@@ -111,7 +111,7 @@ _z80x_execute:	push	ebx
 				movzx	edx, byte [_cycles_main + eax]
 				Z80WORK	dx
 				call	dword [opcode_main + eax*4]
-%if 0
+%if 1
 				inc		byte [edi + R_Z80R]
 				movzx	ecx, word [edi + R_Z80PC]
 				inc		word [edi + R_Z80PC]

@@ -106,8 +106,8 @@
 #define MCR_RLD {													\
 			BYTE tmp;												\
 			tmp = Z80_RDMEM(R_Z80HL);								\
-			Z80_WRMEM(R_Z80HL, (tmp & 0x0f) | (R_Z80A << 4));		\
-			R_Z80A = (tmp & 0xf0) | (R_Z80A >> 4);					\
+			Z80_WRMEM(R_Z80HL, (tmp << 4) + (R_Z80A & 0x0f));		\
+			R_Z80A = (R_Z80A & 0xf0) | (tmp >> 4);					\
 			R_Z80F &= C_FLAG;										\
 			R_Z80F |= ZSPtable[R_Z80A];								\
 		}
