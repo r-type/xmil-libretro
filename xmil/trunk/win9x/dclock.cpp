@@ -1,27 +1,20 @@
 #include	"compiler.h"
-#include	<time.h>
 #include	"parts.h"
 #include	"xmil.h"
 #include	"scrnmng.h"
+#include	"timemng.h"
 #include	"dclock.h"
-#include	"palettes.h"
 #include	"pccore.h"
+#include	"palettes.h"
 
 
-	DCLOCK_T	dclock;
-	BYTE		dclock_dat[(DCLOCK_X * DCLOCK_Y / 8) + 4];
-	RGB32		dclock_pal[4];
-
-static	BYTE dclocky[13] = {0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3};
-#define	DCLOCKY_MAX	13
-
-static	DWORD	outcolors[4][16];
-static	WORD	outcolors16[4];
+	_DCLOCK		dclock;
+	DCLOCKPAL	dclockpal;
 
 
 // ------------------------------------------------------------------ font1
 
-static	BYTE clockchr1[11][16] = {
+static const UINT8 clockchr1[11][16] = {
 			{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,},
 			{0x78, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0x78,},
 			{0x30, 0x70, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30,},
@@ -34,36 +27,37 @@ static	BYTE clockchr1[11][16] = {
 			{0x78, 0xcc, 0xcc, 0xcc, 0x78, 0xcc, 0xcc, 0xcc, 0x78,},
 			{0x78, 0xcc, 0xcc, 0xcc, 0xcc, 0x7c, 0x0c, 0x18, 0x70,}};
 
-static	DCLOCK_POS dclockpos1[6] = {
-						{&dclock_dat[0], (WORD)(~0x00fc), 0, 0},
-						{&dclock_dat[0], (WORD)(~0xf801), 7, 0},
-						{&dclock_dat[2], (WORD)(~0x801f), 3, 0},
-						{&dclock_dat[3], (WORD)(~0x003f), 2, 0},
-						{&dclock_dat[4], (WORD)(~0xf003), 6, 0},
-						{&dclock_dat[5], (WORD)(~0xe007), 5, 0}};
+static const DCPOS dclockpos1[6] = {
+						{&dclock.dat[0], (UINT16)(~0x00fc), 0, 0},
+						{&dclock.dat[0], (UINT16)(~0xf801), 7, 0},
+						{&dclock.dat[2], (UINT16)(~0x801f), 3, 0},
+						{&dclock.dat[3], (UINT16)(~0x003f), 2, 0},
+						{&dclock.dat[4], (UINT16)(~0xf003), 6, 0},
+						{&dclock.dat[5], (UINT16)(~0xe007), 5, 0}};
 
-static void resetfont1(void) {
+static void resetfont1(UINT8 clockx) {
 
-	DWORD pat;
+	UINT32	pat;
 
-	if (xmiloscfg.clockx) {
-		if (xmiloscfg.clockx <= 4) {
+	if (clockx) {
+		if (clockx <= 4) {
 			pat = 0x00008001;
 		}
 		else {
 			pat = 0x30008001;
 		}
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*4+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*5+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*9+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*10+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*4+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*5+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*9+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*10+1]) = pat;
 	}
 }
+
 
 // ------------------------------------------------------------------ font2
 
 // 5x9
-static	BYTE clockchr2[11][16] = {
+static const UINT8 clockchr2[11][16] = {
 			{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,},
 			{0x00, 0x00, 0x30, 0x48, 0x88, 0x88, 0x88, 0x88, 0x70,},
 			{0x10, 0x30, 0x10, 0x10, 0x10, 0x20, 0x20, 0x20, 0x20,},
@@ -76,37 +70,38 @@ static	BYTE clockchr2[11][16] = {
 			{0x38, 0x44, 0x44, 0x48, 0x30, 0x48, 0x88, 0x88, 0x70,},
 			{0x18, 0x24, 0x40, 0x44, 0x48, 0x38, 0x10, 0x20, 0x20,}};
 
-static	DCLOCK_POS dclockpos2[6] = {
-						{&dclock_dat[0], (WORD)(~0x00fc), 0, 0},
-						{&dclock_dat[0], (WORD)(~0xf003), 6, 0},
-						{&dclock_dat[2], (WORD)(~0x00fc), 0, 0},
-						{&dclock_dat[2], (WORD)(~0xf003), 6, 0},
-						{&dclock_dat[4], (WORD)(~0x00fc), 0, 0},
-						{&dclock_dat[4], (WORD)(~0xf003), 6, 0}};
+static const DCPOS dclockpos2[6] = {
+						{&dclock.dat[0], (UINT16)(~0x00fc), 0, 0},
+						{&dclock.dat[0], (UINT16)(~0xf003), 6, 0},
+						{&dclock.dat[2], (UINT16)(~0x00fc), 0, 0},
+						{&dclock.dat[2], (UINT16)(~0xf003), 6, 0},
+						{&dclock.dat[4], (UINT16)(~0x00fc), 0, 0},
+						{&dclock.dat[4], (UINT16)(~0xf003), 6, 0}};
 
-static void resetfont2(void) {
+static void resetfont2(UINT8 clockx) {
 
-	DWORD pat;
+	UINT32	pat;
 
-	if (xmiloscfg.clockx) {
-		if (xmiloscfg.clockx <= 4) {
+	if (clockx) {
+		if (clockx <= 4) {
 			pat = 0x00000002;
 		}
 		else {
 			pat = 0x00020002;
 		}
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*4+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*5+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*4+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*5+1]) = pat;
 		pat <<= 1;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*9+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*10+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*9+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*10+1]) = pat;
 	}
 }
+
 
 // ------------------------------------------------------------------ font3
 
 // 4x9
-static	BYTE clockchr3[11][16] = {
+static const UINT8 clockchr3[11][16] = {
 			{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,},
 			{0x60, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x60,},
 			{0x20, 0x60, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,},
@@ -119,36 +114,37 @@ static	BYTE clockchr3[11][16] = {
 			{0x60, 0x90, 0x90, 0x90, 0x60, 0x90, 0x90, 0x90, 0x60,},
 			{0x60, 0x90, 0x90, 0x90, 0x70, 0x10, 0x90, 0x90, 0x60,}};
 
-static	DCLOCK_POS dclockpos3[6] = {
-						{&dclock_dat[0], (WORD)(~0x00f0), 0, 0},
-						{&dclock_dat[0], (WORD)(~0x8007), 5, 0},
-						{&dclock_dat[1], (WORD)(~0xc003), 6, 0},
-						{&dclock_dat[2], (WORD)(~0x001e), 3, 0},
-						{&dclock_dat[3], (WORD)(~0x000f), 4, 0},
-						{&dclock_dat[4], (WORD)(~0x0078), 1, 0}};
+static const DCPOS dclockpos3[6] = {
+						{&dclock.dat[0], (UINT16)(~0x00f0), 0, 0},
+						{&dclock.dat[0], (UINT16)(~0x8007), 5, 0},
+						{&dclock.dat[1], (UINT16)(~0xc003), 6, 0},
+						{&dclock.dat[2], (UINT16)(~0x001e), 3, 0},
+						{&dclock.dat[3], (UINT16)(~0x000f), 4, 0},
+						{&dclock.dat[4], (UINT16)(~0x0078), 1, 0}};
 
-static void resetfont3(void) {
+static void resetfont3(UINT8 clockx) {
 
-	DWORD pat;
+	UINT32	pat;
 
-	if (xmiloscfg.clockx) {
-		if (xmiloscfg.clockx <= 4) {
+	if (clockx) {
+		if (clockx <= 4) {
 			pat = 0x00000010;
 		}
 		else {
 			pat = 0x00400010;
 		}
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*4+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*5+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*9+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*10+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*4+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*5+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*9+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*10+1]) = pat;
 	}
 }
+
 
 // ------------------------------------------------------------------ font4
 
 // 5x8
-static	BYTE clockchr4[11][16] = {
+static const UINT8 clockchr4[11][16] = {
 			{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,},
 			{0x00, 0x70, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x70,},
 			{0x00, 0x60, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x70,},
@@ -161,27 +157,28 @@ static	BYTE clockchr4[11][16] = {
 			{0x00, 0x70, 0x88, 0x88, 0x70, 0x50, 0x88, 0x88, 0x70,},
 			{0x00, 0x70, 0x88, 0x88, 0x88, 0x78, 0x10, 0x20, 0xc0,}};
 
-static void resetfont4(void) {
+static void resetfont4(UINT8 clockx) {
 
-	DWORD pat;
+	UINT32	pat;
 
-	if (xmiloscfg.clockx) {
-		if (xmiloscfg.clockx <= 4) {
+	if (clockx) {
+		if (clockx <= 4) {
 			pat = 0x00000004;
 		}
 		else {
 			pat = 0x00040004;
 		}
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*5+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*6+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*9+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*10+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*5+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*6+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*9+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*10+1]) = pat;
 	}
 }
 
+
 // ------------------------------------------------------------------ font5
 
-static	BYTE clockchr5[11][16] = {
+static const UINT8 clockchr5[11][16] = {
 			{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,},
 			{0x00, 0x00, 0x70, 0x88, 0x88, 0x88, 0x88, 0x88, 0x70,},
 			{0x00, 0x00, 0x20, 0x60, 0x20, 0x20, 0x20, 0x20, 0x20,},
@@ -194,36 +191,37 @@ static	BYTE clockchr5[11][16] = {
 			{0x00, 0x00, 0x70, 0x88, 0x88, 0x70, 0x88, 0x88, 0x70,},
 			{0x00, 0x00, 0x70, 0x88, 0x88, 0x88, 0x78, 0x10, 0x60,}};
 
-static	DCLOCK_POS dclockpos5[6] = {
-						{&dclock_dat[0], (WORD)(~0x00f8), 0, 0},
-						{&dclock_dat[0], (WORD)(~0xe003), 6, 0},
-						{&dclock_dat[2], (WORD)(~0x007c), 1, 0},
-						{&dclock_dat[2], (WORD)(~0xf001), 7, 0},
-						{&dclock_dat[4], (WORD)(~0x003e), 2, 0},
-						{&dclock_dat[5], (WORD)(~0x00f8), 0, 0}};
+static const DCPOS dclockpos5[6] = {
+						{&dclock.dat[0], (UINT16)(~0x00f8), 0, 0},
+						{&dclock.dat[0], (UINT16)(~0xe003), 6, 0},
+						{&dclock.dat[2], (UINT16)(~0x007c), 1, 0},
+						{&dclock.dat[2], (UINT16)(~0xf001), 7, 0},
+						{&dclock.dat[4], (UINT16)(~0x003e), 2, 0},
+						{&dclock.dat[5], (UINT16)(~0x00f8), 0, 0}};
 
-static void resetfont5(void) {
+static void resetfont5(UINT8 clockx) {
 
-	DWORD pat;
+	UINT32	pat;
 
-	if (xmiloscfg.clockx) {
-		if (xmiloscfg.clockx <= 4) {
+	if (clockx) {
+		if (clockx <= 4) {
 			pat = 0x00000006;
 		}
 		else {
 			pat = 0x00030006;
 		}
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*6+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*7+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*9+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*10+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*6+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*7+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*9+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*10+1]) = pat;
 	}
 }
+
 
 // ------------------------------------------------------------------ font6
 
 // 4x6
-static	BYTE clockchr6[11][16] = {
+static const UINT8 clockchr6[11][16] = {
 			{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,},
 			{0x00, 0x00, 0x00, 0x60, 0x90, 0x90, 0x90, 0x90, 0x60,},
 			{0x00, 0x00, 0x00, 0x20, 0x60, 0x20, 0x20, 0x20, 0x20,},
@@ -236,34 +234,40 @@ static	BYTE clockchr6[11][16] = {
 			{0x00, 0x00, 0x00, 0x60, 0x90, 0x60, 0x90, 0x90, 0x60,},
 			{0x00, 0x00, 0x00, 0x60, 0x90, 0x90, 0x70, 0x20, 0x40,}};
 
-static	DCLOCK_POS dclockpos6[6] = {
-						{&dclock_dat[0], (WORD)(~0x00f0), 0, 0},
-						{&dclock_dat[0], (WORD)(~0x8007), 5, 0},
-						{&dclock_dat[1], (WORD)(~0x000f), 4, 0},
-						{&dclock_dat[2], (WORD)(~0x0078), 1, 0},
-						{&dclock_dat[3], (WORD)(~0x00f0), 0, 0},
-						{&dclock_dat[3], (WORD)(~0x8007), 5, 0}};
+static const DCPOS dclockpos6[6] = {
+						{&dclock.dat[0], (UINT16)(~0x00f0), 0, 0},
+						{&dclock.dat[0], (UINT16)(~0x8007), 5, 0},
+						{&dclock.dat[1], (UINT16)(~0x000f), 4, 0},
+						{&dclock.dat[2], (UINT16)(~0x0078), 1, 0},
+						{&dclock.dat[3], (UINT16)(~0x00f0), 0, 0},
+						{&dclock.dat[3], (UINT16)(~0x8007), 5, 0}};
 
-static void resetfont6(void) {
+static void resetfont6(UINT8 clockx) {
 
-	DWORD pat;
+	UINT32	pat;
 
-	if (xmiloscfg.clockx) {
-		if (xmiloscfg.clockx <= 4) {
+	if (clockx) {
+		if (clockx <= 4) {
 			pat = 0x00000020;
 		}
 		else {
 			pat = 0x00000220;
 		}
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*8+1]) = pat;
-		*(DWORD *)(&dclock_dat[(DCLOCK_X/8)*10+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*8+1]) = pat;
+		*(UINT32 *)(&dclock.dat[(DCLOCK_X/8)*10+1]) = pat;
 	}
 }
 
+
 // ------------------------------------------------------------------------
 
-static DCLOCK_FNT dclock_font = {clockchr1[0], dclockpos1, resetfont1};
-static DCLOCK_FNT fonttype[] =
+typedef struct {
+const UINT8	*fnt;
+const DCPOS	*pos;
+	void	(*init)(UINT8 clockx);
+} DCLOCKFNT;
+
+static const DCLOCKFNT fonttype[] =
 					{{clockchr1[0], dclockpos1, resetfont1},
 					 {clockchr2[0], dclockpos2, resetfont2},
 					 {clockchr3[0], dclockpos3, resetfont3},
@@ -271,18 +275,22 @@ static DCLOCK_FNT fonttype[] =
 					 {clockchr5[0], dclockpos5, resetfont5},
 					 {clockchr6[0], dclockpos6, resetfont6}};
 
+
 // ------------------------------------------------------------------------
 
 void dclock_init(void) {
 
-	pal_makegrad(dclock_pal, 4, xmiloscfg.clockcolor1, xmiloscfg.clockcolor2);
+	pal_makegrad(dclockpal.pal32, 4,
+								xmiloscfg.clockcolor1, xmiloscfg.clockcolor2);
 }
 
 void dclock_init8(void) {
 
-	BYTE	i, j;
-	DWORD	work = 0;							// vc++4.2
+	UINT	i;
+	UINT	j;
+	UINT32	work;
 
+	work = 0;
 	for (i=0; i<16; i++) {
 		for (j=1; j<0x10; j<<=1) {
 			work <<= 8;
@@ -291,25 +299,25 @@ void dclock_init8(void) {
 			}
 		}
 		for (j=0; j<4; j++) {
-			outcolors[j][i] = work * ((START_PAL + TOTAL_PALS) + j);
+			dclockpal.pal8[j][i] = work * ((START_PAL + TOTAL_PALS) + j);
 		}
 	}
 }
 
 void dclock_init16(void) {
 
-	int		i;
+	UINT	i;
 
 	for (i=0; i<4; i++) {
-		outcolors16[i] = scrnmng_makepal16(dclock_pal[i]);
+		dclockpal.pal16[i] = scrnmng_makepal16(dclockpal.pal32[i]);
 	}
 }
 
-
 void dclock_reset(void) {
 
+const DCLOCKFNT *fnt;
+
 	ZeroMemory(&dclock, sizeof(dclock));
-	ZeroMemory(&dclock_dat, sizeof(dclock_dat));
 
 	if (xmiloscfg.clockx) {
 		if (xmiloscfg.clockx <= 4) {
@@ -322,12 +330,15 @@ void dclock_reset(void) {
 			xmiloscfg.clockx = 0;
 		}
 	}
-	if (xmiloscfg.clockfnt >= (sizeof(fonttype) / sizeof(DCLOCK_FNT))) {
+	if (xmiloscfg.clockfnt >= (sizeof(fonttype) / sizeof(DCLOCKFNT))) {
 		xmiloscfg.clockfnt = 0;
 	}
-	dclock_font = fonttype[xmiloscfg.clockfnt];
 
-	dclock_font.init();
+	dclock.clk_x = xmiloscfg.clockx;
+	fnt = fonttype + xmiloscfg.clockfnt;
+	dclock.fnt = fnt->fnt;
+	dclock.pos = fnt->pos;
+	fnt->init(dclock.clk_x);
 	dclock_callback();
 	dclock_redraw();
 }
@@ -335,27 +346,26 @@ void dclock_reset(void) {
 void dclock_callback(void) {
 
 	int			i;
-	BYTE		count = 13;
-	BYTE		buf[8];
-	time_t		ltime;
-	struct tm	*nt;
+	_SYSTIME	st;
+	UINT8		buf[8];
+	UINT8		count;
 
 	if ((scrnmng_isfullscreen()) && (xmiloscfg.clockx)) {
-		time(&ltime);
-		nt = localtime(&ltime);
-		buf[0] = (nt->tm_hour / 10) + 1;
-		buf[1] = (nt->tm_hour % 10) + 1;
-		buf[2] = (nt->tm_min / 10) + 1;
-		buf[3] = (nt->tm_min % 10) + 1;
+		timemng_gettime(&st);
+		buf[0] = (st.hour / 10) + 1;
+		buf[1] = (st.hour % 10) + 1;
+		buf[2] = (st.minute / 10) + 1;
+		buf[3] = (st.minute % 10) + 1;
 		if (xmiloscfg.clockx > 4) {
-			buf[4] = (nt->tm_sec / 10) + 1;
-			buf[5] = (nt->tm_sec % 10) + 1;
+			buf[4] = (st.second / 10) + 1;
+			buf[5] = (st.second % 10) + 1;
 		}
+		count = 13;
 		for (i=xmiloscfg.clockx; i--;) {
-			if (dclock.dclock_now[i] != buf[i]) {
-				dclock.dclock_now[i] = buf[i];
-				dclock.dclock_flm[i] = count;
-				dclock.dclock_drawing |= (1 << i);
+			if (dclock.now[i] != buf[i]) {
+				dclock.now[i] = buf[i];
+				dclock.frm[i] = count;
+				dclock.drawing |= (1 << i);
 				count += 4;
 			}
 		}
@@ -364,24 +374,32 @@ void dclock_callback(void) {
 
 void dclock_redraw(void) {
 
-	dclock.dclock_drawing = 0x3f;
+	dclock.drawing = 0x3f;
 }
 
 BOOL dclock_disp(void) {
 
-	return((dclock.dclock_drawing != 0) ||
-			(*(DWORD *)(&dclock.dclock_flm[0]) != 0) ||
-			(*(DWORD *)(&dclock.dclock_flm[4]) != 0));
+	return((dclock.drawing != 0) ||
+			(*(UINT32 *)(dclock.frm + 0) != 0) ||
+			(*(UINT32 *)(dclock.frm + 4) != 0));
 }
+
+
+
+#if 0
+// ----
+
+#define	DCLOCKY_MAX	13
+static const UINT8 dclocky[13] = {0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3};
 
 LABEL void __fastcall dclock_cntdown(BYTE value) {
 
 	__asm {
 				cmp		xmiloscfg.clockx, 0
 				je		dclock_cdn
-				cmp		dword ptr (dclock.dclock_flm), 0
+				cmp		dword ptr (dclock.frm), 0
 				jne		dclock_cdn
-				cmp		dword ptr (dclock.dclock_flm + 4), 0
+				cmp		dword ptr (dclock.frm + 4), 0
 				jne		dclock_cdn
 				ret
 
@@ -390,7 +408,7 @@ dclock_cdn:		push	ecx
 				cmp		cl, 0
 				jne		dclock_cdnlp
 				inc		cl
-dclock_cdnlp:	movzx	eax, dclock[edx].dclock_flm
+dclock_cdnlp:	movzx	eax, dclock[edx].frm
 				cmp		eax, 0
 				je		dclock_cdned
 				cmp		eax, DCLOCKY_MAX
@@ -408,8 +426,8 @@ dclock_upabove:	sub		al, cl
 				jae		dclock_outflm
 				jmp		dclock_setdraw
 dclock_set0:	xor		eax, eax
-dclock_setdraw:	bts		dclock.dclock_drawing, dx
-dclock_outflm:	mov		dclock[edx].dclock_flm, al
+dclock_setdraw:	bts		dclock.drawing, dx
+dclock_outflm:	mov		dclock[edx].frm, al
 dclock_cdned:	inc		edx
 				cmp		dl, xmiloscfg.clockx
 				jc		dclock_cdnlp
@@ -425,7 +443,7 @@ LABEL void dclock_make(void) {
 				je		dclockmakeend
 				pushad
 				xor		ebx, ebx
-makedclock_lp:	btr		dclock.dclock_drawing, bx
+makedclock_lp:	btr		dclock.drawing, bx
 				jc		makedclock_1
 makedclock_ed:	inc		ebx
 				cmp		bl, xmiloscfg.clockx
@@ -433,21 +451,21 @@ makedclock_ed:	inc		ebx
 				popad
 dclockmakeend:	ret
 
-makedclock_1:	mov		eax, dclock_font.dclock_put
+makedclock_1:	mov		eax, dclock.pos
 				lea		eax, [eax + ebx*8]
-				mov		edi, [eax]DCLOCK_POS.dclock_pos
-				mov		dx, [eax]DCLOCK_POS.dclock_mask
-				mov		cl, [eax]DCLOCK_POS.dclock_rolbit
-				movzx	eax, dclock[ebx].dclock_flm
+				mov		edi, [eax]DCPOS.pos
+				mov		dx, [eax]DCPOS.mask
+				mov		cl, [eax]DCPOS.rolbit
+				movzx	eax, dclock[ebx].frm
 				cmp		eax, 0
 				je		makedclock_y0
 				cmp		eax, DCLOCKY_MAX
 				jb		makedclock_ani
-				movzx	eax, dclock[ebx].dclock_bak
+				movzx	eax, dclock[ebx].bak
 				jmp		makedclock0put
 
-makedclock_y0:	movzx	eax, dclock[ebx].dclock_now
-				mov		dclock[ebx].dclock_bak, al
+makedclock_y0:	movzx	eax, dclock[ebx].now
+				mov		dclock[ebx].bak, al
 
 makedclock0put:	mov		ch, 3
 makedclock0_up:	and		[edi], dx
@@ -455,7 +473,7 @@ makedclock0_up:	and		[edi], dx
 				dec		ch
 				jne		makedclock0_up
 				shl		eax, 4
-				add		eax, dclock_font.dclock_fnt
+				add		eax, dclock.fnt
 				mov		esi, eax
 				mov		ch, 9
 makedclock0_dn:	movzx	eax, byte ptr [esi]
@@ -477,9 +495,9 @@ makedclkani_up:	and		[edi], dx
 				add		edi, (DCLOCK_X / 8)
 				dec		ch
 				jne		makedclkani_up
-makedclock_an2:	movzx	esi, dclock[ebx].dclock_now
+makedclock_an2:	movzx	esi, dclock[ebx].now
 				shl		esi, 4
-				add		esi, dclock_font.dclock_fnt
+				add		esi, dclock.fnt
 				mov		ch, 9
 makedclkani_md:	movzx	eax, byte ptr [esi]
 				ror		ax, cl
@@ -492,11 +510,11 @@ makedclkani_md:	movzx	eax, byte ptr [esi]
 				pop		eax
 
 				mov		ch, al
-				movzx	esi, dclock[ebx].dclock_bak
+				movzx	esi, dclock[ebx].bak
 				shl		esi, 4
 				sub		esi, eax
 				add		esi, 9
-				add		esi, dclock_font.dclock_fnt
+				add		esi, dclock.fnt
 makedclkani_dn:	movzx	eax, byte ptr [esi]
 				ror		ax, cl
 				and		[edi], dx
@@ -509,12 +527,12 @@ makedclkani_dn:	movzx	eax, byte ptr [esi]
 	}
 }
 
-LABEL void __fastcall dclock_out8(void *ptr, DWORD width) {
+LABEL void __fastcall dclock_out8(void *ptr, UINT width) {
 
 	__asm {
 				pushad
-				mov		esi, offset dclock_dat
-				mov		edi, offset outcolors
+				mov		esi, offset (dclock.dat)
+				mov		edi, offset (dclockpal.pal8)
 				mov		bh, 4
 dclockout_lp1:	mov		bl, 3
 dclockout_lp2:	mov		ebp, (DCLOCK_X/8)
@@ -541,12 +559,12 @@ dclockout_lp3:	movzx	eax, byte ptr [esi]
 	}
 }
 
-LABEL void __fastcall dclock_out16(void *ptr, DWORD width) {
+LABEL void __fastcall dclock_out16(void *ptr, UINT width) {
 
 	__asm {
 				pushad
-				mov		esi, offset dclock_dat
-				mov		edi, offset outcolors16
+				mov		esi, offset (dclock.dat)
+				mov		edi, offset (dclockpal.pal16)
 				mov		bh, 4
 dclockout_lp1:	mov		bl, 3
 dclockout_lp2:	push	ebx
@@ -574,3 +592,5 @@ dclockout_lp4:	rcl		bl, 1
 				ret
 	}
 }
+#endif
+
