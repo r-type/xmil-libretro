@@ -76,10 +76,10 @@ static void flashupdatetmp(void) {
 				udt |= 0x0008;
 			}
 			if ((TRAMUPDATE(posl) ^ (udt >> 8)) & 0x1f) {
-				TRAMUPDATE(posl) = (UINT8)((udt >> 8) | UPDATE_TRAM);
+				TRAMUPDATE(posl) = (UINT8)((udt >> 8) | UPDATE_TVRAM);
 			}
 			if ((TRAMUPDATE(posr) ^ (udt >> 0)) & 0x1f) {
-				TRAMUPDATE(posr) = (UINT8)((udt >> 0) | UPDATE_TRAM);
+				TRAMUPDATE(posr) = (UINT8)((udt >> 0) | UPDATE_TVRAM);
 			}
 			posl = LOW11(posl + 2);
 		} while(--r);
