@@ -355,7 +355,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	_GetModuleFileName(NULL, modulefile, sizeof(modulefile));
 	dosio_init();
 	file_setcd(modulefile);
-//	initload();
+	initload();
 
 	hInst = hInstance;
 	hPreI = hPreInst;
@@ -547,9 +547,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	scrnmng_destroy();
 	sysmenu_destroy();
 
-//	if (sys_updates	& (SYS_UPDATECFG | SYS_UPDATEOSCFG)) {
-//		initsave();
-//	}
+	if (sys_updates	& (SYS_UPDATECFG | SYS_UPDATEOSCFG)) {
+		initsave();
+	}
 	TRACETERM();
 	dosio_term();
 

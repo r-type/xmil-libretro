@@ -9,36 +9,39 @@ UINT ucscnv_utf8toucs2(UINT16 *dst, UINT dcnt, const char *src, UINT scnt) {
 	UINT	orgdcnt;
 	UINT	c;
 
-	(void)scnt;
-
-	orgdcnt = dcnt;
 	if (dcnt == 0) {
 		dst = NULL;
 	}
-	dcnt--;
+	else {
+		dcnt--;
+	}
+	orgdcnt = dcnt;
 	while(dcnt) {
-		if (src[0] == '\0') {
+		if ((scnt == 0) || (src[0] == '\0')) {
 			break;
 		}
 		else if (!(src[0] & 0x80)) {
 			c = src[0];
 			src += 1;
+			scnt -= 1;
 		}
 		else if ((src[0] & 0xe0) == 0xc0) {
-			if ((src[1] & 0xc0) != 0x80) {
+			if ((scnt < 2) || ((src[1] & 0xc0) != 0x80)) {
 				break;
 			}
 			c = ((src[0] & 0x1f) << 6) + (src[1] & 0x3f);
 			src += 2;
+			scnt -= 2;
 		}
 		else if ((src[0] & 0xf0) == 0xe0) {
-			if (((src[1] & 0xc0) != 0x80) ||
-				((src[2] & 0xc0) != 0x80)) {
+			if ((scnt < 3) ||
+				((src[1] & 0xc0) != 0x80) || ((src[2] & 0xc0) != 0x80)) {
 				break;
 			}
 			c = ((src[0] & 0x0f) << 12) +
 								((src[1] & 0x3f) << 6) + (src[2] & 0x3f);
 			src += 3;
+			scnt -= 3;
 		}
 		else {
 			break;
@@ -60,14 +63,18 @@ UINT ucscnv_ucs2toutf8(char *dst, UINT dcnt, const UINT16 *src, UINT scnt) {
 	UINT	orgdcnt;
 	UINT	c;
 
-	(void)scnt;
-
-	orgdcnt = dcnt;
 	if (dcnt == 0) {
 		dst = NULL;
 	}
-	dcnt--;
+	else {
+		dcnt--;
+	}
+	orgdcnt = dcnt;
 	while(dcnt) {
+		if (scnt == 0) {
+			break;
+		}
+		scnt--;
 		c = *src++;
 		if (!c) {
 			break;

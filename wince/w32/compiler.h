@@ -4,7 +4,11 @@
 #include	<stddef.h>
 
 #define	BYTESEX_LITTLE
+#if !defined(UNICODE)
+#define	OSLANG_SJIS
+#else
 #define	OSLANG_UCS2
+#endif
 #define	OSLINEBREAK_CRLF
 
 typedef signed int			SINT;
@@ -54,12 +58,21 @@ typedef	unsigned int		UINT32;
 
 #define	GETTICK()			GetTickCount()
 #define	__ASSERT(s)
+#if !defined(UNICODE)
+#define	SPRINTF				wsprintf
+#define	STRLEN				lstrlen
+#else
 #define	SPRINTF				sprintf
 #define	STRLEN				strlen
+#endif
 
 #define SOUND_CRITICAL
 
+#if !defined(UNICODE)
+#define	SUPPORT_SJIS
+#else
 #define	SUPPORT_ANK
+#endif
 
 #define	SUPPORT_16BPP
 #define	MEMOPTIMIZE			2

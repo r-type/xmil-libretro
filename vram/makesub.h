@@ -9,9 +9,24 @@ enum {
 extern "C" {
 #endif
 
-extern	UINT32	to256col[512];
 extern const UINT8 x2left[256];
 extern const UINT8 x2right[256];
+#define	PATx2LEFT(p)		x2left[(p)]
+#define	PATx2RIGHT(p)		x2right[(p)]
+
+#if (!defined(MEMOPTIMIZE)) || (MEMOPTIMIZE == 0)		// x86
+extern	UINT32	to256col0[8][512];
+#define	TO256COLL(d, b)		(to256col0[b][d*2+0])
+#define	TO256COLR(d, b)		(to256col0[b][d*2+1])
+#elif (MEMOPTIMIZE == 1)								// for Mac
+extern	UINT32	to256col1[512];
+#define	TO256COLL(d, b)		(to256col1[d*2+0] << b)
+#define	TO256COLR(d, b)		(to256col1[d*2+1] << b)
+#else													// other
+extern const UINT32 to256col2[16];
+#define	TO256COLL(d, b)		(to256col2[(d >> 4)] << b)
+#define	TO256COLR(d, b)		(to256col2[(d & 15)] << b)
+#endif
 
 void makesub_initialize(void);
 
@@ -80,11 +95,4 @@ void width80x10h(void);							// 80x10
 #ifdef __cplusplus
 }
 #endif
-
-
-#define	PATx2LEFT(p)		x2left[(p)]
-#define	PATx2RIGHT(p)		x2right[(p)]
-
-#define	TO256COLL(d, b)		(to256col[d*2+0] << b)
-#define	TO256COLR(d, b)		(to256col[d*2+1] << b)
 

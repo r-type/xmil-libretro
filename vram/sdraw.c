@@ -4,6 +4,7 @@
 #include	"sdraw.h"
 #include	"palettes.h"
 
+#if !defined(SIZE_QVGA)
 
 #undef	SDZMODE
 
@@ -76,4 +77,6 @@ const SDRAWFN *sdraw_getproctbl(const SCRNSURF *surf) {
 	proc = ((surf->bpp >> 3) - 1) & 3;
 	return(tbl[proc]);
 }
+
+#endif
 
