@@ -67,7 +67,7 @@ static void streamprepare(UINT samples) {
 #if defined(SUPPORT_WAVEREC)
 // ---- wave rec
 
-BOOL sound_recstart(const char *filename) {
+BRESULT sound_recstart(const OEMCHAR *filename) {
 
 	WAVEWR	rec;
 
@@ -166,7 +166,7 @@ static void filltailsample(UINT count) {
 
 // ----
 
-BOOL sound_create(UINT rate, UINT ms) {
+BRESULT sound_create(UINT rate, UINT ms) {
 
 	UINT	samples;
 	UINT	reserve;

@@ -636,7 +636,7 @@ int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, UINT size) {
 
 	SFFILEH		sffh;
 	int			ret;
-	BOOL		done;
+	BRESULT		done;
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
 
@@ -692,7 +692,7 @@ int statsave_load(const OEMCHAR *filename) {
 
 	SFFILEH		sffh;
 	int			ret;
-	BOOL		done;
+	BRESULT		done;
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
 

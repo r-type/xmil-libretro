@@ -28,15 +28,15 @@ enum {
 #endif
 
 #ifndef STOREINTELDWORD
-#define	STOREINTELDWORD(a, b)	*((a)+0) = (BYTE)((b));			\
-								*((a)+1) = (BYTE)((b)>>8);		\
-								*((a)+2) = (BYTE)((b)>>16);		\
-								*((a)+3) = (BYTE)((b)>>24)
+#define	STOREINTELDWORD(a, b)	*((a)+0) = (UINT8)((b));		\
+								*((a)+1) = (UINT8)((b)>>8);		\
+								*((a)+2) = (UINT8)((b)>>16);	\
+								*((a)+3) = (UINT8)((b)>>24)
 #endif
 
 #ifndef STOREINTELWORD
-#define	STOREINTELWORD(a, b)	*((a)+0) = (BYTE)((b));			\
-								*((a)+1) = (BYTE)((b)>>8)
+#define	STOREINTELWORD(a, b)	*((a)+0) = (UINT8)((b));			\
+								*((a)+1) = (UINT8)((b)>>8)
 #endif
 
 #ifndef	NELEMENTS
