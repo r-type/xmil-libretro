@@ -51,6 +51,13 @@ typedef REG8 (*FDDCRC)(FDDFILE fdd, REG8 media, UINT track, UINT num,
 typedef UINT32 (*FDDSEC)(FDDFILE fdd, REG8 media, UINT track, REG8 sc);
 #endif
 
+typedef struct {
+	UINT32	headersize;
+	UINT8	tracks;
+	UINT8	sectors;
+	UINT8	n;
+	UINT8	media;
+} _XDFINFO, *XDFINFO;
 
 typedef struct {
 	UINT32		fd_size;
@@ -71,6 +78,7 @@ struct _fddfile {
 	FDDSEC		sec;
 #endif
 	union {
+		_XDFINFO	xdf;
 		_D88INFO	d88;
 	} inf;
 	OEMCHAR		fname[MAX_PATH];

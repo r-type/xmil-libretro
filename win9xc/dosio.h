@@ -65,3 +65,6 @@ void __stdcall file_setseparator(OEMCHAR *path, int maxlen);
 }
 #endif
 
+#define	file_createex(p, t)		file_create(p)
+#define	file_createex_c(p, t)	file_create_c(p)
+
