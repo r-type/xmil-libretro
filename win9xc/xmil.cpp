@@ -33,7 +33,14 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 		XMILOSCFG	xmiloscfg = {
 							CW_USEDEFAULT, CW_USEDEFAULT,
 							0, 0, 1,
-							0, 0, 0};
+							0, 0, 0,
+#if defined(SUPPORT_RESUME)
+							0,
+#endif
+#if defined(SUPPORT_STATSAVE)
+							1,
+#endif
+					};
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium C");
 		HWND		hWndMain;
@@ -81,12 +88,233 @@ static void dispbmp(HINSTANCE hinst, HDC hdc,
 
 // ----
 
+static void xmilcmd(HWND hWnd, UINT cmd) {
+
+	UINT	update;
+
+	update = 0;
+	switch(cmd) {
+		case IDM_IPLRESET:
+			pccore_reset();
+			break;
+
+		case IDM_NMIRESET:
+			Z80_NMI();
+			break;
+
+		case IDM_CONFIG:
+			winuienter();
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_CONFIG),
+											hWnd, (DLGPROC)CfgDialogProc);
+			winuileave();
+			break;
+
+		case IDM_NEWDISK:
+			winuienter();
+			dialog_newdisk(hWnd);
+			winuileave();
+			break;
+
+		case IDM_EXIT:
+			SendMessage(hWnd, WM_CLOSE, 0, 0L);
+			break;
+
+		case IDM_FDD0OPEN:
+			winuienter();
+			dialog_changefdd(hWnd, 0);
+			winuileave();
+			break;
+
+		case IDM_FDD0EJECT:
+			diskdrv_setfdd(0, NULL, 0);
+			break;
+
+		case IDM_FDD1OPEN:
+			winuienter();
+			dialog_changefdd(hWnd, 1);
+			winuileave();
+			break;
+
+		case IDM_FDD1EJECT:
+			diskdrv_setfdd(1, NULL, 0);
+			break;
+
+		case IDM_TURBOZ:
+			menu_setiplrom(3);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_TURBO:
+			menu_setiplrom(2);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_X1ROM:
+			menu_setiplrom(1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_BOOT2D:
+			menu_setbootmedia(0);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_BOOT2HD:
+			menu_setbootmedia(DIPSW_BOOTMEDIA);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_HIGHRES:
+			menu_setresolute(0);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_LOWRES:
+			menu_setresolute(DIPSW_RESOLUTE);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_WINDOW:
+			scrnmng_changescreen(scrnmode & (~SCRNMODE_FULLSCREEN));
+			break;
+
+		case IDM_FULLSCREEN:
+			scrnmng_changescreen(scrnmode | SCRNMODE_FULLSCREEN);
+			break;
+
+		case IDM_WIDTH80:
+			crtc_forcesetwidth(80);
+			break;
+
+		case IDM_WIDTH40:
+			crtc_forcesetwidth(40);
+			break;
+
+		case IDM_DISPSYNC:
+			menu_setdispmode(xmilcfg.DISPSYNC ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_RASTER:
+			menu_setraster(xmilcfg.RASTER ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_NOWAIT:
+			menu_setwaitflg(xmiloscfg.NOWAIT ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_AUTOFPS:
+			menu_setframe(0);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_60FPS:
+			menu_setframe(1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_30FPS:
+			menu_setframe(2);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_20FPS:
+			menu_setframe(3);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_15FPS:
+			menu_setframe(4);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_KEY:
+			menu_setkey(0);
+			break;
+
+		case IDM_JOY1:
+			menu_setkey(1);
+			break;
+
+		case IDM_JOY2:
+			menu_setkey(2);
+			break;
+
+		case IDM_FMBOARD:
+			menu_setsound(xmilcfg.SOUND_SW ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_JOYSTICK:
+			menu_setjoystick(xmiloscfg.JOYSTICK ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_MOUSE:
+		//	mousemng_toggle(MOUSEPROC_SYSTEM);
+			menu_setmouse(xmilcfg.MOUSE_SW ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_SEEKSND:
+			menu_setmotorflg(xmilcfg.MOTOR ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_BMPSAVE:
+			winuienter();
+			bmpsave();
+			winuileave();
+			break;
+
+		case IDM_OPMLOG:
+			winuienter();
+			dialog_x1f(hWnd);
+			winuileave();
+			break;
+
+		case IDM_DISPCLOCK:
+			menu_setdispclk(xmiloscfg.DISPCLK ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_DISPFRAME:
+			menu_setdispclk(xmiloscfg.DISPCLK ^ 2);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_JOYX:
+			menu_setbtnmode(xmilcfg.BTN_MODE ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_RAPID:
+			menu_setbtnrapid(xmilcfg.BTN_RAPID ^ 1);
+			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_Z80SAVE:
+			debugsub_status();
+			break;
+
+		case IDM_ABOUT:
+			winuienter();
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUT),
+											hWnd, (DLGPROC)AboutDialogProc);
+			winuileave();
+			break;
+	}
+	sysmng_update(update);
+}
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	PAINTSTRUCT	ps;
 	RECT		rc;
 	HDC			hdc;
-	UINT		updateflag;
 
 	switch (msg) {
 		case WM_CREATE:
@@ -97,239 +325,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 
 		case WM_COMMAND:
-			updateflag = 0;
-			switch(LOWORD(wParam)) {
-				case IDM_IPLRESET:
-#if 1
-					pccore_reset();
-#else
-					if ((!juliet_YM2151IsEnable()) && (changehz)) {
-						changehz = 0;
-						STREAM_TERM();
-						STREAM_CREATE();
-					}
-					if (reset_x1(xmilcfg.ROM_TYPE,
-								xmilcfg.SOUND_SW, xmilcfg.DIP_SW)) {
-						PostQuitMessage(0);
-					}
-#endif
-					break;
-
-				case IDM_NMIRESET:
-					Z80_NMI();
-					break;
-
-				case IDM_CONFIG:
-					winuienter();
-					DialogBox(hInst, MAKEINTRESOURCE(IDD_CONFIG),
-											hWnd, (DLGPROC)CfgDialogProc);
-					winuileave();
-					break;
-
-				case IDM_NEWDISK:
-					winuienter();
-					dialog_newdisk(hWnd);
-					winuileave();
-					break;
-
-				case IDM_EXIT:
-					SendMessage(hWnd, WM_CLOSE, 0, 0L);
-					break;
-
-				case IDM_FDD0OPEN:
-					winuienter();
-					dialog_changefdd(hWnd, 0);
-					winuileave();
-					break;
-
-				case IDM_FDD0EJECT:
-					diskdrv_setfdd(0, NULL, 0);
-					break;
-
-				case IDM_FDD1OPEN:
-					winuienter();
-					dialog_changefdd(hWnd, 1);
-					winuileave();
-					break;
-
-				case IDM_FDD1EJECT:
-					diskdrv_setfdd(1, NULL, 0);
-					break;
-
-				case IDM_TURBOZ:
-					menu_setiplrom(3);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_TURBO:
-					menu_setiplrom(2);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_X1ROM:
-					menu_setiplrom(1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_BOOT2D:
-					menu_setbootmedia(0);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_BOOT2HD:
-					menu_setbootmedia(DIPSW_BOOTMEDIA);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_HIGHRES:
-					menu_setresolute(0);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_LOWRES:
-					menu_setresolute(DIPSW_RESOLUTE);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_WINDOW:
-					scrnmng_changescreen(scrnmode & (~SCRNMODE_FULLSCREEN));
-					break;
-
-				case IDM_FULLSCREEN:
-					scrnmng_changescreen(scrnmode | SCRNMODE_FULLSCREEN);
-					break;
-
-				case IDM_WIDTH80:
-					crtc.s.TXT_XL = 80;
-//					crtc.s.GRP_XL = 640;
-					vrambank_patch();
-					scrnallflash = 1;
-					break;
-
-				case IDM_WIDTH40:
-					crtc.s.TXT_XL = 40;
-//					crtc.s.GRP_XL = 320;
-					vrambank_patch();
-					scrnallflash = 1;
-					break;
-
-				case IDM_DISPSYNC:
-					menu_setdispmode(xmilcfg.DISPSYNC ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_RASTER:
-					menu_setraster(xmilcfg.RASTER ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_NOWAIT:
-					menu_setwaitflg(xmiloscfg.NOWAIT ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_AUTOFPS:
-					menu_setframe(0);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_60FPS:
-					menu_setframe(1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_30FPS:
-					menu_setframe(2);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_20FPS:
-					menu_setframe(3);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_15FPS:
-					menu_setframe(4);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_KEY:
-					menu_setkey(0);
-					break;
-
-				case IDM_JOY1:
-					menu_setkey(1);
-					break;
-
-				case IDM_JOY2:
-					menu_setkey(2);
-					break;
-
-				case IDM_FMBOARD:
-					menu_setsound(xmilcfg.SOUND_SW ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_JOYSTICK:
-					menu_setjoystick(xmiloscfg.JOYSTICK ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_MOUSE:
-				//	mousemng_toggle(MOUSEPROC_SYSTEM);
-					menu_setmouse(xmilcfg.MOUSE_SW ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_SEEKSND:
-					menu_setmotorflg(xmilcfg.MOTOR ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_BMPSAVE:
-					winuienter();
-					bmpsave();
-					winuileave();
-					break;
-
-				case IDM_OPMLOG:
-					winuienter();
-					dialog_x1f(hWnd);
-					winuileave();
-					break;
-
-				case IDM_DISPCLOCK:
-					menu_setdispclk(xmiloscfg.DISPCLK ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_DISPFRAME:
-					menu_setdispclk(xmiloscfg.DISPCLK ^ 2);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_JOYX:
-					menu_setbtnmode(xmilcfg.BTN_MODE ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_RAPID:
-					menu_setbtnrapid(xmilcfg.BTN_RAPID ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_Z80SAVE:
-					debugsub_status();
-					break;
-
-				case IDM_ABOUT:
-					winuienter();
-					DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUT),
-											hWnd, (DLGPROC)AboutDialogProc);
-					winuileave();
-					break;
-			}
-			sysmng_update(updateflag);
+			xmilcmd(hWnd, LOWORD(wParam));
 			break;
 
 		case WM_ACTIVATE:

@@ -23,7 +23,6 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"timing.h"
-#include	"keystat.h"
 #if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
 #include	"statsave.h"
 #endif
@@ -123,9 +122,13 @@ static const OEMCHAR xmilresumeext[] = OEMTEXT(".sav");
 #endif
 #if defined(SUPPORT_STATSAVE)
 static const OEMCHAR xmilflagext[] = OEMTEXT(".sv%u");
+static const OEMCHAR str_statload[] = OEMTEXT("Status Load");
 #endif
 
 #if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
+
+static const OEMCHAR str_loaderr[] = OEMTEXT("Couldn't restart");
+static const OEMCHAR str_conflict[] = OEMTEXT("Conflict!\n\n%s\nContinue?");
 
 static void getstatfilename(OEMCHAR *path, const OEMCHAR *ext, UINT size) {
 
@@ -157,24 +160,24 @@ static void flagdelete(const OEMCHAR *ext) {
 	file_delete(path);
 }
 
-static int flagload(const char *ext, const char *title, BOOL force) {
+static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force) {
 
 	int		ret;
 	int		id;
 	OEMCHAR	path[MAX_PATH];
 	OEMCHAR	buf[1024];
+	OEMCHAR buf2[1024 + 32];
 
 	getstatfilename(path, ext, NELEMENTS(path));
 	winuienter();
 	id = IDYES;
 	ret = statsave_check(path, buf, NELEMENTS(buf));
 	if (ret & (~STATFLAG_DISKCHG)) {
-		MessageBox(hWndMain, "Couldn't restart", title, MB_OK | MB_ICONSTOP);
+		MessageBox(hWndMain, str_loaderr, title, MB_OK | MB_ICONSTOP);
 		id = IDNO;
 	}
 	else if ((!force) && (ret & STATFLAG_DISKCHG)) {
-		char buf2[1024 + 256];
-		wsprintf(buf2, "Conflict!\n\n%s\nContinue?", buf);
+		OEMSPRINTF(buf2, str_conflict, buf);
 		id = MessageBox(hWndMain, buf2, title,
 										MB_YESNOCANCEL | MB_ICONQUESTION);
 	}
@@ -422,7 +425,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			else if ((cmd >= IDM_FLAGLOAD) &&
 				(cmd < (IDM_FLAGLOAD + SUPPORT_STATSAVE))) {
 				OEMSPRINTF(ext, xmilflagext, cmd - IDM_FLAGLOAD);
-				flagload(ext, "Status Load", TRUE);
+				flagload(ext, str_statload, TRUE);
 			}
 #endif
 			break;
