@@ -130,6 +130,7 @@ static REG8 type2cmd(REG8 sc) {
 	fdc.s.bufmark = fdc.s.cmd & 1;
 	fdc.s.bufpos = 0;
 	fdc.s.bufsize = size;
+	fdc.s.curtime = 0;
 	return(stat);
 }
 
@@ -169,6 +170,7 @@ static REG8 crccmd(void) {
 		fdc.s.bufsize = 0;
 	}
 	fdc.s.bufwrite = FALSE;
+	fdc.s.curtime = 0;
 	return(stat);
 }
 
@@ -181,6 +183,7 @@ static void bufposinc(void) {
 		return;
 	}
 	fdc.s.bufpos++;
+	fdc.s.curtime = 0;
 	if (fdc.s.bufpos >= fdc.s.bufsize) {
 		r = FALSE;
 		if (fdc.s.type == 2) {
@@ -221,7 +224,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 	if ((port & (~7)) != 0x0ff8) {
 		return;
 	}
-	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
+//	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
 	switch(port & 7) {
 		case 0:									// コマンド
 			fdc.s.cmd = value;
@@ -232,12 +235,15 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				fdc.s.stat = type2flash();
 			}
 			fdc.s.bufdir = FDCDIR_NONE;
+			// マリオは コマンド発行後にbusyを見張る
+			// 逆にソーサリアンとかは busyだとエラーになる…
+			// 条件は何？
 			setbusy(20);
 			switch(cmd) {
 				case 0x00:								// リストア
-					if (value & 8) {					// LAYDOCK
-						setbusy(0);
-					}
+				//	if (value & 8) {					// LAYDOCK
+				//		setbusy(0);
+				//	}
 					fdc.s.motor = 0x80;					// モーターOn?
 					fdc.s.c = 0;
 					fdc.s.step = 1;
@@ -377,16 +383,14 @@ REG8 IOINPCALL fdc_i(UINT port) {
 			if (ret) {
 				return(ret);
 			}
-#if 0
-			if (fdc.s.type == 2) {
-				if (last_r == _fdc.r && last_off == fdc.off &&
-						!(--timeoutwait)) {
-					inc_off();
-					timeoutwait = 4;
+#if 1
+			if (fdc.s.bufdir) {					// YsII
+				fdc.s.curtime++;
+				if (fdc.s.curtime >= 8) {
+					fdc.s.stat |= 0x04;
+					bufposinc();
 				}
-				last_r = _fdc.r;
-				last_off = fdc.off;
-			}							// Read Write時のみの変化でいい筈
+			}
 #endif
 			ret = getstat();
 			if (!(ret & 0x02)) {
