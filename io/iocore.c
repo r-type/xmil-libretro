@@ -35,41 +35,6 @@ static REG8 IOINPCALL dummy_inp(UINT port) {
 
 // ----
 
-static void IOOUTCALL opm_o(UINT port, REG8 dat) {
-
-	REG8	lsb;
-
-	lsb = (UINT8)port;
-	if (lsb == 0x00) {					// 0700
-		sndboard_opmreg(port, dat);
-	}
-	else if (lsb == 0x01) {				// 0701
-		sndboard_opmdat(port, dat);
-	}
-	else if ((lsb & (~3)) == 0x04) {	// 0704-0707
-		ctc_o(port, dat);
-	}
-}
-
-static REG8 IOINPCALL opm_i(UINT port) {
-
-	REG8	lsb;
-
-	lsb = (UINT8)port;
-	if ((lsb & (~1)) == 0x00) {			// 0700/0701
-		return(sndboard_opmsta(port));
-	}
-	else if ((lsb & (~3)) == 0x04) {	// 0704-0707
-		return(ctc_i(port));
-	}
-	else {
-		return(0xff);
-	}
-}
-
-
-// ----
-
 static void IOOUTCALL port1fxx_o(UINT port, REG8 dat) {
 
 	REG8	lsb;

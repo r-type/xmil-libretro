@@ -1,4 +1,10 @@
 
+enum {
+	D88_TRACKMAX		= 164,
+	D88_HEADERSIZE		= 0x20 + (D88_TRACKMAX * 4)
+};
+
+
 #if defined(__GNUC__)
 // D88ヘッダ (size: 2b0h bytes)
 typedef struct {
@@ -7,7 +13,6 @@ typedef struct {
 	UINT8	protect;			// Write Protect bit:4
 	UINT8	fd_type;			// Disk Format
 	UINT8	fd_size[4];			// Disk Size
-	UINT8	trackp[164][4];		// Track_pointer
 } __attribute__ ((packed)) _D88HEAD, *D88HEAD;
 
 // D88セクタ (size: 16bytes)
@@ -34,7 +39,6 @@ typedef struct {
 	UINT8	protect;			// Write Protect bit:4
 	UINT8	fd_type;			// Disk Format
 	UINT8	fd_size[4];			// Disk Size
-	UINT8	trackp[164][4];		// Track_pointer
 } _D88HEAD, *D88HEAD;
 
 // D88セクタ (size: 16bytes)

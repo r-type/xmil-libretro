@@ -2,17 +2,15 @@
 #include	<math.h>
 #include	"sound.h"
 #include	"sndctrl.h"
-#include	"juliet.h"
-#include	"x1f.h"
 
 
-extern	int		s_cnt;
-extern	DWORD	basedclk;
+// extern	int		s_cnt;
+// extern	DWORD	basedclk;
 
 
 	PSGGENCFG	psggencfg;
 
-static const UINT8 psggen_deftbl[0x10] =
+const UINT8 psggen_deftbl[0x10] =
 				{0, 0, 0, 0, 0, 0, 0, 0xbf, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
 
 static const UINT8 psgenv_pat[16] = {
@@ -93,11 +91,10 @@ void psggen_setreg(PSGGEN psg, REG8 reg, REG8 value) {
 	UINT	freq;
 	UINT	ch;
 
-	x1f_psg(reg, value);
-	if (romeo_exist) {
-		juliet2_YMF288A(reg, value, (basedclk * s_cnt / 1600));
-		return;
-	}
+//	if (romeo_exist) {
+//		juliet2_YMF288A(reg, value, (basedclk * s_cnt / 1600));
+//		return;
+//	}
 
 	reg &= 15;
 //	if (reg < 14) {

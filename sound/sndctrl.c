@@ -3,12 +3,10 @@
 #include	"pccore.h"
 #include	"sound.h"
 #include	"sndctrl.h"
-#include	"juliet.h"
 
 
 	UINT		pcmbufsize[300];
 	UINT		framesoundcnt;
-	BRESULT		romeo_exist;
 	OPMCH		opmch[OPMCH_MAX];
 	_OPMGEN		opmgen;
 	_PSGGEN		psggen;
@@ -24,7 +22,6 @@ void sndctrl_initialize(void) {
 	rate = xmilcfg.samplingrate;
 
 	sound_create(rate, xmilcfg.delayms);
-	romeo_exist = juliet_YM2151IsEnable();
 	opmgen_initialize(rate);
 	psggen_initialize(rate);
 	psggen_setvol(64);

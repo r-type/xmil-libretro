@@ -56,6 +56,4 @@ typedef ULONG (WINAPI *PCIMEMRD32)(ULONG addr);
 #define	FN_PCIMEMRD16	"_MemReadShort"
 #define	FN_PCIMEMRD32	"_MemReadLong"
 
-#define pciBusDevFunc(Bus,Dev,Func)		( ((Bus&0xff)<<8)|((Dev&0x1f)<<3)|(Func&7) )
-
 #endif /* _ROMEO_ROMEO_H */

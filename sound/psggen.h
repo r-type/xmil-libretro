@@ -64,6 +64,8 @@ typedef struct {
 extern "C" {
 #endif
 
+extern const UINT8 psggen_deftbl[0x10];
+
 void psggen_initialize(UINT rate);
 void psggen_setvol(UINT vol);
 

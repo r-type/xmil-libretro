@@ -116,7 +116,7 @@ static void ctcch_o(CTCCH *ch, UINT port, REG8 value) {
 
 static REG8 ctcch_i(CTCCH *ch, UINT port) {
 
-	UINT	scale;
+	REG8	scale;
 
 	port &= 3;
 	if (port != 3) {

@@ -12,7 +12,6 @@
 #include	"sndctrl.h"
 #include	"menu.h"
 #include	"font.h"
-#include	"juliet.h"
 #include	"xmilver.h"
 #include	"fddfile.h"
 #include	"calendar.h"
@@ -130,8 +129,6 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 ***********************************************************************/
 
 static	BYTE	keyintcnt = 0;
-static	BYTE	flame = 0;
-static	BYTE	inttiming = 0;
 
 void pccore_initialize(void) {
 
@@ -212,25 +209,15 @@ void iptrace_out(void) {
 
 void x1r_exec(void) {
 
-extern	BYTE	disp_flashscreen;
+	REG8	inttiming;
 
 	v_cnt = 0;
 	s_cnt = 0;
 	xmilcfg.DISPSYNC &= 1;
 	inttiming = xmilcfg.CPU8MHz & 1;
-//	TRACEOUT(("*sync"));
 
 	while(s_cnt < 266) {
 		while(h_cnt < pccore.HSYNC_CLK) {
-#if defined(TRACE)
-//			TRACEOUT(("%.4x", Z80_PC));
-//			if (Z80_PC == 0x8198) {
-//				TRACEOUT(("---->sound"));
-//			}
-//			if (Z80_PC == 0x8188) {
-//				TRACEOUT(("-- poll sound"));
-//			}
-#endif
 #if IPTRACE
 			treip[trpos & (IPTRACE - 1)] = Z80_PC;
 			trpos++;
@@ -244,7 +231,7 @@ extern	BYTE	disp_flashscreen;
 		if (inttiming != 3) {
 			if (xmilcfg.SOUNDPLY) {
 				sound_makesample(pcmbufsize[s_cnt]);
-				juliet2_exec();
+//				juliet2_exec();
 			}
 			s_cnt++;
 			x1_ctc_int();
@@ -265,10 +252,7 @@ extern	BYTE	disp_flashscreen;
 			}
 		}
 	}
-	if (++flame >= 60) {
-		flame = 0;
-		calendar_inc();
-	}
+	calendar_inc();
 	if (!xmilcfg.SOUNDPLY) {
 		sound_makesample(framesoundcnt);
 	}

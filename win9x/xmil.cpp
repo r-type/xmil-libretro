@@ -725,7 +725,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	juliet_load();
 	juliet_prepare();
 
-	juliet2_reset();
+//	juliet2_reset();
 	if (soundmng_initialize() == SUCCESS) {
 		soundmng_pcmload(SOUND_PCMSEEK, OEMTEXT("fddseek.wav"), 0);
 		soundmng_pcmload(SOUND_PCMSEEK1, OEMTEXT("fddseek1.wav"), 0);
@@ -774,12 +774,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 					timing_setcount(0);
 					joymng_sync();
 					mousemng_sync();
-					juliet2_sync(25);
+//					juliet2_sync(25);
 					x1r_exec();
 					x1f_sync();
 				}
 				soundmng_sync();
-				juliet2_exec();
+//				juliet2_exec();
 			}
 		}
 		else {

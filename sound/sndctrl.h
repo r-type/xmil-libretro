@@ -8,7 +8,6 @@ extern "C" {
 
 extern	UINT		pcmbufsize[];
 extern	UINT		framesoundcnt;
-extern	BRESULT		romeo_exist;
 extern	OPMCH		opmch[OPMCH_MAX];
 extern	_OPMGEN		opmgen;
 extern	_PSGGEN		psggen;

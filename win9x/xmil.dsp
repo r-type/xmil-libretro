@@ -616,7 +616,7 @@ SOURCE=..\IO\SIO.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\IO\SNDBOARD.C
+SOURCE=.\SNDBOARD.C
 # End Source File
 # Begin Source File
 
@@ -694,10 +694,6 @@ SOURCE=..\IO\VRAMIO.C
 # Begin Group "sound"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\SOUND\JULIET.CPP
-# End Source File
 # Begin Source File
 
 SOURCE=..\SOUND\OPMGENC.C
@@ -939,6 +935,10 @@ SOURCE=.\INI.CPP
 # Begin Source File
 
 SOURCE=.\JOYMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\JULIET.CPP
 # End Source File
 # Begin Source File
 
