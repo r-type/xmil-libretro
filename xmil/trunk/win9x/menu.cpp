@@ -4,6 +4,7 @@
 #include	"dosio.h"
 #include	"scrnmng.h"
 #include	"sysmng.h"
+#include	"extclass.h"
 #include	"pccore.h"
 #include	"ini.h"
 #include	"menu.h"
@@ -217,7 +218,7 @@ void menu_disablewindow(void) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	EnableMenuItem(hmenu, IDM_WINDOW, MF_GRAYED);
 	EnableMenuItem(hmenu, IDM_FULLSCREEN, MF_GRAYED);
 }
@@ -226,7 +227,7 @@ void menu_setiplrom(UINT8 num) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	xmilcfg.ROM_TYPE = num;
 	CheckMenuItem(hmenu, IDM_TURBOZ, MFCHECK(num == 3));
 	CheckMenuItem(hmenu, IDM_TURBO, MFCHECK(num == 2));
@@ -237,7 +238,7 @@ void menu_setbootmedia(UINT8 value) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	value &= DIPSW_BOOTMEDIA;
 	xmilcfg.DIP_SW &= ~DIPSW_BOOTMEDIA;
 	xmilcfg.DIP_SW |= value;
@@ -249,7 +250,7 @@ void menu_setresolute(UINT8 value) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	value &= DIPSW_RESOLUTE;
 	xmilcfg.DIP_SW &= ~DIPSW_RESOLUTE;
 	xmilcfg.DIP_SW |= value;
@@ -261,7 +262,7 @@ void menu_setwidth(UINT8 value) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	CheckMenuItem(hmenu, IDM_WIDTH80, MFCHECK(!value));
 	CheckMenuItem(hmenu, IDM_WIDTH40, MFCHECK(value));
 }
@@ -270,28 +271,28 @@ void menu_setdispmode(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.DISPSYNC = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_DISPSYNC, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_DISPSYNC, MFCHECK(value));
 }
 
 void menu_setraster(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.RASTER = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_RASTER, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_RASTER, MFCHECK(value));
 }
 
 void menu_setwaitflg(UINT8 value) {
 
 	value &= 1;
 	xmiloscfg.NOWAIT = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_NOWAIT, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_NOWAIT, MFCHECK(value));
 }
 
 void menu_setframe(UINT8 value) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	xmiloscfg.DRAW_SKIP = value;
 	CheckMenuItem(hmenu, IDM_AUTOFPS, MFCHECK(!value));
 	CheckMenuItem(hmenu, IDM_60FPS, MFCHECK(value == 1));
@@ -304,7 +305,7 @@ void menu_setkey(UINT8 value) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	if (value >= 3) {
 		value = 0;
 	}
@@ -317,14 +318,14 @@ void menu_setkey(UINT8 value) {
 void menu_setsound(UINT8 value) {
 
 	xmilcfg.SOUND_SW = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_FMBOARD, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_FMBOARD, MFCHECK(value));
 }
 
 void menu_setjoystick(UINT8 value) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	xmiloscfg.JOYSTICK &= 0x80;
 	xmiloscfg.JOYSTICK |= (value & 0x7f);
 	if (value & 2) {
@@ -339,26 +340,26 @@ void menu_setmouse(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.MOUSE_SW = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_MOUSE, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_MOUSE, MFCHECK(value));
 }
 
 void menu_setmotorflg(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.MOTOR = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_SEEKSND, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_SEEKSND, MFCHECK(value));
 }
 
 void menu_opmlog(UINT8 value) {
 
-	CheckMenuItem(GetMenu(hWndMain), IDM_OPMLOG, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_OPMLOG, MFCHECK(value));
 }
 
 void menu_setdispclk(UINT8 value) {
 
 	HMENU	hmenu;
 
-	hmenu = GetMenu(hWndMain);
+	hmenu = extclass_gethmenu(hWndMain);
 	value &= 3;
 	xmiloscfg.DISPCLK = value;
 	CheckMenuItem(hmenu, IDM_DISPCLOCK, MFCHECK(value & 1));
@@ -371,13 +372,13 @@ void menu_setbtnmode(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.BTN_MODE = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_JOYX, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_JOYX, MFCHECK(value));
 }
 
 void menu_setbtnrapid(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.BTN_RAPID = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_RAPID, MFCHECK(value));
+	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_RAPID, MFCHECK(value));
 }
 

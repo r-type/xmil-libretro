@@ -321,6 +321,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_RASTER:
 			menu_setraster(xmilcfg.RASTER ^ 1);
+			if (xmilcfg.RASTER) {
+				scrnmng_changescreen(scrnmode | SCRNMODE_SYSHIGHCOLOR);
+			}
+			else {
+				scrnmng_changescreen(scrnmode & (~SCRNMODE_SYSHIGHCOLOR));
+			}
 			update = SYS_UPDATECFG;
 			break;
 
@@ -858,6 +864,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 
 	scrndraw_initialize();
 	scrnmode = 0;
+	if (xmilcfg.RASTER) {
+		scrnmode |= SCRNMODE_SYSHIGHCOLOR;
+	}
 	if (scrnmng_create(scrnmode) != SUCCESS) {
 		scrnmode ^= SCRNMODE_FULLSCREEN;
 		if (scrnmng_create(scrnmode) != SUCCESS) {
