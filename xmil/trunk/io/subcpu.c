@@ -9,9 +9,53 @@
 #include	"calendar.h"
 
 
-//							    e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef
-static const UINT8 cmdtbl[] = { 0, 1, 0, 0, 1, 0, 1, 0, 0, 3, 0, 3, 0};
-static const UINT8 dattbl[] = { 3, 0, 0, 2, 0, 1, 0, 1, 1, 0, 3, 0, 3};
+// 							     e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef
+//static const UINT8 cmdtbl[] = { 0, 1, 0, 0, 1, 0, 1, 0, 0, 3, 0, 3, 0};
+//static const UINT8 dattbl[] = { 3, 0, 0, 2, 0, 1, 0, 1, 1, 0, 3, 0, 3};
+
+typedef struct {
+	UINT8	pos;
+	UINT8	flag;
+} SCPUTBL;
+
+enum {
+	SCPU_CNTMASK	= 0x07,
+	SCPU_INPUT		= 0x08
+};
+
+static const SCPUTBL scputbl[0x20] = {
+		{offsetof(SUBCPU, s.timer[0]),	6},					// d0: timer0 set
+		{offsetof(SUBCPU, s.timer[1]),	6},					// d1: timer1 set
+		{offsetof(SUBCPU, s.timer[2]),	6},					// d2: timer2 set
+		{offsetof(SUBCPU, s.timer[3]),	6},					// d3: timer3 set
+		{offsetof(SUBCPU, s.timer[4]),	6},					// d4: timer4 set
+		{offsetof(SUBCPU, s.timer[5]),	6},					// d5: timer5 set
+		{offsetof(SUBCPU, s.timer[6]),	6},					// d6: timer6 set
+		{offsetof(SUBCPU, s.timer[7]),	6},					// d7: timer7 set
+		{offsetof(SUBCPU, s.timer[0]),	6 + SCPU_INPUT},	// d8: timer0 get
+		{offsetof(SUBCPU, s.timer[1]),	6 + SCPU_INPUT},	// d9: timer1 get
+		{offsetof(SUBCPU, s.timer[2]),	6 + SCPU_INPUT},	// da: timer2 get
+		{offsetof(SUBCPU, s.timer[3]),	6 + SCPU_INPUT},	// db: timer3 get
+		{offsetof(SUBCPU, s.timer[4]),	6 + SCPU_INPUT},	// dc: timer4 get
+		{offsetof(SUBCPU, s.timer[5]),	6 + SCPU_INPUT},	// dd: timer5 get
+		{offsetof(SUBCPU, s.timer[6]),	6 + SCPU_INPUT},	// de: timer6 get
+		{offsetof(SUBCPU, s.timer[7]),	6 + SCPU_INPUT},	// df: timer7 get
+		{offsetof(SUBCPU, s.zero),		0},					// e0:
+		{offsetof(SUBCPU, s.zero),		0},					// e1:
+		{offsetof(SUBCPU, s.zero),		0},					// e2:
+		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT},	// e3: game keys
+		{offsetof(SUBCPU, s.vect),		1},					// e4: intr vector
+		{offsetof(SUBCPU, s.zero),		0},					// e5:
+		{offsetof(SUBCPU, s.work),		2 + SCPU_INPUT},	// e6: game keys
+		{offsetof(SUBCPU, s.tvctrl),	1},					// e7: set TV ctrl
+		{offsetof(SUBCPU, s.tvctrl),	1 + SCPU_INPUT},	// e8: get TV ctrl
+		{offsetof(SUBCPU, s.work),		1},					// e9: cmt ctrl
+		{offsetof(SUBCPU, s.work),		1 + SCPU_INPUT},	// ea: cmtctrlstat
+		{offsetof(SUBCPU, s.work),		1 + SCPU_INPUT},	// eb: cmttypestat
+		{offsetof(SUBCPU, s.work),		3},					// ec: date set
+		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT},	// ed: date set
+		{offsetof(SUBCPU, s.work),		3},					// ee: time set
+		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT}};	// ef: time set
 
 
 // ----
@@ -20,19 +64,20 @@ void neitem_scpu(UINT id) {
 
 	BRESULT	intr;
 
-	nevent_repeat(id);
 	intr = FALSE;
 	// こうすると同時押しが判定できないのでキーバッファを持つべし
 	if (keystat.req_int) {
 		keystat.req_int = 0;
 		intr = TRUE;
 	}
-	else if (subcpu.keydata) {
-		subcpu.keycount++;
-		if (subcpu.keycount >= subcpu.keycountrep) {
-			subcpu.keycount = 0;
+	else if (subcpu.s.keydata) {
+		subcpu.s.keycount++;
+		if (subcpu.s.keycount >= subcpu.s.keycountrep) {
+			subcpu.s.keycount = 0;
 			intr = TRUE;
 		}
+		nevent_set(NEVENT_SUBCPU, subcpu.e.intrclock,
+											neitem_scpu, NEVENT_RELATIVE);
 	}
 	if (intr) {
 		ievent_set(IEVENT_SUBCPU);
@@ -44,37 +89,41 @@ BRESULT ieitem_scpu(UINT id) {
 	UINT	key;
 	UINT8	keydata;
 
-	if ((subcpu.cmdcnt) || (subcpu.datacnt)) {
+	if ((subcpu.s.cmdcnt) || (subcpu.s.datcnt)) {
 		keystat.req_int = 1;			// 再送しる
+		subcpu_sendkey();
 		return(FALSE);
 	}
-	if (!subcpu.Ex[4][0]) {				// 割り込み不要だったら捨てる
+	if (subcpu.s.vect == 0) {			// 割り込み不要だったら捨てる
 		return(FALSE);
 	}
 	key = keystat_getflag();
 	keydata = (UINT8)(key >> 8);
-	if (subcpu.keydata != keydata) {
-		subcpu.keydata = keydata;
-		subcpu.keycount = 0;
-		subcpu.keycountrep = 480;
+	if (subcpu.s.keydata != keydata) {
+		subcpu.s.keydata = keydata;
+		subcpu.s.keycount = 0;
+		subcpu.s.keycountrep = 480;
 	}
 	else {
 		if (keydata == 0) {
 			return(FALSE);
 		}
 		key = key & (~0x20);			// rep
-		subcpu.keycountrep = 48;		// 0.1sec
+		subcpu.s.keycountrep = 48;		// 0.1sec
 	}
-	subcpu.Ex[0x06][0] = (UINT8)key;
-	subcpu.Ex[0x06][1] = keydata;
-	subcpu.mode = 0xe6;
-	subcpu.cmdcnt = 0;
-	subcpu.datacnt = 2;
-	subcpu.dataptr = offsetof(SUBCPU, Ex[0xe6 - 0xe0][0]);
-	subcpu.OBF = 0;
-	subcpu.IBF = 1;
+	subcpu.s.work[1] = (UINT8)key;
+	subcpu.s.work[0] = keydata;
+	subcpu.s.cmdptr = offsetof(SUBCPU, s.zero);
+	subcpu.s.datptr = offsetof(SUBCPU, s.work);
+	subcpu.s.mode = 0xe6;
+	subcpu.s.cmdcnt = 0;
+	subcpu.s.datcnt = 2;
 
-	Z80_INTERRUPT(subcpu.Ex[4][0]);
+//	subcpu.s.OBF = 0;
+//	subcpu.s.IBF = 1;
+	iocore.s.ppib = (UINT8)((iocore.s.ppib & (~0x20)) | 0x40);
+
+	Z80_INTERRUPT(subcpu.s.vect);
 	(void)id;
 	return(TRUE);
 }
@@ -82,166 +131,121 @@ BRESULT ieitem_scpu(UINT id) {
 
 // ----
 
-void IOOUTCALL subcpu_o(UINT port, REG8 value) {
+static void subcpusetbuffer(SUBCPU *s) {
 
 	UINT32	key;
 
-	if (subcpu.IBF) {
+	switch(s->s.mode) {
+		case 0xe3:
+			key = keystat_gete3();
+			s->s.work[2] = (UINT8)(key >> 16);
+			s->s.work[1] = (UINT8)(key >> 8);
+			s->s.work[0] = (UINT8)(key >> 0);
+			break;
+
+		case 0xe6:
+			key = keystat_getflag();
+			s->s.work[1] = (UINT8)(key >> 0);
+			s->s.work[0] = (UINT8)(key >> 8);
+			break;
+
+		case 0xea:
+			s->s.work[0] = cmt_ctrl_stat();
+			break;
+
+		case 0xeb:
+			s->s.work[0] = cmt_tape_stat();
+			break;
+
+		case 0xed:
+			calendar_getdate(s->s.work);
+			break;
+
+		case 0xef:
+			calendar_gettime(s->s.work);
+			break;
+	}
+}
+
+void IOOUTCALL subcpu_o(UINT port, REG8 value) {
+
+	UINT		tblpos;
+const SCPUTBL	*p;
+
+	if (iocore.s.ppib & 0x40) {		// subcpu.IBF
 		return;
 	}
-	if (!subcpu.cmdcnt) {
-		subcpu.mode = (UINT8)value;
-		subcpu.cmdcnt = 0;
-		subcpu.datacnt = 0;
-		if ((value >= 0xd0) && (value <= 0xd7)) {
-			subcpu.cmdcnt = 6;
-			subcpu.datacnt = 0;
+	if (!subcpu.s.cmdcnt) {
+		subcpu.s.mode = (UINT8)value;
+		tblpos = value - 0xd0;
+		if (tblpos >= 0x20) {
+			tblpos = 0x10;
 		}
-		else if ((value >= 0xd8) && (value <= 0xdf)) {
-			subcpu.cmdcnt = 0;
-			subcpu.datacnt = 6;
-		}
-		else if ((value >= 0xe3) && (value <= 0xef)) {
-			subcpu.cmdcnt = cmdtbl[value - 0xe3];
-			subcpu.datacnt = dattbl[value - 0xe3];
-		}
-		if (value < 0xe0) {
-			subcpu.dataptr = offsetof(SUBCPU, Dx[value - 0xd0][0]);
+		p = scputbl + tblpos;
+		iocore.s.ppib = (UINT8)(iocore.s.ppib & (~0x60));
+		if (p->flag & SCPU_INPUT) {
+			subcpu.s.cmdptr = offsetof(SUBCPU, s.zero);
+			subcpu.s.datptr = p->pos;
+		//	subcpu.s.cmdcnt = 0;
+			subcpu.s.datcnt = p->flag & SCPU_CNTMASK;
+		//	subcpu.s.OBF = (UINT8)(subcpu.s.datacnt?0:1);	// = 0
+		//	subcpu.s.IBF = (UINT8)(subcpu.s.datacnt?1:0);	// = 1
+			iocore.s.ppib |= 0x40;
+			subcpusetbuffer(&subcpu);
 		}
 		else {
-			subcpu.dataptr = offsetof(SUBCPU, Ex[value - 0xe0][0]);
-		}
-		switch(subcpu.mode) {
-			case 0xe3:
-				key = keystat_gete3();
-				subcpu.Ex[0x03][0] = (UINT8)(key >> 0);
-				subcpu.Ex[0x03][1] = (UINT8)(key >> 8);
-				subcpu.Ex[0x03][2] = (UINT8)(key >> 16);
-				break;
-
-			case 0xe6:
-				key = keystat_getflag();
-				subcpu.Ex[0x06][0] = (UINT8)(key >> 0);
-				subcpu.Ex[0x06][1] = (UINT8)(key >> 8);
-				break;
-
-			case 0xed:
-				calendar_getdate(subcpu.Ex[0x0d]);
-				break;
-
-			case 0xef:
-				calendar_gettime(subcpu.Ex[0x0f]);
-				break;
+			subcpu.s.cmdptr = p->pos;
+			subcpu.s.datptr = offsetof(SUBCPU, s.zero);
+			subcpu.s.cmdcnt = p->flag & SCPU_CNTMASK;
+			subcpu.s.datcnt = 0;
+		//	subcpu.s.OBF = (UINT8)(subcpu.s.datacnt?0:1);	// = 1
+		//	subcpu.s.IBF = (UINT8)(subcpu.s.datacnt?1:0);	// = 0
+			iocore.s.ppib |= 0x20;
 		}
 	}
 	else {
-		((UINT8 *)(&subcpu))[subcpu.dataptr] = value;
-		subcpu.dataptr++;
-		if (--subcpu.cmdcnt == 0) {
-			switch(subcpu.mode) {
+		subcpu.s.cmdcnt--;
+		((UINT8 *)(&subcpu))[subcpu.s.cmdptr + subcpu.s.cmdcnt] = value;
+		if (subcpu.s.cmdcnt == 0) {
+			switch(subcpu.s.mode) {
 				case 0xe9:
-					cmt_ctrl(subcpu.Ex[0x9][0]);
+					cmt_ctrl(subcpu.s.work[0]);
 					break;
 
 				case 0xec:
-					calendar_setdate(subcpu.Ex[0x0c]);
+					calendar_setdate(subcpu.s.work);
 					break;
 
 				case 0xee:
-					calendar_settime(subcpu.Ex[0x0e]);
+					calendar_settime(subcpu.s.work);
 					break;
 			}
 		}
 	}
-	subcpu.OBF = (UINT8)(subcpu.datacnt?0:1);
-	subcpu.IBF = (UINT8)(subcpu.datacnt?1:0);
 	(void)port;
 }
 
 REG8 IOINPCALL subcpu_i(UINT port) {
 
-	UINT32	key;
-	REG8	ret;
-
-#if 1										// D-SIDE で通るように…
-	if (!subcpu.datacnt) {					// ポインタは変らない？
-		subcpu.datacnt++;
-
-		switch(subcpu.mode) {					// 990225 puni
-			case 0xe3:
-				key = keystat_gete3();
-				subcpu.Ex[0x03][0] = (UINT8)(key >> 0);
-				subcpu.Ex[0x03][1] = (UINT8)(key >> 8);
-				subcpu.Ex[0x03][2] = (UINT8)(key >> 16);
-				break;
-
-			case 0xe6:
-				key = keystat_getflag();
-				subcpu.Ex[0x06][0] = (UINT8)(key >> 0);
-				subcpu.Ex[0x06][1] = (UINT8)(key >> 8);
-				break;
-
-			case 0xed:
-				calendar_getdate(subcpu.Ex[0x0d]);
-				break;
-
-			case 0xef:
-				calendar_gettime(subcpu.Ex[0x0f]);
-				break;
-		}
+	if (subcpu.s.datcnt) {
+		subcpu.s.datcnt--;
+	}
+	else {									// D-SIDE で通るように…
+		subcpusetbuffer(&subcpu);
 	}
 
-#else
-	if (subcpu.OBF) {
-		return(0);
+//	subcpu.s.OBF = (UINT8)(subcpu.s.datacnt?0:1);
+//	subcpu.s.IBF = (UINT8)(subcpu.s.datacnt?1:0);
+	iocore.s.ppib = (UINT8)(iocore.s.ppib & (~0x60));
+	if (subcpu.s.datcnt) {
+		 iocore.s.ppib |= 0x40;
 	}
-#endif
-	ret = 0;
-	switch(subcpu.mode) {
-		case 0xd8:
-		case 0xd9:
-		case 0xda:
-		case 0xdb:
-		case 0xdc:
-		case 0xdd:
-		case 0xde:
-		case 0xdf:
-			ret = subcpu.Dx[subcpu.mode - 0xd8][6 - subcpu.datacnt];
-			break;
-
-		case 0xe3:
-			ret = subcpu.Ex[0x03][3 - subcpu.datacnt];
-			break;
-
-		case 0xe6:
-			ret = subcpu.Ex[0x06][2 - subcpu.datacnt];
-			break;
-
-		case 0xe8:
-			ret = subcpu.Ex[0x07][0];
-			break;
-
-		case 0xea:
-			ret = cmt_ctrl_stat();
-			break;
-
-		case 0xeb:
-			ret = cmt_tape_stat();
-			break;
-
-		case 0xed:
-			ret = subcpu.Ex[0x0d][3 - subcpu.datacnt];
-			break;
-
-		case 0xef:
-			ret = subcpu.Ex[0x0f][3 - subcpu.datacnt];
-			break;
+	else {
+		 iocore.s.ppib |= 0x20;
 	}
-	subcpu.datacnt--;
-	subcpu.OBF = (UINT8)(subcpu.datacnt?0:1);
-	subcpu.IBF = (UINT8)(subcpu.datacnt?1:0);
+
 	(void)port;
-	return(ret);
+	return(((UINT8 *)(&subcpu))[subcpu.s.datptr + subcpu.s.datcnt]);
 }
 
 
@@ -250,8 +254,22 @@ REG8 IOINPCALL subcpu_i(UINT port) {
 void subcpu_reset(void) {
 
 	ZeroMemory(&subcpu, sizeof(subcpu));
-	subcpu.OBF = 1;
-	nevent_set(NEVENT_SUBCPU, pccore.realclock / 480,
-												neitem_scpu, NEVENT_ABSOLUTE);
+
+//	subcpu.s.OBF = 1;
+	iocore.s.ppib = (UINT8)(iocore.s.ppib | 0x20);
+
+#if defined(FIX_Z80A)
+	subcpu.e.intrclock = 2000000 * 2 / 480;
+#else
+	subcpu.e.intrclock = pccore.realclock / 480;
+#endif
+}
+
+void subcpu_sendkey(void) {
+
+	if (!nevent_iswork(NEVENT_SUBCPU)) {
+		nevent_set(NEVENT_SUBCPU, subcpu.e.intrclock,
+											neitem_scpu, NEVENT_ABSOLUTE);
+	}
 }
 

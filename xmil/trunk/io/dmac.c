@@ -6,21 +6,24 @@
 #include	"ievent.h"
 
 
+#define	DMACMD(a)	(((a) >> 2) & 0x1f)
+
+
 static REG8 iswork(const DMAC *d) {
 
-	REG8	r;
-
-	r = d->cmd;
-	if ((r & 3) == 0) return(FALSE);
-	if (d->enable == 0) return(FALSE);
-	if (d->ENDB_FLG != 0) return(FALSE);			// mod
-	if (r & 2) {
-		if (d->MACH_FLG != 0) return(FALSE);		// mod
-	}
+	if (d->enable == 0) return(0);
+	if (!(d->WR0 & 3)) return(0);
+#if !defined(DMAS_STOIC)
+	if (d->ENDB_FLG != 0) return(0);
+	if ((d->WR0 & 2) && (d->MACH_FLG != 0)) return(0);
+#else
+	if (!(d->flag & DMAF_ENDB)) return(0);
+	if ((d->WR0 & 2) && (!(d->flag & DMAF_MACH))) return(0);
+#endif
 	if (d->mode != 1) {
-		if ((d->WR[5] ^ d->ready) & 8) return(FALSE);
+		if ((d->WR5 ^ d->ready) & 8) return(0);
 	}
-	return(TRUE);
+	return(1);
 }
 
 void dmac_sendready(BRESULT ready) {
@@ -28,16 +31,27 @@ void dmac_sendready(BRESULT ready) {
 	REG8	working;
 
 	if (!ready) {
+#if !defined(DMAS_STOIC)
 		dma.working = FALSE;
+#else
+		dma.flag &= ~DMAF_WORKING;
+#endif
 		dma.ready = 8;
 	}
 	else {
 		dma.ready = 0;
 		working = iswork(&dma);
+#if !defined(DMAS_STOIC)
 		if (dma.working != working) {
 			dma.working = working;
 			nevent_forceexit();
 		}
+#else
+		if ((dma.flag ^ working) & DMAF_WORKING) {
+			dma.flag ^= DMAF_WORKING;
+			nevent_forceexit();
+		}
+#endif
 	}
 }
 
@@ -48,12 +62,21 @@ BRESULT ieitem_dmac(UINT id) {
 
 	if (dma.INT_ENBL) {
 		vect = 0;
+#if !defined(DMAS_STOIC)
 		if ((dma.INT_FLG & 1) && (dma.MACH_FLG)) {
 			vect = 2;
 		}
 		else if ((dma.INT_FLG & 2) && (dma.ENDB_FLG)) {
 			vect = 4;
 		}
+#else
+		if ((dma.INT_FLG & 1) && (!(dma.flag & DMAF_MACH))) {
+			vect = 2;
+		}
+		else if ((dma.INT_FLG & 2) && (!(dma.flag & DMAF_ENDB))) {
+			vect = 4;
+		}
+#endif
 		if (vect) {
 			if (dma.INT_FLG & 0x20) {
 				vect += (dma.INT_VCT & 0xf9);
@@ -72,223 +95,293 @@ BRESULT ieitem_dmac(UINT id) {
 
 // ----
 
-static void setdmareaddat(void) {
+static void setdmareaddat(DMAC *d) {
 
-	UINT	cnt;
 	REG8	rrmsk;
+	UINT8	*ptr;
 
-	cnt = 0;
-	rrmsk = dma.RR_MSK;
+	rrmsk = d->RR_MSK;
+	ptr = d->rtbl;
 	if (rrmsk & 0x01) {
-		dma.RR_TBL[cnt++] = offsetof(DMAC, RR);
+		*ptr++ = offsetof(DMAC, RR);
 	}
 	if (rrmsk & 0x02) {
-		dma.RR_TBL[cnt++] = offsetof(DMAC, BYT_N.b.l);
+		*ptr++ = offsetof(DMAC, leng.b.nl);
 	}
 	if (rrmsk & 0x04) {
-		dma.RR_TBL[cnt++] = offsetof(DMAC, BYT_N.b.h);
+		*ptr++ = offsetof(DMAC, leng.b.nh);
 	}
 	if (rrmsk & 0x08) {
-		dma.RR_TBL[cnt++] = offsetof(DMAC, CNT_A.b.l);
+		*ptr++ = offsetof(DMAC, cnt_a.b.addrl);
 	}
 	if (rrmsk & 0x10) {
-		dma.RR_TBL[cnt++] = offsetof(DMAC, CNT_A.b.h);
+		*ptr++ = offsetof(DMAC, cnt_a.b.addrh);
 	}
 	if (rrmsk & 0x20) {
-		dma.RR_TBL[cnt++] = offsetof(DMAC, CNT_B.b.l);
+		*ptr++ = offsetof(DMAC, cnt_b.b.addrl);
 	}
 	if (rrmsk & 0x40) {
-		dma.RR_TBL[cnt++] = offsetof(DMAC, CNT_B.b.h);
+		*ptr++ = offsetof(DMAC, cnt_b.b.addrh);
 	}
-	dma.RR_CNT = (UINT8)cnt;
-	dma.RR_OFF = 0;
+	d->rcnt = (UINT8)(ptr - d->rtbl);
+	d->rptr = 0;
 }
 
 
 void IOOUTCALL dmac_o(UINT port, REG8 value) {
 
-	REG8	wr;
 	REG8	working;
+
+	TRACEOUT(("out %.4x %.2x", port, value));
 
 	dma.enable = 0;
 
-	if (!dma.WR_CNT) {
-		wr = 6;
-		dma.WR_CNT = 0;
-		dma.WR_OFF = 0;
+	if (!dma.wcnt) {
+//		dma.wcnt = 0;
+		dma.wptr = 0;
 		if (!(value & 0x80)) {
 			if ((value & 3) != 0) {
-				wr = 0;
-			}
-			else if (value & 4) {
-				wr = 1;
+				dma.WR0 = value;
+				if (value & 0x08) {
+					dma.wtbl[dma.wcnt++] = offsetof(DMAC, addr.b.al);
+				}
+				if (value & 0x10) {
+					dma.wtbl[dma.wcnt++] = offsetof(DMAC, addr.b.ah);
+				}
+				if (value & 0x20) {
+					dma.wtbl[dma.wcnt++] = offsetof(DMAC, leng.b.ll);
+				}
+				if (value & 0x40) {
+					dma.wtbl[dma.wcnt++] = offsetof(DMAC, leng.b.lh);
+				}
 			}
 			else {
-				wr = 2;
+				if (value & 4) {
+					dma.cnt_a.b.flag = value;
+				}
+				else {
+					dma.cnt_b.b.flag = value;
+				}
+				if (value & 0x40) {
+					dma.wtbl[dma.wcnt++] = offsetof(DMAC, dummydat);
+				}
 			}
 		}
 		else {
-			if ((value & 3) == 0) {
-				wr = 3;
-			}
-			else if (((value & 3) == 1) && (value >> 5) != 7) {
-				wr = 4;
-			}
-			else if (((value & 7) == 2) && (!(value & 0x40))) {
-				wr = 5;
-			}
-			else if ((value & 3) == 3) {
-				wr = 6;
-			}
-		}
-		dma.WR[wr] = value;
-		switch(wr) {
-			case 0:
-				dma.cmd = (UINT8)(value & 3);
+			REG8 cmd;
+			cmd = value & 3;
+			if (cmd == 0) {
+//				dma.WR3 = value;
 				if (value & 0x08) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, ADR_A.b.l);
+					dma.wtbl[dma.wcnt++] = offsetof(DMAC, MASK_BYT);
 				}
 				if (value & 0x10) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, ADR_A.b.h);
-				}
-				if (value & 0x20) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, BYT_L.b.l);
-				}
-				if (value & 0x40) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, BYT_L.b.h);
-				}
-				break;
-
-			case 1:
-			case 2:
-				if (value & 0x40) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, dummydat);
-				}
-				break;
-
-			case 3:
-				if (value & 0x08) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, MASK_BYT);
-				}
-				if (value & 0x10) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, MACH_BYT);
+					dma.wtbl[dma.wcnt++] = offsetof(DMAC, MACH_BYT);
 				}
 				dma.INT_ENBL = (UINT8)((value & 0x20)?1:0);
 				dma.enable = (UINT8)((value & 0x40)?1:0);
-				break;
-
-			case 4:
-				dma.mode = (UINT8)((dma.WR[4] >> 5) & 3);
-				if (value & 0x04) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, ADR_B.b.l);
+			}
+			else if (cmd == 1) {
+				REG8 mode;
+				mode = (REG8)(value & (3 << 5));
+				if (mode != (3 << 5)) {
+					dma.WR4 = value;
+					dma.mode = (UINT8)(mode >> 5);
+					if (value & 0x04) {
+						dma.wtbl[dma.wcnt++] = offsetof(DMAC, addr.b.bl);
+					}
+					if (value & 0x08) {
+						dma.wtbl[dma.wcnt++] = offsetof(DMAC, addr.b.bh);
+					}
+					if (value & 0x10) {
+						dma.wtbl[dma.wcnt++] = offsetof(DMAC, INT_FLG);
+					}
 				}
-				if (value & 0x08) {
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, ADR_B.b.h);
+			}
+#if 1
+			else if (cmd == 2) {
+				if (!(value & 0x44)) {
+					dma.WR5 = value;
 				}
-				if (value & 0x10){
-					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, INT_FLG);
-				}
-				break;
-
-			case 6:
-				switch(value) {
-					case 0x83:				// dma disable
+			}
+#else
+			else if (((value & 7) == 2) && (!(value & 0x40))) {
+				dma.WR5 = value;
+			}
+#endif
+			else if (cmd == 3) {
+				switch(DMACMD(value)) {
+					case DMACMD(0x83):		// dma disable
 					//	dma.enable = 0;
 						break;
 
-					case 0x87:				// dma enable
+					case DMACMD(0x87):		// dma enable
+#if !defined(DMAS_STOIC)
 						dma.increment = 0;
+#else
+						dma.flag &= ~DMAF_INCREMENT;
+#endif
 						dma.enable = 1;
 						break;
 
-					case 0x8b:				// re-init status byte
+					case DMACMD(0x8b):		// re-init status byte
+#if !defined(DMAS_STOIC)
 						dma.MACH_FLG = 0;
 						dma.ENDB_FLG = 0;
+#else
+						dma.flag |= DMAF_MACH | DMAF_ENDB;
+#endif
 						break;
 
-					case 0xa7:				// イニシエイトリードシーケンス
-						setdmareaddat();
+					case DMACMD(0xa7):		// イニシエイトリードシーケンス
+						setdmareaddat(&dma);
 						break;
 
-					case 0xab:				// interrupt enable
+					case DMACMD(0xab):		// interrupt enable
 						dma.INT_ENBL = 1;
 						break;
 
-					case 0xaf:				// interrupt disable
+					case DMACMD(0xaf):		// interrupt disable
 						dma.INT_ENBL = 0;
 						break;
 
-					case 0xb3:				// force ready
-						dma.ready = (dma.WR[5] & 0x08);
+					case DMACMD(0xb3):		// force ready
+						dma.ready = (dma.WR5 & 0x08);
 						break;
 
-					case 0xbb:				// read mask follows
-						dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, RR_MSK);
+					case DMACMD(0xbb):		// read mask follows
+						dma.wtbl[dma.wcnt++] = offsetof(DMAC, RR_MSK);
 						break;
 
-					case 0xbf:				// read status byte
+					case DMACMD(0xbf):		// read status byte
 						dma.RR_MSK = 1;
-						setdmareaddat();
+						setdmareaddat(&dma);
 						break;
 
-					case 0xc3:				// reset
+					case DMACMD(0xc3):		// reset
 											// ローグアライアンス	// ver0.25
-						dma.cmd = 0;
+						dma.WR0 &= ~3;		// 0でいいと思うケド…
+#if !defined(DMAS_STOIC)
+						dma.increment = 0;
+#else
+						dma.flag &= ~DMAF_INCREMENT;
+#endif
 					//	dma.enable = 0;
 						dma.INT_ENBL = 0;
-						dma.increment = 0;
 						break;
 
-					case 0xc7:						// リセットタイミングA
-					case 0xcb:						// リセットタイミングB
+					case DMACMD(0xc7):				// リセットタイミングA
+					case DMACMD(0xcb):				// リセットタイミングB
 						break;
 
-					case 0xcf:						// ロード
-						dma.mode = (UINT8)((dma.WR[4] >> 5) & 3);
-						dma.CNT_A.w = dma.ADR_A.w;
-						dma.CNT_B.w = dma.ADR_B.w;
-						dma.BYT_N.w = 0;
+					case DMACMD(0xcf):				// ロード
+//						dma.mode = (UINT8)((dma.WR4 >> 5) & 3);
+						dma.cnt_a.w.addr = dma.addr.w.a;
+						dma.cnt_b.w.addr = dma.addr.w.b;
+						dma.leng.w.n = 0;
+#if !defined(DMAS_STOIC)
+						dma.MACH_FLG = 0;
 						dma.ENDB_FLG = 0;
-						dma.MACH_FLG = 0;			// 0619
+#else
+						dma.flag |= DMAF_MACH | DMAF_ENDB;
+#endif
 					//	dma.enable = 0;
 						break;
 
-					case 0xd3:						// コンティニュー
-						dma.BYT_N.w = 0;			// 0619
-						dma.MACH_FLG = 0;			// 0619
+					case DMACMD(0xd3):				// コンティニュー
+#if !defined(DMAS_STOIC)
+						if (dma.increment) {
+							dma.increment = 0;
+							switch(dma.cnt_a.b.flag & 0x30) {
+								case 0x00:
+									dma.cnt_a.w.addr--;
+									break;
+
+								case 0x10:
+									dma.cnt_a.w.addr++;
+									break;
+							}
+							switch(dma.cnt_b.b.flag & 0x30) {
+								case 0x00:
+									dma.cnt_b.w.addr--;
+									break;
+
+								case 0x10:
+									dma.cnt_b.w.addr++;
+									break;
+							}
+						}
+#else
+						if (dma.flag & DMAF_INCREMENT) {
+							dma.flag &= ~DMAF_INCREMENT;
+							switch(dma.cnt_a.b.flag & 0x30) {
+								case 0x00:
+									dma.cnt_a.w.addr--;
+									break;
+
+								case 0x10:
+									dma.cnt_a.w.addr++;
+									break;
+							}
+							switch(dma.cnt_b.b.flag & 0x30) {
+								case 0x00:
+									dma.cnt_b.w.addr--;
+									break;
+
+								case 0x10:
+									dma.cnt_b.w.addr++;
+									break;
+							}
+						}
+#endif
+#if !defined(DMAS_STOIC)
+						dma.MACH_FLG = 0;
 						dma.ENDB_FLG = 0;
+#else
+						dma.flag |= DMAF_MACH | DMAF_ENDB;
+#endif
+						dma.leng.w.n = 0;
 						dma.enable = 1;
 						break;
 				}
-				break;
+			}
 		}
 	}
 	else {
-		*(((UINT8 *)&dma) + dma.WR_TBL[dma.WR_OFF]) = value;
-		if (dma.WR_TBL[dma.WR_OFF] == offsetof(DMAC, INT_FLG)) {
+		*(((UINT8 *)&dma) + dma.wtbl[dma.wptr]) = value;
+		if (dma.wtbl[dma.wptr] == offsetof(DMAC, INT_FLG)) {
 			if (value & 0x08) {
-				dma.WR_TBL[dma.WR_OFF + dma.WR_CNT] = offsetof(DMAC, INT_PLS);
-				dma.WR_CNT++;
+				dma.wtbl[dma.wptr + dma.wcnt] = offsetof(DMAC, INT_PLS);
+				dma.wcnt++;
 			}
 			if (value & 0x10) {
-				dma.WR_TBL[dma.WR_OFF + dma.WR_CNT] = offsetof(DMAC, INT_VCT);
-				dma.WR_CNT++;
+				dma.wtbl[dma.wptr + dma.wcnt] = offsetof(DMAC, INT_VCT);
+				dma.wcnt++;
 			}
 		}
-		else if (dma.WR_TBL[dma.WR_OFF] == offsetof(DMAC, RR_MSK)) {
-			setdmareaddat();
+		else if (dma.wtbl[dma.wptr] == offsetof(DMAC, RR_MSK)) {
+			setdmareaddat(&dma);
 		}
-		dma.WR_OFF++;
-		dma.WR_CNT--;
+		dma.wptr++;
+		dma.wcnt--;
 	}
 
 	working = iswork(&dma);
+#if !defined(DMAS_STOIC)
 	if (dma.working != working) {
 		dma.working = working;
 		if (working) {
 			nevent_forceexit();
 		}
 	}
+#else
+	if ((dma.flag ^ working) & DMAF_WORKING) {
+		dma.flag ^= DMAF_WORKING;
+		if (working) {
+			nevent_forceexit();
+		}
+	}
+#endif
 	(void)port;
 }
 
@@ -300,23 +393,28 @@ REG8 IOINPCALL dmac_i(UINT port) {
 	if (dma.enable) {
 		ret |= 0x01;
 	}
-	if ((dma.mode != 1) && ((dma.WR[5] ^ dma.ready) & 8)) {
+	if ((dma.mode != 1) && ((dma.WR5 ^ dma.ready) & 8)) {
 		ret |= 0x02;
 	}
+#if !defined(DMAS_STOIC)
 	if (!dma.MACH_FLG) {
 		ret |= 0x10;
 	}
 	if (!dma.ENDB_FLG) {
 		ret |= 0x20;
 	}
+#else
+	ret |= (dma.flag & (DMAF_MACH | DMAF_ENDB));
+#endif
 	dma.RR = ret;
-	if (dma.RR_CNT) {
-		if (dma.RR_OFF >= dma.RR_CNT) {
-			dma.RR_OFF = 0;
+	if (dma.rcnt) {
+		if (dma.rptr >= dma.rcnt) {
+			dma.rptr = 0;
 		}
-		ret = (*(((UINT8 *)&dma) + dma.RR_TBL[dma.RR_OFF++]));
+		ret = (*(((UINT8 *)&dma) + dma.rtbl[dma.rptr++]));
 	}
 	(void)port;
+	TRACEOUT(("inp %.4x %.2x", port, ret));
 	return(ret);
 }
 
@@ -326,6 +424,9 @@ REG8 IOINPCALL dmac_i(UINT port) {
 void dmac_reset(void) {
 
 	ZeroMemory(&dma, sizeof(dma));
+#if defined(DMAS_STOIC)
+	dma.flag = DMAF_MACH | DMAF_ENDB;
+#endif
 	dma.ready = 8;
 	dma.RR = 0x38;
 }

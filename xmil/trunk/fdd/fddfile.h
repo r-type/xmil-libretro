@@ -41,7 +41,9 @@ typedef struct {
 	UINT8	h;
 	UINT8	r;
 	UINT8	n;
-	UINT	size;
+	UINT8	flag;
+	UINT8	padding;
+	UINT8	size[2];
 } TAOSEC;
 
 
@@ -81,6 +83,7 @@ struct _fddfile {
 	FDDSEEK		seek;
 	FDDREAD		read;
 	FDDWRITE	write;
+	FDDWRITE	wrtrk;
 	FDDCRC		crc;
 #if defined(SUPPORT_DISKEXT)
 	FDDSEC		sec;

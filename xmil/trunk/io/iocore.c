@@ -1,3 +1,6 @@
+
+// #define	IOCOUNTER
+
 #include	"compiler.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -10,7 +13,6 @@
 	CTC			ctc;
 	DMAC		dma;
 	FDC			fdc;
-	MEMIO		memio;
 	PCG			pcg;
 	PPI			ppi;
 	SIO			sio;
@@ -41,27 +43,29 @@ static void IOOUTCALL port1fxx_o(UINT port, REG8 dat) {
 	REG8	msb6;
 
 	lsb = (UINT8)port;
+	if (lsb == 0xd0) {
+		scrn_o(port, dat);
+		return;
+	}
 	if (lsb < 0x80) {
 		return;
 	}
 	msb6 = lsb & (~3);
-	if (pccore.ROM_TYPE >= 2) {
-		if (lsb < 0x90) {
-			dmac_o(port, dat);
-			return;
-		}
-		if ((msb6 == 0xa0) || (msb6 == 0xa8)) {
-			ctc_o(port, dat);
-			return;
-		}
-		if (lsb == 0xd0) {
-			scrn_o(port, dat);
-			return;
-		}
-		if (lsb == 0xe0) {
-			blackctrl_o(port, dat);
-			return;
-		}
+	if (lsb < 0x90) {
+		dmac_o(port, dat);
+		return;
+	}
+	if (msb6 == 0x90) {
+		sio_o(port, dat);
+		return;
+	}
+	if ((msb6 == 0xa0) || (msb6 == 0xa8)) {
+		ctc_o(port, dat);
+		return;
+	}
+	if (lsb == 0xe0) {
+		blackctrl_o(port, dat);
+		return;
 	}
 #if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE >= 3) {
@@ -83,10 +87,6 @@ static void IOOUTCALL port1fxx_o(UINT port, REG8 dat) {
 		}
 	}
 #endif
-	if (msb6 == 0x90) {
-		sio_o(port, dat);
-		return;
-	}
 }
 
 static REG8 IOINPCALL port1fxx_i(UINT port) {
@@ -95,23 +95,24 @@ static REG8 IOINPCALL port1fxx_i(UINT port) {
 	REG8	msb6;
 
 	lsb = (UINT8)port;
+	if (lsb == 0xd0) {
+		return(scrn_i(port));
+	}
 	if (lsb < 0x80) {
 		return(0xff);
 	}
 	msb6 = lsb & (~3);
-	if (pccore.ROM_TYPE >= 2) {
-		if (lsb < 0x90) {
-			return(dmac_i(port));
-		}
-		if ((msb6 == 0xa0) || (msb6 == 0xa8)) {
-			return(ctc_i(port));
-		}
-		if (lsb == 0xd0) {
-			return(scrn_i(port));
-		}
-		if (lsb >= 0xf0) {
-			return(dipsw_i(port));
-		}
+	if (lsb < 0x90) {
+		return(dmac_i(port));
+	}
+	if (msb6 == 0x90) {
+		return(sio_i(port));
+	}
+	if ((msb6 == 0xa0) || (msb6 == 0xa8)) {
+		return(ctc_i(port));
+	}
+	if (lsb >= 0xf0) {
+		return(dipsw_i(port));
 	}
 #if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE >= 3) {
@@ -132,9 +133,6 @@ static REG8 IOINPCALL port1fxx_i(UINT port) {
 		}
 	}
 #endif
-	if (msb6 == 0x90) {
-		return(sio_i(port));
-	}
 	return(0xff);
 }
 
@@ -160,7 +158,7 @@ static const IOINP definp[0x20] = {
 			dummy_inp,			subcpu_i,
 			ppi_i,				sndboard_psgsta,
 			dummy_inp,			dummy_inp,
-			dummy_inp,			port1fxx_i};
+			dummy_inp,			dummy_inp};
 
 static const IOOUT defout[0x20] = {
 			dummy_out,			dummy_out,
@@ -181,7 +179,7 @@ static const IOOUT defout[0x20] = {
 			crtc_o,				subcpu_o,
 			ppi_o,				sndboard_psgdat,
 			sndboard_psgreg,	memio_rom,
-			memio_ram,			port1fxx_o};
+			memio_ram,			dummy_out};
 
 
 typedef void (*INITFN)(void);
@@ -201,26 +199,40 @@ void iocore_reset(void) {
 	UINT	i;
 
 	ZeroMemory(&iocore, sizeof(iocore));
-	CopyMemory(iocore.e.inpfn, definp, sizeof(definp));
-	CopyMemory(iocore.e.outfn, defout, sizeof(defout));
-#if defined(SUPPORT_BANKMEM)
-	if (pccore.ROM_TYPE >= 2) {
-		iocore.e.inpfn[0x0b] = memio_bank_i;
-		iocore.e.outfn[0x0b] = memio_bank_o;
+	CopyMemory(iocore.f.inpfn, definp, sizeof(definp));
+	CopyMemory(iocore.f.outfn, defout, sizeof(defout));
+	for (i=0; i<0x10; i++) {
+		iocore.f.inpfn[i+0x20] = tram_atr_i;
+		iocore.f.inpfn[i+0x30] = tram_ank_i;
+		iocore.f.outfn[i+0x20] = tram_atr_o;
+		iocore.f.outfn[i+0x30] = tram_ank_o;
 	}
+	if (pccore.ROM_TYPE >= 2) {
+#if defined(SUPPORT_BANKMEM)
+		iocore.f.inpfn[0x0b] = memio_bank_i;
+		iocore.f.outfn[0x0b] = memio_bank_o;
 #endif
+		iocore.f.inpfn[0x1f] = port1fxx_i;
+		iocore.f.outfn[0x1f] = port1fxx_o;
+		for (i=0; i<8; i++) {
+			iocore.f.inpfn[i+0x38] = tram_knj_i;
+			iocore.f.outfn[i+0x38] = tram_knj_o;
+		}
+	}
 #if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE >= 3) {
-		iocore.e.inpfn[0x10] = palette_i;
-		iocore.e.inpfn[0x11] = palette_i;
-		iocore.e.inpfn[0x12] = palette_i;
-		iocore.e.inpfn[0x13] = ply_i;
+		iocore.f.inpfn[0x10] = palette_i;
+		iocore.f.inpfn[0x11] = palette_i;
+		iocore.f.inpfn[0x12] = palette_i;
+		iocore.f.inpfn[0x13] = ply_i;
 	}
 #endif
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	if (pccore.SOUND_SW) {
-		iocore.e.inpfn[0x07] = opm_i;
-		iocore.e.outfn[0x07] = opm_o;
+		iocore.f.inpfn[0x07] = opm_i;
+		iocore.f.outfn[0x07] = opm_o;
 	}
+#endif
 	for (i=0; i<NELEMENTS(initfn); i++) {
 		(initfn[i])();
 	}
@@ -228,6 +240,11 @@ void iocore_reset(void) {
 
 
 // ----
+
+#if defined(TRACE) && defined(IOCOUNTER)
+extern	UINT	ocounter[0x2008];
+extern	UINT	icounter[0x2008];
+#endif
 
 void IOOUTCALL iocore_out(UINT port, REG8 dat) {
 
@@ -239,12 +256,20 @@ void IOOUTCALL iocore_out(UINT port, REG8 dat) {
 	}
 	else if (msb >= 0x40) {
 		gram_o(port, dat);
-	}
-	else if (msb >= 0x20) {
-		tram_o(port, dat);
+#if defined(TRACE) && defined(IOCOUNTER)
+		ocounter[0x2000 + (port >> 14)]++;
+#endif
 	}
 	else {
-		(*iocore.e.outfn[msb])(port, dat);
+#if defined(TRACE) && defined(IOCOUNTER)
+		if (port < 0x2000) {
+			ocounter[port]++;
+		}
+		else {
+			ocounter[0x1ffc + (port >> 11)]++;
+		}
+#endif
+		(*iocore.f.outfn[msb])(port, dat);
 	}
 }
 
@@ -255,13 +280,21 @@ REG8 IOINPCALL iocore_inp(UINT port) {
 	msb = port >> 8;
 	iocore.s.mode = 0;
 	if (msb >= 0x40) {
+#if defined(TRACE) && defined(IOCOUNTER)
+		icounter[0x2000 + (port >> 14)]++;
+#endif
 		return(gram_i(port));
 	}
-	else if (msb >= 0x20) {
-		return(tram_i(port));
-	}
 	else {
-		return((*iocore.e.inpfn[msb])(port));
+#if defined(TRACE) && defined(IOCOUNTER)
+		if (port < 0x2000) {
+			icounter[port]++;
+		}
+		else {
+			icounter[0x1ffc + (port >> 11)]++;
+		}
+#endif
+		return((*iocore.f.inpfn[msb])(port));
 	}
 }
 

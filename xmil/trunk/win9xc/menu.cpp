@@ -117,11 +117,13 @@ void menu_setkey(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_JOY2, MFCHECK(value == 2));
 }
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 void menu_setsound(UINT8 value) {
 
 	xmilcfg.SOUND_SW = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_FMBOARD, MFCHECK(value));
 }
+#endif
 
 void menu_setjoystick(UINT8 value) {
 

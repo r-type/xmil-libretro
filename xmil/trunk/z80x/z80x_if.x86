@@ -90,7 +90,7 @@ _z80x_nonmaskedinterrupt:
 _z80x_execute	push	ebx
 				push	edi
 				mov		edi, _z80core
-				cmp		byte [_dma], 0
+				test	byte [_dma], 1
 				jne		short .dmalp
 .lp:			inc		byte [edi + R_Z80R]
 				movzx	ecx, word [edi + R_Z80PC]

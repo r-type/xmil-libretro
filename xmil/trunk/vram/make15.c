@@ -32,10 +32,10 @@ void width80x25_200l(void) {								// 80x25 200line
 	do {
 		x = makescrn.surfcx;
 		do {
-			udtmp = updatetmp[pos];
+			udtmp = TRAMUPDATE(pos);
 			dirty = (udtmp & makescrn.dispflag);
 			if (dirty) {
-				updatetmp[pos] = (UINT8)(udtmp ^ dirty);
+				TRAMUPDATE(pos) = (UINT8)(udtmp ^ dirty);
 				newline = TRUE;
 				if (dirty & UPDATE_TRAM) {
 					ZeroMemory(work, sizeof(work));
@@ -44,7 +44,7 @@ void width80x25_200l(void) {								// 80x25 200line
 				}
 				if (dirty & UPDATE_VRAM) {
 					makemix_mixgrph(dst, SURFACE_WIDTH * 2,
-									makescrn.disp1 + (pos << 5), fontcy);
+									makescrn.disp1 + TRAM2GRAM(pos), fontcy);
 				}
 				if (fontcy < makescrn.fontcy) {
 					makemix_cpy200(dst, fontcy, makescrn.fontcy);
@@ -55,7 +55,7 @@ void width80x25_200l(void) {								// 80x25 200line
 		} while(--x);
 
 		pos = LOW11(pos + makescrn.surfrx);
-		if (updatetmp[LOW11(pos - 1)] & 4) {			// c”{Šp•`‰æ‚¾‚Á‚½‚ç
+		if (TRAMUPDATE(LOW11(pos - 1)) & 4) {			// c”{Šp•`‰æ‚¾‚Á‚½‚ç
 			makescrn.fontycnt += makescrn.charcy;
 		}
 		else {
@@ -99,10 +99,10 @@ const UINT8	*src;
 	do {
 		x = makescrn.surfcx;
 		do {
-			udtmp = updatetmp[pos];
+			udtmp = TRAMUPDATE(pos);
 			dirty = (udtmp & makescrn.dispflag);
 			if (dirty) {
-				updatetmp[pos] = (UINT8)(udtmp ^ dirty);
+				TRAMUPDATE(pos) = (UINT8)(udtmp ^ dirty);
 				newline = TRUE;
 				if (dirty & UPDATE_TRAM) {
 					ZeroMemory(work, sizeof(work));
@@ -112,7 +112,7 @@ const UINT8	*src;
 											work + MAKETEXT_STEP, fontcy);
 				}
 				if (dirty & UPDATE_VRAM) {
-					src = makescrn.disp1 + (LOW10(pos) << 5);
+					src = makescrn.disp1 + TRAM2GRAM(LOW10(pos));
 					makemix_mixgrph(dst, SURFACE_WIDTH * 4, src, fontcy);
 					makemix_mixgrph(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
 											src + GRAM_HALFSTEP, fontcy);
@@ -126,7 +126,7 @@ const UINT8	*src;
 		} while(--x);
 
 		pos = LOW11(pos + makescrn.surfrx);
-		if (updatetmp[LOW11(pos - 1)] & 4) {			// c”{Šp•`‰æ‚¾‚Á‚½‚ç
+		if (TRAMUPDATE(LOW11(pos - 1)) & 4) {			// c”{Šp•`‰æ‚¾‚Á‚½‚ç
 			makescrn.fontycnt += makescrn.charcy;
 		}
 		else {
@@ -168,9 +168,9 @@ void width80x20l(void) {
 	do {
 		x = makescrn.surfcx;
 		do {
-			udtmp = updatetmp[pos];
+			udtmp = TRAMUPDATE(pos);
 			if (udtmp & UPDATE_TRAM) {
-				updatetmp[pos] = (UINT8)(udtmp & (~UPDATE_TRAM));
+				TRAMUPDATE(pos) = (UINT8)(udtmp & (~UPDATE_TRAM));
 				newline = TRUE;
 				ZeroMemory(work, sizeof(work));
 				makechr8(work, pos, fontcy, udtmp);
@@ -185,7 +185,7 @@ void width80x20l(void) {
 		} while(--x);
 
 		pos = LOW11(pos + makescrn.surfrx);
-		if (updatetmp[LOW11(pos - 1)] & 4) {			// c”{Šp•`‰æ‚¾‚Á‚½‚ç
+		if (TRAMUPDATE(LOW11(pos - 1)) & 4) {			// c”{Šp•`‰æ‚¾‚Á‚½‚ç
 			makescrn.fontycnt += makescrn.charcy;
 		}
 		else {
@@ -227,9 +227,9 @@ void width80x10l(void) {
 	do {
 		x = makescrn.surfcx;
 		do {
-			udtmp = updatetmp[pos];
+			udtmp = TRAMUPDATE(pos);
 			if (udtmp & UPDATE_TRAM) {
-				updatetmp[pos] = (UINT8)(udtmp & (~UPDATE_TRAM));
+				TRAMUPDATE(pos) = (UINT8)(udtmp & (~UPDATE_TRAM));
 				newline = TRUE;
 				ZeroMemory(work, sizeof(work));
 				makechr16(work, pos, fontcy, udtmp);
@@ -246,7 +246,7 @@ void width80x10l(void) {
 		} while(--x);
 
 		pos = LOW11(pos + makescrn.surfrx);
-		if (updatetmp[LOW11(pos - 1)] & 4) {			// c”{Šp•`‰æ‚¾‚Á‚½‚ç
+		if (TRAMUPDATE(LOW11(pos - 1)) & 4) {			// c”{Šp•`‰æ‚¾‚Á‚½‚ç
 			makescrn.fontycnt += makescrn.charcy;
 		}
 		else {

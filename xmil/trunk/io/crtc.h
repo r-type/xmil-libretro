@@ -139,26 +139,37 @@ typedef struct {
 } CRTCSTAT;
 
 typedef struct {
-	SINT32	rasterclock8;
-	SINT32	rasterdisp8;
-	UINT	fonty;
-	UINT	yl;
-	SINT32	frameclock;
+	UINT8	scrnflash;
+	UINT8	scrnallflash;
+	UINT8	remakeattr;							// doubleatrchange
+	UINT8	palandply;
 
-	UINT8	*gram;				// curvram
-	UINT	updatemask;			// updatemsk
-	UINT8	updatebit;			// curupdt
+	UINT8	*gramacc;							// curvram
+#if (!defined(MEMOPTIMIZE)) || (MEMOPTIMIZE < 100)
+	UINT	updatemask;							// updatemsk
+	UINT8	updatebit;							// curupdt
+#else
+	UINT8	updatebit;							// curupdt
+	UINT8	_padding1;
+	UINT16	updatemask;							// updatemsk
+	UINT8	_padding2;
+#endif
 	UINT8	dispmode;
+	UINT8	existblink;							// blinkflag
+	UINT8	blinktime;
+
 #if defined(SUPPORT_TURBOZ)
 	UINT8	pal_bank;
 	UINT8	pal_disp;
+	UINT8	pal_padding[2];
 #endif
 
+	SINT32	rasterclock8;
+	SINT32	rasterdisp8;
+	SINT32	frameclock;
+	UINT	fonty;
+	UINT	yl;
 	UINT	pos;
-
-	SINT32	dispclock;
-	SINT32	vsyncstart;
-	SINT32	vpulseclock;
 } CRTCEXT;
 
 #if defined(SUPPORT_TURBOZ)
@@ -170,8 +181,8 @@ typedef struct {
 #endif
 
 typedef struct {
-	CRTCSTAT	s;
 	CRTCEXT		e;
+	CRTCSTAT	s;
 #if defined(SUPPORT_TURBOZ)
 	CRTCPAL		p;
 #endif

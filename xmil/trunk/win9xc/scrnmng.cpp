@@ -11,6 +11,7 @@
 #include	"sysmng.h"
 #include	"extclass.h"
 #include	"pccore.h"
+#include	"iocore.h"
 #include	"scrndraw.h"
 #include	"palettes.h"
 #include	"makescrn.h"
@@ -446,7 +447,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 	ddraw.height = height;
 	ddraw.cliping = 0;
 	renewalclientsize(FALSE);
-	makescrn.palandply = 1;
+	crtc.e.palandply = 1;
 	return(SUCCESS);
 
 scre_err:

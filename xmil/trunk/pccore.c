@@ -1,7 +1,21 @@
+
+// #define	SINGLESTEPONLY
+// #define	IPTRACE			(1 << 14)
+// #define	NEVENT_COUNTER
+// #define	PCCOUNTER
+// #define	IOCOUNTER
+// #define	CTCCOUNTER
+
 #include	"compiler.h"
+#if defined(TRACE) && IPTRACE
 #include	"dosio.h"
+#endif
+#if defined(SUPPORT_TURBOZ)
 #include	"scrnmng.h"
+#endif
+#if !defined(DISABLE_SOUND)
 #include	"soundmng.h"
+#endif
 #include	"sysmng.h"
 #include	"timemng.h"
 #include	"xmilver.h"
@@ -19,42 +33,23 @@
 #include	"sndctrl.h"
 #include	"font.h"
 #include	"fddfile.h"
-#include	"defrom.res"
 
 
 const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 
 	XMILCFG		xmilcfg = { 2, 1, 0x03,
 							1, 0, 0, 0,
-							22050, 500, 0, 64, 64, 0, 80,
+#if !defined(DISABLE_SOUND)
+							22050, 500,
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+							0, 64,
+#endif
+							64, 0, 80,
+#endif
 							0, 0, 0, 0};
 
 	PCCORE		pccore;
 	CORESTAT	corestat;
-
-
-// ----
-
-static void ipl_load(void) {
-
-	FILEH	hdl;
-
-	ZeroMemory(biosmem, 0x8000);
-	CopyMemory(biosmem, DEFROM, sizeof(DEFROM));
-
-	if (pccore.ROM_TYPE >= 2) {
-		if ((hdl = file_open_c(OEMTEXT("IPLROM.X1T"))) != FILEH_INVALID) {
-			file_read(hdl, biosmem, 0x8000);
-			file_close(hdl);
-		}
-	}
-	else if (pccore.ROM_TYPE == 1) {
-		if ((hdl = file_open_c(OEMTEXT("IPLROM.X1"))) != FILEH_INVALID) {
-			file_read(hdl, biosmem, 0x8000);
-			file_close(hdl);
-		}
-	}
-}
 
 
 // ----
@@ -66,7 +61,7 @@ void pccore_initialize(void) {
 	sndctrl_initialize();
 	makescrn_initialize();
 
-	font_load(NULL, TRUE);
+	(void)font_load(NULL, TRUE);
 
 	crtc_initialize();
 	pcg_initialize();
@@ -83,24 +78,43 @@ void pccore_deinitialize(void) {
 	fddfile_eject(3);
 }
 
+#if 0
+void neitem_dummy(UINT id) {
+
+	nevent_repeat(id);
+}
+#endif
+
 void pccore_reset(void) {
 
+#if !defined(DISABLE_SOUND)
 	soundmng_stop();
 	if (corestat.soundrenewal) {
 		corestat.soundrenewal = 0;
 		sndctrl_deinitialize();
 		sndctrl_initialize();
 	}
+#endif
 
+#if !defined(FIX_Z80A)
 	pccore.baseclock = 2000000;
 	pccore.multiple = 2;
 	pccore.realclock = pccore.baseclock * pccore.multiple;
+#endif
 
 	pccore.ROM_TYPE = xmilcfg.ROM_TYPE;
-	pccore.SOUND_SW = xmilcfg.SOUND_SW;
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	if (xmilcfg.ROM_TYPE >= 3) {
+		pccore.SOUND_SW = 1;					// 無条件で搭載
+	}
+	else {
+		pccore.SOUND_SW = xmilcfg.SOUND_SW;
+	}
+#endif
 	pccore.DIP_SW = xmilcfg.DIP_SW;
 
 	// スクリーンモードの変更...
+#if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE >= 3) {
 		if (scrnmng_setcolormode(TRUE) != SUCCESS) {
 			pccore.ROM_TYPE = 2;
@@ -109,6 +123,7 @@ void pccore_reset(void) {
 	else {
 		scrnmng_setcolormode(FALSE);
 	}
+#endif
 
 	sysmng_cpureset();
 
@@ -120,20 +135,19 @@ void pccore_reset(void) {
 	ievent_reset();
 	calendar_reset();
 	iocore_reset();
-
-	ipl_load();
+//	nevent_set(15, 4000000 / (60 * 50), neitem_dummy, NEVENT_RELATIVE);
 
 	pal_reset();
 	makescrn_reset();
 	timing_reset();
 
+#if !defined(DISABLE_SOUND)
 	soundmng_play();
+#endif
 }
 
 
 // ----
-
-// #define	IPTRACE			(1 << 14)
 
 #if defined(TRACE) && IPTRACE
 static	UINT	trpos = 0;
@@ -165,6 +179,44 @@ void iptrace_out(void) {
 #endif
 
 
+#if !defined(MAINFRAMES_OLD)
+void neitem_mainframes(UINT id) {
+
+	SINT32	clock;
+	REG8	ppib;
+	SINT32	next;
+
+	clock = CPU_CLOCKCOUNT - iocore.e.framestartclock;
+	ppib = iocore.s.ppib & (~0x84);
+	do {
+		next = iocore.e.dispclock;
+		if (clock < next) {
+			ppib |= 0x80;
+			break;
+		}
+		next = iocore.e.dispclock;
+		if (clock < next) {
+			if (xmilcfg.DISPSYNC & 1) {
+				scrnupdate();
+			}
+			break;
+		}
+		next = iocore.e.vsyncend;
+		if (clock < next) {
+			ppib |= 0x04;
+			break;
+		}
+		next = corestat.framebaseclock;
+		if (clock >= next) {
+			corestat.vsync = 2;
+			return;
+		}
+	} while(0);
+	iocore.s.ppib = ppib;
+	nevent_set(NEVENT_FRAMES,
+							next - clock, neitem_mainframes, NEVENT_ABSOLUTE);
+}
+#else
 void neitem_disp(UINT id) {
 
 	corestat.vsync = 1;
@@ -179,30 +231,67 @@ void neitem_vsync(UINT id) {
 	corestat.vsync = 2;
 	(void)id;
 }
+#endif
 
 
 // ----
 
-// #define	SINGLESTEPONLY
-
+#if defined(TRACE) && defined(IOCOUNTER)
+static	UINT	iocounter = 0;
+		UINT	icounter[0x2008];
+		UINT	ocounter[0x2008];
+#endif
+#if defined(TRACE) && defined(CTCCOUNTER)
+		UINT	ctccnt;
+#endif
+#if defined(TRACE) && defined(PCCOUNTER)
+		UINT	pccnt;
+		UINT	pccnt2;
+		UINT	pccnt3;
+		UINT	lastpc;
+#endif
 
 void pccore_exec(BRESULT draw) {
 
 	SINT32	frameclock;
+#if defined(MAINFRAMES_OLD)
 	SINT32	dispclock;
+#endif
+#if defined(TRACE) && defined(NEVENT_COUNTER)
+	UINT	ncounter = 0;
+#endif
 
 	corestat.drawframe = draw;
 	pal_eventclear();
+#if !defined(DISABLE_SOUND)
 	soundmng_sync();
+#endif
 
-	timing_setrate(crtc.e.frameclock);
-	frameclock = crtc.e.frameclock * pccore.multiple / 2;
-	dispclock = min(frameclock, crtc.e.dispclock);
-	corestat.dispclock = dispclock;
-	corestat.syncclock = frameclock - dispclock;
+	frameclock = crtc.e.frameclock;
+	if (corestat.framebaseclock != frameclock) {
+		corestat.framebaseclock = frameclock;
+		timing_setrate(frameclock);
+	}
 	corestat.vsync = 0;
+
+	iocore.e.framestartclock = CPU_CLOCKCOUNT;
+
+#if !defined(MAINFRAMES_OLD)
+	neitem_mainframes(NEVENT_FRAMES);
+#else
+#if !defined(FIX_Z80A)
+	frameclock = frameclock * pccore.multiple / 2;
+#endif
+	dispclock = min(frameclock, iocore.e.dispclock);
+//	corestat.dispclock = dispclock;
+	corestat.syncclock = frameclock - dispclock;
 	nevent_set(NEVENT_FRAMES, dispclock, neitem_disp, NEVENT_RELATIVE);
+#endif
+
 	do {
+#if defined(TRACE) && defined(NEVENT_COUNTER)
+		ncounter++;
+#endif
 #if !defined(SINGLESTEPONLY)
 		if (CPU_REMCLOCK > 0) {
 			Z80_EXECUTE();
@@ -224,5 +313,50 @@ void pccore_exec(BRESULT draw) {
 	scrnupdate();
 	sound_sync();
 	fdc_callback();
+
+#if defined(TRACE) && defined(NEVENT_COUNTER)
+	TRACEOUT(("loop = %d", ncounter));
+#endif
+#if defined(TRACE) && defined(CTCCOUNTER)
+	TRACEOUT(("ctc = %d", ctccnt));
+	ctccnt = 0;
+#endif
+#if defined(TRACE) && defined(PCCOUNTER)
+	TRACEOUT(("pccnt = %d %d %d", pccnt, pccnt2, pccnt3));
+	pccnt = 0;
+	pccnt2 = 0;
+	pccnt3 = 0;
+#endif
+#if defined(TRACE) && defined(IOCOUNTER)
+	iocounter++;
+	if (iocounter >= 60) {
+		UINT i, j, cnt, pos;
+		iocounter = 0;
+		for (i=0; i<10; i++) {
+			cnt = 0;
+			pos = 0;
+			for (j=0; j<0x2004; j++) {
+				if (cnt < ocounter[j]) {
+					cnt = ocounter[j];
+					pos = j;
+				}
+			}
+			ocounter[pos] = 0;
+			TRACEOUT(("o%2d - %.4x %8dtimes", i, pos, cnt));
+		}
+		for (i=0; i<10; i++) {
+			cnt = 0;
+			pos = 0;
+			for (j=0; j<0x2004; j++) {
+				if (cnt < icounter[j]) {
+					cnt = icounter[j];
+					pos = j;
+				}
+			}
+			icounter[pos] = 0;
+			TRACEOUT(("i%2d - %.4x %8dtimes", i, pos, cnt));
+		}
+	}
+#endif
 }
 

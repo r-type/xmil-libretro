@@ -94,7 +94,7 @@ typedef struct {
 } Z80STAT;
 
 typedef struct {
-	UINT8	*memread;
+const UINT8	*memread;
 	UINT8	*memwrite;
 } Z80EXT;
 
@@ -162,6 +162,7 @@ void CPUCALL z80c_step(void);
 #define	CPU_REMCLOCK	z80core.s.remainclock
 #define	CPU_BASECLOCK	z80core.s.baseclock
 #define	CPU_CLOCK		z80core.s.clock
+#define	CPU_CLOCKCOUNT	(CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK)
 
 #define	Z80_DI			((z80core.s.iff & 3) != 0)
 #define	Z80_EI			((z80core.s.iff & 3) == 0)

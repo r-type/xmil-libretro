@@ -2,7 +2,6 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"nevent.h"
 #include	"vram.h"
 #include	"makescrn.h"
 #include	"font.h"
@@ -13,11 +12,7 @@ static void waithsync(void) {
 	SINT32	clock;
 	SINT32	h;
 
-//	•K‚¸ hsync‚ğ‘Ò‚ÂH
-//	if (corestat.vsync) {
-//		return;
-//	}
-	clock = nevent_getwork(NEVENT_FRAMES) << 8;
+	clock = (CPU_CLOCKCOUNT - iocore.e.framestartclock) << 8;
 	h = clock % crtc.e.rasterclock8;
 	h = crtc.e.rasterdisp8 - h;
 	if (h < 0) {
@@ -29,16 +24,16 @@ static void waithsync(void) {
 
 static UINT pcg_offset(void) {
 
-	if (tram[TRAM_ATR + 0x07ff] & 0x20) {
+	if (TRAM_ATR(0x07ff) & 0x20) {
 		return(0x7ff);
 	}
-	if (tram[TRAM_ATR + 0x03ff] & 0x20) {
+	if (TRAM_ATR(0x03ff) & 0x20) {
 		return(0x3ff);
 	}
-	if (tram[TRAM_ATR + 0x05ff] & 0x20) {
+	if (TRAM_ATR(0x05ff) & 0x20) {
 		return(0x5ff);
 	}
-	if (tram[TRAM_ATR + 0x01ff] & 0x20) {
+	if (TRAM_ATR(0x01ff) & 0x20) {
 		return(0x1ff);
 	}
 	return(0x7ff);
@@ -46,16 +41,16 @@ static UINT pcg_offset(void) {
 
 static UINT knj_offset(void) {
 
-	if (!(tram[TRAM_ATR + 0x07ff] & 0x20)) {
+	if (!(TRAM_ATR(0x07ff) & 0x20)) {
 		return(0x7ff);
 	}
-	if (!(tram[TRAM_ATR + 0x03ff] & 0x20)) {
+	if (!(TRAM_ATR(0x03ff) & 0x20)) {
 		return(0x3ff);
 	}
-	if (!(tram[TRAM_ATR + 0x05ff] & 0x20)) {
+	if (!(TRAM_ATR(0x05ff) & 0x20)) {
 		return(0x5ff);
 	}
-	if (!(tram[TRAM_ATR + 0x01ff] & 0x20)) {
+	if (!(TRAM_ATR(0x01ff) & 0x20)) {
 		return(0x1ff);
 	}
 	return(0x7ff);
@@ -68,11 +63,7 @@ static UINT nowsyncoffset(UINT *line) {
 	UINT	v;
 	UINT	ret;
 
-	clock = nevent_getwork(NEVENT_FRAMES);
-	if (corestat.vsync) {
-		clock += corestat.dispclock;
-	}
-	clock = clock << 8;
+	clock = (CPU_CLOCKCOUNT - iocore.e.framestartclock) << 8;
 	v = clock / crtc.e.rasterclock8;
 	h = clock - (v * crtc.e.rasterclock8);
 	if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
@@ -98,8 +89,8 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
 		waithsync();
 		off = pcg_offset();
-		chr = tram[TRAM_ANK + off];
-		if (tram[TRAM_KNJ + off] & 0x90) {
+		chr = TRAM_ANK(off);
+		if (TRAM_KNJ(off) & 0x90) {
 			chr = chr & (~1);
 			line = port & 15;
 		}
@@ -109,12 +100,12 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 	}
 	else {
 		off = nowsyncoffset(&line);
-		chr = tram[TRAM_ANK + off];
+		chr = TRAM_ANK(off);
 	}
 	chr += (port & 0x0300) - 0x100;
 	if (pcg.d[(chr << 3) + line] != value) {
 		pcg.d[(chr << 3) + line] = value;
-		scrnallflash = TRUE;
+		crtc.e.scrnallflash = TRUE;
 	}
 }
 
@@ -133,8 +124,8 @@ REG8 IOINPCALL pcg_i(UINT port) {
 		line = port & 0x0f;
 		if (!upper) {
 			off = knj_offset();
-			chr = tram[TRAM_ANK + off];
-			knj = tram[TRAM_KNJ + off];
+			chr = TRAM_ANK(off);
+			knj = TRAM_KNJ(off);
 			if (knj & 0x80) {
 				addr = ((((knj & 0x1f) << 8) + chr) << 4) + line;
 				if (knj & 0x40) {
@@ -151,8 +142,8 @@ REG8 IOINPCALL pcg_i(UINT port) {
 		}
 		else {
 			off = pcg_offset();
-			chr = tram[TRAM_ANK + off];
-			if (tram[TRAM_KNJ + off] & 0x90) {
+			chr = TRAM_ANK(off);
+			if (TRAM_KNJ(off) & 0x90) {
 				chr = chr & (~1);
 			}
 			else {
@@ -162,7 +153,7 @@ REG8 IOINPCALL pcg_i(UINT port) {
 	}
 	else {
 		off = nowsyncoffset(&line);
-		chr = tram[TRAM_ANK + off];
+		chr = TRAM_ANK(off);
 	}
 	if (!upper) {
 		return(font_ank[(chr << 3) + line]);

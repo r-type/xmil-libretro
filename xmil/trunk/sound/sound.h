@@ -5,6 +5,8 @@
 
 typedef void (SOUNDCALL * SOUNDCB)(void *hdl, SINT32 *pcm, UINT count);
 
+#if !defined(DISABLE_SOUND)
+
 typedef struct {
 	UINT	rate;
 	UINT32	hzbase;
@@ -41,5 +43,19 @@ void sound_recstop(void);
 
 #ifdef __cplusplus
 }
+#endif
+
+#else
+
+#define	sound_create(r, m)			(FAILURE)
+#define	sound_destroy()
+#define sound_reset()
+#define sound_changeclock()
+#define sound_streamregist(h, c)
+#define	sound_sync()
+#define	sound_makesample(l)
+#define	sound_pcmlock()				(NULL)
+#define	sound_pcmunlock(h)
+
 #endif
 

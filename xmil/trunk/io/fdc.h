@@ -3,13 +3,9 @@
 
 enum {
 	FDCDIR_NONE			= 0x00,
-	FDCDIR_IN			= 0x01,
-	FDCDIR_OUT			= 0x02,
-	FDCDIR_TAO			= 0x03
-};
-
-enum {
-	FDC_BUFFERS		= 0x3000
+	FDCDIR_TAO			= 0x01,
+	FDCDIR_IN			= 0x02,
+	FDCDIR_OUT			= 0x03,
 };
 
 enum {
@@ -21,7 +17,7 @@ enum {
 
 typedef struct {
 	UINT8	cmd;
-	UINT8	type;
+	UINT8	ctype;
 	UINT8	data;
 	SINT8	step;
 	UINT8	drv;
@@ -62,15 +58,31 @@ typedef struct {
 	SINT32	motorclock[4];
 #endif
 
-	UINT8	buffer[FDC_BUFFERS];
+#if !defined(CONST_DISKIMAGE)
+	UINT8	wt_mode;
+	UINT8	wt_sectors;
+	UINT8	wt_padding[2];
+	UINT	wt_ptr;
+	UINT	wt_datpos;
+	UINT	wt_datsize;
+
+	UINT8	buffer[0x3000];
+#else
+	UINT8	crcbuf[6];
+#endif
 } FDCSTAT;
 
+#if defined(CONST_DISKIMAGE)
 typedef struct {
-	UINT	dummy;
+	UINT8	*buffer;
 } FDCEXT;
+#endif
 
 typedef struct {
 	FDCSTAT	s;
+#if defined(CONST_DISKIMAGE)
+	FDCEXT	e;
+#endif
 } FDC;
 
 

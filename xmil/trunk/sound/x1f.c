@@ -60,7 +60,11 @@ BRESULT x1f_open(const OEMCHAR *filename) {
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	CopyMemory(buf, sndboard.opmdat, 256);
+#else
+	ZeroMemory(buf, 256);
+#endif
 	CopyMemory(buf, "X1F", 4);
 	file_write(fh, buf, 256);
 
@@ -85,6 +89,7 @@ void x1f_close(void) {
 	}
 }
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 void x1f_opm(REG8 reg, REG8 dat) {
 
 	if (x1f.enable) {
@@ -93,6 +98,7 @@ void x1f_opm(REG8 reg, REG8 dat) {
 		}
 	}
 }
+#endif
 
 void x1f_psg(REG8 reg, REG8 dat) {
 

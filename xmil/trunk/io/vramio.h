@@ -3,8 +3,12 @@
 extern "C" {
 #endif
 
-void IOOUTCALL tram_o(UINT port, REG8 dat);			// x1_txt_w
-REG8 IOINPCALL tram_i(UINT port);					// x1_txt_r
+void IOOUTCALL tram_atr_o(UINT port, REG8 value);
+void IOOUTCALL tram_ank_o(UINT port, REG8 value);
+void IOOUTCALL tram_knj_o(UINT port, REG8 value);
+REG8 IOOUTCALL tram_atr_i(UINT port);
+REG8 IOOUTCALL tram_ank_i(UINT port);
+REG8 IOOUTCALL tram_knj_i(UINT port);
 
 void IOOUTCALL gram_o(UINT port, REG8 dat);			// x1_grp_w
 REG8 IOINPCALL gram_i(UINT port);					// x1_grp_r

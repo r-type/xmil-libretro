@@ -174,7 +174,12 @@ void CPUCALL z80c_execute(void) {
 
 	UINT	op;
 
-	if (!dma.working) {
+#if !defined(DMAS_STOIC)
+	if (!dma.working)
+#else
+	if (!(dma.flag & DMAF_WORKING))
+#endif
+	{
 		do {
 			R_Z80R++;
 			GET_PC_BYTE(op);

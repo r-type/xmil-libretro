@@ -35,7 +35,9 @@ static const PFTBL iniitem[] = {
 
 	{"SampleHz", PFTYPE_UINT16,		&xmilcfg.samplingrate,	0},
 	{"Latencys", PFTYPE_UINT16,		&xmilcfg.delayms,		0},
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	{"OPMsound", PFTYPE_BOOL,		&xmilcfg.SOUND_SW,		0},
+#endif
 	{"Seek_Snd", PFTYPE_BOOL,		&xmilcfg.MOTOR,			0},
 	{"Seek_Vol", PFMAX_UINT8,		&xmilcfg.MOTORVOL,		100},
 

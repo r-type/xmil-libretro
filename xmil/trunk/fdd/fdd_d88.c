@@ -186,6 +186,96 @@ const _D88SEC	*sec;
 
 // ----
 
+static BRESULT fileappend(FILEH fh, UINT32 ptr, UINT size) {
+
+	UINT	filesize;
+	UINT	r;
+	UINT8	work[0x400];
+
+	filesize = file_getsize(fh);
+	if (filesize < ptr) {
+		return(FAILURE);
+	}
+	filesize -= ptr;
+	while(filesize) {
+		r = min(filesize, sizeof(work));
+		filesize -= r;
+		file_seek(fh, ptr + filesize, FSEEK_SET);
+		r = file_read(fh, work, r);
+		file_seek(fh, ptr + filesize + size, FSEEK_SET);
+		file_write(fh, work, r);
+	}
+	return(SUCCESS);
+}
+
+static BRESULT writetrack(FDDFILE fdd, REG8 media, UINT track,
+													UINT8 *buf, UINT size) {
+
+	FILEH	fh;
+	UINT	i;
+	UINT32	curptr;				// fpointer;
+	UINT32	nextptr;			// endpointer;
+	UINT	cursize;
+	UINT	addsize;
+	UINT32	cur;
+	UINT8	ptr[D88_TRACKMAX][4];
+
+	if ((track >= D88_TRACKMAX) || (size == 0)) {
+		return(FAILURE);
+	}
+
+	fh = file_open(fdd->fname);
+	if (fh == FILEH_INVALID) {
+		return(FAILURE);
+	}
+	curptr = fdd->inf.d88.ptr[track];
+	if (curptr == 0) {
+		for (i=track; i>0;) {					// 新規トラック
+			curptr = fdd->inf.d88.ptr[--i];
+			if (curptr) {
+				break;
+			}
+		}
+		if (curptr) {								// ヒットした
+			curptr = nexttrackptr(fdd, curptr, fdd->inf.d88.fd_size);
+		}
+		else {
+			curptr = D88_HEADERSIZE;
+		}
+		nextptr = curptr;
+	}
+	else {										// トラックデータは既にある
+		nextptr = nexttrackptr(fdd, curptr, fdd->inf.d88.fd_size);
+	}
+	cursize = nextptr - curptr;
+	if (size > cursize) {
+		addsize = size - cursize;
+		fileappend(fh, curptr, addsize);
+		fdd->inf.d88.fd_size += addsize;
+		for (i=0; i<D88_TRACKMAX; i++) {
+			cur = fdd->inf.d88.ptr[i];
+			if ((cur) && (cur >= curptr)) {
+				fdd->inf.d88.ptr[i] = cur + addsize;
+			}
+		}
+	}
+	STOREINTELDWORD(fdd->inf.d88.head.fd_size, fdd->inf.d88.fd_size);
+	fdd->inf.d88.ptr[track] = curptr;
+	for (i=0; i<D88_TRACKMAX; i++) {
+		STOREINTELDWORD(ptr[i], fdd->inf.d88.ptr[i]);
+	}
+	file_seek(fh, 0, FSEEK_SET);
+	file_write(fh, &fdd->inf.d88.head, sizeof(fdd->inf.d88.head));
+	file_write(fh, ptr, sizeof(ptr));
+	file_seek(fh, curptr, FSEEK_SET);
+	file_write(fh, buf, size);
+	file_close(fh);
+	return(SUCCESS);
+}
+
+
+// ----
+
 static REG8 fddd88_seek(FDDFILE fdd, REG8 media, UINT track) {
 
 	if (trackseek(fdd, media, track) != NULL) {
@@ -257,6 +347,44 @@ static REG8 fddd88_write(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
 	return(0x00);
 
 fd8w_err:
+	return(FDDSTAT_RECNFND | FDDSTAT_WRITEFAULT);
+}
+
+static REG8 fddd88_wrtrk(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
+												const UINT8 *ptr, UINT size) {
+
+	UINT	pos;
+	UINT	i;
+	UINT	datsize;
+	D88SEC	dst;
+
+	trackflush(&d88trk);
+
+	// データ作る
+	ZeroMemory(d88trk.buf, sizeof(d88trk.buf));
+	pos = 0;
+	for (i=0; i<sc; i++) {
+		dst = (D88SEC)(d88trk.buf + pos);
+		datsize = LOADINTELWORD(((TAOSEC *)ptr)->size);
+		pos += sizeof(_D88SEC) + datsize;
+		if (pos > D88BUFSIZE) {
+			goto fd8wt_err;
+		}
+		dst->c = ((TAOSEC *)ptr)->c;
+		dst->h = ((TAOSEC *)ptr)->h;
+		dst->r = ((TAOSEC *)ptr)->r;
+		dst->n = ((TAOSEC *)ptr)->n;
+		dst->sectors[0] = sc;
+		STOREINTELWORD(dst->size, datsize);
+		CopyMemory((dst + 1), ptr + sizeof(TAOSEC), datsize);
+		ptr += sizeof(TAOSEC) + datsize;
+	}
+	if (writetrack(fdd, media, track, d88trk.buf, pos) != SUCCESS) {
+		goto fd8wt_err;
+	}
+	return(0);
+
+fd8wt_err:
 	return(FDDSTAT_RECNFND | FDDSTAT_WRITEFAULT);
 }
 
@@ -363,6 +491,7 @@ BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname) {
 	fdd->seek = fddd88_seek;
 	fdd->read = fddd88_read;
 	fdd->write = fddd88_write;
+	fdd->wrtrk = fddd88_wrtrk;
 	fdd->crc = fddd88_crc;
 #if defined(SUPPORT_DISKEXT)
 	fdd->sec = fddd88_sec;
@@ -377,312 +506,4 @@ void fddd88_eject(FDDFILE fdd) {
 
 	drvflush(fdd);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// ---------------------------------------------------------------------------
-
-#if 0
-// ----
-
-static	_D88SEC		cursec;
-static	REG8		curdrv = (REG8)-1;
-static	UINT		curtrk = (UINT)-1;
-static	BYTE		curtype = 0;
-static	UINT		cursct = (UINT)-1;
-static	long		curfp = 0;
-static	UINT		cursize = 0;
-static	BYTE		curwrite = 0;
-static	BYTE		curtrkerr = 0;
-static	BYTE		hole = 0;
-static	BYTE		*curdata;
-// static	UINT		crcnum = 0;
-// static	BYTE		crcerror = FALSE;
-
-extern	WORD		readdiag;
-
-
-typedef struct {
-	BYTE	mode;
-	BYTE	flag;
-	WORD	cnt;
-	WORD	size;
-	WORD	ptr;
-	WORD	top;
-	WORD	gap;
-	BYTE	sector;
-	WORD	lostdatacnt;
-	BYTE	maxsector;
-	WORD	maxsize;
-} WID_PARA;
-
-#define LOSTDATA_COUNT	256
-
-static	WID_PARA WID_2D	= {TAO_ENDOFDATA, 3, 0, 0, 0, 0, 0, 0, 0, 33, 0x1f80};
-static	WID_PARA WID_2HD= {TAO_ENDOFDATA, 3, 0, 0, 0, 0, 0, 0, 0, 55, 0x2f80};
-static	WID_PARA WID_ERR= {TAO_ENDOFDATA, 4, 0, 0, 0, 0, 0, 0, 0,  0, 0x0000};
-static	WID_PARA tao	= {TAO_ENDOFDATA, 4, 0, 0, 0, 0, 0, 0, 0,  0, 0x0000};
-
-static	BYTE		D88_BUF[0x4000];
-static	BYTE		TAO_BUF[0x3000];
-
-
-// ----
-
-void init_tao_d88(void) {
-
-	FDDFILE		fdd;
-
-	fdd = fddfile + fdc.s.drv;
-	if (fdc.s.media != (fdd->inf.d88.head.fd_type >> 4)) {
-		tao = WID_ERR;
-	}
-	if (fdc.s.media == DISKTYPE_2D) {
-		tao = WID_2D;
-	}
-	else if (fdc.s.media == DISKTYPE_2HD) {
-		tao = WID_2HD;
-	}
-	else {
-		tao = WID_ERR;
-	}
-}
-
-static int fileappend(FILEH hdl, FDDFILE fdd,
-									UINT32 ptr, long last, long apsize) {
-
-	long	length;
-	UINT	size;
-	UINT	rsize;
-	UINT	t;
-	BYTE	tmp[0x400];
-	UINT32	cur;
-
-	length = last - ptr;
-	if (length <= 0) {							// 書き換える必要なし
-		return(0);
-	}
-	while(length) {
-		if (length >= (long)(sizeof(tmp))) {
-			size = sizeof(tmp);
-		}
-		else {
-			size = length;
-		}
-		length -= size;
-		file_seek(hdl, ptr + length, FSEEK_SET);
-		rsize = file_read(hdl, tmp, size);
-		file_seek(hdl, ptr + length + apsize, FSEEK_SET);
-		file_write(hdl, tmp, rsize);
-	}
-	for (t=0; t<164; t++) {
-		cur = fdd->inf.d88.ptr[t];
-		if ((cur) && (cur >= ptr)) {
-			fdd->inf.d88.ptr[t] = cur + apsize;
-		}
-	}
-	return(0);
-}
-
-static void endoftrack(void) {
-
-	FDDFILE	fdd;
-	FILEH	hdr;
-	int		i;
-	UINT	trk;
-	long	fpointer;
-	long	endpointer;
-	long	lastpointer;
-	long	trksize;
-	long	apsize;
-	D88SEC	p;
-	UINT	secsize;
-	UINT8	ptr[D88_TRACKMAX][4];
-
-	if (!tao.sector) {
-		tao.flag = 4;
-		return;
-	}
-	tao.flag = 0;
-
-	curdataflush();						// write cache flush &
-	curdrv = (REG8)-1;					// use D88_BUF[] for temp
-
-	fdd = fddfile + fdc.s.drv;
-	trk = (fdc.s.c << 1) + fdc.s.h;
-
-	p = (D88SEC)TAO_BUF;
-	for (i=0; i<(int)tao.sector; i++) {
-		STOREINTELWORD(p->sectors, tao.sector);
-		secsize = LOADINTELWORD(p->size);
-		p = (D88SEC)(((UINT8 *)(p + 1)) + secsize);
-	}
-
-	if ((hdr = file_open(fdd->fname)) == FILEH_INVALID) {
-		return;
-	}
-	lastpointer = file_seek(hdr, 0, 2);
-	fpointer = fdd->inf.d88.ptr[trk];
-	if (fpointer == 0) {
-		for (i=trk; i>=0; i--) {					// 新規トラック
-			fpointer = fdd->inf.d88.ptr[i];
-			if (fpointer) {
-				break;
-			}
-		}
-		if (fpointer) {								// ヒットした
-			fpointer = nexttrackptr(fdd, fpointer, lastpointer);
-		}
-		else {
-			fpointer = D88_HEADERSIZE;
-		}
-		endpointer = fpointer;
-	}
-	else {										// トラックデータは既にある
-		endpointer = nexttrackptr(fdd, fpointer, lastpointer);
-	}
-	trksize = endpointer - fpointer;
-	if ((apsize = (long)tao.size - trksize) > 0) {
-								// 書き込むデータのほーが大きい
-		fileappend(hdr, fdd, endpointer, lastpointer, apsize);
-		fdd->inf.d88.fd_size += apsize;
-	}
-	STOREINTELDWORD(fdd->inf.d88.head.fd_size, fdd->inf.d88.fd_size);
-	fdd->inf.d88.ptr[trk] = fpointer;
-	for (i=0; i<D88_TRACKMAX; i++) {
-		STOREINTELDWORD(ptr[i], fdd->inf.d88.ptr[i]);
-	}
-	file_seek(hdr, 0, FSEEK_SET);
-	file_write(hdr, &fdd->inf.d88.head, sizeof(fdd->inf.d88.head));
-	file_write(hdr, ptr, sizeof(ptr));
-	file_seek(hdr, fpointer, FSEEK_SET);
-	file_write(hdr, TAO_BUF, tao.size);
-	file_close(hdr);
-}
-
-void fdd_wtao_d88(BYTE data) {
-
-	D88SEC	p;
-
-	if (tao.flag != 3) {
-		return;
-	}
-	tao.lostdatacnt = 0;
-	if (tao.cnt > tao.maxsize) {
-		endoftrack();
-		return;
-	}
-	tao.cnt++;
-	switch(tao.mode) {
-		case TAO_ENDOFDATA:
-			if (data == TAO_MODE_GAP) {
-				tao.mode = TAO_MODE_GAP;
-				tao.gap = 0;
-			}
-			break;
-
-		case TAO_MODE_GAP:
-			if (data == TAO_MODE_GAP) {
-				if (tao.gap++ > 256) {
-					endoftrack();
-				}
-			}
-			else if (data == TAO_CMD_SYNC) {
-				tao.mode = TAO_MODE_SYNC;
-			}
-#if 1												// ver0.26 Zeliard
-			else if (data == 0xf4) {
-				endoftrack();
-			}
-#endif
-			else {
-				tao.flag = 4;
-			}
-			break;
-
-		case TAO_MODE_SYNC:
-//			tao.cnt--;								// ver0.26 Zeliard
-			if (data == TAO_CMD_AM_IN) {
-				tao.mode = TAO_MODE_AM;
-			}
-			else if (data == TAO_CMD_IM_IN) {
-				tao.mode = TAO_MODE_IM;
-			}
-			else if (data) {
-				tao.flag = 4;
-			}
-			break;
-
-		case TAO_MODE_IM:
-			if (data == TAO_CMD_IM) {
-				tao.mode = TAO_ENDOFDATA;
-			}
-			else if (data != TAO_CMD_IM_IN) {
-				tao.flag = 4;
-			}
-			break;
-
-		case TAO_MODE_AM:
-			if (data == TAO_CMD_IAM) {
-				tao.mode = TAO_MODE_ID;
-				tao.ptr = 0;
-				tao.top = tao.size;
-			}
-			else if (data == TAO_CMD_DAM) {
-				tao.mode = TAO_MODE_DATA;
-				tao.ptr = 0;
-			}
-			else if (data == TAO_CMD_DDAM) {
-				tao.mode = TAO_MODE_DATA;
-				tao.ptr = 0;
-				p = (D88SEC)(TAO_BUF + tao.top);
-				p->del_flg = 1;
-			}
-			break;
-
-		case TAO_MODE_ID:
-			if ((data == TAO_CMD_IAM) && (!tao.ptr)) {
-				break;
-			}
-			else if (tao.ptr < 4) {
-				TAO_BUF[tao.size++] = data;
-				tao.ptr++;
-			}
-			else if (data == TAO_CMD_CRC) {
-				tao.mode = TAO_ENDOFDATA;
-				ZeroMemory(TAO_BUF + tao.size, 12);
-				tao.size += 12;
-			}
-			break;
-
-		case TAO_MODE_DATA:						// DATA WRITE
-			if ((!tao.ptr) &&
-				((data == TAO_CMD_DAM) || (data == TAO_CMD_DDAM))) {
-				break;
-			}
-			else if (data == TAO_CMD_CRC) {			// nで判定した方が無難か？
-				tao.mode = TAO_ENDOFDATA;
-				p = (D88SEC)(TAO_BUF + tao.top);
-				STOREINTELWORD(p->size, tao.ptr);
-				if (tao.sector++ > tao.maxsector) {
-					tao.flag = 4;
-				}
-			}
-			else {
-				TAO_BUF[tao.size++] = data;
-				tao.ptr++;
-			}
-			break;
-	}
-}
-#endif
 

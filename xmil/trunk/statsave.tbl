@@ -6,6 +6,7 @@ static const NP2FHDR np2flagdef = {
 						"create by xmil",
 						XMILSTATUS_VERSION};
 
+#if 0
 static const ENUMTBL evtnum[] = {
 			{PROCID('m','a','i','n'), NEVENT_FRAMES},
 			{PROCID('r','t','c',' '), NEVENT_RTC},
@@ -14,10 +15,15 @@ static const ENUMTBL evtnum[] = {
 			{PROCID('c','t','c','1'), NEVENT_CTC1},
 			{PROCID('c','t','c','2'), NEVENT_CTC2},
 			{PROCID('s','c','p','u'), NEVENT_SUBCPU}};
+#endif
 
 static const PROCTBL evtproc[] = {
+#if !defined(MAINFRAMES_OLD)
+			{PROCID('e','m','n','f'), (INTPTR)neitem_mainframes},
+#else
 			{PROCID('e','s','c','0'), (INTPTR)neitem_disp},
 			{PROCID('e','s','c','1'), (INTPTR)neitem_vsync},
+#endif
 			{PROCID('e','r','t','c'), (INTPTR)neitem_rtc},
 			{PROCID('e','f','d','c'), (INTPTR)neitem_fdcbusy},
 			{PROCID('e','c','t','c'), (INTPTR)neitem_ctc},
@@ -47,12 +53,11 @@ static const SFENTRY xmiltbl[] = {
 	{"CTC2",		0,	STATFLAG_BIN,	&ctc.ch[2].s,	sizeof(ctc.ch[2].s)},
 	{"DMAC",		0,	STATFLAG_BIN,	&dma,			sizeof(dma)},
 	{"FDC",			0,	STATFLAG_BIN,	&fdc.s,			sizeof(fdc.s)},
-	{"MEMIO",		0,	STATFLAG_BIN,	&memio,			sizeof(memio)},
 	{"PCG",			0,	STATFLAG_BIN,	&pcg,			sizeof(pcg)},
 	{"PPI",			0,	STATFLAG_BIN,	&ppi,			sizeof(ppi)},
 	{"SIO",			0,	STATFLAG_BIN,	&sio,			sizeof(sio)},
 	{"SNDBOARD",	0,	STATFLAG_BIN,	&sndboard,		sizeof(sndboard)},
-	{"SUBCPU",		0,	STATFLAG_BIN,	&subcpu,		sizeof(subcpu)},
+	{"SUBCPU",		0,	STATFLAG_BIN,	&subcpu.s,		sizeof(subcpu.s)},
 	{"CALENDAR",	0,	STATFLAG_BIN,	&cal,			sizeof(cal)},
 	{"NEVENT",		0,	STATFLAG_EVT,	&nevent,		sizeof(nevent)},
 	{"DISK",		0,	STATFLAG_DISK,	NULL,			0},

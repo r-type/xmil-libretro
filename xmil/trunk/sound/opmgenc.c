@@ -1,4 +1,7 @@
 #include	"compiler.h"
+
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+
 #include	<math.h>
 #include	"sound.h"
 #include	"sndctrl.h"
@@ -471,4 +474,6 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 			break;
 	}
 }
+
+#endif
 

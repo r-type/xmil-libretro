@@ -9,72 +9,82 @@
 
 void nevent_allreset(void) {
 
+	UINT	i;
+
 	ZeroMemory(&nevent, sizeof(nevent));
+	nevent.first = NEVENTITEM_TERM;
+	for (i=0; i<NEVENT_MAXEVENTS; i++) {
+		nevent.item[i].next = NEVENTITEM_NONE;
+	}
 }
 
 void nevent_progress(void) {
 
-	SINT32		nextbase;
-	UINT		eventnum;
-	UINT		waitevents;
-	UINT		i;
-	UINT		curid;
 	NEVENTITEM	item;
-	UINT		waitlevel[NEVENT_MAXEVENTS];
+	NEVENTITEM	itemnext;
+	NEVENTITEM	*witem;
+	NEVENTITEM	waititem[NEVENT_MAXEVENTS];
+	SINT32		nextbase;
+	NEVENTITEM	*wi;
 
 	CPU_CLOCK += CPU_BASECLOCK;
 
-	nextbase = NEVENT_MAXCLOCK;
-	eventnum = 0;
-	waitevents = 0;
-	for (i=0; i<nevent.readyevents; i++) {
-		curid = nevent.level[i];
-		item = nevent.item + curid;
+	item = nevent.first;
+	witem = waititem;
+	while(item != NEVENTITEM_TERM) {
 		item->clock -= CPU_BASECLOCK;
 		if (item->clock > 0) {
-			// イベント待ち中
-			nevent.level[eventnum++] = curid;
-			if (nextbase >= item->clock) {
-				nextbase = item->clock;
-			}
+			break;
 		}
-		else {
-			waitlevel[waitevents++] = curid;
-//			TRACEOUT(("event = %x", curid));
+		*witem++ = item;
+		itemnext = item->next;
+		item->next = NEVENTITEM_NONE;
+		item = itemnext;
+	}
+	nevent.first = item;
+	if (item != NEVENTITEM_TERM) {
+		nextbase = item->clock;
+		item = item->next;
+		while(item != NEVENTITEM_TERM) {
+			item->clock -= CPU_BASECLOCK;
+			item = item->next;
 		}
 	}
-	nevent.readyevents = eventnum;
+	else {
+		nextbase = NEVENT_MAXCLOCK;
+	}
 	CPU_BASECLOCK = nextbase;
 	CPU_REMCLOCK += nextbase;
 //	TRACEOUT(("nextbase = %d (%d)", nextbase, CPU_REMCLOCK));
 
 	// イベント発生
-	for (i=0; i<waitevents; i++) {
-		curid = waitlevel[i];
-		item = nevent.item + curid;
+	wi = waititem;
+	while(wi < witem) {
+		item = *wi++;
 		if (item->proc != NULL) {
-			item->proc(curid);
+			item->proc(item - nevent.item);
 		}
 	}
 }
 
 void nevent_reset(UINT id) {
 
-	UINT	i;
+	NEVENTITEM	item;
+	NEVENTITEM	*back;
+	NEVENTITEM	cur;
 
-	// 現在進行してるイベントを検索
-	for (i=0; i<nevent.readyevents; i++) {
-		if (nevent.level[i] == id) {
-			break;
+	item = nevent.item + id;
+	if (item->next != NEVENTITEM_NONE) {
+		back = &nevent.first;
+		cur = *back;
+		while(cur != item) {
+			__ASSERT(cur != NEVENTITEM_NONE);
+			__ASSERT(cur != NEVENTITEM_TERM);
+			back = &cur->next;
+			cur = *back;
 		}
-	}
-	// イベントは存在した？
-	if (i < nevent.readyevents) {
-		// 存在していたら削る
-		nevent.readyevents--;
-		for (; i<nevent.readyevents; i++) {
-			nevent.level[i] = nevent.level[i+1];
-		}
+		*back = cur->next;
+		cur->next = NEVENTITEM_NONE;
 	}
 }
 
@@ -82,13 +92,15 @@ void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, BRESULT absolute) {
 
 	SINT32		clock;
 	NEVENTITEM	item;
-	UINT		eventid;
-	UINT		i;
+	NEVENTITEM	*back;
+	NEVENTITEM	n;
+	NEVENTITEM	p;
 
 //	TRACEOUT(("event %d - %xclocks", id, eventclock));
 
 	clock = CPU_BASECLOCK - CPU_REMCLOCK;
 	item = nevent.item + id;
+
 	item->baseclock = eventclock;
 	item->proc = proc;
 	if (absolute) {
@@ -98,25 +110,23 @@ void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, BRESULT absolute) {
 		item->clock += eventclock;
 	}
 
-	// イベントの削除
-	nevent_reset(id);
-
-	// イベントの挿入位置の検索
-	for (eventid=0; eventid<nevent.readyevents; eventid++) {
-		if (item->clock < nevent.item[nevent.level[eventid]].clock) {
-			break;
+	if (item->next != NEVENTITEM_NONE) {
+		back = &nevent.first;
+		n = *back;
+		while(n != item) {
+			__ASSERT(n != NEVENTITEM_NONE);
+			__ASSERT(n != NEVENTITEM_TERM);
+			back = &n->next;
+			n = *back;
 		}
+		*back = n->next;
+		n->next = NEVENTITEM_NONE;
 	}
 
-	// イベントの挿入
-	for (i=nevent.readyevents; i>eventid; i--) {
-		nevent.level[i] = nevent.level[i-1];
-	}
-	nevent.level[eventid] = id;
-	nevent.readyevents++;
-
-	// もし最短イベントだったら...
-	if (eventid == 0) {
+	n = nevent.first;
+	if ((n == NEVENTITEM_TERM) || (item->clock < n->clock)) {
+		item->next = n;
+		nevent.first = item;
 		clock = CPU_BASECLOCK;
 		if (item->clock > 0) {
 			clock -= item->clock;
@@ -124,6 +134,15 @@ void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, BRESULT absolute) {
 		CPU_BASECLOCK -= clock;
 		CPU_REMCLOCK -= clock;
 //		TRACEOUT(("reset nextbase -%d (%d)", clock, CPU_REMCLOCK));
+	}
+	else {
+		p = n->next;
+		while((p != NEVENTITEM_TERM) && (item->clock >= p->clock)) {
+			n = p;
+			p = n->next;
+		}
+		item->next = p;
+		n->next = item;
 	}
 }
 
@@ -137,47 +156,54 @@ void nevent_repeat(UINT id) {
 
 void nevent_setbyms(UINT id, SINT32 ms, NEVENTCB proc, BRESULT absolute) {
 
-	nevent_set(id, (pccore.realclock / 1000) * ms, proc, absolute);
+	SINT32	clock;
+
+#if defined(FIX_Z80A)
+	clock = (2000000 * 2 / 1000) * ms;
+#else
+	clock = (pccore.realclock / 1000) * ms;
+#endif
+	nevent_set(id, clock, proc, absolute);
 }
 
 BRESULT nevent_iswork(UINT id) {
 
-	UINT	i;
+	NEVENTITEM	item;
 
-	// 現在進行してるイベントを検索
-	for (i=0; i<nevent.readyevents; i++) {
-		if (nevent.level[i] == id) {
-			return(TRUE);
-		}
+	item = nevent.item + id;
+	if (item->next != NEVENTITEM_NONE) {
+		return(TRUE);
 	}
-	return(FALSE);
+	else {
+		return(FALSE);
+	}
 }
 
 SINT32 nevent_getwork(UINT id) {
 
-	UINT	i;
+	NEVENTITEM	item;
 
-	// 現在進行してるイベントを検索
-	for (i=0; i<nevent.readyevents; i++) {
-		if (nevent.level[i] == id) {
-			return(nevent.item[id].baseclock - 
-				(nevent.item[id].clock - (CPU_BASECLOCK - CPU_REMCLOCK)));
-		}
+	item = nevent.item + id;
+	if (item->next != NEVENTITEM_NONE) {
+		return(item->baseclock -
+							(item->clock - (CPU_BASECLOCK - CPU_REMCLOCK)));
 	}
-	return(-1);
+	else {
+		return(-1);
+	}
 }
 
 SINT32 nevent_getremain(UINT id) {
 
-	UINT	i;
+	NEVENTITEM	item;
 
-	// 現在進行してるイベントを検索
-	for (i=0; i<nevent.readyevents; i++) {
-		if (nevent.level[i] == id) {
-			return(nevent.item[id].clock - (CPU_BASECLOCK - CPU_REMCLOCK));
-		}
+	item = nevent.item + id;
+	if (item->next != NEVENTITEM_NONE) {
+		return(item->clock - (CPU_BASECLOCK - CPU_REMCLOCK));
 	}
-	return(-1);
+	else {
+		return(-1);
+	}
 }
 
 void nevent_forceexit(void) {

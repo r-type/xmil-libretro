@@ -1,3 +1,7 @@
+
+// #define	CTCCOUNTER
+#define	CTCFAST
+
 #include	"compiler.h"
 #include	"z80core.h"
 #include	"pccore.h"
@@ -5,6 +9,10 @@
 #include	"nevent.h"
 #include	"ievent.h"
 
+
+#if defined(TRACE) && defined(CTCCOUNTER)
+extern UINT ctccnt;
+#endif
 
 static SINT32 minclock(const CTCCH *ch) {
 
@@ -42,10 +50,19 @@ static REG8 ctcwork(CTCCH *ch) {
 	SINT32	pulse;
 	SINT32	count;
 
+#if defined(TRACE) && defined(CTCCOUNTER)
+	ctccnt++;
+#endif
+
 	baseclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
 	stepclock = baseclock - ch->s.baseclock;
+#if defined(FIX_Z80A)			// 2x2MHz
+	ch->s.baseclock += stepclock & (~1);
+	stepclock = stepclock >> 1;
+#else
 	stepclock /= pccore.multiple;
 	ch->s.baseclock += stepclock * pccore.multiple;
+#endif
 
 	intr = 0;
 	pulse3 = 0;
@@ -56,9 +73,19 @@ static REG8 ctcwork(CTCCH *ch) {
 		count = ch->s.count[0];
 		count -= pulse;
 		if (count <= 0) {
+#if defined(CTCFAST)
+			count += ch->s.countmax[0];
+			if (count <= 0) {
+				pulse3 = (0 - count) / ch->s.countmax[0];
+				pulse3 += 1;
+				count += pulse3 * ch->s.countmax[0];
+			}
+			pulse3 += 1;
+#else
 			pulse3 = (0 - count) / ch->s.countmax[0];
 			pulse3 += 1;
 			count += pulse3 * ch->s.countmax[0];
+#endif
 			intr |= (ch->s.cmd[0] & 0x80) >> (7 - 0);
 		}
 		ch->s.count[0] = count;
@@ -72,8 +99,18 @@ static REG8 ctcwork(CTCCH *ch) {
 		count = ch->s.count[3];
 		count -= pulse3;
 		if (count <= 0) {
+#if defined(CTCFAST)
+			count += ch->s.countmax[3];
+			if (count <= 0) {
+				count = ch->s.countmax[3] - ((0 - count) % ch->s.countmax[3]);
+			}
+#else
 			count = ch->s.countmax[3] - ((0 - count) % ch->s.countmax[3]);
+#endif
 			intr |= (ch->s.cmd[3] & 0x80) >> (7 - 3);
+//			TRACEOUT(("<- ch.3 %.8x [%.2x:%.2x %.2x:%.2x]", baseclock,
+//								ch->s.basecnt[0], ch->s.cmd[0],
+//								ch->s.basecnt[3], ch->s.cmd[3]));
 		}
 		ch->s.count[3] = count;
 	}
@@ -122,7 +159,11 @@ static void ctcnextevent(CTCCH *ch) {
 	if (ch->s.intr) {
 		return;
 	}
+#if defined(FIX_Z80A)
+	event = minclock(ch) * 2;
+#else
 	event = minclock(ch) * pccore.multiple;
+#endif
 	nevent_set(NEVENT_CTC0 + ch->s.num, event, neitem_ctc, NEVENT_ABSOLUTE);
 }
 
@@ -280,7 +321,7 @@ void IOOUTCALL ctc_o(UINT port, REG8 value) {
 
 	CTCCH	*ch;
 
-	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
+//	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
 	ch = getctcch(port);
 	if (ch != NULL) {
 		ctcch_o(ch, port, value);

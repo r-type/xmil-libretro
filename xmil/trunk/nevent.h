@@ -20,17 +20,20 @@ typedef	struct _neventitem	_NEVENTITEM;
 typedef	struct _neventitem	*NEVENTITEM;
 typedef void (*NEVENTCB)(UINT id);
 
+#define	NEVENTITEM_NONE		((NEVENTITEM)-1)
+#define	NEVENTITEM_TERM		((NEVENTITEM)0)
+
+
 struct _neventitem {
+	NEVENTITEM	next;
 	SINT32		clock;
 	SINT32		baseclock;
 	NEVENTCB	proc;
-	UINT32		param;
 };
 
 typedef struct {
-	UINT		readyevents;
-	UINT		level[NEVENT_MAXEVENTS];
 	_NEVENTITEM	item[NEVENT_MAXEVENTS];
+	NEVENTITEM	first;
 } _NEVENT, *NEVENT;
 
 

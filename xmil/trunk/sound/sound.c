@@ -1,10 +1,12 @@
 #include	"compiler.h"
-// #include	"wavefile.h"
+
+#if !defined(DISABLE_SOUND)
+
+#include	"wavefile.h"
 #include	"dosio.h"
 #include	"soundmng.h"
 #include	"z80core.h"
 #include	"pccore.h"
-// #include	"iocore.h"
 #include	"sound.h"
 #include	"sndcsec.h"
 // #include	"getsnd.h"
@@ -354,4 +356,6 @@ void sound_pcmunlock(const SINT32 *hdl) {
 		locks--;
 	}
 }
+
+#endif
 

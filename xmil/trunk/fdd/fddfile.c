@@ -72,6 +72,7 @@ static void setempty(FDDFILE fdd) {
 	fdd->seek = dummyseek;
 	fdd->read = dummyread;
 	fdd->write = dummywrite;
+	fdd->wrtrk = dummywrite;
 	fdd->crc = dummycrc;
 }
 
