@@ -1,11 +1,13 @@
 #include	"compiler.h"
 #include	<stdarg.h>
 #include	"strres.h"
+#include	"profile.h"
+#include	"xmil.h"
 #include	"dosio.h"
 #include	"ini.h"
 
 
-#ifdef TRACE
+#if defined(TRACE) && !defined(UNICODE)
 
 #define FILEBUFSIZE			(1 << 20)
 // #define FILELASTBUFONLY
@@ -36,9 +38,6 @@ typedef struct {
 	int		height;
 } TRACECFG;
 
-extern	HINSTANCE	hInst;
-extern	HINSTANCE	hPrev;
-
 enum {
 	IDM_TRACE1		= 3300,
 	IDM_TRACE2,
@@ -65,13 +64,12 @@ static	HBRUSH		hBrush = NULL;
 static	TCHAR		szView[VIEW_BUFFERSIZE];
 static	TRACECFG	tracecfg;
 
-static const char	np2trace[] = "np2trace.ini";
 static const char	inititle[] = "TRACE";
-static const INITBL	initbl[4] = {
-			{"posx",	INITYPE_SINT32,	&tracecfg.posx,		0},
-			{"posy",	INITYPE_SINT32,	&tracecfg.posy,		0},
-			{"width",	INITYPE_SINT32,	&tracecfg.width,	0},
-			{"height",	INITYPE_SINT32,	&tracecfg.height,	0}};
+static const PFTBL	initbl[4] = {
+			{"posx",	PFTYPE_SINT32,	&tracecfg.posx,		0},
+			{"posy",	PFTYPE_SINT32,	&tracecfg.posy,		0},
+			{"width",	PFTYPE_SINT32,	&tracecfg.width,	0},
+			{"height",	PFTYPE_SINT32,	&tracecfg.height,	0}};
 
 static void View_ScrollToBottom(HWND hWnd) {
 
@@ -370,8 +368,9 @@ static LRESULT CALLBACK traceproc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 void trace_init(void) {
 
 	HWND	hwnd;
+	OEMCHAR	path[MAX_PATH];
 
-	if (!hPrev) {
+	if (!hPreI) {
 		WNDCLASS wc;
 		wc.style = CS_HREDRAW | CS_VREDRAW;
 		wc.lpfnWndProc = traceproc;
@@ -401,7 +400,8 @@ void trace_init(void) {
 	tracecfg.posy = CW_USEDEFAULT;
 	tracecfg.width = CW_USEDEFAULT;
 	tracecfg.height = CW_USEDEFAULT;
-	ini_read(file_getcd(np2trace), inititle, initbl, 4);
+	initgetfile(path, NELEMENTS(path));
+	profile_iniread(path, inititle, initbl, NELEMENTS(initbl), NULL);
 
 	hwnd = CreateWindowEx(WS_EX_CONTROLPARENT,
 							ClassName, ProgTitle,
@@ -419,13 +419,16 @@ void trace_init(void) {
 
 void trace_term(void) {
 
+	OEMCHAR	path[MAX_PATH];
+
 	if (tracewin.fh != FILEH_INVALID) {
 		trfh_close();
 	}
 	if (tracewin.hwnd) {
 		DestroyWindow(tracewin.hwnd);
 		tracewin.hwnd = NULL;
-		ini_write(file_getcd(np2trace), inititle, initbl, 4);
+		initgetfile(path, NELEMENTS(path));
+		profile_iniwrite(path, inititle, initbl, NELEMENTS(initbl), NULL);
 	}
 }
 

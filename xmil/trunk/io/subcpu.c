@@ -18,9 +18,23 @@ static const UINT8 dattbl[] = { 3, 0, 0, 2, 0, 1, 0, 1, 1, 0, 3, 0, 3};
 
 void neitem_scpu(UINT id) {
 
+	BRESULT	intr;
+
 	nevent_repeat(id);
+	intr = FALSE;
+	// こうすると同時押しが判定できないのでキーバッファを持つべし
 	if (keystat.req_int) {
 		keystat.req_int = 0;
+		intr = TRUE;
+	}
+	else if (subcpu.keydata) {
+		subcpu.keycount++;
+		if (subcpu.keycount >= subcpu.keycountrep) {
+			subcpu.keycount = 0;
+			intr = TRUE;
+		}
+	}
+	if (intr) {
 		ievent_set(IEVENT_SUBCPU);
 	}
 }
@@ -28,6 +42,7 @@ void neitem_scpu(UINT id) {
 BRESULT ieitem_scpu(UINT id) {
 
 	UINT	key;
+	UINT8	keydata;
 
 	if ((subcpu.cmdcnt) || (subcpu.datacnt)) {
 		keystat.req_int = 1;			// 再送しる
@@ -36,24 +51,22 @@ BRESULT ieitem_scpu(UINT id) {
 	if (!subcpu.Ex[4][0]) {				// 割り込み不要だったら捨てる
 		return(FALSE);
 	}
-	if (keystat.shift & 0x40) {					// キーが押された場合
-		key = keystat_getflag();
-		subcpu.Ex[0x06][0] = (UINT8)(key >> 0);
-		subcpu.Ex[0x06][1] = (UINT8)(key >> 8);
-		if (!subcpu.Ex[0x06][1]) {		// 無効なキーだったら捨てる
-			return(FALSE);
-		}
-		subcpu.INT_SW = 1;
+	key = keystat_getflag();
+	keydata = (UINT8)(key >> 8);
+	if (subcpu.keydata != keydata) {
+		subcpu.keydata = keydata;
+		subcpu.keycount = 0;
+		subcpu.keycountrep = 480;
 	}
 	else {
-		if (!subcpu.INT_SW) {			// 何も押されてなかったら割り込まない
+		if (keydata == 0) {
 			return(FALSE);
 		}
-		subcpu.INT_SW = 0;
-		key = keystat_getflag();
-		subcpu.Ex[0x06][0] = (UINT8)(key >> 0);
-		subcpu.Ex[0x06][1] = (UINT8)(key >> 8);
+		key = key & (~0x20);			// rep
+		subcpu.keycountrep = 96;
 	}
+	subcpu.Ex[0x06][0] = (UINT8)key;
+	subcpu.Ex[0x06][1] = keydata;
 	subcpu.mode = 0xe6;
 	subcpu.cmdcnt = 0;
 	subcpu.datacnt = 2;

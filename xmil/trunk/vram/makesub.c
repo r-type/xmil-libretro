@@ -2,9 +2,6 @@
 #include	"makesub.h"
 
 
-	UINT32	to256col[512];
-
-
 const UINT8 x2left[256] = {
 				0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 				0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -79,6 +76,11 @@ typedef union {
 	UINT8	b[4];
 } PAT32;
 
+
+#if (!defined(MEMOPTIMIZE)) || (MEMOPTIMIZE == 0)		// x86
+
+	UINT32	to256col0[8][512];
+
 void makesub_initialize(void) {
 
 	UINT	i;
@@ -89,11 +91,57 @@ void makesub_initialize(void) {
 		for (j=0; j<4; j++) {
 			pat.b[j] = (i & (0x80 >> j))?1:0;
 		}
-		to256col[i*2+0] = pat.d;
+		for (j=0; j<8; j++) {
+			to256col0[j][i*2+0] = pat.d << j;
+		}
 		for (j=0; j<4; j++) {
 			pat.b[j] = (i & (0x08 >> j))?1:0;
 		}
-		to256col[i*2+1] = pat.d;
+		for (j=0; j<8; j++) {
+			to256col0[j][i*2+1] = pat.d << j;
+		}
 	}
 }
+
+#elif (MEMOPTIMIZE == 1)								// for Mac
+
+	UINT32	to256col1[512];
+
+void makesub_initialize(void) {
+
+	UINT	i;
+	REG8	j;
+	PAT32	pat;
+
+	for (i=0; i<256; i++) {
+		for (j=0; j<4; j++) {
+			pat.b[j] = (i & (0x80 >> j))?1:0;
+		}
+		to256col1[i*2+0] = pat.d;
+		for (j=0; j<4; j++) {
+			pat.b[j] = (i & (0x08 >> j))?1:0;
+		}
+		to256col1[i*2+1] = pat.d;
+	}
+}
+
+#else													// other
+
+#if defined(BYTESEX_LITTLE)
+const UINT32 to256col2[16] = {
+	0x00000000, 0x01000000, 0x00010000, 0x01010000,
+	0x00000100, 0x01000100, 0x00010100, 0x01010100,
+	0x00000001, 0x01000001, 0x00010001, 0x01010001,
+	0x00000101, 0x01000101, 0x00010101, 0x01010101};
+#else
+const UINT32 to256col2[16] = {
+	0x00000000, 0x00000001, 0x00000100, 0x00000101,
+	0x00010000, 0x00010001, 0x00010100, 0x00010101,
+	0x01000000, 0x01000001, 0x01000100, 0x01000101,
+	0x01010000, 0x01010001, 0x01010100, 0x01010101};
+#endif
+
+void makesub_initialize(void) { }
+
+#endif
 

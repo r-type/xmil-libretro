@@ -1,6 +1,7 @@
 #include	"compiler.h"
 #include	<stdarg.h>
 #include	"strres.h"
+#include	"profile.h"
 #include	"xmil.h"
 #include	"dosio.h"
 #include	"ini.h"
@@ -45,15 +46,15 @@ enum {
 	IDM_TRACECL
 };
 
-static const char	ProgTitle[] = "console";
-static const char	ClassName[] = "TRACE-console";
-static const char	ClassEdit[] = "EDIT";
-static const char	trace1[] = "TRACE";
-static const char	trace2[] = "VERBOSE";
-static const char	traceen[] = "Enable";
-static const char	tracefh[] = "File out";
-static const char	tracecl[] = "Clear";
-static const char	crlf[] = "\r\n";
+static const OEMCHAR ProgTitle[] = "console";
+static const OEMCHAR ClassName[] = "TRACE-console";
+static const OEMCHAR ClassEdit[] = "EDIT";
+static const OEMCHAR trace1[] = "TRACE";
+static const OEMCHAR trace2[] = "VERBOSE";
+static const OEMCHAR traceen[] = "Enable";
+static const OEMCHAR tracefh[] = "File out";
+static const OEMCHAR tracecl[] = "Clear";
+static const OEMCHAR crlf[] = "\r\n";
 
 static	TRACEWIN	tracewin;
 static	HWND		hView = NULL;
@@ -62,13 +63,12 @@ static	HBRUSH		hBrush = NULL;
 static	char		szView[VIEW_BUFFERSIZE];
 static	TRACECFG	tracecfg;
 
-static const char	np2trace[] = "np2trace.ini";
-static const char	inititle[] = "TRACE";
-static const INITBL	initbl[4] = {
-			{"posx",	INITYPE_SINT32,	&tracecfg.posx,		0},
-			{"posy",	INITYPE_SINT32,	&tracecfg.posy,		0},
-			{"width",	INITYPE_SINT32,	&tracecfg.width,	0},
-			{"height",	INITYPE_SINT32,	&tracecfg.height,	0}};
+static const char inititle[] = "TRACE";
+static const PFTBL initbl[4] = {
+			{"posx",	PFTYPE_SINT32,	&tracecfg.posx,		0},
+			{"posy",	PFTYPE_SINT32,	&tracecfg.posy,		0},
+			{"width",	PFTYPE_SINT32,	&tracecfg.width,	0},
+			{"height",	PFTYPE_SINT32,	&tracecfg.height,	0}};
 
 static void View_ScrollToBottom(HWND hWnd) {
 
@@ -344,6 +344,7 @@ static LRESULT CALLBACK traceproc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 void trace_init(void) {
 
 	HWND	hwnd;
+	OEMCHAR	path[MAX_PATH];
 
 	if (!hPreI) {
 		WNDCLASS wc;
@@ -375,7 +376,8 @@ void trace_init(void) {
 	tracecfg.posy = CW_USEDEFAULT;
 	tracecfg.width = CW_USEDEFAULT;
 	tracecfg.height = CW_USEDEFAULT;
-	ini_read(file_getcd(np2trace), inititle, initbl, 4);
+	initgetfile(path, NELEMENTS(path));
+	profile_iniread(path, inititle, initbl, NELEMENTS(initbl), NULL);
 
 	hwnd = CreateWindowEx(WS_EX_CONTROLPARENT,
 							ClassName, ProgTitle,
@@ -393,13 +395,16 @@ void trace_init(void) {
 
 void trace_term(void) {
 
+	OEMCHAR	path[MAX_PATH];
+
 	if (tracewin.fh != FILEH_INVALID) {
 		trfh_close();
 	}
 	if (tracewin.hwnd) {
 		DestroyWindow(tracewin.hwnd);
 		tracewin.hwnd = NULL;
-		ini_write(file_getcd(np2trace), inititle, initbl, 4);
+		initgetfile(path, NELEMENTS(path));
+		profile_iniwrite(path, inititle, initbl, NELEMENTS(initbl), NULL);
 	}
 }
 

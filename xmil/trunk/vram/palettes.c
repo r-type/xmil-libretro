@@ -288,6 +288,13 @@ void pal_update1(const UINT8 *rgbp) {
 			}
 		}
 	}
+#if defined(SUPPORT_16BPP)
+	if (scrnmng_getbpp() == 16) {
+		for (i=0; i<xmil_palettes; i++) {
+			xmil_pal16[i] = scrnmng_makepal16(xmil_pal32[i]);
+		}
+	}
+#endif
 }
 
 void pal_update(void) {
@@ -303,6 +310,8 @@ void pal_update(void) {
 	if (!(crtc.e.dispmode & SCRN64_ENABLE)) {
 		pal_update1(crtc.s.rgbp);
 		xmil_palettes = 64 + 64;
+		scrndraw_changepalette();
+		return;
 	}
 	else if (crtc.e.pal_disp & PAL_4096) {
 		switch(crtc.e.pal_disp & 0xf) {

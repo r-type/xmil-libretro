@@ -1,5 +1,5 @@
 
-#ifndef TRACE
+#if !defined(TRACE) || defined(UNICODE)
 
 #define	TRACEINIT()
 #define	TRACETERM()

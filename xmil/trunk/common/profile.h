@@ -1,39 +1,4 @@
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-BOOL profile_enum(const char *filename, void *arg,
-							BOOL (*proc)(void *arg, const char *para,
-									const char *key, const char *data));
-const char *profile_getarg(const char *str, char *buf, UINT leng);
-
-
-
-
-// ---- ‚Ü‚¾ƒeƒXƒg
-
-enum {
-	PFILEH_READONLY		= 0x0001,
-	PFILEH_MODIFY		= 0x0002
-};
-
-typedef struct {
-	char	*buffer;
-	UINT	buffers;
-	UINT	size;
-	UINT	flag;
-	char	path[MAX_PATH];
-} _PFILEH, *PFILEH;
-
-PFILEH profile_open(const char *filename, UINT flag);
-void profile_close(PFILEH hdl);
-BOOL profile_read(const char *app, const char *key, const char *def,
-										char *ret, UINT size, PFILEH hdl);
-BOOL profile_write(const char *app, const char *key,
-											const char *data, PFILEH hdl);
-
-
 enum {
 	PFTYPE_STR			= 0,
 	PFTYPE_BOOL,
@@ -64,13 +29,50 @@ typedef struct {
 	UINT32	arg;
 } PFTBL;
 
-typedef void (*PFREAD)(const PFTBL *item, const char *string);
-typedef char *(*PFWRITE)(const PFTBL *item, char *string, UINT size);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void profile_iniread(const char *path, const char *app,
+typedef void (*PFREAD)(const PFTBL *item, const OEMCHAR *string);
+typedef OEMCHAR *(*PFWRITE)(const PFTBL *item, OEMCHAR *string, UINT size);
+
+void profile_iniread(const OEMCHAR *path, const char *app,
 								const PFTBL *tbl, UINT count, PFREAD cb);
-void profile_iniwrite(const char *path, const char *app,
+void profile_iniwrite(const OEMCHAR *path, const char *app,
 								const PFTBL *tbl, UINT count, PFWRITE cb);
+
+#ifdef __cplusplus
+}
+#endif
+
+
+// ----
+
+enum {
+	PFILEH_READONLY		= 0x0001,
+	PFILEH_MODIFY		= 0x0002,
+	PFILEH_UTF8			= 0x0004
+};
+
+typedef struct {
+	char	*buffer;
+	UINT	buffers;
+	UINT	size;
+	UINT	flag;
+	OEMCHAR	path[MAX_PATH];
+} _PFILEH, *PFILEH;
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+PFILEH profile_open(const OEMCHAR *filename, UINT flag);
+void profile_close(PFILEH hdl);
+BRESULT profile_read(const char *app, const char *key, const OEMCHAR *def,
+										OEMCHAR *ret, UINT size, PFILEH hdl);
+BRESULT profile_write(const char *app, const char *key,
+										const OEMCHAR *data, PFILEH hdl);
 
 #ifdef __cplusplus
 }

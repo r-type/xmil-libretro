@@ -1,152 +1,11 @@
 #include	"compiler.h"
 #include	"strres.h"
 #include	"dosio.h"
-#include	"textfile.h"
 #include	"profile.h"
+#if defined(OSLANG_UCS2)
+#include	"ucscnv.h"
+#endif
 
-
-static void strdelspace(char **buf, int *size) {
-
-	char	*p;
-	int		len;
-
-	p = *buf;
-	len = *size;
-	while((len > 0) && (p[0] == ' ')) {
-		p++;
-		len--;
-	}
-	while((len > 0) && (p[len - 1] == ' ')) {
-		len--;
-	}
-	*buf = p;
-	*size = len;
-}
-
-static char *profana(char *buf, char **data) {
-
-	int		len;
-	char	*buf2;
-	int		l;
-
-	len = strlen(buf);
-	strdelspace(&buf, &len);
-	if ((len >= 2) && (buf[0] == '[') && (buf[len - 1] == ']')) {
-		buf++;
-		len -= 2;
-		strdelspace(&buf, &len);
-		buf[len] = '\0';
-		*data = NULL;
-		return(buf);
-	}
-	for (l=0; l<len; l++) {
-		if (buf[l] == '=') {
-			break;
-		}
-	}
-	if (l < len) {
-		len -= (l + 1);
-		buf2 = buf + (l + 1);
-		strdelspace(&buf, &l);
-		buf[l] = '\0';
-		strdelspace(&buf2, &len);
-		if ((len >= 2) && (buf2[0] == '\"') && (buf2[len - 1] == '\"')) {
-			buf2++;
-			len -= 2;
-			strdelspace(&buf2, &len);
-		}
-		buf2[len] = '\0';
-		*data = buf2;
-		return(buf);
-	}
-	return(NULL);
-}
-
-BOOL profile_enum(const char *filename, void *arg,
-							BOOL (*proc)(void *arg, const char *para,
-									const char *key, const char *data)) {
-	TEXTFILEH	fh;
-	BOOL		r;
-	char		buf[0x200];
-	char		para[0x100];
-	char		*key;
-	char		*data;
-
-	r = FALSE;
-	if (proc == NULL) {
-		goto gden_err0;
-	}
-	fh = textfile_open(filename, 0x800);
-	if (fh == NULL) {
-		goto gden_err0;
-	}
-	para[0] = '\0';
-	while(1) {
-		if (textfile_read(fh, buf, sizeof(buf)) != SUCCESS) {
-			break;
-		}
-		key = profana(buf, &data);
-		if (key) {
-			if (data == NULL) {
-				milstr_ncpy(para, key, NELEMENTS(para));
-			}
-			else {
-				r = proc(arg, para, key, data);
-				if (r != SUCCESS) {
-					break;
-				}
-			}
-		}
-	}
-	textfile_close(fh);
-
-gden_err0:
-	return(r);
-}
-
-
-// ----
-
-const char *profile_getarg(const char *str, char *buf, UINT leng) {
-
-	UINT8	c;
-
-	if (leng) {
-		leng--;
-	}
-	else {
-		buf = NULL;
-	}
-	if (str) {
-		c = (UINT8)*str;
-		while(((c - 1) & 0xff) < 0x20) {
-			str++;
-			c = (UINT8)*str;
-		}
-		if (c == 0) {
-			str = NULL;
-		}
-	}
-	if (str) {
-		c = (UINT8)*str;
-		while(c > 0x20) {
-			if (leng) {
-				*buf++ = c;
-				leng--;
-			}
-			str++;
-			c = (UINT8)*str;
-		}
-	}
-	if (buf) {
-		buf[0] = '\0';
-	}
-	return(str);
-}
-
-
-
-// ---- ‚Ü‚¾ƒeƒXƒg
 
 typedef struct {
 	UINT	applen;
@@ -157,6 +16,30 @@ typedef struct {
 const char	*data;
 	UINT	datasize;
 } PFPOS;
+
+
+static const UINT8 utf8header[3] = {0xef, 0xbb, 0xbf};
+
+static BRESULT keycmp(const char *str, const char *cmp) {
+
+	int		s;
+	int		c;
+
+	do {
+		c = *cmp++;
+		if (c == 0) {
+			return(SUCCESS);
+		}
+		if ((c >= 'a') && (c <= 'z')) {
+			c -= 0x20;
+		}
+		s = *str++;
+		if ((s >= 'a') && (s <= 'z')) {
+			s -= 0x20;
+		}
+	} while(s == c);
+	return(FAILURE);
+}
 
 static char *delspace(const char *buf, UINT *len) {
 
@@ -176,7 +59,8 @@ static char *delspace(const char *buf, UINT *len) {
 	return((char *)buf);
 }
 
-static BOOL seakey(PFILEH hdl, PFPOS *pfp, const char *app, const char *key) {
+static BRESULT seakey(PFILEH hdl, PFPOS *pfp,
+										const char *app, const char *key) {
 
 	PFPOS	ret;
 	UINT	pos;
@@ -189,8 +73,8 @@ static BOOL seakey(PFILEH hdl, PFPOS *pfp, const char *app, const char *key) {
 		return(FAILURE);
 	}
 	ZeroMemory(&ret, sizeof(ret));
-	ret.applen = strlen(app);
-	ret.keylen = strlen(key);
+	ret.applen = STRLEN(app);
+	ret.keylen = STRLEN(key);
 	if ((ret.applen == 0) || (ret.keylen == 0)) {
 		return(FAILURE);
 	}
@@ -226,12 +110,12 @@ static BOOL seakey(PFILEH hdl, PFPOS *pfp, const char *app, const char *key) {
 			buf++;
 			len -= 2;
 			buf = delspace(buf, &len);
-			if ((len == ret.applen) && (!milstr_memcmp(buf, app))) {
+			if ((len == ret.applen) && (keycmp(buf, app) == SUCCESS)) {
 				ret.apphit = 1;
 			}
 		}
 		else if ((ret.apphit) && (len > ret.keylen) &&
-				(!milstr_memcmp(buf, key))) {
+				(keycmp(buf, key) == SUCCESS)) {
 			buf += ret.keylen;
 			len -= ret.keylen;
 			buf = delspace(buf, &len);
@@ -259,7 +143,7 @@ static BOOL seakey(PFILEH hdl, PFPOS *pfp, const char *app, const char *key) {
 	return(SUCCESS);
 }
 
-static BOOL replace(PFILEH hdl, UINT pos, UINT size1, UINT size2) {
+static BRESULT replace(PFILEH hdl, UINT pos, UINT size1, UINT size2) {
 
 	UINT	cnt;
 	UINT	size;
@@ -301,12 +185,13 @@ static BOOL replace(PFILEH hdl, UINT pos, UINT size1, UINT size2) {
 	return(SUCCESS);
 }
 
-PFILEH profile_open(const char *filename, UINT flag) {
+PFILEH profile_open(const OEMCHAR *filename, UINT flag) {
 
 	FILEH	fh;
 	UINT	filesize;
 	UINT	size;
 	PFILEH	ret;
+	char	*ptr;
 
 	if (filename == NULL) {
 		goto pfore_err1;
@@ -320,23 +205,29 @@ PFILEH profile_open(const char *filename, UINT flag) {
 		goto pfore_err1;
 	}
 	else {
-		fh = file_create(filename);
-		if (fh == FILEH_INVALID) {
-			goto pfore_err1;
-		}
+#if defined(OSLANG_UTF8) || defined(OSLANG_UCS2)
+		flag |= PFILEH_UTF8;
+#endif
 	}
 	size = filesize + 0x2000;
 	ret = (PFILEH)_MALLOC(sizeof(_PFILEH) + size, filename);
 	if (ret == NULL) {
 		goto pfore_err2;
 	}
-	if (filesize) {
+	if (fh != FILEH_INVALID) {
 		if (file_read(fh, ret + 1, filesize) != filesize) {
 			goto pfore_err3;
 		}
+		file_close(fh);
 	}
-	file_close(fh);
-	ret->buffer = (char *)(ret + 1);
+	ptr = (char *)(ret + 1);
+	if ((filesize >= 3) && (!memcmp(ptr, utf8header, 3))) {
+		ptr += 3;
+		size -= 3;
+		filesize -= 3;
+		flag |= PFILEH_UTF8;
+	}
+	ret->buffer = ptr;
 	ret->buffers = size;
 	ret->size = filesize;
 	ret->flag = flag;
@@ -347,7 +238,9 @@ pfore_err3:
 	_MFREE(ret);
 
 pfore_err2:
-	file_close(fh);
+	if (fh != FILEH_INVALID) {
+		file_close(fh);
+	}
 
 pfore_err1:
 	return(NULL);
@@ -361,6 +254,9 @@ void profile_close(PFILEH hdl) {
 		if (hdl->flag & PFILEH_MODIFY) {
 			fh = file_create(hdl->path);
 			if (fh != FILEH_INVALID) {
+				if (hdl->flag & PFILEH_UTF8) {
+					file_write(fh, utf8header, 3);
+				}
 				file_write(fh, hdl->buffer, hdl->size);
 				file_close(fh);
 			}
@@ -369,8 +265,8 @@ void profile_close(PFILEH hdl) {
 	}
 }
 
-BOOL profile_read(const char *app, const char *key, const char *def,
-										char *ret, UINT size, PFILEH hdl) {
+BRESULT profile_read(const char *app, const char *key, const OEMCHAR *def,
+										OEMCHAR *ret, UINT size, PFILEH hdl) {
 
 	PFPOS	pfp;
 
@@ -382,14 +278,18 @@ BOOL profile_read(const char *app, const char *key, const char *def,
 		return(FAILURE);
 	}
 	else {
+#if defined(OSLANG_UCS2)
+		ucscnv_utf8toucs2(ret, size, pfp.data, pfp.datasize);
+#else
 		size = min(size, pfp.datasize + 1);
 		milstr_ncpy(ret, pfp.data, size);
+#endif
 		return(SUCCESS);
 	}
 }
 
-BOOL profile_write(const char *app, const char *key,
-											const char *data, PFILEH hdl) {
+BRESULT profile_write(const char *app, const char *key,
+											const OEMCHAR *data, PFILEH hdl) {
 
 	PFPOS	pfp;
 	UINT	newsize;
@@ -424,7 +324,11 @@ BOOL profile_write(const char *app, const char *key,
 #endif
 		pfp.pos += newsize;
 	}
-	datalen = strlen(data);
+#if defined(OSLANG_UCS2)
+	datalen = ucscnv_ucs2toutf8(NULL, (UINT)-1, data, (UINT)-1);
+#else
+	datalen = STRLEN(data);
+#endif
 	newsize = pfp.keylen + 1 + datalen;
 #if defined(OSLINEBREAK_CR) || defined(OSLINEBREAK_CRLF)
 	newsize++;
@@ -439,7 +343,11 @@ BOOL profile_write(const char *app, const char *key,
 	CopyMemory(buf, key, pfp.keylen);
 	buf += pfp.keylen;
 	*buf++ = '=';
+#if defined(OSLANG_UCS2)
+	ucscnv_ucs2toutf8(buf, datalen + 1, data, (UINT)-1);
+#else
 	CopyMemory(buf, data, datalen);
+#endif
 	buf += datalen;
 #if defined(OSLINEBREAK_CR) || defined(OSLINEBREAK_CRLF)
 	*buf++ = '\r';
@@ -450,7 +358,7 @@ BOOL profile_write(const char *app, const char *key,
 	return(SUCCESS);
 }
 
-static void bitmapset(BYTE *ptr, UINT pos, BOOL set) {
+static void bitmapset(UINT8 *ptr, UINT pos, BRESULT set) {
 
 	UINT8	bit;
 
@@ -464,17 +372,17 @@ static void bitmapset(BYTE *ptr, UINT pos, BOOL set) {
 	}
 }
 
-static BOOL bitmapget(const BYTE *ptr, UINT pos) {
+static BRESULT bitmapget(const UINT8 *ptr, UINT pos) {
 
 	return((ptr[pos >> 3] >> (pos & 7)) & 1);
 }
 
-static void binset(BYTE *bin, UINT binlen, const char *src) {
+static void binset(UINT8 *bin, UINT binlen, const OEMCHAR *src) {
 
 	UINT	i;
-	BYTE	val;
-	BOOL	set;
-	char	c;
+	UINT8	val;
+	BRESULT	set;
+	OEMCHAR	c;
 
 	for (i=0; i<binlen; i++) {
 		val = 0;
@@ -509,28 +417,28 @@ static void binset(BYTE *bin, UINT binlen, const char *src) {
 	}
 }
 
-static void binget(char *work, int size, const BYTE *bin, UINT binlen) {
+static void binget(OEMCHAR *work, UINT size, const UINT8 *bin, UINT binlen) {
 
 	UINT	i;
-	char	tmp[8];
+	OEMCHAR	tmp[8];
 
 	if (binlen) {
-		SPRINTF(tmp, "%.2x", bin[0]);
+		OEMSPRINTF(tmp, OEMTEXT("%.2x"), bin[0]);
 		milstr_ncpy(work, tmp, size);
 	}
 	for (i=1; i<binlen; i++) {
-		SPRINTF(tmp, " %.2x", bin[i]);
+		OEMSPRINTF(tmp, OEMTEXT(" %.2x"), bin[i]);
 		milstr_ncat(work, tmp, size);
 	}
 }
 
-void profile_iniread(const char *path, const char *app,
+void profile_iniread(const OEMCHAR *path, const char *app,
 								const PFTBL *tbl, UINT count, PFREAD cb) {
 
 	PFILEH	pfh;
 const PFTBL	*p;
 const PFTBL	*pterm;
-	char	work[512];
+	OEMCHAR	work[512];
 
 	pfh = profile_open(path, 0);
 	if (pfh == NULL) {
@@ -539,7 +447,7 @@ const PFTBL	*pterm;
 	p = tbl;
 	pterm = tbl + count;
 	while(p < pterm) {
-		if (profile_read(app, p->item, NULL, work, sizeof(work), pfh)
+		if (profile_read(app, p->item, NULL, work, NELEMENTS(work), pfh)
 																== SUCCESS) {
 			switch(p->itemtype & PFITYPE_MASK) {
 				case PFTYPE_STR:
@@ -551,12 +459,12 @@ const PFTBL	*pterm;
 					break;
 
 				case PFTYPE_BITMAP:
-					bitmapset((BYTE *)p->value, p->arg,
-									(!milstr_cmp(work, str_true))?TRUE:FALSE);
+					bitmapset((UINT8 *)p->value, p->arg,
+								(BRESULT)((!milstr_cmp(work, str_true))?1:0));
 					break;
 
 				case PFTYPE_BIN:
-					binset((BYTE *)p->value, p->arg, work);
+					binset((UINT8 *)p->value, p->arg, work);
 					break;
 
 				case PFTYPE_SINT8:
@@ -598,14 +506,14 @@ const PFTBL	*pterm;
 	profile_close(pfh);
 }
 
-void profile_iniwrite(const char *path, const char *app,
+void profile_iniwrite(const OEMCHAR *path, const char *app,
 								const PFTBL *tbl, UINT count, PFWRITE cb) {
 
-	PFILEH	pfh;
-const PFTBL	*p;
-const PFTBL	*pterm;
-const char	*set;
-	char	work[512];
+	PFILEH		pfh;
+const PFTBL		*p;
+const PFTBL		*pterm;
+const OEMCHAR	*set;
+	OEMCHAR		work[512];
 
 	pfh = profile_open(path, 0);
 	if (pfh == NULL) {
@@ -619,7 +527,7 @@ const char	*set;
 			set = work;
 			switch(p->itemtype & PFITYPE_MASK) {
 				case PFTYPE_STR:
-					set = (char *)p->value;
+					set = (OEMCHAR *)p->value;
 					break;
 
 				case PFTYPE_BOOL:
@@ -627,48 +535,48 @@ const char	*set;
 					break;
 
 				case PFTYPE_BITMAP:
-					set = (bitmapget((BYTE *)p->value, p->arg))?
+					set = (bitmapget((UINT8 *)p->value, p->arg))?
 														str_true:str_false;
 					break;
 
 				case PFTYPE_BIN:
-					binget(work, sizeof(work), (BYTE *)p->value, p->arg);
+					binget(work, NELEMENTS(work), (UINT8 *)p->value, p->arg);
 					break;
 
 				case PFTYPE_SINT8:
-					SPRINTF(work, str_d, *((SINT8 *)p->value));
+					OEMSPRINTF(work, str_d, *((SINT8 *)p->value));
 					break;
 
 				case PFTYPE_SINT16:
-					SPRINTF(work, str_d, *((SINT16 *)p->value));
+					OEMSPRINTF(work, str_d, *((SINT16 *)p->value));
 					break;
 
 				case PFTYPE_SINT32:
-					SPRINTF(work, str_d, *((SINT32 *)p->value));
+					OEMSPRINTF(work, str_d, *((SINT32 *)p->value));
 					break;
 
 				case PFTYPE_UINT8:
-					SPRINTF(work, str_u, *((UINT8 *)p->value));
+					OEMSPRINTF(work, str_u, *((UINT8 *)p->value));
 					break;
 
 				case PFTYPE_UINT16:
-					SPRINTF(work, str_u, *((UINT16 *)p->value));
+					OEMSPRINTF(work, str_u, *((UINT16 *)p->value));
 					break;
 
 				case PFTYPE_UINT32:
-					SPRINTF(work, str_u, *((UINT32 *)p->value));
+					OEMSPRINTF(work, str_u, *((UINT32 *)p->value));
 					break;
 
 				case PFTYPE_HEX8:
-					SPRINTF(work, str_x, *((UINT8 *)p->value));
+					OEMSPRINTF(work, str_x, *((UINT8 *)p->value));
 					break;
 
 				case PFTYPE_HEX16:
-					SPRINTF(work, str_x, *((UINT16 *)p->value));
+					OEMSPRINTF(work, str_x, *((UINT16 *)p->value));
 					break;
 
 				case PFTYPE_HEX32:
-					SPRINTF(work, str_x, *((UINT32 *)p->value));
+					OEMSPRINTF(work, str_x, *((UINT32 *)p->value));
 					break;
 
 				default:

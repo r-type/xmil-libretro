@@ -17,7 +17,8 @@ CFG=xmil - Win32 Debug
 !MESSAGE 
 !MESSAGE 選択可能なﾋﾞﾙﾄﾞ ﾓｰﾄﾞ:
 !MESSAGE 
-!MESSAGE "xmil - Win32 Release" ("Win32 (x86) Application" 用)
+!MESSAGE "xmil - Win32 Release QVGA SJIS" ("Win32 (x86) Application" 用)
+!MESSAGE "xmil - Win32 Release VGA Unicode" ("Win32 (x86) Application" 用)
 !MESSAGE "xmil - Win32 Debug" ("Win32 (x86) Application" 用)
 !MESSAGE 
 
@@ -29,20 +30,46 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release QVGA SJIS"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "Release"
-# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Output_Dir "Release_QVGA_SJIS"
+# PROP BASE Intermediate_Dir "Release_QVGA_SJIS"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "..\bin"
-# PROP Intermediate_Dir "..\obj\vc\wincerel"
+# PROP Intermediate_Dir "..\obj\vc\wincerelqs"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\w32" /I ".\gx" /I "..\\" /I "..\common" /I "..\z80c" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\generic" /I "..\embed" /I "..\embed\menu" /I "..\embed\menubase" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "SIZE_QVGA" /D "TRACE" /YX /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x411 /d "NDEBUG"
+# ADD RSC /l 0x411 /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /out:"..\bin/xmilceqs.exe"
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release VGA Unicode"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release_VGA_Unicode"
+# PROP BASE Intermediate_Dir "Release_VGA_Unicode"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "..\bin"
+# PROP Intermediate_Dir "..\obj\vc\wincerelvu"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "UNICODE" /D "_UNICODE" /YX /FD /c
 # ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\w32" /I ".\gx" /I "..\\" /I "..\common" /I "..\z80c" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\generic" /I "..\embed" /I "..\embed\menu" /I "..\embed\menubase" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "UNICODE" /D "_UNICODE" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -53,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /out:"..\bin/xmilce.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /out:"..\bin/xmilcevu.exe"
 
 !ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
 
@@ -69,7 +96,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I ".\\" /I ".\w32" /I ".\gx" /I "..\\" /I "..\common" /I "..\z80c" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\generic" /I "..\embed" /I "..\embed\menu" /I "..\embed\menubase" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "UNICODE" /D "_UNICODE" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I ".\\" /I ".\w32" /I ".\gx" /I "..\\" /I "..\common" /I "..\z80c" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\generic" /I "..\embed" /I "..\embed\menu" /I "..\embed\menubase" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x411 /d "_DEBUG"
@@ -85,7 +112,8 @@ LINK32=link.exe
 
 # Begin Target
 
-# Name "xmil - Win32 Release"
+# Name "xmil - Win32 Release QVGA SJIS"
+# Name "xmil - Win32 Release VGA Unicode"
 # Name "xmil - Win32 Debug"
 # Begin Group "Source Files"
 
@@ -115,6 +143,10 @@ SOURCE=..\COMMON\PARTS.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\COMMON\PROFILE.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\COMMON\RECT.C
 # End Source File
 # Begin Source File
@@ -124,6 +156,14 @@ SOURCE=..\COMMON\RESIZE.C
 # Begin Source File
 
 SOURCE=..\COMMON\STRRES.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\COMMON\TEXTFILE.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\COMMON\UCSCNV.C
 # End Source File
 # End Group
 # Begin Group "cpu"
@@ -280,6 +320,10 @@ SOURCE=..\VRAM\SCRNSAVE.C
 # Begin Source File
 
 SOURCE=..\VRAM\SDRAW.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\SDRAWQ16.C
 # End Source File
 # Begin Source File
 
@@ -455,6 +499,10 @@ SOURCE=.\GX\GX.CPP
 # End Source File
 # Begin Source File
 
+SOURCE=.\INI.CPP
+# End Source File
+# Begin Source File
+
 SOURCE=.\INPUTMNG.CPP
 # End Source File
 # Begin Source File
@@ -488,6 +536,10 @@ SOURCE=.\TASKMNG.CPP
 # Begin Source File
 
 SOURCE=.\TIMEMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\W32\TRACE.CPP
 # End Source File
 # Begin Source File
 

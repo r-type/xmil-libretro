@@ -111,6 +111,10 @@ SOURCE=..\COMMON\PARTS.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\COMMON\PROFILE.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\COMMON\STRRES.C
 # End Source File
 # End Group

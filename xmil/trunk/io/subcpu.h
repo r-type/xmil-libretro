@@ -3,10 +3,12 @@ typedef struct {
 	UINT8	Dx[16][8];
 	UINT8	Ex[16][8];
 	UINT	dataptr;
+	UINT	keycount;
+	UINT	keycountrep;
 	UINT8	mode;
+	UINT8	keydata;
 	UINT8	cmdcnt;
 	UINT8	datacnt;
-	UINT8	INT_SW;
 	UINT8	IBF;
 	UINT8	OBF;
 } SUBCPU;

@@ -149,8 +149,12 @@ const SDRAWFN	*sdrawfn;
 
 	sdraw.src = screenmap;
 	sdraw.dst = surf->ptr;
+#if defined(SIZE_QVGA)
+	sdraw.width = surf->width >> 1;
+#else
 	sdraw.width = surf->width;
-	sdraw.xbytes = surf->xalign * surf->width;
+#endif
+	sdraw.xbytes = surf->xalign * sdraw.width;
 	sdraw.y = 0;
 	sdraw.xalign = surf->xalign;
 	sdraw.yalign = surf->yalign;
