@@ -18,9 +18,9 @@ enum {
 
 typedef struct {
 	OEMCHAR	fname[MAX_PATH];
-//	UINT8	type;
-//	UINT8	protect;
-	UINT8	padding[4];
+	UINT8	type;
+	UINT8	protect;
+	UINT8	padding[2];
 } _FDDFILE, *FDDFILE;
 
 

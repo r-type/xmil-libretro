@@ -1,8 +1,6 @@
 #include	"compiler.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"x1_io.h"
-#include	"x1_fdc.h"
 
 
 static void setdmareaddat(void) {

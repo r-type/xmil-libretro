@@ -3,7 +3,6 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"x1_io.h"
-#include	"x1_fdc.h"
 
 
 LABEL void z80dmap(void) {

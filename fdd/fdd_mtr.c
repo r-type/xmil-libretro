@@ -1,8 +1,7 @@
 #include	"compiler.h"
 #include	"soundmng.h"
 #include	"pccore.h"
-#include	"x1_io.h"
-#include	"x1_fdc.h"
+#include	"iocore.h"
 
 
 		BYTE		curevent = 0;

@@ -5,8 +5,6 @@
 #include	"scrnmng.h"
 #include	"sysmng.h"
 #include	"pccore.h"
-#include	"x1_io.h"
-#include	"x1_fdc.h"
 #include	"ini.h"
 #include	"menu.h"
 #include	"draw.h"

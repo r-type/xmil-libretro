@@ -26,7 +26,6 @@
 #include	"x1_crtc.h"
 #include	"timing.h"
 #include	"draw.h"
-#include	"x1_fdc.h"
 #include	"fdd_ini.h"
 #include	"juliet.h"
 #include	"diskdrv.h"
