@@ -180,6 +180,13 @@ static void MenuBarInit(void) {
 		}
 	}
 
+#if !defined(SUPPORT_TURBOZ)
+	hmenu = GetMenuHandle(IDM_IPLROM);
+	if (hmenu) {
+		DeleteMenuItem(hmenu, 3);
+	}
+#endif
+
 #if TARGET_API_MAC_CARBON
 	hmenu = GetMenuHandle(IDM_FDD1);
 	SetItemCmd(hmenu, LoWord(IDM_FDD1OPEN), 'D');
@@ -281,8 +288,8 @@ static void HandleMenuChoice(long wParam) {
 			diskdrv_setfdd(3, NULL, 0);
 			break;
 
-		case IDM_TURBOZ:
-			menu_setiplrom(3);
+		case IDM_X1ROM:
+			menu_setiplrom(1);
 			update = SYS_UPDATECFG;
 			break;
 
@@ -291,10 +298,12 @@ static void HandleMenuChoice(long wParam) {
 			update = SYS_UPDATECFG;
 			break;
 
-		case IDM_X1ROM:
-			menu_setiplrom(1);
+#if defined(SUPPORT_TURBOZ)
+		case IDM_TURBOZ:
+			menu_setiplrom(3);
 			update = SYS_UPDATECFG;
 			break;
+#endif
 
 		case IDM_BOOT2D:
 			menu_setbootmedia(0);
@@ -401,9 +410,9 @@ static void HandleMenuChoice(long wParam) {
 			update = SYS_UPDATECFG;
 			break;
 
-//		case IDM_BMPSAVE:
-//			dialog_writebmp();
-//			break;
+		case IDM_BMPSAVE:
+			dialog_writebmp();
+			break;
 
 		case IDM_DISPCLOCK:
 			menu_setdispclk(xmiloscfg.DISPCLK ^ 1);

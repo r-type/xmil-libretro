@@ -291,7 +291,9 @@ void pal_update1(const UINT8 *rgbp) {
 
 void pal_update(void) {
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_16BPP)
 	UINT	i;
+#endif
 
 #if !defined(SUPPORT_TURBOZ)
 	pal_update1(crtc.s.rgbp);
