@@ -173,23 +173,6 @@ void iptrace_out(void) {
 }
 #endif
 
-#if 0
-UINT pccore_getraster(UINT *h) {
-
-	SINT32	work;
-	UINT	vl;
-
-	work = nevent_getwork(NEVENT_FRAMES);
-	vl = work / 250;
-	if (h) {
-		*h = work - (vl * 250);
-	}
-	if (corestat.vsync) {
-		vl += corestat.vl;
-	}
-	return(vl);
-}
-#endif
 
 void neitem_disp(UINT id) {
 
