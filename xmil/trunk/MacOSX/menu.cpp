@@ -38,9 +38,11 @@ void menu_setiplrom(UINT8 value) {
 
 	hmenu = _GetMenu(IDM_IPLROM);
 	xmilcfg.ROM_TYPE = value;
-	_CheckMenuItem(hmenu, IDM_TURBOZ, MFCHECK(value == 3));
-	_CheckMenuItem(hmenu, IDM_TURBO, MFCHECK(value == 2));
 	_CheckMenuItem(hmenu, IDM_X1ROM, MFCHECK(value == 1));
+	_CheckMenuItem(hmenu, IDM_TURBO, MFCHECK(value == 2));
+#if defined(SUPPORT_TURBOZ)
+	_CheckMenuItem(hmenu, IDM_TURBOZ, MFCHECK(value == 3));
+#endif
     setEmuMenuStatus((value == 1));
 }
 

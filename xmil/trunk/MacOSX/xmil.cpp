@@ -29,14 +29,12 @@
 #endif
 #include "CarbonAboutBox.h"
 
-// #define	USE_RESUME
-
 
 		XMILOSCFG	xmiloscfg = {	100, 100,
 									0, 0, 0,
 									0, 0,
 #if defined(SUPPORT_RESUME)
-									0,
+									1,
 #endif
 #if defined(SUPPORT_STATSAVE)
 									1,
@@ -172,7 +170,14 @@ static void MenuBarInit(void) {
 	if (!(xmilcfg.fddequip & (1 << 0))) {
 		DeleteMenu(IDM_FDD0);
 	}
-	
+
+#if !defined(SUPPORT_TURBOZ)
+	DeleteMenuItem(GetMenuRef(IDM_IPLROM), 3);
+#endif
+#if !defined(SUPPORT_X1F)
+	DisableMenuItem(GetMenuRef(IDM_OTHER), 2);
+#endif
+
 #if defined(SUPPORT_STATSAVE)
 	if (!xmiloscfg.statsave) {
 #endif
@@ -253,12 +258,12 @@ static void HandleMenuChoice(long wParam) {
 			diskdrv_setfdd(3, NULL, 0);
 			DisableMenuItem(GetMenuRef(IDM_FDD3), IDM_FDD3EJECT);
 			break;
-
+#if defined(SUPPORT_TURBOZ)
 		case IDM_TURBOZ:
 			menu_setiplrom(3);
 			update = SYS_UPDATECFG;
 			break;
-
+#endif
 		case IDM_TURBO:
 			menu_setiplrom(2);
 			update = SYS_UPDATECFG;
@@ -301,9 +306,10 @@ static void HandleMenuChoice(long wParam) {
 			menu_setdispmode(xmilcfg.DISPSYNC ^ 1);
 			break;
 
-//		case IDM_RASTER:
-//			menu_setraster(xmilcfg.RASTER ^ 1);
-//			break;
+		case IDM_RASTER:
+			menu_setraster(xmilcfg.RASTER ^ 1);
+			update = SYS_UPDATECFG;
+			break;
 
 		case IDM_NOWAIT:
 			menu_setwaitflg(xmiloscfg.NOWAIT ^ 1);
@@ -337,27 +343,18 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_KEY:
 			menu_setkey(0);
-//			keystat_resetjoykey();
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_JOY1:
 			menu_setkey(1);
-//			keystat_resetjoykey();
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_JOY2:
 			menu_setkey(2);
-//			keystat_resetjoykey();
 			update = SYS_UPDATECFG;
 			break;
-
-//		case IDM_MOUSEKEY:
-//			menu_setkey(3);
-//			keystat_resetjoykey();
-//			update = SYS_UPDATECFG;
-//			break;
 
 		case IDM_FMBOARD:
 			menu_setsound(xmilcfg.SOUND_SW ^ 1);
@@ -365,6 +362,7 @@ static void HandleMenuChoice(long wParam) {
 			break;
 
 		case IDM_MOUSE:
+		//	mousemng_toggle(MOUSEPROC_SYSTEM);
 			menu_setmouse(xmilcfg.MOUSE_SW ^ 1);
 			update = SYS_UPDATECFG;
 			break;
@@ -374,9 +372,15 @@ static void HandleMenuChoice(long wParam) {
 			update = SYS_UPDATECFG;
 			break;
 
-//		case IDM_BMPSAVE:
-//			dialog_writebmp();
-//			break;
+		case IDM_BMPSAVE:
+			dialog_writebmp();
+			break;
+
+#if defined(SUPPORT_X1F)
+		case IDM_OPMLOG:
+			dialog_x1f();
+			break;
+#endif
 
 		case IDM_DISPCLOCK:
 			menu_setdispclk(xmiloscfg.DISPCLK ^ 1);
@@ -498,20 +502,7 @@ int main(int argc, char *argv[]) {
 		dosio_term();
 		return(0);
 	}
-/*
-	SetRect(&wRect, xmiloscfg.posx, xmiloscfg.posy, 100, 100);
-	hWndMain = NewWindow(0, &wRect, "\pNekoe System", FALSE,
-								noGrowDocProc, (WindowPtr)-1, TRUE, 0);
-	if (!hWndMain) {
-		TRACETERM();
-		macossub_term();
-		dosio_term();
-		return(0);
-	}
-	scrnmng_initialize();
-	SizeWindow(hWndMain, 640, 400, TRUE);
-	ShowWindow(hWndMain);
-*/
+
 	menu_setiplrom(xmilcfg.ROM_TYPE);
 	menu_setbootmedia(xmilcfg.DIP_SW);
 	menu_setresolute(xmilcfg.DIP_SW);

@@ -5,18 +5,6 @@
 #include	"fdefine.h"
 #include	"resource.h"
 
-
-Handle GetDlgItem(DialogPtr hWnd, short pos) {
-
-	Handle	ret;
-	Rect	rct;
-	short	s;
-
-	GetDialogItem(hWnd, pos, &s, &ret, &rct);
-	return(ret);
-}
-
-
 // ---- file select
 
 static const BYTE pathsep[2] = {0x01, ':'};
@@ -111,22 +99,16 @@ static pascal Boolean NavLaunchServicesFilterProc( AEDesc* theItem, void* info, 
             }
             else {
                 ret = file_getftype(name);
-                switch (*(int*)ioUserData) {
-                    case OPEN_FDD:
-                        if (ret == FTYPE_D88 || ret == FTYPE_BETA) {
-                            showItem = true;
-                        }
-                        break;
-                   default:
-                        break;
-                }
-            }
+				if (ret == FTYPE_D88 || ret == FTYPE_BETA) {
+					showItem = true;
+				}
+             }
         }
 	}
 	return( showItem );
 }
 
-BOOL dlgs_selectfile(char *name, int size, WindowRef parent, int opentype) {
+BOOL dlgs_selectfile(char *name, int size, WindowRef parent) {
 
 	NavDialogRef				navWin;
 	BOOL						ret;
@@ -149,16 +131,9 @@ BOOL dlgs_selectfile(char *name, int size, WindowRef parent, int opentype) {
 		optNav.modality=kWindowModalityWindowModal;
 		optNav.parentWindow=parent;
 	}
-    switch (opentype) {
-        case OPEN_FONT:
-            optNav.message = CFCopyLocalizedString(CFSTR("Choose font file."),"FontSelect Message");
-            break;
-        default:
-            break;
-    }
 	proc = NewNavEventUPP(dummyproc);
     navFilterProc = NewNavObjectFilterUPP( NavLaunchServicesFilterProc );
-    ret=NavCreateGetFileDialog(&optNav,NULL,proc,NULL,navFilterProc,&opentype,&navWin);
+    ret=NavCreateGetFileDialog(&optNav,NULL,proc,NULL,navFilterProc,NULL,&navWin);
     NavDialogRun(navWin);
     RunAppModalLoopForWindow(NavDialogGetWindow(navWin));
     NavDialogGetReply(navWin, &reply);
@@ -211,7 +186,7 @@ BOOL dlgs_selectwritefile(char *name, int size, const char *def, OSType type, Wi
     copt.optionFlags += kNavPreserveSaveFileExtension;
     copt.modality = kWindowModalityWindowModal;
     switch (type) {
-        case 'BMP ':
+        case FTYPE_BMP:
             copt.message = CFCopyLocalizedString(CFSTR("Save the screen as BMP file."),"ScreenShot Message");
             break;
         default:
@@ -259,4 +234,13 @@ ControlRef getControlRefByID(OSType sign, int id, WindowRef win) {
     conID.id=id;
     GetControlByID(win, &conID, &conRef);
     return conRef;
-}    
+}
+
+UInt32 getFieldValue(OSType type, WindowRef win) {
+	char	buffer[255];
+	char*	retPtr;
+
+    memset(buffer, NULL, sizeof(buffer));
+	getFieldText(getControlRefByID(type, 0, win), buffer);
+	return strtoul(buffer, &retPtr, 10);
+}
