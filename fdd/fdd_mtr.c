@@ -5,7 +5,6 @@
 #include	"x1_fdc.h"
 
 
-extern	FDC_REGS	FDC;
 		BYTE		curevent = 0;
 		DWORD		nextevent = 0;
 		BYTE		FDC_HEAD[4] = {0, 0, 0, 0};
@@ -51,11 +50,11 @@ void fddmtr_callback(DWORD time) {
 
 void fddmtr_drvset(void) {
 
-	curdrv = FDC.drv;
-	if ((!FDC_TIME[curdrv]) && (!FDC.motor)) {
+	curdrv = fdc.drv;
+	if ((!FDC_TIME[curdrv]) && (!fdc.motor)) {
 		FDC_TIME[curdrv] = GetTickCount() + 5000;
 	}
-	else if ((FDC_TIME[curdrv]) && (FDC.motor)) {
+	else if ((FDC_TIME[curdrv]) && (fdc.motor)) {
 		if (FDC_TIME[curdrv] < GetTickCount()) {
 			FDC_HEAD[curdrv] = 24;
 		}
@@ -67,8 +66,8 @@ void fddmtr_motormove(void) {
 
 	int		regmove;
 
-	regmove = FDC_HEAD[curdrv] - FDC.c;
-	FDC_HEAD[curdrv] = FDC.c;
+	regmove = FDC_HEAD[curdrv] - fdc.c;
+	FDC_HEAD[curdrv] = fdc.c;
 	if ((!xmilcfg.MOTOR) || (xmilcfg.NOWAIT)) {
 		return;
 	}
@@ -98,7 +97,7 @@ void fddmtr_waitsec(BYTE value) {
 	if ((!xmilcfg.MOTOR) || (xmilcfg.NOWAIT)) {
 		return;
 	}
-	if ((FDC.r != value) && (curevent < 1)) {
+	if ((fdc.r != value) && (curevent < 1)) {
 		fddmtr_event();
 		curevent = 1;
 		nextevent = GetTickCount() + SEKSEC_MS;

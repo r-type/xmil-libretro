@@ -28,8 +28,8 @@ typedef struct {
 } D88_SECTOR;
 
 
-BRESULT fdd_eject_d88(REG8 drv);
-BRESULT fdd_set_d88(REG8 drv, const OEMCHAR *fname);
+BRESULT fddd88_eject(REG8 drv);
+BRESULT fddd88_set(REG8 drv, const OEMCHAR *fname);
 
 short fdd_crc_d88(void);
 BYTE fdd_stat_d88(void);

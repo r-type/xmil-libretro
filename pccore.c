@@ -236,9 +236,19 @@ extern	BYTE	disp_flashscreen;
 	s_cnt = 0;
 	xmilcfg.DISPSYNC &= 1;
 	inttiming = xmilcfg.CPU8MHz & 1;
+//	TRACEOUT(("*sync"));
 
 	while(s_cnt < 266) {
 		while(h_cnt < pccore.HSYNC_CLK) {
+#if defined(TRACE)
+//			TRACEOUT(("%.4x", Z80_PC));
+//			if (Z80_PC == 0x8198) {
+//				TRACEOUT(("---->sound"));
+//			}
+//			if (Z80_PC == 0x8188) {
+//				TRACEOUT(("-- poll sound"));
+//			}
+#endif
 #if IPTRACE
 			treip[trpos & (IPTRACE - 1)] = Z80_PC;
 			trpos++;
@@ -265,6 +275,7 @@ extern	BYTE	disp_flashscreen;
 		}
 		v_cnt++;
 		if (crtc.CRT_YL == v_cnt) {
+//			TRACEOUT(("--->sync"));
 			pcg.r.vsync = 1;
 			if (xmilcfg.DISPSYNC == 1) {
 				xmilcfg.DISPSYNC |= 0x80;

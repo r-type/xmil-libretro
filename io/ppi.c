@@ -97,9 +97,15 @@ REG8 IOINPCALL ppi_i(UINT port) {
 	if (!pccore.ROM_SW) {
 		ppi.PORT_B |= 0x10;					// 1:RAM
 	}
+#if 1
 	if (!(v_cnt < crtc.CRT_VS)) {
 		ppi.PORT_B |= 0x04;					// V-SYNC
 	}
+#else								// ラプラステスト…VYSNCが長すぎるらしい
+	if (v_cnt == crtc.CRT_VS) {
+		ppi.PORT_B |= 0x04;
+	}
+#endif
 	if (crtc.TXT_XL == 40) {
 		ppi.PORT_C |= 0x40;
 	}
