@@ -2183,11 +2183,184 @@
 		};
 		96BAC7A007B7CEB7000E62C9 = {
 			children = (
+				96BAC81407B7D569000E62C9,
 				96BAC79D07B7CEB1000E62C9,
 				96BAC79807B7CEA6000E62C9,
+				96BAC86207B7D99D000E62C9,
 			);
 			isa = PBXGroup;
 			name = support_files;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC80F07B7D569000E62C9 = {
+			children = (
+				96BAC81007B7D569000E62C9,
+				96BAC81107B7D569000E62C9,
+				96BAC81207B7D569000E62C9,
+				96BAC81307B7D569000E62C9,
+				96BAC81507B7D569000E62C9,
+				96BAC81607B7D569000E62C9,
+				96BAC81707B7D569000E62C9,
+				96BAC81807B7D569000E62C9,
+				96BAC81907B7D569000E62C9,
+				96BAC81A07B7D569000E62C9,
+				96BAC81B07B7D569000E62C9,
+				96BAC81C07B7D569000E62C9,
+				96BAC81D07B7D569000E62C9,
+				96BAC81E07B7D569000E62C9,
+				96BAC81F07B7D569000E62C9,
+			);
+			isa = PBXGroup;
+			name = fdlibm;
+			path = support_files/fdlibm;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81007B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = e_log.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81107B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = e_pow.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81207B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = e_rem_pio2.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81307B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = e_sqrt.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81407B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = fdlibm.h;
+			path = support_files/fdlibm/fdlibm.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81507B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = k_cos.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81607B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = k_rem_pio2.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81707B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = k_sin.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81807B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = s_copysign.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81907B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = s_fabs.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81A07B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = s_floor.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81B07B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = s_scalbn.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81C07B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = s_sin.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81D07B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = w_log.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81E07B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = w_pow.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC81F07B7D569000E62C9 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = w_sqrt.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC82207B7D570000E62C9 = {
+			children = (
+				96BAC80F07B7D569000E62C9,
+			);
+			isa = PBXGroup;
+			name = support_files;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96BAC86207B7D99D000E62C9 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = xmil_fdlibm.h;
+			path = support_files/xmil_fdlibm.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -3073,6 +3246,7 @@
 				96EB429606E80CB80031701D,
 				96EB429806E80CB80031701D,
 				96EB429A06E80CB80031701D,
+				96BAC82207B7D570000E62C9,
 			);
 			isa = PBXGroup;
 			name = palm;
