@@ -7,6 +7,8 @@
 #include	"pccore.h"
 
 
+// ---- Å´ ÉgÉã
+
 typedef struct {
 const char		*title;
 const INITBL	*tbl;
@@ -311,10 +313,13 @@ const INITBL	*pterm;
 }
 
 
+// ---- Å™ ÉgÉã
 // ----
 
 static const char ini_title[] = "Xmil";
 static const char inifile[] = "xmil.cfg";
+
+// ---- INI* -> PF* Ç…ïœçX (common/profile.h)
 
 enum {
 	INIRO_BOOL			= INITYPE_BOOL + INIFLAG_RO,
