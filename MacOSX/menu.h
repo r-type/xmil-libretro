@@ -10,7 +10,6 @@ void menu_setframe(UINT8 value);
 void menu_setkey(UINT8 value);
 void menu_setsound(UINT8 value);
 void menu_setmouse(UINT8 value);
-void menu_setcpuspeed(UINT8 value);
 void menu_setmotorflg(UINT8 value);
 void menu_setdispclk(UINT8 value);
 void menu_setskipline(UINT8 value);

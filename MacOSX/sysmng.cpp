@@ -25,7 +25,7 @@ static struct {
 void sysmng_workclockreset(void) {
 
 	workclock.tick = GETTICK();
-	workclock.clock = h_cnt + h_cntbase;	// CPU_CLOCK;
+	workclock.clock = CPU_CLOCK;
 	workclock.draws = drawtime;				// drawcount;
 }
 
@@ -40,8 +40,8 @@ BOOL sysmng_workclockrenewal(void) {
 	workclock.tick += tick;
 	workclock.fps = ((drawtime - workclock.draws) * 10000) / tick;
 	workclock.draws = drawtime;
-	workclock.khz = (h_cnt + h_cntbase - workclock.clock) / tick;
-	workclock.clock = h_cnt + h_cntbase;
+	workclock.khz = (CPU_CLOCK - workclock.clock) / tick;
+	workclock.clock = CPU_CLOCK;
 	return(TRUE);
 }
 
@@ -54,12 +54,12 @@ void sysmng_updatecaption(BYTE flag) {
 		strtitle[0] = '\0';
 		if (fddfile_diskready(0)) {
 			milstr_ncat(strtitle, "  FDD0:", sizeof(strtitle));
-			milstr_ncat(strtitle, file_getname((char *)fddfile_diskname(0)),
+			milstr_ncat(strtitle, file_getname(fddfile_diskname(0)),
 															sizeof(strtitle));
 		}
 		if (fddfile_diskready(1)) {
 			milstr_ncat(strtitle, "  FDD1:", sizeof(strtitle));
-			milstr_ncat(strtitle, file_getname((char *)fddfile_diskname(1)),
+			milstr_ncat(strtitle, file_getname(fddfile_diskname(1)),
 															sizeof(strtitle));
 		}
 	}

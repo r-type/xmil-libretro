@@ -117,13 +117,6 @@ void menu_setmouse(UINT8 value) {
 	_CheckMenuItem(GetMenu(IDM_DEVICE), IDM_MOUSE, MFCHECK(value));
 }
 
-void menu_setcpuspeed(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.CPU8MHz = value;
-	_CheckMenuItem(_GetMenu(IDM_DEVICE), IDM_8MHZ, MFCHECK(value));
-}
-
 void menu_setmotorflg(UINT8 value) {
 
 	value &= 1;
