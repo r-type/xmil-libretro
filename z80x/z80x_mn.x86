@@ -150,9 +150,9 @@ _ei:			mov		al, [edi + R_Z80IFF]
 				and		al, ~(1 << IFF_IFLAG)
 				mov		edx, [edi + z80core_t.remainclock]
 				mov		[edi + R_Z80IFF], al
-				test	al, ((1 << IFF_IRQ) | (1 << IFF_NMI))
+				test	al, (1 << IFF_NMI)
 				jne		short .nextop
-				cmp		dword [edi + z80core_t.reqirq], byte 0
+				cmp		dword [edi + R_Z80REQIRQ], byte 0
 				jne		short .eventexit
 .nextop:		cmp		edx, byte 1
 				jge		short .ed

@@ -38,6 +38,7 @@ REG8 IOINPCALL cgrom_i(UINT port) {
 			ret = font_knjx1[cgrom.face + cgrom.count + FONTX1_LR];
 			cgrom.flag |= 2;
 		}
+		// 0x0e81 ポートリードの時だけインクリメントの筈だが…？
 		if (cgrom.flag == 3) {
 			cgrom.flag = 0;
 			cgrom.count = (cgrom.count + 1) & 15;

@@ -10,18 +10,12 @@ enum {
 	IEVENT_MAX
 };
 
-typedef struct {
-	UINT	dummy;
-} IEVENT;
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern	IEVENT	ievent;
-
-void ievent_reset(void);
+#define	ievent_reset()
 void ievent_progress(void);
 void ievent_setbit(UINT bit);
 

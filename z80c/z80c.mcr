@@ -573,8 +573,7 @@
 			Z80_IFF = (UINT8)(iff & (~(1 << IFF_IFLAG)));				\
 			rem = CPU_REMCLOCK - 1;										\
 			if ((rem < 0) ||											\
-				((!(iff & ((1 << IFF_IRQ) | (1 << IFF_NMI)))) &&		\
-					(CPU_REQIRQ != 0))) {								\
+				((!(iff & (1 << IFF_NMI))) && (CPU_REQIRQ != 0))) {		\
 				CPU_BASECLOCK -= rem;									\
 				CPU_REMCLOCK = 1;										\
 			}															\

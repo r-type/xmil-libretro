@@ -40,10 +40,6 @@ typedef struct {
 } CORESTAT;
 
 enum {
-	RASTER_CLOCK		= 250
-};
-
-enum {
 	DIPSW_RESOLUTE		= 0x01,
 	DIPSW_BOOTMEDIA		= 0x04
 };

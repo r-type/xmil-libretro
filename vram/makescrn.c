@@ -168,9 +168,9 @@ static void changecrtc(void) {
 
 	makescrn.vramtop = crtc.e.pos;
 
-	scrnxmax = (crtc.s.reg[CRTCREG_HDISP] <= 40)?40:80;
+	scrnxmax = (crtc.s.width40)?40:80;
 	scrnymax = 200;
-	if (crtc.s.reg[CRTCREG_HDISP] <= 40) {
+	if (crtc.s.width40) {
 		if (lastdisp & SCRN_DRAW4096) {
 			widthmode = SCRNWIDTHMODE_4096;
 		}

@@ -760,8 +760,7 @@ const SFENTRY	*tblterm;
 	statflag_close(sffh);
 
 	memio_update();
-	crtc_bankupdate();
-	crtc_regupdate();
+	crtc_update();
 	sndboard_update();
 
 	pal_reset();

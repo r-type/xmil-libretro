@@ -41,6 +41,7 @@ void dmac_sendready(BRESULT ready) {
 	}
 }
 
+
 BRESULT ieitem_dmac(UINT id) {
 
 	REG8	vect;
@@ -192,10 +193,11 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 			case 6:
 				switch(value) {
 					case 0x83:				// dma disable
-						dma.enable = 0;
+					//	dma.enable = 0;
 						break;
 
 					case 0x87:				// dma enable
+						dma.increment = 0;
 						dma.enable = 1;
 						break;
 
@@ -232,8 +234,9 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 					case 0xc3:				// reset
 											// ローグアライアンス	// ver0.25
 						dma.cmd = 0;
-						dma.enable = 0;
+					//	dma.enable = 0;
 						dma.INT_ENBL = 0;
+						dma.increment = 0;
 						break;
 
 					case 0xc7:						// リセットタイミングA
@@ -247,32 +250,10 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 						dma.BYT_N.w = 0;
 						dma.ENDB_FLG = 0;
 						dma.MACH_FLG = 0;			// 0619
-						dma.enable = 0;
+					//	dma.enable = 0;
 						break;
 
 					case 0xd3:						// コンティニュー
-						if (dma.DMA_STOP) {			// 前回途中でNOT READY
-							dma.DMA_STOP = 0;
-							// ここでインクリメントするのはちょい無理が…
-							switch(dma.WR[1] & 0x30) {
-								case 0x00:
-									dma.CNT_A.w--;
-									break;
-
-								case 0x10:
-									dma.CNT_A.w++;
-									break;
-							}
-							switch(dma.WR[2] & 0x30) {
-								case 0x00:
-									dma.CNT_B.w--;
-									break;
-
-								case 0x10:
-									dma.CNT_B.w++;
-									break;
-							}
-						}
 						dma.BYT_N.w = 0;			// 0619
 						dma.MACH_FLG = 0;			// 0619
 						dma.ENDB_FLG = 0;

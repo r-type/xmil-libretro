@@ -18,9 +18,8 @@ enum {
 
 enum {
 	IFF_IFLAG	= 0,
-	IFF_IRQ		= 1,
-	IFF_NMI		= 2,
-	IFF_HALT	= 3
+	IFF_NMI		= 1,
+	IFF_HALT	= 2
 };
 
 
@@ -82,7 +81,8 @@ typedef struct {
 	UINT8	r2;
 	UINT8	iff;				// 4byte align
 	UINT8	padding[3];
-	UINT	reqirq;
+	UINT32	irq;
+	UINT32	reqirq;
 
 	SINT32	remainclock;
 	SINT32	baseclock;
@@ -111,7 +111,6 @@ extern	Z80CORE		z80core;
 void z80x_initialize(void);
 void z80x_reset(void);
 void z80x_maketable(void);
-REG8 z80x_ableinterrupt(void);
 void __fastcall z80x_interrupt(REG8 irq);
 void z80x_nonmaskedinterrupt(void);
 void z80x_execute(void);
@@ -151,16 +150,19 @@ void z80x_step(void);
 #define Z80_R2			z80core.s.r2
 #define	Z80_IFF			z80core.s.iff
 
+#define	CPU_IRQ			z80core.s.irq
 #define	CPU_REQIRQ		z80core.s.reqirq
 
 #define	CPU_REMCLOCK	z80core.s.remainclock
 #define	CPU_BASECLOCK	z80core.s.baseclock
 #define	CPU_CLOCK		z80core.s.clock
 
+#define	Z80_DI			((z80core.s.iff & 3) != 0)
+#define	Z80_EI			((z80core.s.iff & 3) == 0)
+
 #define	Z80_INITIALIZE			z80x_initialize
 #define	Z80_DEINITIALIZE()		
 #define	Z80_RESET				z80x_reset
-#define	Z80_ABLEINTERRUPT		z80x_ableinterrupt
 #define	Z80_INTERRUPT(a)		z80x_interrupt(a)
 #define	Z80_NMI					z80x_nonmaskedinterrupt
 #define	Z80_EXECUTE				z80x_execute

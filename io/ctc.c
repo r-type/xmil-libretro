@@ -74,6 +74,7 @@ static REG8 ctcwork(CTCCH *ch) {
 		if (count <= 0) {
 			count = ch->countmax[3] - ((0 - count) % ch->countmax[3]);
 			intr |= (ch->cmd[3] & 0x80) >> (7 - 3);
+TRACEOUT(("ctc3 !"));
 		}
 		ch->count[3] = count;
 	}
@@ -174,7 +175,7 @@ BRESULT ieitem_ctc(UINT id) {
 				else if (!r) {
 					r = TRUE;
 					intr ^= bit;
-//					TRACEOUT(("ctc int %d %d", ch->num, i));
+					TRACEOUT(("ctc int %d %d", ch->num, i));
 					Z80_INTERRUPT((REG8)(ch->vector + (i << 1)));
 				}
 			}

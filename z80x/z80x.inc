@@ -37,6 +37,7 @@
 .r2				resb	1
 .iff			resw	1
 				resw	1
+.irq			resd	1
 .reqirq			resd	1
 .remainclock	resd	1
 .baseclock		resd	1
@@ -52,9 +53,8 @@ N_FLAG		equ		0x02
 C_FLAG		equ		0x01
 
 IFF_IFLAG	equ		0
-IFF_IRQ		equ		1
-IFF_NMI		equ		2
-IFF_HALT	equ		3
+IFF_NMI		equ		1
+IFF_HALT	equ		2
 
 R_Z80A		equ		reg8_t.a
 R_Z80F		equ		reg8_t.f
@@ -84,4 +84,6 @@ R_Z80IM		equ		z80core_t.im
 R_Z80R		equ		z80core_t.r1
 R_Z80R2		equ		z80core_t.r2
 R_Z80IFF	equ		z80core_t.iff
+R_Z80IRQ	equ		z80core_t.irq
+R_Z80REQIRQ	equ		z80core_t.reqirq
 

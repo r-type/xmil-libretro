@@ -274,7 +274,7 @@ const _D88SEC	*sec;
 	}
 	sec = (D88SEC)trk->buf;
 	sectors = trk->sectors;
-	if (sectors >= num) {
+	if (num >= sectors) {
 		return(FDDSTAT_RECNFND);
 	}
 	while(num) {

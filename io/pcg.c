@@ -52,12 +52,16 @@ static UINT nowsyncoffset(UINT *line) {
 	if (corestat.vsync) {
 		clock += corestat.dispclock;
 	}
-	v = clock / RASTER_CLOCK;
-	h = clock - (v * RASTER_CLOCK);
+	clock = clock << 8;
+	v = clock / crtc.e.rasterclock8;
+	h = clock - (v * crtc.e.rasterclock8);
+	if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
+		v = v >> 1;
+	}
 	ret = v / crtc.e.fonty;
 	*line = (v - (ret * crtc.e.fonty)) & 7;
 	ret = (ret * crtc.s.reg[CRTCREG_HDISP]) + crtc.e.pos;
-	ret += (h * crtc.s.reg[CRTCREG_HDISP]) / RASTER_CLOCK;
+	ret += (h * crtc.s.reg[CRTCREG_HDISP]) / crtc.e.rasterclock8;
 	if (ret >= 0x0800) {
 		ret = 0x07ff;		// オーバーフロー
 	}
@@ -92,17 +96,17 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 
 REG8 IOINPCALL pcg_i(UINT port) {
 
-	BRESULT	ank;
+	UINT	upper;
 	UINT	line;
 	UINT	off;
 	UINT	chr;
 	UINT	knj;
 	UINT	addr;
 
-	ank = ((port & 0xff00) == 0x1400);
+	upper = port & 0x0300;
 	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
 		line = port & 0x0f;
-		if (ank) {
+		if (!upper) {
 			off = knj_offset();
 			chr = tram[TRAM_ANK + off];
 			knj = tram[TRAM_KNJ + off];
@@ -135,11 +139,11 @@ REG8 IOINPCALL pcg_i(UINT port) {
 		off = nowsyncoffset(&line);
 		chr = tram[TRAM_ANK + off];
 	}
-	if (ank) {
+	if (!upper) {
 		return(font_ank[(chr << 3) + line]);
 	}
 	else {
-		chr += (port & 0x0300) - 0x100;
+		chr += upper - 0x100;
 		return(pcg.d[(chr << 3) + line]);
 	}
 }

@@ -192,7 +192,7 @@ void neitem_vsync(UINT id) {
 
 // ----
 
-// #define	SINGLESTEPONLY
+#define	SINGLESTEPONLY
 
 void pccore_exec(BRESULT draw) {
 
@@ -202,7 +202,8 @@ void pccore_exec(BRESULT draw) {
 	corestat.drawframe = draw;
 	soundmng_sync();
 
-	frameclock = 266 * RASTER_CLOCK * pccore.multiple / 2;
+	timing_setrate(crtc.e.frameclock);
+	frameclock = crtc.e.frameclock * pccore.multiple / 2;
 	dispclock = min(frameclock, crtc.e.dispclock);
 	corestat.dispclock = dispclock;
 	corestat.syncclock = frameclock - dispclock;
@@ -215,6 +216,7 @@ void pccore_exec(BRESULT draw) {
 		}
 #else
 		while(CPU_REMCLOCK > 0) {
+		//	TRACEOUT(("%.4x", Z80_PC));
 #if defined(TRACE) && IPTRACE
 			treip[trpos & (IPTRACE - 1)] = Z80_PC;
 			trpos++;
