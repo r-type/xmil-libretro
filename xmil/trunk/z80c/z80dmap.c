@@ -48,9 +48,6 @@ void z80dmap(void) {
 		}
 		addr = *off1;
 		if (flag1 & 8) {
-			if (addr == 0x0ffb) {
-				fdcdummyread = 0;
-			}
 			dat = iocore_inp(addr);
 		}
 		else {
@@ -59,9 +56,6 @@ void z80dmap(void) {
 		if (dma.DMA_CMND & 1) {
 			addr = *off2;
 			if (flag2 & 8) {
-				if ((addr == 0x0ffb) && (!iocore.s.mode)) {
-					fdcdummyread = 0;
-				}
 				iocore_out(addr, dat);
 			}
 			else {
