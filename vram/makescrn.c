@@ -161,6 +161,7 @@ static void changecrtc(void) {
 	REG8	y2;
 	UINT	charcy;
 	UINT	surfcy;
+	UINT	surfsy;
 	UINT	x;
 	UINT	y;
 	UINT8	*p;
@@ -215,24 +216,26 @@ static void changecrtc(void) {
 		surfcy = crtc.e.yl;
 	}
 
+	surfsy = charcy * surfcy * 2;
 	x = min(scrnxmax, makescrn.surfcx);
 	if (surfcx < x) {								// ¬‚³‚­‚È‚Á‚½
 		x = (x - surfcx) * 8;
 		p = screenmap + (surfcx * 8);
-		y = surfcy * 2;
+		y = surfsy;
 		while(y) {
 			y--;
 			ZeroMemory(p, x);
 			p += SURFACE_WIDTH;
 		}
 	}
-	if (surfcy < makescrn.surfcy) {
-		ZeroMemory(screenmap + (SURFACE_WIDTH * surfcy * charcy * 2),
-					SURFACE_WIDTH * (makescrn.surfcy - surfcy) * charcy * 2);
+	if (surfsy < makescrn.surfsy) {
+		ZeroMemory(screenmap + (SURFACE_WIDTH * surfsy),
+								SURFACE_WIDTH * (makescrn.surfsy - surfsy));
 	}
 	makescrn.surfcx = surfcx;
 	makescrn.surfrx = textxl - surfcx;
 	makescrn.surfcy = surfcy;
+	makescrn.surfsy = surfsy;
 	makescrn.surfstep = (SURFACE_WIDTH * charcy * 2) - (surfcx * 8);
 	makescrn.vramsize = min(0x800, surfcy * textxl);
 //	scrnmng_setheight(0, charcy * surfcy * 2);
