@@ -1,7 +1,6 @@
 #include	"compiler.h"
 #include	"scrnmng.h"
 #include	"pccore.h"
-#include	"iocore.h"
 #include	"vram.h"
 #include	"scrndraw.h"
 #include	"makescrn.h"
@@ -29,7 +28,7 @@ void width80x25_200l(void) {								// 80x25 200line
 	UINT	i;
 
 	fontcy = min(makescrn.fontcy, MAKETEXT_ROW);
-	pos = crtc.s.TXT_TOP;
+	pos = makescrn.vramtop;
 	dst = screenmap;
 	newline = FALSE;
 	y = makescrn.surfcy;
@@ -91,7 +90,7 @@ const UINT8	*src;
 	UINT	i;
 
 	fontcy = min(makescrn.fontcy, MAKETEXT_ROW);
-	pos = crtc.s.TXT_TOP;
+	pos = makescrn.vramtop;
 	dst = screenmap;
 	newline = FALSE;
 	y = makescrn.surfcy;
@@ -154,7 +153,7 @@ void width80x20l(void) {
 	UINT	i;
 
 	fontcy = min(makescrn.fontcy, MAKETEXT_ROW);
-	pos = crtc.s.TXT_TOP;
+	pos = makescrn.vramtop;
 	dst = screenmap;
 	newline = FALSE;
 	y = makescrn.surfcy;
@@ -216,7 +215,7 @@ void width80x10l(void) {
 	UINT	i;
 
 	fontcy = min(makescrn.fontcy, MAKETEXT_ROW);
-	pos = crtc.s.TXT_TOP;
+	pos = makescrn.vramtop;
 	dst = screenmap;
 	newline = FALSE;
 	y = makescrn.surfcy;

@@ -262,7 +262,7 @@ static void knj8_Yx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = makescrn.fontycnt >> 1;					// レジューム
+	pos = makescrn.fontycnt;						// レジューム
 	do {
 		dat = src[pos];
 		pos = (pos + 1) & 15;
@@ -277,7 +277,7 @@ static void knj8_x4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = makescrn.fontycnt >> 1;					// レジューム
+	pos = makescrn.fontycnt;						// レジューム
 	do {
 		dat = PATx2LEFT(src[pos]);
 		pos = (pos + 1) & 15;
@@ -292,7 +292,7 @@ static void knj8_x4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = makescrn.fontycnt >> 1;					// レジューム
+	pos = makescrn.fontycnt;						// レジューム
 	do {
 		dat = PATx2RIGHT(src[pos]);
 		pos = (pos + 1) & 15;
@@ -320,7 +320,7 @@ static void knj8_right4half(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = makescrn.fontycnt >> 1;					// レジューム
+	pos = makescrn.fontycnt;						// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = src[pos] << 4;
 		pos = 0;
@@ -343,7 +343,7 @@ static void knj8_right4x2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = makescrn.fontycnt >> 1;					// レジューム
+	pos = makescrn.fontycnt;						// レジューム
 	do {
 		dat = src[pos] << 4;
 		pos = (pos + 1) & 15;
@@ -358,7 +358,7 @@ static void knj8_halfx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = makescrn.fontycnt >> 1;					// レジューム
+	pos = makescrn.fontycnt;						// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = src[pos];
 		pos = 0;
@@ -381,7 +381,7 @@ static void knj8_halfx4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = makescrn.fontycnt >> 1;					// レジューム
+	pos = makescrn.fontycnt;						// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = PATx2LEFT(src[pos]);
 		pos = 0;
@@ -404,7 +404,7 @@ static void knj8_halfx4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = makescrn.fontycnt >> 1;					// レジューム
+	pos = makescrn.fontycnt;						// レジューム ?
 	if (pos) {										// 最初の１回だけ
 		dat = PATx2RIGHT(src[pos]);
 		pos = 0;

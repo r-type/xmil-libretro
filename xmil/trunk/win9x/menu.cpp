@@ -260,22 +260,25 @@ void xmenu_setdispclk(UINT8 value) {
 
 void xmenu_setskipline(UINT8 value) {
 
-	xmilcfg.SKIP_LINE = value & 1;
-	CheckMenuItem(GetMenu(hWndMain), IDM_SKIPLINE, MFCHECK(xmilcfg.SKIP_LINE));
+	value &= 1;
+	xmilcfg.SKIP_LINE = value;
+	CheckMenuItem(GetMenu(hWndMain), IDM_SKIPLINE, MFCHECK(value));
 	reflesh_palette();
 	makescrn.palandply = 1;
 }
 
 void xmenu_setbtnmode(UINT8 value) {
 
-	xmilcfg.BTN_MODE = value & 1;
-	CheckMenuItem(GetMenu(hWndMain), IDM_JOYX, MFCHECK(xmilcfg.BTN_MODE));
+	value &= 1;
+	xmilcfg.BTN_MODE = value;
+	CheckMenuItem(GetMenu(hWndMain), IDM_JOYX, MFCHECK(value));
 }
 
 void xmenu_setbtnrapid(UINT8 value) {
 
+	value &= 1;
 	xmilcfg.BTN_RAPID = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_RAPID, MFCHECK(xmilcfg.BTN_RAPID));
+	CheckMenuItem(GetMenu(hWndMain), IDM_RAPID, MFCHECK(value));
 }
 
 void xmenu_setz80save(UINT8 value) {
