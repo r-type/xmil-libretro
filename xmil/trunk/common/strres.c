@@ -16,6 +16,7 @@ const OEMCHAR str_bmp[] = OEMTEXT("bmp");
 const OEMCHAR str_e2d[] = OEMTEXT("2d");
 const OEMCHAR str_d88[] = OEMTEXT("d88");
 const OEMCHAR str_88d[] = OEMTEXT("88d");
+const OEMCHAR str_dx1[] = OEMTEXT("dx1");
 
 const OEMCHAR str_d[] = OEMTEXT("%d");
 const OEMCHAR str_u[] = OEMTEXT("%u");

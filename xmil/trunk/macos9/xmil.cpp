@@ -94,12 +94,11 @@ static void flagdelete(const char *ext) {
 
 static int flagload(const char *ext, BRESULT force) {
 
-	int		ret;
 	char	path[MAX_PATH];
 	char	buf[1024];
 	int		r;
+	int		ret;
 
-	ret = IDOK;
 	getstatfilename(path, ext, NELEMENTS(path));
 	r = statsave_check(path, buf, NELEMENTS(buf));
 	if (r & (~STATFLAG_DISKCHG)) {
