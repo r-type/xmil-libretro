@@ -5,13 +5,12 @@
 #include	"dosio.h"
 #include	"soundmng.h"
 #include	"sysmng.h"
+#include	"ini.h"
 #include	"dialog.h"
 #include	"dialogs.h"
-
 #include	"pccore.h"
-#include	"draw.h"
-#include	"ini.h"
 #include	"palettes.h"
+#include	"makescrn.h"
 
 
 #define	LIMITS(v, n, m)		(((v) > (m))?(m):(((v) < (n))?(n):(v)))
@@ -78,7 +77,7 @@ static void cfgupdate(HWND hWnd) {
 	if (xmilcfg.samplingrate != wval) {
 		xmilcfg.samplingrate = wval;
 		updateflag |= SYS_UPDATECFG;
-		soundrenewal = TRUE;
+		corestat.soundrenewal = TRUE;
 	}
 
 	GetDlgItemText(hWnd, IDC_SNDBUFFER, work, NELEMENTS(work));
@@ -86,7 +85,7 @@ static void cfgupdate(HWND hWnd) {
 	if (xmilcfg.delayms != wval) {
 		xmilcfg.delayms = wval;
 		updateflag |= SYS_UPDATECFG;
-		soundrenewal = TRUE;
+		corestat.soundrenewal = TRUE;
 	}
 
 	GetDlgItemText(hWnd, IDC_SEEKVOL, work, NELEMENTS(work));
@@ -101,7 +100,6 @@ static void cfgupdate(HWND hWnd) {
 	bval = (UINT8)GetDlgItemCheck(hWnd, IDC_TXTENHANCED);
 	if (xmilcfg.TEXTMODE != bval) {
 		xmilcfg.TEXTMODE = bval;
-		textdrawproc_renewal();
 		updateflag |= SYS_UPDATECFG;
 	}
 
@@ -139,7 +137,7 @@ static void cfgupdate(HWND hWnd) {
 	}
 	if (renewalflg) {
 		reflesh_palette();
-		palandply = 1;
+		makescrn.palandply = 1;
 		updateflag |= SYS_UPDATECFG;
 	}
 	sysmng_update(updateflag);

@@ -24,7 +24,7 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"timing.h"
-#include	"draw.h"
+#include	"makescrn.h"
 #include	"fdd_ini.h"
 #include	"juliet.h"
 #include	"diskdrv.h"
@@ -36,7 +36,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
 		XMILOSCFG	xmiloscfg = {
 							CW_USEDEFAULT, CW_USEDEFAULT,
-							1, 0, 0,
+							1, 0, 0, 0, 1,
 							0, 0, 0,
 							0, 0, 0xffffff, 0xffbf6a};
 
@@ -48,8 +48,8 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 		OEMCHAR		fddfolder[MAX_PATH];
 		OEMCHAR		bmpfilefolder[MAX_PATH];
 
-static	BYTE		xmilforeground = 0;
-		BYTE		xmilopening = 1;
+static	BRESULT		xmilstopemulate = FALSE;
+		UINT8		xmilopening = 1;
 
 
 static void wincentering(HWND hWnd) {
@@ -276,7 +276,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					break;
 
 				case IDM_NOWAIT:
-					xmenu_setwaitflg(xmilcfg.NOWAIT ^ 1);
+					xmenu_setwaitflg(xmiloscfg.NOWAIT ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
@@ -402,14 +402,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_ACTIVATE:
 			if (LOWORD(wParam) != WA_INACTIVE) {
-				xmilforeground = 0;
+				xmilstopemulate = FALSE;
 				scrnmng_update();
 				mousemng_enable(MOUSEPROC_BG);
 				soundmng_enable(SNDPROC_MASTER);
 			}
 			else {
-				xmilforeground = 1;
 				mousemng_disable(MOUSEPROC_BG);
+				xmilstopemulate = (xmiloscfg.background & 1)?TRUE:FALSE;
 				if (xmiloscfg.background) {
 					soundmng_disable(SNDPROC_MASTER);
 				}
@@ -629,6 +629,47 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 // ----
 
+static	UINT	framecnt = 0;
+static	UINT	waitcnt = 0;
+static	UINT	framemax = 1;
+
+static void framereset(UINT cnt) {
+
+	framecnt = 0;
+	scrnmng_dispclock();
+//	kdispwin_draw((BYTE)cnt);
+//	skbdwin_process();
+//	mdbgwin_process();
+//	toolwin_draw((BYTE)cnt);
+//	viewer_allreload(FALSE);
+	if (xmiloscfg.DISPCLK & 3) {
+		if (sysmng_workclockrenewal()) {
+			sysmng_updatecaption(3);
+		}
+	}
+}
+
+static void processwait(UINT cnt) {
+
+	if (timing_getcount() >= cnt) {
+		timing_setcount(0);
+		framereset(cnt);
+	}
+	else {
+		Sleep(1);
+	}
+	soundmng_sync();
+}
+
+static void exec1frame(void) {
+
+	joymng_sync();
+	mousemng_sync();
+	pccore_exec(framecnt == 0);
+	dclock_callback();
+	framecnt++;
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 										LPSTR lpszCmdLine, int nCmdShow) {
 
@@ -690,8 +731,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	xmenu_setbtnrapid(xmilcfg.BTN_RAPID);
 	xmenu_setbtnmode(xmilcfg.BTN_MODE);
 	xmenu_setcpuspeed(xmilcfg.CPU8MHz);
-	xmenu_setwaitflg(xmilcfg.NOWAIT);
-	xmenu_setframe(xmilcfg.DRAW_SKIP);
+	xmenu_setwaitflg(xmiloscfg.NOWAIT);
+	xmenu_setframe(xmiloscfg.DRAW_SKIP);
 	xmenu_setmotorflg(xmilcfg.MOTOR);
 	xmenu_setz80save(xmiloscfg.Z80SAVE);
 	xmenu_setjoystick(xmiloscfg.JOYSTICK);
@@ -753,36 +794,72 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	xmilopening = 0;
 
 	while(1) {
-		if (!(xmiloscfg.background & xmilforeground)) {
+		if (!xmilstopemulate) {
 			if (PeekMessage(&msg, 0, 0, 0, PM_NOREMOVE)) {
 				if (!GetMessage(&msg, NULL, 0, 0)) {
 					break;
 				}
-				if ((msg.message != WM_SYSKEYDOWN) &&
-					(msg.message != WM_SYSKEYUP)) {
+				if ((msg.hwnd != hWnd) ||
+					((msg.message != WM_SYSKEYDOWN) &&
+					(msg.message != WM_SYSKEYUP))) {
 					TranslateMessage(&msg);
 				}
 				DispatchMessage(&msg);
 			}
 			else {
-				if (xmiloscfg.DISPCLK) {
-					if (sysmng_workclockrenewal()) {
-						sysmng_updatecaption(2);
+				if (xmiloscfg.NOWAIT) {
+					exec1frame();
+					if (xmiloscfg.DRAW_SKIP) {		// nowait frame skip
+						if (framecnt >= xmiloscfg.DRAW_SKIP) {
+							processwait(0);
+						}
+					}
+					else {							// nowait auto skip
+						if (timing_getcount()) {
+							processwait(0);
+						}
 					}
 				}
-				if ((xmilcfg.NOWAIT) || (timing_getcount())) {
-					timing_setcount(0);
-					joymng_sync();
-					mousemng_sync();
-//					juliet2_sync(25);
-					x1r_exec();
-					x1f_sync();
+				else if (xmiloscfg.DRAW_SKIP) {		// frame skip
+					if (framecnt < xmiloscfg.DRAW_SKIP) {
+						exec1frame();
+					}
+					else {
+						processwait(xmiloscfg.DRAW_SKIP);
+					}
 				}
-				soundmng_sync();
-//				juliet2_exec();
+				else {								// auto skip
+					if (!waitcnt) {
+						UINT cnt;
+						exec1frame();
+						cnt = timing_getcount();
+						if (framecnt > cnt) {
+							waitcnt = framecnt;
+							if (framemax > 1) {
+								framemax--;
+							}
+						}
+						else if (framecnt >= framemax) {
+							if (framemax < 12) {
+								framemax++;
+							}
+							if (cnt >= 12) {
+								timing_reset();
+							}
+							else {
+								timing_setcount(cnt - framecnt);
+							}
+							framereset(0);
+						}
+					}
+					else {
+						processwait(waitcnt);
+						waitcnt = framecnt;
+					}
+				}
 			}
 		}
-		else {
+		else {											// background sleep
 			if (!GetMessage(&msg, NULL, 0, 0)) {
 				break;
 			}

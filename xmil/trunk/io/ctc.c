@@ -67,7 +67,7 @@ void x1_ctc_int(void) {
 				else if (ctcint_flg) {
 					ctcint_flg = 0;
 					ch->int_flag ^= bit;
-					TRACEOUT(("ctc%u int -- %d", 3 - r, i));
+//					TRACEOUT(("ctc%u int -- %d", 3 - r, i));
 					Z80_INT((REG8)(ch->vector + (i << 1)));
 				}
 			}
@@ -158,7 +158,7 @@ void IOOUTCALL ctc_o(UINT port, REG8 value) {
 
 	CTCCH	*ch;
 
-	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
+//	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
 	ch = getctcch(port);
 	if (ch != NULL) {
 		ctcch_o(ch, port, value);

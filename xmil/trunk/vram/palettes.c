@@ -3,8 +3,8 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"scrndraw.h"
-#include	"draw.h"
 #include	"palettes.h"
+#include	"makescrn.h"
 
 
 	RGB32	x1n_pal32[256];			// xm_palette
@@ -138,7 +138,7 @@ void pal_settext(REG8 num) {
 	pals.text[num+16].p.r = (halfgrp * rgb.p.r) / 255;
 	pals.text[num+16].p.e = num + START_EXT + 0x10;
 
-	palandply = 1;
+	makescrn.palandply = 1;
 }
 
 void pal_setgrph(REG8 bank, REG8 num) {
@@ -177,7 +177,7 @@ void pal_setgrph(REG8 bank, REG8 num) {
 		pals.grph[bank][num+8].p.r = (halfgrp * rgb.p.r) / 0xff;
 		pals.grph[bank][num+8].p.e = num + START_EXT + 0x20;
 	}
-	palandply = 1;
+	makescrn.palandply = 1;
 }
 
 void pal_setgrph4096(UINT num) {
@@ -212,7 +212,7 @@ void pal_setgrph4096(UINT num) {
 		x1z_pal16[num] = scrnmng_makepal16(rgb);
 	}
 #endif
-	palandply = 1;
+	makescrn.palandply = 1;
 }
 
 

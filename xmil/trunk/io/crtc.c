@@ -3,8 +3,8 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"vram.h"
-#include	"draw.h"
 #include	"palettes.h"
+#include	"makescrn.h"
 
 
 		BYTE	crtc_TEXTPAL[8];
@@ -13,6 +13,7 @@
 
 static const UINT8 def_TEXTPAL[8] = {
 				0x00, 0x03, 0x0c, 0x0f, 0x30, 0x33, 0x3c, 0x3f};
+
 static const UINT16 def_GRPHPAL[64] = {
 				0x000, 0x00a, 0x0a0, 0x0aa, 0xa00, 0xa0a, 0xaa0, 0xaaa,
 				0x005, 0x00f, 0x0a5, 0x0af, 0xa05, 0xa0f, 0xaa5, 0xaaf,
@@ -22,7 +23,6 @@ static const UINT16 def_GRPHPAL[64] = {
 				0x505, 0x50f, 0x5a5, 0x5af, 0xf05, 0xf0f, 0xfa5, 0xfaf,
 				0x550, 0x55a, 0x5f0, 0x5fa, 0xf50, 0xf5a, 0xff0, 0xffa,
 				0x555, 0x55f, 0x5f5, 0x5ff, 0xf55, 0xf5f, 0xff5, 0xfff};
-
 
 static const CRTCSTAT crtcdefault = {
 				0xaa,						// PAL_B;
@@ -246,13 +246,13 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 			case 0x0c:
 				crtc.s.TXT_TOP &= 0xff;
 				crtc.s.TXT_TOP |= (value & 7) << 8;
-				doubleatrchange = 1;
+				makescrn.remakeattr = 1;
 				break;
 
 			case 0x0d:
 				crtc.s.TXT_TOP &= 0x7ff;
 				crtc.s.TXT_TOP |= value;
-				doubleatrchange = 1;
+				makescrn.remakeattr = 1;
 				break;
 
 			default:
@@ -275,10 +275,9 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 	modify = crtc.s.SCRN_BITS ^ value;
 	crtc.s.SCRN_BITS = value;
 	if (modify & SCRN_DISPCHANGE) {
-		textdrawproc_renewal();
 		reflesh_palette();
 		scrnallflash = 1;
-		palandply = 1;
+		makescrn.palandply = 1;
 		crtc_updt();
 	}
 	vrambank_patch();
@@ -300,7 +299,7 @@ void IOOUTCALL ply_o(UINT port, REG8 value) {
 
 	if (crtc.s.PLY != value) {
 		crtc.s.PLY = value;
-		palandply = 1;
+		makescrn.palandply = 1;
 	}
 	(void)port;
 }
@@ -392,21 +391,21 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 			case 0x1000:
 				if (crtc.s.PAL_B != value) {
 					crtc.s.PAL_B = value;
-					palandply = 1;
+					makescrn.palandply = 1;
 				}
 				break;
 
 			case 0x1100:
 				if (crtc.s.PAL_R != value) {
 					crtc.s.PAL_R = value;
-					palandply = 1;
+					makescrn.palandply = 1;
 				}
 				break;
 
 			case 0x1200:
 				if (crtc.s.PAL_G != value) {
 					crtc.s.PAL_G = value;
-					palandply = 1;
+					makescrn.palandply = 1;
 				}
 				break;
 		}
@@ -531,7 +530,7 @@ REG8 IOINPCALL exttextdisp_i(UINT port) {
 void IOOUTCALL blackctrl_o(UINT port, REG8 value) {
 
 	crtc.s.BLACKPAL = value;
-	palandply = 1;
+	makescrn.palandply = 1;
 }
 
 REG8 IOINPCALL blackctrl_i(UINT port) {
@@ -563,7 +562,6 @@ void crtc_reset(void) {
 
 	crtc.s = crtcdefault;
 
-	palandply = 1;
 	dispmode = SCRN64_INVALID;
 	pal_bank = pal_disp = PAL_NORMAL;
 	if (pccore.ROM_TYPE < 3) {
@@ -574,12 +572,11 @@ void crtc_reset(void) {
 		crtc.s.FNT_YL = 16;
 	}
 
-	textdrawproc_renewal();
 	reflesh_palette();
 	crtc_updt();
 
 	vrambank_patch();
-	palandply = 1;
+	makescrn.palandply = 1;
 	scrnallflash = 1;
 }
 

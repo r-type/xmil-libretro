@@ -1,10 +1,7 @@
 #include	"compiler.h"
 #include	"scrndraw.h"
-#include	"draw_sub.h"
-
-
-#define	PATx2LEFT(p)		x2left[(p)]
-#define	PATx2RIGHT(p)		x2right[(p)]
+#include	"makescrn.h"
+#include	"makesub.h"
 
 
 // --------------------------------------------------- 16ライン ANK キャラクタ
@@ -57,7 +54,7 @@ static void txt16_Yx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt;									// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	do {
 		dat = src[pos];
 		pos = (pos + 1) & 15;
@@ -73,7 +70,7 @@ static void txt16_x4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt;									// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	do {
 		dat = PATx2LEFT(src[pos]);
 		pos = (pos + 1) & 15;
@@ -89,7 +86,7 @@ static void txt16_x4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt;									// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	do {
 		dat = PATx2RIGHT(src[pos]);
 		pos = (pos + 1) & 15;
@@ -119,7 +116,7 @@ static void txt16_right4half(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt;									// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = src[pos] << 4;
 		pos = 0;
@@ -142,7 +139,7 @@ static void txt16_right4x2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt;									// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	do {
 		dat = src[pos] << 4;
 		pos = (pos + 2) & 15;
@@ -158,7 +155,7 @@ static void txt16_halfx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = src[pos];
 		pos = 0;
@@ -181,7 +178,7 @@ static void txt16_halfx4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt;									// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = PATx2LEFT(src[pos]);
 		pos = 0;
@@ -204,7 +201,7 @@ static void txt16_halfx4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt;									// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = PATx2RIGHT(src[pos]);
 		pos = 0;
@@ -278,7 +275,7 @@ static void pcg8x2_Yx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	do {
 		dat = src[pos];
 		pos = (pos + 1) & 7;
@@ -296,7 +293,7 @@ static void pcg8x2_x4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	do {
 		dat = PATx2LEFT(src[pos]);
 		pos = (pos + 1) & 7;
@@ -314,7 +311,7 @@ static void pcg8x2_x4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	do {
 		dat = PATx2RIGHT(src[pos]);
 		pos = (pos + 1) & 7;
@@ -348,7 +345,7 @@ static void pcg8x2_right4half(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = src[pos] << 4;
 		pos = 0;
@@ -375,7 +372,7 @@ static void pcg8x2_right4x2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	do {
 		dat = src[pos] << 4;
 		pos = (pos + 1) & 7;
@@ -393,7 +390,7 @@ static void pcg8x2_halfx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = src[pos];
 		pos = 0;
@@ -420,7 +417,7 @@ static void pcg8x2_halfx4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = PATx2LEFT(src[pos]);
 		pos = 0;
@@ -447,7 +444,7 @@ static void pcg8x2_halfx4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	UINT	pos;
 	REG8	dat;
 
-	pos = fontycnt >> 1;							// レジューム
+	pos = makescrn.fontycnt >> 1;					// レジューム
 	if (pos) {										// 最初の１回だけ
 		dat = PATx2RIGHT(src[pos]);
 		pos = 0;
@@ -477,9 +474,7 @@ static void draw_nop(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 
 // --------------------------------------------------------------------------
 
-typedef void (*TXTBFN)(UINT8 *dst, UINT8 *term, const UINT8 *src);
-
-const TXTBFN _txtbeffects16[16] = {
+const MAKETXTFN maketxt16fn[16] = {
 						txt16_nor,					// ノーマル
 						txt16_halfx2,				// 潰して縦倍角
 						txt16_right4dot,			// 右４ドット
@@ -501,7 +496,7 @@ const TXTBFN _txtbeffects16[16] = {
 						draw_nop					// ありえない
 };
 
-const TXTBFN _pcgbeffectsx2[16] = {
+const MAKETXTFN makepcg16fn[16] = {
 						pcg8x2_nor,					// ノーマル
 						pcg8x2_halfx2,				// 潰して縦倍角
 						pcg8x2_right4dot,			// 右４ドット

@@ -196,8 +196,8 @@ static const INITBL iniitem[] = {
 
 	{"Resolute", INITYPE_HEX8,		&xmilcfg.DIP_SW,		0},
 	{"SkipLine", INITYPE_BOOL,		&xmilcfg.SKIP_LINE,		0},
-	{"s_NOWAIT", INITYPE_BOOL,		&xmilcfg.NOWAIT,		0},
-	{"SkpFrame", INITYPE_UINT8,		&xmilcfg.DRAW_SKIP,		0},
+	{"s_NOWAIT", INITYPE_BOOL,		&xmiloscfg.NOWAIT,		0},
+	{"SkpFrame", INITYPE_UINT8,		&xmiloscfg.DRAW_SKIP,	0},
 	{"LinLIGHT", INITYPE_HEX8,		&xmilcfg.LINEDEPTH,		0},
 	{"BlkLIGHT", INITYPE_HEX8,		&xmilcfg.BLKLIGHT,		0},
 	{"TxtLIGHT", INITYPE_HEX8,		&xmilcfg.LINETEXT,		0},

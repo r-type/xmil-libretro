@@ -7,10 +7,9 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"draw.h"
+#include	"makescrn.h"
 #include	"sound.h"
 #include	"sndctrl.h"
-#include	"menu.h"
 #include	"font.h"
 #include	"xmilver.h"
 #include	"fddfile.h"
@@ -22,7 +21,8 @@
 
 const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 
-	XMILCFG		xmilcfg = {	0, 0, 1, 0, 1, 2, 0, 1,
+	XMILCFG		xmilcfg = {	0, 0, 1,
+							2, 0, 1,
 							22050, 1000, 0, 80,
 							0, 0,
 							0, 0,
@@ -30,6 +30,7 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 							1, 0};
 
 	PCCORE		pccore = {250, 0, 1, 0};
+	CORESTAT	corestat;
 	BYTE		mMAIN[0x10000];
 	BYTE		mBIOS[0x8000];
 	BYTE		mBANK[16][0x8000];
@@ -39,7 +40,6 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	BYTE		*RAM0r;
 	BYTE		*RAM0w;
 	DWORD		h_cntbase;
-	BRESULT		soundrenewal;
 
 
 
@@ -90,7 +90,6 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 		scrnmng_setcolormode(FALSE);
 	}
 
-	textdrawproc_renewal();
 	ipl_load();
 
 	Z80_RESET();
@@ -149,8 +148,8 @@ void pccore_initialize(void) {
 void pccore_reset(void) {
 
 	soundmng_stop();
-	if (soundrenewal) {
-		soundrenewal = 0;
+	if (corestat.soundrenewal) {
+		corestat.soundrenewal = 0;
 		sndctrl_deinitialize();
 		sndctrl_initialize();
 	}
@@ -206,15 +205,14 @@ void iptrace_out(void) {
 }
 #endif
 
-
-
-void x1r_exec(void) {
+void pccore_exec(BRESULT draw) {
 
 	REG8	inttiming;
 
+	corestat.drawframe = draw;
+
 	v_cnt = 0;
 	s_cnt = 0;
-	xmilcfg.DISPSYNC &= 1;
 	inttiming = xmilcfg.CPU8MHz & 1;
 
 	while(s_cnt < 266) {
@@ -246,16 +244,13 @@ void x1r_exec(void) {
 		v_cnt++;
 		if (crtc.s.CRT_YL == v_cnt) {
 			pcg.r.vsync = 1;
-			if (xmilcfg.DISPSYNC == 1) {
-				xmilcfg.DISPSYNC |= 0x80;
+			if (xmilcfg.DISPSYNC & 1) {
 				scrnupdate();
 			}
 		}
 	}
 	sound_sync();
 	calendar_inc();
-	if (!(xmilcfg.DISPSYNC & 0x80)) {
-		scrnupdate();
-	}
+	scrnupdate();
 }
 

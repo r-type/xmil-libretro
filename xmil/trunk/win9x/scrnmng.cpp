@@ -13,8 +13,8 @@
 #include	"extclass.h"
 #include	"pccore.h"
 #include	"scrndraw.h"
-#include	"draw.h"
 #include	"palettes.h"
+#include	"makescrn.h"
 
 
 typedef struct {
@@ -766,7 +766,7 @@ void scrnmng_dispclock(void) {
 			ddraw.primsurf->Restore();
 			ddraw.clocksurf->Restore();
 		}
-		dclock_cntdown(xmilcfg.DRAW_SKIP);
+		dclock_cntdown(xmiloscfg.DRAW_SKIP);
 	}
 }
 
