@@ -79,7 +79,8 @@ void sysmng_updatecaption(BYTE flag) {
 
 	const char nodisk[] = "No Disk Image";
 	FormType*	frm = ARM_FrmGetActiveForm();
-	UINT16 textlen;
+	UINT16	voltage;
+	UINT8	battery;
 	
 	if (flag & 1) {
 		strtitle0[0] = '\0';
@@ -116,7 +117,12 @@ void sysmng_updatecaption(BYTE flag) {
 			}
 		}
 		else {
-			milstr_ncpy(strframe, "-.-FPS", sizeof(strframe));
+			//milstr_ncpy(strframe, "-.-FPS", sizeof(strframe));
+			voltage = ARM_SysBatteryInfo(&battery);
+			if (voltage > 0) {
+				ARM_StrPrintF(strframe, "%3u", battery);
+				milstr_ncat(strframe, "%", sizeof(strtitle1));
+			}
 		}
 		if (ARM_StrLen(strframe) < 33) {
 			changelabel(frm, IDC_DISPFRAME, strframe);
@@ -130,8 +136,7 @@ void sysmng_updatecaption(BYTE flag) {
 		else {
 			milstr_ncpy(strclock, "-.---MHz", sizeof(strclock));
 		}
-		textlen = ARM_StrLen(strclock);
-		if (textlen < 45) {
+		if (workclock.khz < 100000) {
 			changelabel(frm, IDC_DISPCLOCK, strclock);
 		}
 	}

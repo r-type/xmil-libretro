@@ -8,6 +8,10 @@
 #include "resource.h"
 #include "UFD.h"
 
+#ifndef vfsVolumeAttrNonRemovable
+#define	vfsVolumeAttrNonRemovable	0x00000008L
+#endif
+
 
 #define ByteSwap16(n) ( ((((unsigned int) n) << 8) & 0xFF00) | \
 ((((unsigned int) n) >> 8) & 0x00FF) )
@@ -613,9 +617,8 @@ UInt32 PilotMain(UInt16 cmd, void *cmdPBP, UInt16 launchFlags)
 {
     PealModule *m;
 	UInt32 volIterator = vfsIteratorStart;
-	UInt16	vRef = vfsInvalidVolRef;
+	VolumeInfoType	info;
     FormType *frmP;
-	Err err;
 	int	ret;
 	const RGBColorType	white = {0, 255, 255, 255};
 
@@ -634,15 +637,15 @@ UInt32 PilotMain(UInt16 cmd, void *cmdPBP, UInt16 launchFlags)
 	WinSetBackColorRGB(&white, NULL);
 
 	while (volIterator != vfsIteratorStop) {
-		err = VFSVolumeEnumerate(&volRefNum, &volIterator);
-		if (err == errNone) {
-			vRef = volRefNum;
+		if (VFSVolumeEnumerate(&volRefNum, &volIterator) == errNone) {
+			if (VFSVolumeInfo(volRefNum, &info) == errNone) {
+				if ((!info.attributes & vfsVolumeAttrHidden) && (!info.attributes & vfsVolumeAttrNonRemovable)) {
+					break;
+				}
+			}
 		}
 	}
-	if ((volRefNum != vRef) && (vRef != vfsInvalidVolRef)) {
-		volRefNum = vRef;
-	}
-	
+
 	m = load();
 	ret = setup(m);
     unload(m);

@@ -99,6 +99,8 @@ Err ARM_EvtEnqueueKey(WChar ascii, UInt16 keycode, UInt16 modifier);
 Boolean ARM_MenuHandleEvent(MenuBarType *menuP, EventType *event, UInt16 *error);
 Boolean ARM_SysHandleEvent(EventType *event);
 
+UINT16 ARM_SysBatteryInfo(UINT8* battery);
+
 #define ARM_KeyCurrentState()		ARM_TYPE_nullinint(sysTrapKeyCurrentState)
 
 void print(char *format, ...);
