@@ -1,11 +1,10 @@
 
-#if 0
 enum {
 	CTC_OPM			= 0,
 	CTC_TURBO1		= 1,
 	CTC_TURBO2		= 2
 };
-#endif
+
 
 typedef struct {
 	UINT32	baseclock;
@@ -19,6 +18,16 @@ typedef struct {
 	SINT32	count[4];
 	SINT32	countmax[4];
 	SINT32	range[4];
+} CTCCHST;
+
+typedef struct {
+	UINT	neventid;
+	UINT32	ieventbit;
+} CTCCHEX;
+
+typedef struct {
+	CTCCHST	s;
+	CTCCHEX	e;
 } CTCCH;
 
 typedef struct {

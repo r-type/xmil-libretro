@@ -1,6 +1,5 @@
 #include	"compiler.h"
 #include	"scrnmng.h"
-#include	"sysmng.h"
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"scrndraw.h"
@@ -9,7 +8,6 @@
 #include	"makescrn.h"
 
 
-	SCRN	scrn;
 	UINT8	renewalline[SURFACE_HEIGHT+4];
 	UINT8	screenmap[SURFACE_SIZE];
 
@@ -32,20 +30,8 @@ void scrndraw_initialize(void) {					// ddraws_init
 	ZeroMemory(xmil_pal32, sizeof(xmil_pal32));
 	xmil_palettes = 0;
 
-	scrn.widthmode = SCRNWIDTHMODE_WIDTH40;
-
 	updateallline(0x03030303);			// updateallline(0x01010101);
 	scrnmng_allflash();
-	sysmng_scrnwidth(scrn.widthmode);
-}
-
-void scrndraw_changewidth(REG8 widthmode) {
-
-	if (scrn.widthmode != widthmode) {
-		scrn.widthmode = widthmode;
-		sysmng_scrnwidth(widthmode);
-		updateallline(0x01010101);				// fillrenewalline(0x03030303)
-	}
 }
 
 void scrndraw_changepalette(void) {
@@ -148,19 +134,7 @@ const SDRAWFN	*sdrawfn;
 	if (sdrawfn == NULL) {
 		goto sddr_exit2;
 	}
-	switch(scrn.widthmode) {
-		case SCRNWIDTHMODE_WIDTH80:
-		default:
-			break;
-
-		case SCRNWIDTHMODE_WIDTH40:
-			sdrawfn += 1;
-			break;
-
-		case SCRNWIDTHMODE_4096:
-			sdrawfn += 2;
-			break;
-	}
+	sdrawfn += makescrn.drawmode;
 	fn = *sdrawfn;
 	if (fn == NULL) {
 		goto sddr_exit2;
@@ -183,7 +157,7 @@ const SDRAWFN	*sdrawfn;
 #if !defined(SUPPORT_PALEVENT)
 	(*fn)(&sdraw, 400);
 #else
-	if (((crtc.e.dispmode & SCRN64_MASK) != SCRN64_INVALID) ||
+	if ((crtc.e.dispmode & SCRN64_ENABLE) ||
 		(palevent.events >= SUPPORT_PALEVENT)) {
 		(*fn)(&sdraw, 400);
 	}

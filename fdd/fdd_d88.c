@@ -410,23 +410,6 @@ static	BYTE		*curdata;
 
 extern	WORD		readdiag;
 
-#define		TAO_MODE_GAP	0x4e
-#define		TAO_MODE_SYNC	0x00
-#define		TAO_MODE_AM		0xf5
-#define		TAO_MODE_IM		0xf6
-#define		TAO_MODE_ID		0xfe
-#define		TAO_MODE_DATA	0xfb
-#define		TAO_ENDOFDATA	0xf7
-
-#define		TAO_CMD_GAP		0x4e
-#define		TAO_CMD_SYNC	0x00
-#define		TAO_CMD_IM_IN	0xf6
-#define		TAO_CMD_IM		0xfc
-#define		TAO_CMD_AM_IN	0xf5
-#define		TAO_CMD_IAM		0xfe
-#define		TAO_CMD_DAM		0xfb
-#define		TAO_CMD_DDAM	0xf8
-#define		TAO_CMD_CRC		0xf7
 
 typedef struct {
 	BYTE	mode;

@@ -45,12 +45,154 @@ static const GDCCLK gdcclk[] = {
 			{14318180 / 8, 112 - 8, 112 + 8, 200, 300},
 			{21052600 / 8, 108 - 6, 108 + 6, 400, 575}};
 
-enum {
-	CRTCUPD_CLOCK		= 0x01,
-	CRTCUPD_TIMING		= 0x02,
-	CRTCUPD_POS			= 0x04
-};
 
+static void crtc_bankupdate(void) {
+
+	if (!(crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)) {
+		crtc.e.gram = gram + GRAM_BANK0;
+		crtc.e.updatebit = UPDATE_VRAM0;
+	}
+	else {
+		crtc.e.gram = gram + GRAM_BANK1;
+		crtc.e.updatebit = UPDATE_VRAM1;
+	}
+}
+
+static void crtc_dispupdate(void) {
+
+	REG8	scrnpage;
+	REG8	dispmode;
+#if defined(SUPPORT_TURBOZ)
+	UINT	updatemask;
+	REG8	pal_bank;
+	REG8	pal_disp;
+#endif
+
+	scrnpage = (crtc.s.SCRN_BITS & SCRN_DISPVRAM)?SCRN_BANK1:SCRN_BANK0;
+	if (!crtc.s.width40) {
+		scrnpage += SCRN_WIDTH80;
+	}
+	dispmode = scrnpage;
+	dispmode += (crtc.s.SCRN_BITS & SCRN_UNDERLINE) >> 4;
+	dispmode += (crtc.s.SCRN_BITS & 7);
+
+#if !defined(SUPPORT_TURBOZ)
+	crtc.e.updatemask = (crtc.s.SCRN_BITS & SCRN_TEXTYx2)?0x3ff:0x7ff;
+	crtc.e.dispmode = dispmode;
+#else
+	pal_bank = PAL_NORMAL;
+	pal_disp = PAL_NORMAL;
+	if ((!(crtc.s.EXTPALMODE & 0x80)) || (crtc.s.SCRN_BITS & SCRN_UNDERLINE)) {
+		updatemask = 0x7ff;
+		if ((crtc.s.SCRN_BITS & SCRN_24KHZ) && (!crtc.s.width40)) {
+			pal_bank = PAL_HIGHRESO;
+			pal_disp = PAL_HIGHRESO;
+		}
+		if (crtc.s.SCRN_BITS & SCRN_TEXTYx2) {
+			updatemask = 0x3ff;
+		}
+	}
+	else {													// Analog mode
+		updatemask = 0x3ff;
+		if (!(crtc.s.SCRN_BITS & SCRN_TEXTYx2)) {
+			if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
+				if (crtc.s.width40) {
+					if (crtc.s.SCRN_BITS & SCRN_200LINE) {	// width 40,25,0,2
+						dispmode = scrnpage + SCRN64_320x200;
+					}
+					else {									// width 40,25,1,2
+						dispmode = SCRN64_H320x400;
+					}
+				}
+				else {										// width 80,25,?,2
+					updatemask = 0x7ff;
+					pal_bank = PAL_HIGHRESO;
+					pal_disp = PAL_HIGHRESO;
+				}
+			}
+			else {
+				if (crtc.s.width40) {						// width 40,25,0,1
+					if (crtc.s.EXTPALMODE & 0x10) {
+						if (crtc.s.ZPRY & 0x10) {
+							dispmode = SCRN64_L320x200x2 +
+									((crtc.s.ZPRY & 8)?SCRN_BANK1:SCRN_BANK0);
+							pal_disp = PAL_4096 + PAL_64x2 +
+									((crtc.s.ZPRY & 8)?PAL_4096L:PAL_4096H);
+						}
+						else {
+							dispmode = scrnpage + SCRN64_320x200;
+							pal_disp = PAL_4096 +
+										((crtc.s.SCRN_BITS & SCRN_DISPVRAM)
+														?PAL_4096L:PAL_4096H);
+						}
+						pal_bank = PAL_4096 +
+										((crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)
+														?PAL_4096L:PAL_4096H);
+					}
+					else {
+						dispmode = SCRN_DRAW4096 + SCRN64_320x200x4096;
+						pal_bank = PAL_4096 + PAL_4096FULL;
+						pal_disp = PAL_4096 + PAL_4096FULL;
+					}
+				}
+				else {										// width 80,25,0,1
+					updatemask = 0x7ff;
+					dispmode = SCRN_WIDTH80 + SCRN64_L640x200;
+				}
+			}
+		}
+		else {
+			if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
+				if (crtc.s.width40) {
+					if (crtc.s.SCRN_BITS & SCRN_200LINE) {	// width 40,12,0,2
+						dispmode = scrnpage + SCRN64_320x100;
+					}
+					else {									// width 40,12,1,2
+						dispmode = SCRN64_H320x200;
+					}
+				}
+				else {										// width 80,12,?,2
+					pal_bank = PAL_HIGHRESO;
+					pal_disp = PAL_HIGHRESO;
+				}
+			}
+			else {
+				if (crtc.s.width40) {						// width 40,12,0,1
+					if (crtc.s.EXTPALMODE & 0x10) {
+						if (crtc.s.ZPRY & 0x10) {
+							dispmode = SCRN64_320x100x2 +
+									((crtc.s.ZPRY & 8)?SCRN_BANK1:SCRN_BANK0);
+							pal_disp = PAL_4096 + PAL_64x2 +
+									((crtc.s.ZPRY & 8)?PAL_4096L:PAL_4096H);
+						}
+						else {
+							dispmode = scrnpage + SCRN64_320x100;
+							pal_disp = PAL_4096 +
+										((crtc.s.SCRN_BITS & SCRN_DISPVRAM)
+														?PAL_4096L:PAL_4096H);
+						}
+						pal_bank = PAL_4096 +
+										((crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)
+														?PAL_4096L:PAL_4096H);
+					}
+					else {
+						dispmode = SCRN_DRAW4096 + SCRN64_320x100x4096;
+						pal_bank = PAL_4096 + PAL_4096FULL;
+						pal_disp = PAL_4096 + PAL_4096FULL;
+					}
+				}
+				else {										// width 80,12,0,1
+					dispmode = SCRN_WIDTH80 + SCRN64_L640x100;
+				}
+			}
+		}
+	}
+	crtc.e.updatemask = updatemask;
+	crtc.e.dispmode = dispmode;
+	crtc.e.pal_bank = pal_bank;
+	crtc.e.pal_disp = pal_disp;
+#endif
+}
 
 static void crtc_clkupdate(void) {
 
@@ -114,140 +256,6 @@ static void crtc_timingupdate(void) {
 									+ ((crtc.s.reg[CRTCREG_POSH] & 7) << 8);
 }
 
-static void crtc_bankupdate(void) {
-
-#if defined(SUPPORT_TURBOZ)
-	UINT	updatemask;
-	UINT8	dispmode;
-	UINT8	pal_bank;
-	UINT8	pal_disp;
-#endif
-
-	if (crtc.s.SCRN_BITS & 0x10) {
-		crtc.e.gram = gram + GRAM_BANK1;
-		crtc.e.updatebit = UPDATE_VRAM1;
-	}
-	else {
-		crtc.e.gram = gram + GRAM_BANK0;
-		crtc.e.updatebit = UPDATE_VRAM0;
-	}
-
-#if !defined(SUPPORT_TURBOZ)
-	crtc.e.updatemask = (crtc.s.SCRN_BITS & SCRN_TEXTYx2)?0x3ff:0x7ff;
-	crtc.e.dispmode =
-					(crtc.s.SCRN_BITS & SCRN_DISPVRAM)?SCRN_BANK1:SCRN_BANK0;
-#else
-	dispmode = (crtc.s.SCRN_BITS & SCRN_DISPVRAM)?SCRN_BANK1:SCRN_BANK0;
-	pal_bank = PAL_NORMAL;
-	pal_disp = PAL_NORMAL;
-	if ((!(crtc.s.EXTPALMODE & 0x80)) || (crtc.s.SCRN_BITS & SCRN_UNDERLINE)) {
-		updatemask = 0x7ff;
-		if ((crtc.s.SCRN_BITS & SCRN_24KHZ) && (!crtc.s.width40)) {
-			pal_bank = PAL_HIGHRESO;
-			pal_disp = PAL_HIGHRESO;
-		}
-		if (crtc.s.SCRN_BITS & SCRN_TEXTYx2) {
-			updatemask = 0x3ff;
-		}
-	}
-	else {													// Analog mode
-		updatemask = 0x3ff;
-		if (!(crtc.s.SCRN_BITS & SCRN_TEXTYx2)) {
-			if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
-				if (crtc.s.width40) {
-					if (crtc.s.SCRN_BITS & SCRN_200LINE) {	// width 40,25,0,2
-						dispmode |= SCRN64_320x200;
-					}
-					else {									// width 40,25,1,2
-						dispmode = SCRN64_H320x400;
-					}
-				}
-				else {										// width 80,25,?,2
-					updatemask = 0x7ff;
-					pal_bank = pal_disp = PAL_HIGHRESO;
-				}
-			}
-			else {
-				if (crtc.s.width40) {						// width 40,25,0,1
-					if (crtc.s.EXTPALMODE & 0x10) {
-						if (crtc.s.ZPRY & 0x10) {
-							dispmode = SCRN64_L320x200x2 |
-								((crtc.s.ZPRY & 8) ? SCRN_BANK1 : SCRN_BANK0);
-							pal_disp = PAL_4096 | PAL_64x2 |
-								((crtc.s.ZPRY & 8) ? PAL_4096L : PAL_4096H);
-						}
-						else {
-							dispmode |= SCRN64_320x200;
-							pal_disp = PAL_4096 |
-									((crtc.s.SCRN_BITS & SCRN_DISPVRAM)
-													? PAL_4096L : PAL_4096H);
-						}
-						pal_bank = PAL_4096 |
-									((crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)
-													? PAL_4096L : PAL_4096H);
-					}
-					else {
-						dispmode = SCRN64_320x200x4096 | SCRN_DRAW4096;
-						pal_bank = pal_disp = PAL_4096 | PAL_4096FULL;
-					}
-				}
-				else {										// width 80,25,0,1
-					updatemask = 0x7ff;
-					dispmode = SCRN64_L640x200;
-				}
-			}
-		}
-		else {
-			if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
-				if (crtc.s.width40) {
-					if (crtc.s.SCRN_BITS & SCRN_200LINE) {	// width 40,12,0,2
-						dispmode |= SCRN64_320x100;
-					}
-					else {									// width 40,12,1,2
-						dispmode = SCRN64_H320x200;
-					}
-				}
-				else {										// width 80,12,?,2
-					pal_bank = pal_disp = PAL_HIGHRESO;
-				}
-			}
-			else {
-				if (crtc.s.width40) {						// width 40,12,0,1
-					if (crtc.s.EXTPALMODE & 0x10) {
-						if (crtc.s.ZPRY & 0x10) {
-							dispmode = SCRN64_320x100x2 |
-								((crtc.s.ZPRY & 8) ? SCRN_BANK1 : SCRN_BANK0);
-							pal_disp = PAL_4096 | PAL_64x2 |
-								((crtc.s.ZPRY & 8) ? PAL_4096L : PAL_4096H);
-						}
-						else {
-							dispmode |= SCRN64_320x100;
-							pal_disp = PAL_4096 |
-									((crtc.s.SCRN_BITS & SCRN_DISPVRAM)
-													? PAL_4096L : PAL_4096H);
-						}
-						pal_bank = PAL_4096 |
-									((crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)
-													? PAL_4096L : PAL_4096H);
-					}
-					else {
-						dispmode = SCRN64_320x100x4096 | SCRN_DRAW4096;
-						pal_bank = pal_disp = PAL_4096 | PAL_4096FULL;
-					}
-				}
-				else {										// width 80,12,0,1
-					dispmode = SCRN64_L640x100;
-				}
-			}
-		}
-	}
-	crtc.e.updatemask = updatemask;
-	crtc.e.dispmode = dispmode;
-	crtc.e.pal_bank = pal_bank;
-	crtc.e.pal_disp = pal_disp;
-#endif
-}
-
 
 // ---- CRTC
 
@@ -263,7 +271,6 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 				crtc.s.reg[crtc.s.regnum] = value;
 				crtc_clkupdate();
 				crtc_timingupdate();
-				crtc_bankupdate();
 				makescrn.remakeattr = 1;
 				scrnallflash = 1;
 			}
@@ -280,14 +287,17 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 
 	modify = crtc.s.SCRN_BITS ^ value;
 	crtc.s.SCRN_BITS = value;
+	if (modify & SCRN_ACCESSVRAM) {
+		crtc_bankupdate();
+	}
 	if (modify & SCRN_DISPCHANGE) {
 //		pal_reset();					// ‚È‚ñ‚ÅH
 		scrnallflash = 1;
-		makescrn.palandply = 1;
+		crtc_dispupdate();
 		crtc_clkupdate();
 		crtc_timingupdate();
+		makescrn.palandply = 1;
 	}
-	crtc_bankupdate();
 	(void)port;
 }
 
@@ -371,12 +381,12 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 		else {
 			num = ((port & 0x80) >> 5) | ((port & 0x08) >> 2) |
 												((value & 0x80) >> 7);
-			if ((crtc.e.dispmode & SCRN64_MASK) == SCRN64_INVALID) {
-				num |= (num << 3);
-			}
-			else {
+			if (crtc.e.dispmode & SCRN64_ENABLE) {
 				num += ((port & 0x40) >> 1) | ((port & 0x04) << 2) |
 													((value & 0x40) >> 3);
+			}
+			else {
+				num |= (num << 3);
 			}
 			pal = crtc.p.grph[crtc.e.pal_bank][num];
 			pal &= ~((0x0f) << sft);
@@ -442,12 +452,12 @@ REG8 IOINPCALL palette_i(UINT port) {
 		else {
 			num = ((port & 0x80) >> 5) | ((port & 0x08) >> 2) |
 											((crtc.s.lastpal & 0x80) >> 7);
-			if ((crtc.e.dispmode & SCRN64_MASK) == SCRN64_INVALID) {
-				num |= (num << 3);
-			}
-			else {
+			if (crtc.e.dispmode & SCRN64_ENABLE) {
 				num += ((port & 0x40) >> 1) | ((port & 0x04) << 2) |
 											((crtc.s.lastpal & 0x40) >> 3);
+			}
+			else {
+				num |= (num << 3);
 			}
 			pal = crtc.p.grph[crtc.e.pal_bank][num];
 		}
@@ -463,7 +473,7 @@ REG8 IOINPCALL palette_i(UINT port) {
 void IOOUTCALL extpal_o(UINT port, REG8 value) {
 
 	crtc.s.EXTPALMODE = value;
-	crtc_bankupdate();
+	crtc_dispupdate();
 	(void)port;
 }
 
@@ -509,7 +519,7 @@ REG8 IOINPCALL exttextpal_i(UINT port) {
 void IOOUTCALL exttextdisp_o(UINT port, REG8 value) {
 
 	crtc.s.ZPRY = value;
-	crtc_bankupdate();
+	crtc_dispupdate();
 	(void)port;
 }
 
@@ -528,9 +538,10 @@ REG8 IOINPCALL exttextdisp_i(UINT port) {
 
 void crtc_update(void) {
 
+	crtc_bankupdate();
+	crtc_dispupdate();
 	crtc_clkupdate();
 	crtc_timingupdate();
-	crtc_bankupdate();
 	makescrn.palandply = 1;
 	scrnallflash = 1;
 }
@@ -590,7 +601,7 @@ void crtc_reset(void) {
 void crtc_forcesetwidth(REG8 width) {
 
 	crtc.s.reg[CRTCREG_HDISP] = (UINT8)width;
-	crtc_bankupdate();
+	crtc_dispupdate();
 	scrnallflash = 1;
 }
 

@@ -4,7 +4,8 @@
 enum {
 	FDCDIR_NONE			= 0x00,
 	FDCDIR_IN			= 0x01,
-	FDCDIR_OUT			= 0x02
+	FDCDIR_OUT			= 0x02,
+	FDCDIR_TAO			= 0x03
 };
 
 enum {

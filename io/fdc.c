@@ -12,6 +12,28 @@
 
 static const UINT8 fdctype[] = {1,1,1,1,1,1,1,1,2,2,2,2,3,4,3,3};
 
+enum {
+	TAO_MODE_GAP	= 0x4e,
+	TAO_MODE_SYNC	= 0x00,
+	TAO_MODE_AM		= 0xf5,
+	TAO_MODE_IM		= 0xf6,
+	TAO_MODE_ID		= 0xfe,
+	TAO_MODE_DATA	= 0xfb,
+	TAO_ENDOFDATA	= 0xf7,
+
+	TAO_CMD_GAP		= 0x4e,
+	TAO_CMD_SYNC	= 0x00,
+	TAO_CMD_IM_IN	= 0xf6,
+	TAO_CMD_IM		= 0xfc,
+	TAO_CMD_AM_IN	= 0xf5,
+	TAO_CMD_IAM		= 0xfe,
+	TAO_CMD_DAM		= 0xfb,
+	TAO_CMD_DDAM	= 0xf8,
+	TAO_CMD_CRC		= 0xf7
+};
+
+
+// ----
 
 void neitem_fdcbusy(UINT id) {
 
