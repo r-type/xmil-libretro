@@ -150,8 +150,8 @@
 		};
 		20286C2CFDCF999611CA2CEA = {
 			children = (
-				960F8E8106C891C200937580,
-				8D0C4E960486CD37000505A6,
+				965B8C2806C949D1003373D6,
+				968DFC2A06C940DE00AE02AB,
 				0867D6AAFE840B52C02AAC07,
 				02345980000FD03B11CA0E72,
 			);
@@ -244,6 +244,7 @@
 				8D0C4E8C0486CD37000505A6,
 				8D0C4E8F0486CD37000505A6,
 				8D0C4E910486CD37000505A6,
+				965B8C2C06C949DF003373D6,
 			);
 			buildRules = (
 			);
@@ -253,13 +254,13 @@
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = xmil;
+				PRODUCT_NAME = "X millennium";
 				WRAPPER_EXTENSION = app;
 			};
 			dependencies = (
 			);
 			isa = PBXNativeTarget;
-			name = xmil;
+			name = "X millennium";
 			productInstallPath = "$(HOME)/Applications";
 			productName = xmil;
 			productReference = 8D0C4E970486CD37000505A6;
@@ -268,9 +269,9 @@
 		8D0C4E8C0486CD37000505A6 = {
 			buildActionMask = 2147483647;
 			files = (
-				960F8E3306C880A200937580,
 				960F8E3406C880A800937580,
 				960F9C0A06C8E17F00937580,
+				968DFC2706C940DA00AE02AB,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -395,19 +396,11 @@
 			settings = {
 			};
 		};
-		8D0C4E960486CD37000505A6 = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = text.plist;
-			path = Info.plist;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		8D0C4E970486CD37000505A6 = {
 			explicitFileType = wrapper.application;
 			includeInIndex = 0;
 			isa = PBXFileReference;
-			path = xmil.app;
+			path = "X millennium.app";
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -685,9 +678,9 @@
 			);
 			isa = PBXGroup;
 			name = fdd;
-			path = "/Users/tora/Documents/Project Builder/CVS/xmil/fdd";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../fdd;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		960F8C0906C817B600937580 = {
 			fileEncoding = "-2147483647";
@@ -826,9 +819,9 @@
 			);
 			isa = PBXGroup;
 			name = font;
-			path = "/Users/tora/Documents/Project Builder/CVS/xmil/font";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../font;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		960F8C1906C817B600937580 = {
 			fileEncoding = "-2147483647";
@@ -909,9 +902,9 @@
 			);
 			isa = PBXGroup;
 			name = io;
-			path = "/Users/tora/Documents/Project Builder/CVS/xmil/io";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../io;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		960F8C2106C817B600937580 = {
 			fileEncoding = "-2147483647";
@@ -1226,9 +1219,9 @@
 			);
 			isa = PBXGroup;
 			name = sound;
-			path = "/Users/tora/Documents/Project Builder/CVS/xmil/sound";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../sound;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		960F8C7206C817B600937580 = {
 			fileEncoding = "-2147483647";
@@ -1384,9 +1377,9 @@
 			);
 			isa = PBXGroup;
 			name = vram;
-			path = "/Users/tora/Documents/Project Builder/CVS/xmil/vram";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../vram;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		960F8C8306C817B600937580 = {
 			fileEncoding = "-2147483647";
@@ -1577,9 +1570,9 @@
 			);
 			isa = PBXGroup;
 			name = z80c;
-			path = "/Users/tora/Documents/Project Builder/CVS/xmil/z80c";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../z80c;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		960F8C9906C817B600937580 = {
 			fileEncoding = "-2147483647";
@@ -2134,12 +2127,6 @@
 			settings = {
 			};
 		};
-		960F8E3306C880A200937580 = {
-			fileRef = 8D0C4E960486CD37000505A6;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		960F8E3406C880A800937580 = {
 			fileRef = 0867D6AAFE840B52C02AAC07;
 			isa = PBXBuildFile;
@@ -2479,14 +2466,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			path = xmil.h;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		960F8E8106C891C200937580 = {
-			fileEncoding = "-2147483647";
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.rez;
-			path = xmil.r;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2839,6 +2818,51 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		965B8C2806C949D1003373D6 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.rez;
+			path = xmil.r;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		965B8C2C06C949DF003373D6 = {
+			buildActionMask = 2147483647;
+			files = (
+				965B8C3506C94A6C003373D6,
+			);
+			isa = PBXRezBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		965B8C3506C94A6C003373D6 = {
+			fileRef = 965B8C2806C949D1003373D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		968DFC2606C940DA00AE02AB = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
+			name = X1EMx.icns;
+			path = Icons/X1EMx.icns;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		968DFC2706C940DA00AE02AB = {
+			fileRef = 968DFC2606C940DA00AE02AB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		968DFC2A06C940DE00AE02AB = {
+			children = (
+				968DFC2606C940DA00AE02AB,
+			);
+			isa = PBXGroup;
+			name = Icons;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 	};
 	rootObject = 20286C28FDCF999611CA2CEA;

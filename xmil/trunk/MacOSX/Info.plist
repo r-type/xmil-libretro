@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>xmil</string>
+	<string>X millennium</string>
 	<key>CFBundleIconFile</key>
-	<string></string>
+	<string>X1EMx.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>net.retropc.xmil</string>
+	<string>net.retropc.xmillennium</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
