@@ -42,7 +42,7 @@ typedef struct {
 	UINT8	busy;
 	UINT8	hole;
 	UINT8	curtime;
-	UINT8	padding;
+	UINT8	equip;
 	UINT	crcnum;
 
 	UINT8	buffer[FDC_BUFFERS];

@@ -24,7 +24,7 @@
 
 const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 
-	XMILCFG		xmilcfg = { 2, 0, 1,
+	XMILCFG		xmilcfg = { 2, 1, 0x03,
 							1, 0, 0, 0,
 							22050, 500, 0, 0, 80,
 							0, 0, 0, 0};
@@ -145,7 +145,7 @@ void pccore_reset(void) {
 	subcpu_reset();
 	vramio_reset();
 
-	calendar_initialize();
+	calendar_reset();
 	pal_reset();
 	makescrn_reset();
 	timing_reset();
@@ -254,7 +254,6 @@ void pccore_exec(BRESULT draw) {
 	} while(corestat.vsync < 2);
 
 	scrnupdate();
-	calendar_inc();
 	sound_sync();
 }
 

@@ -1,6 +1,8 @@
 #include	"compiler.h"
 #include	"parts.h"
 #include	"timemng.h"
+#include	"pccore.h"
+#include	"nevent.h"
 #include	"calendar.h"
 
 
@@ -62,20 +64,6 @@ secinc_exit:
 
 // ----
 
-void calendar_initialize(void) {
-
-	timemng_gettime(&cal.dt);
-}
-
-void calendar_inc(void) {
-
-	cal.steps++;
-	if (cal.steps >= 60) {
-		cal.steps = 0;
-		secinc(&cal.dt);
-	}
-}
-
 void calendar_getdate(UINT8 *bcd) {
 
 	bcd[0] = AdjustAfterMultiply((UINT8)(cal.dt.year % 100));
@@ -109,5 +97,24 @@ void calendar_settime(const UINT8 *bcd) {
 	cal.dt.hour = AdjustBeforeDivision(bcd[0]);
 	cal.dt.minute = AdjustBeforeDivision(bcd[1]);
 	cal.dt.second = AdjustBeforeDivision(bcd[2]);
+}
+
+
+// ----
+
+void neitem_rtc(UINT id) {
+
+	nevent_repeat(id);
+	cal.steps++;
+	if (cal.steps >= 5) {
+		cal.steps -= 5;
+		secinc(&cal.dt);
+	}
+}
+
+void calendar_reset(void) {
+
+	timemng_gettime(&cal.dt);
+	nevent_set(NEVENT_RTC, pccore.realclock / 5, neitem_rtc, NEVENT_RELATIVE);
 }
 
