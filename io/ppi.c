@@ -66,7 +66,7 @@ void IOOUTCALL ppi_o(UINT port, REG8 value) {
 
 //	cmt_write(ppi.PORT_C & 1);
 	if ((bak_c & 0x20) && (!(ppi.PORT_C & 0x20))) {
-		ppi.IO_MODE = 1;
+		iocore.s.mode = 1;
 	}
 	xl = ((ppi.PORT_C & 0x40)?40:80);
 	if (crtc.s.TXT_XL != xl) {
@@ -134,7 +134,6 @@ void ppi_initialize(void) {
 	ppi.PORT_B = 0xff;
 	ppi.PORT_C = 0xff;
 	ppi.MODE = 0;
-	ppi.IO_MODE = 0;
 }
 
 void ppi_reset(void) {
@@ -142,6 +141,5 @@ void ppi_reset(void) {
 	ppi.MODE = 0;
 	ppi.PORT_A = 0;
 	ppi.PORT_C |= 0x40;
-	ppi.IO_MODE = 0;
 }
 

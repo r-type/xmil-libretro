@@ -151,7 +151,7 @@ Z80inport:		call	iocore_inp
 dma_outport:	push	ebx
 				cmp		cx, 0ffbh
 				jne		Z80outport
-				cmp		ppi.IO_MODE, 0
+				cmp		iocore.s.mode, 0
 				jne		Z80outport
 				mov		fdcdummyread, 0
 Z80outport:		call	iocore_out

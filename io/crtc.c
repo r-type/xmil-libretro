@@ -7,14 +7,10 @@
 #include	"makescrn.h"
 
 
-		BYTE	crtc_TEXTPAL[8];
-		WORD	crtc_GRPHPAL[2][64];
-		WORD	crtc_PAL4096[4096];
-
-static const UINT8 def_TEXTPAL[8] = {
+static const UINT8 defpaltext[8] = {
 				0x00, 0x03, 0x0c, 0x0f, 0x30, 0x33, 0x3c, 0x3f};
 
-static const UINT16 def_GRPHPAL[64] = {
+static const UINT16 defpalgrph[64] = {
 				0x000, 0x00a, 0x0a0, 0x0aa, 0xa00, 0xa0a, 0xaa0, 0xaaa,
 				0x005, 0x00f, 0x0a5, 0x0af, 0xa05, 0xa0f, 0xaa5, 0xaaf,
 				0x050, 0x05a, 0x0f0, 0x0fa, 0xa50, 0xa5a, 0xaf0, 0xafa,
@@ -29,7 +25,7 @@ static const CRTCSTAT crtcdefault = {
 				0xcc,						// PAL_R;
 				0xf0,						// PAL_G;
 				0x00,						// PLY
-				{0, 1, 2, 3, 4, 5, 6, 7},	// TEXT_PAL[8]
+//				{0, 1, 2, 3, 4, 5, 6, 7},	// TEXT_PAL[8]
 				0,							// SCRN_BITS
 				0,							// CRTC_NUM
 
@@ -41,8 +37,8 @@ static const CRTCSTAT crtcdefault = {
 				28,							// TXT_YS
 				320,						// GRP_XL
 				200,						// GRP_YL
-				0,							// CPU_BANK
-				0,							// CRT_BANK
+//				0,							// CPU_BANK
+//				0,							// CRT_BANK
 
 				200,						// CRT_YL
 				232,						// CRT_VS
@@ -281,8 +277,8 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 		crtc_updt();
 	}
 	vrambank_patch();
-	crtc.s.CPU_BANK = (BYTE)((crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)?1:0);
-	crtc.s.CRT_BANK = (BYTE)((crtc.s.SCRN_BITS & SCRN_DISPVRAM)?1:0);
+//	crtc.s.CPU_BANK = (BYTE)((crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)?1:0);
+//	crtc.s.CRT_BANK = (BYTE)((crtc.s.SCRN_BITS & SCRN_DISPVRAM)?1:0);
 	(void)port;
 }
 
@@ -315,75 +311,51 @@ REG8 IOINPCALL ply_i(UINT port) {
 
 void IOOUTCALL palette_o(UINT port, REG8 value) {
 
+	REG8	sft;
+	UINT	num;
 	UINT	pal;
-	BYTE	c;
 
 	crtc.s.lastpal = (value & 0xf0);
 	if (crtc.s.EXTPALMODE & 0x80) {
 		if ((crtc.s.EXTGRPHPAL & 0x88) != 0x80) {
 			return;
 		}
+		sft = (port >> (8 - 2)) & (3 << 2);
 		if (pal_bank & PAL_4096) {					// use 4096palettes
 			switch(pal_bank & (PAL_4096FULL | PAL_4096BANK)) {
 				case 0:
-					pal = ((port & 0xcc) << 4) + ((value & 0xc0) >> 4);
+					num = ((port & 0xcc) << 4) + ((value & 0xc0) >> 4);
 					break;
 
 				case 1:
-					pal = ((port & 0xcc) << 2) + ((value & 0xc0) >> 6);
+					num = ((port & 0xcc) << 2) + ((value & 0xc0) >> 6);
 					break;
 
 				default:
-					pal = ((port & 0xff) << 4) + (crtc.s.lastpal >> 4);
+					num = ((port & 0xff) << 4) + (crtc.s.lastpal >> 4);
 					break;
 			}
-			value &= 0xf;
-			switch(port & 0xff00) {
-				case 0x1000:
-					crtc_PAL4096[pal] &= 0xff0;
-					crtc_PAL4096[pal] |= value;
-					break;
-
-				case 0x1100:
-					crtc_PAL4096[pal] &= 0xf0f;
-					crtc_PAL4096[pal] |= (value << 4);
-					break;
-
-				case 0x1200:
-					crtc_PAL4096[pal] &= 0x0ff;
-					crtc_PAL4096[pal] |= ((WORD)value << 8);
-					break;
-			}
-			pal_setgrph4096(pal);
+			pal = crtc.p.grph4096[num];
+			pal &= ~((0x0f) << sft);
+			pal |= (value & 0x0f) << sft;
+			crtc.p.grph4096[num] = pal;
+			pal_setgrph4096(num);
 		}
 		else {
-			c = ((port & 0x80) >> 5) | ((port & 0x08) >> 2) |
+			num = ((port & 0x80) >> 5) | ((port & 0x08) >> 2) |
 												((value & 0x80) >> 7);
 			if ((dispmode & SCRN64_MASK) == SCRN64_INVALID) {
-				c |= (c << 3);
+				num |= (num << 3);
 			}
 			else {
-				c += ((port & 0x40) >> 1) | ((port & 0x04) << 2) |
+				num += ((port & 0x40) >> 1) | ((port & 0x04) << 2) |
 													((value & 0x40) >> 3);
 			}
-			value &= 0xf;
-			switch(port & 0xff00) {
-				case 0x1000:
-					crtc_GRPHPAL[pal_bank][c] &= 0xff0;
-					crtc_GRPHPAL[pal_bank][c] |= value;
-					break;
-
-				case 0x1100:
-					crtc_GRPHPAL[pal_bank][c] &= 0xf0f;
-					crtc_GRPHPAL[pal_bank][c] |= (value << 4);
-					break;
-
-				case 0x1200:
-					crtc_GRPHPAL[pal_bank][c] &= 0x0ff;
-					crtc_GRPHPAL[pal_bank][c] |= ((WORD)value << 8);
-					break;
-			}
-			pal_setgrph(pal_bank, c);
+			pal = crtc.p.grph[pal_bank][num];
+			pal &= ~((0x0f) << sft);
+			pal |= (value & 0x0f) << sft;
+			crtc.p.grph[pal_bank][num] = pal;
+			pal_setgrph(pal_bank, (REG8)num);
 		}
 	}
 	else {
@@ -414,58 +386,47 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 
 REG8 IOINPCALL palette_i(UINT port) {
 
-	UINT	c;
+	UINT	num;
+	UINT	pal;
+	REG8	sft;
 
 	if ((crtc.s.EXTPALMODE & 0x80) && ((crtc.s.EXTGRPHPAL & 0x88) == 0x88)) {
 		if (pal_bank & PAL_4096) {					// use 4096palettes
 			switch(pal_bank & (PAL_4096FULL | PAL_4096BANK)) {
 				case 0:
-					c = ((port & 0xcc) << 4) | ((crtc.s.lastpal & 0xc0) >> 4);
+					num = ((port & 0xcc) << 4) |
+											((crtc.s.lastpal & 0xc0) >> 4);
 					break;
 
 				case 1:
-					c = ((port & 0xcc) << 2) | ((crtc.s.lastpal & 0xc0) >> 6);
+					num = ((port & 0xcc) << 2) |
+											((crtc.s.lastpal & 0xc0) >> 6);
 					break;
 
 				default:
-					c = ((port & 0xff) << 4) | (crtc.s.lastpal >> 4);
+					num = ((port & 0xff) << 4) | (crtc.s.lastpal >> 4);
 					break;
 			}
-			switch(port & 0xff00) {
-				case 0x1000:
-					return(crtc.s.lastpal | (crtc_PAL4096[c] & 0xf));
-
-				case 0x1100:
-					return(crtc.s.lastpal | ((crtc_PAL4096[c] & 0xf0) >> 4));
-
-				case 0x1200:
-					return(crtc.s.lastpal | ((crtc_PAL4096[c] & 0xf00) >> 8));
-			}
+			pal = crtc.p.grph4096[num];
 		}
 		else {
-			c = ((port & 0x80) >> 5) | ((port & 0x08) >> 2) |
+			num = ((port & 0x80) >> 5) | ((port & 0x08) >> 2) |
 											((crtc.s.lastpal & 0x80) >> 7);
 			if ((dispmode & SCRN64_MASK) == SCRN64_INVALID) {
-				c |= (c << 3);
+				num |= (num << 3);
 			}
 			else {
-				c += ((port & 0x40) >> 1) | ((port & 0x04) << 2) |
+				num += ((port & 0x40) >> 1) | ((port & 0x04) << 2) |
 											((crtc.s.lastpal & 0x40) >> 3);
 			}
-			switch(port & 0xff00) {
-				case 0x1000:
-					return(crtc.s.lastpal |
-								(crtc_GRPHPAL[pal_bank][c] & 0xf));
-				case 0x1100:
-					return(crtc.s.lastpal |
-								((crtc_GRPHPAL[pal_bank][c] & 0xf0) >> 4));
-				case 0x1200:
-					return(crtc.s.lastpal |
-								((crtc_GRPHPAL[pal_bank][c] & 0xf00) >> 8));
-			}
+			pal = crtc.p.grph[pal_bank][num];
 		}
+		sft = (port >> (8 - 2)) & (3 << 2);
+		return((REG8)(crtc.s.lastpal + ((pal >> sft) & 0xf)));
 	}
-	return(0xff);
+	else {
+		return(0xff);
+	}
 }
 
 
@@ -504,7 +465,7 @@ REG8 IOINPCALL extgrphpal_i(UINT port) {
 void IOOUTCALL exttextpal_o(UINT port, REG8 value) {
 
 	if (crtc.s.EXTPALMODE & 0x80) {
-		crtc_TEXTPAL[port & 7] = value;
+		crtc.p.text[port & 7] = value;
 		pal_settext((REG8)(port & 7));
 	}
 }
@@ -512,7 +473,7 @@ void IOOUTCALL exttextpal_o(UINT port, REG8 value) {
 REG8 IOINPCALL exttextpal_i(UINT port) {
 
 	if (crtc.s.EXTPALMODE & 0x80) {
-		return(crtc_TEXTPAL[port & 7]);
+		return(crtc.p.text[port & 7]);
 	}
 	return(0xff);
 }
@@ -551,9 +512,9 @@ REG8 IOINPCALL blackctrl_i(UINT port) {
 
 static void resetpal(void) {
 
-	CopyMemory(crtc_TEXTPAL, def_TEXTPAL, 8);
-	CopyMemory(crtc_GRPHPAL[0], def_GRPHPAL, 64*2);
-	CopyMemory(crtc_GRPHPAL[1], def_GRPHPAL, 64*2);
+	CopyMemory(crtc.p.text, defpaltext, sizeof(defpaltext));
+	CopyMemory(crtc.p.grph[0], defpalgrph, sizeof(defpalgrph));
+	CopyMemory(crtc.p.grph[1], defpalgrph, sizeof(defpalgrph));
 }
 
 void crtc_initialize(void) {
@@ -562,7 +523,7 @@ void crtc_initialize(void) {
 
 	resetpal();
 	for (p=0; p<4096; p++) {
-		crtc_PAL4096[p] = p;
+		crtc.p.grph4096[p] = p;
 	}
 }
 

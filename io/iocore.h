@@ -9,31 +9,19 @@
 typedef	void (IOOUTCALL *IOOUT)(UINT port, REG8 dat);
 typedef	REG8 (IOINPCALL *IOINP)(UINT port);
 
-typedef void (*IOCBFN)(void);
-
-enum {
-	IOCORE_OUTHTBL	= 0x01,
-	IOCORE_INPHTBL	= 0x02
-};
-
-typedef union {
-	IOOUT	fn;
-	IOOUT	*tbl;
-} OUTHTBL;
-
-typedef union {
-	IOINP	fn;
-	IOINP	*tbl;
-} INPHTBL;
-
 typedef struct {
 	UINT8	mode;
-	UINT8	padding[15];
-//	IOINP	inpt[4];
-//	IOOUT	outt[4];
-//	UINT8	iofg[0x20];
-	INPHTBL	inph[0x20];
-	OUTHTBL	outh[0x20];
+	UINT8	padding[7];
+} IOSTAT;
+
+typedef struct {
+	IOINP	inpfn[0x20];
+	IOOUT	outfn[0x20];
+} IOEXT;
+
+typedef struct {
+	IOSTAT	s;
+	IOEXT	e;
 } IOCORE;
 
 

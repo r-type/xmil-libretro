@@ -59,7 +59,7 @@ void z80dmap(void) {
 		if (dma.DMA_CMND & 1) {
 			addr = *off2;
 			if (flag2 & 8) {
-				if ((addr == 0x0ffb) && (!ppi.IO_MODE)) {
+				if ((addr == 0x0ffb) && (!iocore.s.mode)) {
 					fdcdummyread = 0;
 				}
 				iocore_out(addr, dat);
