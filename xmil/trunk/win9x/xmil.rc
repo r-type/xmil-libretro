@@ -1,0 +1,297 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// “ú–{Œê resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON    DISCARDABLE     "Icons\\Vinered.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDM_MAIN MENU DISCARDABLE 
+BEGIN
+    POPUP "&Emulate"
+    BEGIN
+        MENUITEM "&IPL Reset",                  IDM_IPLRESET
+        MENUITEM "&NMI Reset",                  IDM_NMIRESET
+        MENUITEM SEPARATOR
+        MENUITEM "Configure...",                IDM_CONFIG
+        MENUITEM "NewDisk...",                  IDM_NEWDISK
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDM_EXIT
+    END
+    POPUP "FDD-&0"
+    BEGIN
+        MENUITEM "&Open...",                    IDM_FDD0OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Eject",                      IDM_FDD0EJECT
+    END
+    POPUP "FDD-&1"
+    BEGIN
+        MENUITEM "&Open...",                    IDM_FDD1OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Eject",                      IDM_FDD1EJECT
+    END
+    POPUP "&IPL-ROM"
+    BEGIN
+        MENUITEM "turbo&Z",                     IDM_TURBOZ
+        MENUITEM "&turbo",                      IDM_TURBO
+        MENUITEM "&X1",                         IDM_X1ROM
+    END
+    POPUP "&DIP-SW"
+    BEGIN
+        MENUITEM "boot 2D",                     IDM_BOOT2D
+        MENUITEM "boot 2HD",                    IDM_BOOT2HD
+        MENUITEM SEPARATOR
+        MENUITEM "&HIGH RESO.",                 IDM_HIGHRES
+        MENUITEM "&Standard",                   IDM_LOWRES
+    END
+    POPUP "&Screen"
+    BEGIN
+        MENUITEM "&Window",                     IDM_WINDOW
+        MENUITEM "&FullScreen",                 IDM_FULLSCREEN
+        MENUITEM SEPARATOR
+        MENUITEM "Width &80",                   IDM_WIDTH80
+        MENUITEM "Width &40",                   IDM_WIDTH40
+        MENUITEM SEPARATOR
+        MENUITEM "DispVsync",                   IDM_DISPSYNC
+        MENUITEM "&No Wait",                    IDM_NOWAIT
+        MENUITEM SEPARATOR
+        MENUITEM "&Raster",                     IDM_RASTER
+        MENUITEM "&60 FPS",                     IDM_60FPS
+        MENUITEM "&30 FPS",                     IDM_30FPS
+        MENUITEM "&20 FPS",                     IDM_20FPS
+        MENUITEM "&15 FPS",                     IDM_15FPS
+    END
+    POPUP "&Device"
+    BEGIN
+        MENUITEM "&Keyboard",                   IDM_KEY
+        MENUITEM "JoyKey-&1",                   IDM_JOY1
+        MENUITEM "Joykey-&2",                   IDM_JOY2
+        MENUITEM SEPARATOR
+        MENUITEM "&FM Board",                   IDM_FMBOARD
+        MENUITEM "&Joystick",                   IDM_JOYSTICK
+        MENUITEM "&MOUSE",                      IDM_MOUSE
+        MENUITEM "&8MHz",                       IDM_8MHZ
+        MENUITEM SEPARATOR
+        MENUITEM "SeekSound",                   IDM_SEEKSND
+    END
+    POPUP "&Other"
+    BEGIN
+        MENUITEM "&BMP Save",                   IDM_BMPSAVE
+        MENUITEM "&OPM LOG",                    IDM_OPMLOG
+        MENUITEM "&Clock Disp",                 IDM_DISPCLOCK
+        MENUITEM "&Flame Disp",                 IDM_DISPFRAME
+        MENUITEM "&SkipLine",                   IDM_SKIPLINE
+        MENUITEM "Joy Re&verse",                IDM_JOYX
+        MENUITEM "Joy &Rapid",                  IDM_RAPID
+        MENUITEM "&Half-BMP",                   IDM_HALFBMP
+        MENUITEM "&Z80 Save",                   IDM_Z80SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&About...",                   IDM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CONFIG DIALOG DISCARDABLE  0, 0, 195, 177
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Configure"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    GROUPBOX        "Sound",IDC_STATIC,8,8,128,94
+    LTEXT           "Sapling Rate",IDC_STATIC,14,22,38,8
+    COMBOBOX        IDC_SAMPLERATE,60,20,52,64,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Hz",IDC_STATIC,116,22,8,8
+    LTEXT           "Buffer",IDC_STATIC,14,37,19,8
+    EDITTEXT        IDC_SNDBUFFER,70,35,30,12
+    LTEXT           "ms",IDC_STATIC,116,37,10,8
+    LTEXT           "Seek Volume",IDC_STATIC,14,52,38,8
+    EDITTEXT        IDC_SEEKVOL,80,50,20,12
+    CONTROL         "Sound High Priority",IDC_HIGHPRY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,65,73,10
+    GROUPBOX        "Screen",IDC_STATIC,7,106,181,62
+    LTEXT           "Text Type",IDC_STATIC,14,120,31,8
+    CONTROL         "Real",IDC_TXTREAL,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,54,119,27,10
+    CONTROL         "Enhanced",IDC_TXTENHANCED,"Button",BS_AUTORADIOBUTTON,
+                    84,119,44,10
+    LTEXT           "Text Effect",IDC_STATIC,14,135,34,8
+    CONTROL         "Real",IDC_TXTEXTEND,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,54,134,29,10
+    CONTROL         "400line",IDC_TXT400,"Button",BS_AUTORADIOBUTTON,84,134,
+                    33,10
+    CONTROL         "Custom",IDC_TXTCSTM,"Button",BS_AUTORADIOBUTTON,120,134,
+                    38,10
+    EDITTEXT        IDC_TXTVALUE,160,133,20,12,WS_GROUP
+    LTEXT           "Black Light",IDC_STATIC,14,152,34,8
+    EDITTEXT        IDC_BLKLIGHT,52,150,20,12
+    LTEXT           "Skipline Light",IDC_STATIC,90,152,40,8
+    EDITTEXT        IDC_LINEDEPTH,134,150,20,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,144,12,44,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,30,44,14
+END
+
+IDD_NEWDISK DIALOG DISCARDABLE  0, 0, 180, 44
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Create New FD image"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    LTEXT           "Disk Label:",IDC_STATIC,8,10,32,8
+    EDITTEXT        IDC_DISKLABEL,50,8,64,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Disk Type:",IDC_STATIC,8,28,32,8
+    CONTROL         "2D",IDC_MAKE2D,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
+                    WS_TABSTOP,52,27,24,10
+    CONTROL         "2HD",IDC_MAKE2HD,"Button",BS_AUTORADIOBUTTON,82,27,29,
+                    10
+    DEFPUSHBUTTON   "&OK",IDOK,130,7,44,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,130,24,44,14
+END
+
+IDD_ABOUT DIALOG DISCARDABLE  0, 0, 194, 36
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About..."
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    ICON            IDI_ICON1,IDC_STATIC,8,8,20,21
+    LTEXT           "",IDC_XMILVER,36,16,102,8
+    DEFPUSHBUTTON   "&OK",IDOK,148,4,40,14,WS_GROUP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_HAND                CURSOR  DISCARDABLE     "Icons\\Cursor1.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_CONFIG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 188
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 158
+    END
+
+    IDD_NEWDISK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 174
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 38
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        RIGHTMARGIN, 152
+        TOPMARGIN, 2
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+XMILBMP                 BITMAP  DISCARDABLE     "Icons\\Xmil.bmp"
+OPMSOUND                BITMAP  DISCARDABLE     "Icons\\Opmsound.bmp"
+ZILOG                   BITMAP  DISCARDABLE     "Icons\\zilog.bmp"
+TURBOZ                  BITMAP  DISCARDABLE     "Icons\\turboz.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_SCREENCENTER        "&Centering"
+    IDS_SNAPENABLE          "&Window Snap"
+    IDS_BACKGROUND          "&Background"
+    IDS_BGSOUND             "Back&ground Sound"
+END
+
+#endif    // “ú–{Œê resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
