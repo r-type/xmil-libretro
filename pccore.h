@@ -32,8 +32,8 @@ typedef struct {
 } PCCORE;
 
 typedef struct {
-	UINT	tl;
-	UINT	vl;
+	SINT32	dispclock;
+	SINT32	syncclock;
 	UINT8	vsync;
 	UINT8	drawframe;
 	UINT8	soundrenewal;
@@ -67,8 +67,6 @@ extern	UINT8	mBIOS[0x8000];
 extern	UINT8	mBANK[16][0x8000];
 #endif
 
-
-UINT pccore_getraster(UINT *h);
 void neitem_disp(UINT id);
 void neitem_vsync(UINT id);
 

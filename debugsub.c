@@ -25,14 +25,12 @@ void debugsub_status(void) {
 						"IY = %04x\nSP = %04x\nAF'= %04x\n"		\
 						"BC'= %04x\nDE'= %04x\nHL'= %04x\n\n"	\
 						"IM = %2d\nADRS = %02x%02x\n\n"			\
-						"CRT_YL = %3d\nCRT_VS = %3d\n\n"		\
 						"FNT_YL = %3d\nTXT_YL = %3d\nSCRN_b = %02x\n",
 						Z80_PC, Z80_AF, Z80_BC, Z80_DE,
 						Z80_HL, Z80_IX, Z80_IY, Z80_SP,
 						Z80_AF2, Z80_BC2, Z80_DE2, Z80_HL2,
 						Z80_IM, Z80_I, subcpu.Ex[4][0],
-						crtc.e.dl, crtc.e.vs,
-						crtc.e.fonty, crtc.s.TXT_YL, crtc.s.SCRN_BITS);
+						crtc.e.fonty, crtc.e.yl, crtc.s.SCRN_BITS);
 		file_write(fh, work, STRLEN(work));
 		file_close(fh);
 	}

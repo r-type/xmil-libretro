@@ -64,27 +64,28 @@ enum {
 	SCRN_DISPCHANGE	= SCRN_24KHZ|SCRN_200LINE|SCRN_TEXTYx2|SCRN_UNDERLINE
 };
 
+enum {
+	CRTCREG_HSIZE		= 0,
+	CRTCREG_HDISP		= 1,
+	CRTCREG_HSYNC		= 2,
+	CRTCREG_PULSE		= 3,
+	CRTCREG_VSIZE		= 4,
+	CRTCREG_VSIZEA		= 5,
+	CRTCREG_VDISP		= 6,
+	CRTCREG_VSYNC		= 7,
+	CRTCREG_CHRCY		= 9,
+	CRTCREG_POSL		= 12,
+	CRTCREG_POSH		= 13,
+
+	CRTCREG_MAX			= 18
+};
+
 
 typedef struct {
 	UINT8	rgbp[4];
 	UINT8	SCRN_BITS;
-	UINT8	CRTC_NUM;
-
-	BYTE	_FNT_YL;
-	BYTE	TXT_XL;
-	BYTE	TXT_YL;
-	BYTE	TXT_YS;
-
-//	WORD	CRT_YL;
-//	WORD	CRT_VS;
-//	WORD	CRT_VL;
-
-	BYTE	TXT_VL;
-	BYTE	TXT_VLA;
-
-	WORD	TXT_TOP;
-//	WORD	fnty;
-
+	UINT8	regnum;
+	UINT8	reg[CRTCREG_MAX];
 	UINT8	BLACKPAL;
 	UINT8	EXTPALMODE;
 	UINT8	EXTGRPHPAL;
@@ -100,11 +101,13 @@ typedef struct {
 	UINT8	pal_bank;
 	UINT8	pal_disp;
 
+	UINT	pos;
 	UINT	fonty;
 	UINT	yl;
 
-	UINT	dl;
-	UINT	vs;
+	SINT32	dispclock;
+	SINT32	vsyncstart;
+	SINT32	vpulseclock;
 	UINT	vl;
 } CRTCEXT;
 

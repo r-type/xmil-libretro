@@ -108,7 +108,8 @@ typedef struct {
 	NP2FHDR		f;
 } _SFFILEH, *SFFILEH;
 
-static SFFILEH statflag_open(const char *filename, char *err, int errlen) {
+static SFFILEH statflag_open(const OEMCHAR *filename,
+												OEMCHAR *err, UINT errlen) {
 
 	FILEH	fh;
 	SFFILEH	ret;
@@ -220,7 +221,7 @@ sfr_err:
 	return(STATFLAG_FAILURE);
 }
 
-static SFFILEH statflag_create(const char *filename) {
+static SFFILEH statflag_create(const OEMCHAR *filename) {
 
 	SFFILEH	ret;
 	FILEH	fh;
@@ -314,7 +315,7 @@ static void statflag_close(SFFILEH sffh) {
 	}
 }
 
-void statflag_seterr(STFLAGH sfh, const char *str) {
+void statflag_seterr(STFLAGH sfh, const OEMCHAR *str) {
 
 	if ((sfh) && (sfh->errlen)) {
 		milstr_ncat(sfh->err, str, sfh->errlen);
@@ -592,7 +593,7 @@ static int flagcheck_veronly(STFLAGH sfh, const SFENTRY *tbl) {
 
 // ----
 
-int statsave_save(const char *filename) {
+int statsave_save(const OEMCHAR *filename) {
 
 	SFFILEH		sffh;
 	int			ret;
@@ -629,7 +630,7 @@ const SFENTRY	*tblterm;
 	return(ret);
 }
 
-int statsave_check(const char *filename, char *buf, int size) {
+int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, UINT size) {
 
 	SFFILEH		sffh;
 	int			ret;
@@ -685,7 +686,7 @@ const SFENTRY	*tblterm;
 	return(ret);
 }
 
-int statsave_load(const char *filename) {
+int statsave_load(const OEMCHAR *filename) {
 
 	SFFILEH		sffh;
 	int			ret;

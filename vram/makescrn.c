@@ -29,7 +29,6 @@ static void fillupdatetmp(void) {
 	}
 }
 
-#if 1
 static void flashupdatetmp(void) {
 
 	UINT	posl;
@@ -45,17 +44,17 @@ static void flashupdatetmp(void) {
 	if (!makescrn.vramsize) {
 		return;
 	}
-	posl = crtc.s.TXT_TOP;
-	y = crtc.s.TXT_YL;
+	posl = crtc.e.pos;
+	y = crtc.e.yl;
 	do {
-		for (x=0; x<crtc.s.TXT_XL; x++) {
+		for (x=0; x<crtc.s.reg[CRTCREG_HDISP]; x++) {
 			if (!(tram[TRAM_ATR + LOW11(posl + x)] & TRAMATR_Yx2)) {
 				break;
 			}
 		}
-		y2 = (x < crtc.s.TXT_XL)?FALSE:TRUE;
-		udtbase = (x < crtc.s.TXT_XL)?0x0000:0x0404;
-		r = (crtc.s.TXT_XL + 1) >> 1;
+		y2 = (x < crtc.s.reg[CRTCREG_HDISP])?FALSE:TRUE;
+		udtbase = (x < crtc.s.reg[CRTCREG_HDISP])?0x0000:0x0404;
+		r = (crtc.s.reg[CRTCREG_HDISP] + 1) >> 1;
 		do {
 			posr = LOW11(posl + 1);
 			atr = (tram[TRAM_ATR + posl] << 8) | tram[TRAM_ATR + posr];
@@ -90,111 +89,11 @@ static void flashupdatetmp(void) {
 			}
 			posl = LOW11(posl + 2);
 		} while(--r);
-		if (crtc.s.TXT_XL & 1) {
+		if (crtc.s.reg[CRTCREG_HDISP] & 1) {
 			posl = LOW11(posl - 1);
 		}
 	} while(--y);
 }
-#else
-static LABEL void flashupdatetmp(void) {
-
-		__asm {
-				push	ebx
-				push	esi
-				push	edi
-
-				movzx	esi, crtc.s.TXT_TOP
-				xor		dl, dl
-										// ‚Ü‚¸s‚·‚×‚Ä‚ªc”{Šp‚©’²‚×‚é
-check_tateflag:	mov		edi, esi
-				movzx	ecx, crtc.s.TXT_XL
-tateflaglp_s:	and		edi, (TRAM_MAX - 1)
-				test	tram[TRAM_ATR + edi], X1ATR_Yx2
-				je		tatex1
-				inc		edi
-				loop	tateflaglp_s
-										// ‚·‚×‚Äc”{Šp ‚¾‚Á‚½‚ç
-
-				movzx	ecx, crtc.s.TXT_XL
-				shr		cl, 1
-
-tatex2loop_s:	and		esi, (TRAM_MAX - 1)
-				mov		ax, (UPDATE_TVRAM or 04h) * 0101h		// c”{Šp
-				mov		bx, word ptr (tram[TRAM_ATR + esi])
-
-				test	bl, X1ATR_Xx2
-				je		tatex2_norleft
-												// ”{Špƒtƒ‰ƒO‚ª—§‚Á‚Ä‚é
-				or		ax, 08h + 12h * 256		// ¶‚S”{Šp + ‰Ec”{Šp‚ÍŠm’è
-				test	bh, X1ATR_Xx2
-				je		tatex2_pcg
-				or		ah, 8					// ‰E‘¤‚à”{Špƒrƒbƒg‚ª—§‚Á‚Ä‚½
-				jmp		tatex2_pcg
-
-tatex2_norleft:	test	bh, X1ATR_Xx2			// ‚S”{Šp‚Å‚È‚¢ê‡
-				je		tatex2_pcg
-				or		ah, 8					// ‰E‘¤‚Ì‚Ý”{Šp‚¾‚Á‚½
-tatex2_pcg:		mov		bx, word ptr (updatetmp[esi])
-				and		bx, UPDATE_TVRAM * 0101h
-				or		ax, bx					// UPDATEƒtƒ‰ƒO‚ð‰Á‚¦‚é
-				cmp		word ptr (updatetmp[esi]), ax
-				je		tatex2noupdate
-				or		ax, UPDATE_TVRAM * 0101h
-				mov		word ptr (updatetmp[esi]), ax
-tatex2noupdate:	add		esi, 2
-				loop	tatex2loop_s
-				jmp		nextlinecheck
-
-tatex1:			movzx	ecx, crtc.s.TXT_XL
-				shr		cl, 1
-				xor		dh, dh
-tatex1loop_s:	and		esi, (TRAM_MAX - 1)
-				xor		ax, ax
-				mov		bx, word ptr (tram[TRAM_ATR + esi])
-				or		dh, dh					// cƒm[ƒ}ƒ‹‚ÍŠù‚É‚ ‚Á‚½‚©H
-				jne		tatex1_tate_e
-				test	bl, X1ATR_Yx2
-				je		tatex1_tate0
-				mov		al, UPDATE_TVRAM or 1	// ¶’×‚êc”{Šp
-				test	bh, X1ATR_Yx2
-				je		tatex1_tate0
-				mov		ah, UPDATE_TVRAM or 1	// ‰E’×‚êc”{Šp
-				jmp		tatex1_tate_e
-tatex1_tate0:	inc		dh						// cƒm[ƒ}ƒ‹‚ÌoŒ»
-tatex1_tate_e:
-				test	bl, X1ATR_Xx2
-				je		tatex1_norleft
-												// ”{Špƒtƒ‰ƒO‚ª—§‚Á‚Ä‚é
-				or		ax, 08h + (12h * 256)	// ¶‰¡”{Šp ‚ÍŠm’è
-				test	bh, X1ATR_Xx2
-				je		tatex1_pcg
-				or		ah, 8					// ‰E‘¤‚à”{Špƒrƒbƒg‚ª—§‚Á‚Ä‚½
-				jmp		tatex1_pcg
-
-tatex1_norleft:	test	bh, X1ATR_Xx2			// ”{Šp‚Å‚È‚¢ê‡
-				je		tatex1_pcg
-				or		ah, 8					// ‰E‘¤‚Ì‚Ý”{Šp‚¾‚Á‚½
-tatex1_pcg:		mov		bx, word ptr (updatetmp[esi])
-				and		bx, UPDATE_TVRAM * 0101h
-				or		ax, bx
-				cmp		word ptr (updatetmp[esi]), ax
-				je		tatex1noupdate
-				or		ax, UPDATE_TVRAM * 0101h
-				mov		word ptr (updatetmp[esi]), ax
-tatex1noupdate:	add		esi, 2
-				loop	tatex1loop_s
-
-nextlinecheck:	inc		dl
-				cmp		dl, crtc.s.TXT_YL
-				jb		check_tateflag
-
-				pop		edi
-				pop		esi
-				pop		ebx
-				ret
-	}
-}
-#endif
 
 static BRESULT updateblink(void) {
 
@@ -266,11 +165,11 @@ static void changecrtc(void) {
 	UINT	y;
 	UINT8	*p;
 
-	makescrn.vramtop = LOW11(crtc.s.TXT_TOP);
+	makescrn.vramtop = crtc.e.pos;
 
-	scrnxmax = (crtc.s.TXT_XL <= 40)?40:80;
+	scrnxmax = (crtc.s.reg[CRTCREG_HDISP] <= 40)?40:80;
 	scrnymax = 200;
-	if (crtc.s.TXT_XL <= 40) {
+	if (crtc.s.reg[CRTCREG_HDISP] <= 40) {
 		if (lastdisp & SCRN_DRAW4096) {
 			widthmode = SCRNWIDTHMODE_4096;
 		}
@@ -283,7 +182,7 @@ static void changecrtc(void) {
 	}
 	scrndraw_changewidth(widthmode);
 
-	textxl = crtc.s.TXT_XL;
+	textxl = crtc.s.reg[CRTCREG_HDISP];
 	surfcx = min(scrnxmax, textxl);
 
 	fontcy = crtc.e.fonty;
@@ -312,8 +211,8 @@ static void changecrtc(void) {
 	makescrn.charcy = charcy;
 	charcy <<= y2;
 	surfcy = scrnymax / charcy;
-	if (surfcy > crtc.s.TXT_YL) {
-		surfcy = crtc.s.TXT_YL;
+	if (surfcy > crtc.e.yl) {
+		surfcy = crtc.e.yl;
 	}
 
 	x = min(scrnxmax, makescrn.surfcx);
@@ -328,8 +227,8 @@ static void changecrtc(void) {
 		}
 	}
 	if (surfcy < makescrn.surfcy) {
-		ZeroMemory(screenmap + (SURFACE_WIDTH * surfcy * 2),
-							SURFACE_WIDTH * (makescrn.surfcy - surfcy) * 2);
+		ZeroMemory(screenmap + (SURFACE_WIDTH * surfcy * charcy * 2),
+					SURFACE_WIDTH * (makescrn.surfcy - surfcy) * charcy * 2);
 	}
 	makescrn.surfcx = surfcx;
 	makescrn.surfrx = textxl - surfcx;
@@ -376,6 +275,7 @@ void scrnupdate(void) {
 		scrnallflash = 0;
 		fillupdatetmp();
 		changecrtc();
+		ddrawflash = TRUE;
 		allflash = TRUE;
 		makescrn.scrnflash = 1;
 	}
@@ -386,7 +286,7 @@ void scrnupdate(void) {
 	if (makescrn.palandply) {
 		makescrn.palandply = 0;
 		pal_update();
-		ddrawflash = 1;
+		ddrawflash = TRUE;
 	}
 	if (makescrn.existblink) {
 		makescrn.scrnflash |= updateblink();
