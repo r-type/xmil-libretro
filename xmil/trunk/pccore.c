@@ -31,8 +31,8 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 
 	PCCORE		pccore;
 	CORESTAT	corestat;
-	BYTE		mMAIN[0x10000];
-	BYTE		mBIOS[0x8000];
+	UINT8		mMAIN[0x10000];
+	UINT8		mBIOS[0x8000];
 #if defined(SUPPORT_BANKMEM)
 	UINT8		mBANK[16][0x8000];
 #endif
@@ -97,8 +97,6 @@ void pccore_reset(void) {
 		sndctrl_deinitialize();
 		sndctrl_initialize();
 	}
-	sound_reset();
-
 
 	pccore.baseclock = 2000000;
 	pccore.multiple = 2;
@@ -118,12 +116,15 @@ void pccore_reset(void) {
 		scrnmng_setcolormode(FALSE);
 	}
 
-	sound_changeclock();
 	sysmng_cpureset();
+
+	sound_changeclock();
+	sound_reset();
 
 	Z80_RESET();
 	nevent_allreset();
 	ievent_reset();
+	calendar_reset();
 	iocore_reset();
 
 	ipl_load();
@@ -131,21 +132,6 @@ void pccore_reset(void) {
 	RAM0r = mBIOS;
 	RAM0w = mMAIN;
 
-	cgrom_reset();
-	cmt_reset();
-	crtc_reset();
-	ctc_reset();
-	dmac_reset();
-	fdc_reset();
-	memio_reset();
-	pcg_reset();
-	ppi_reset();
-	sio_reset();
-	sndboard_reset();
-	subcpu_reset();
-	vramio_reset();
-
-	calendar_reset();
 	pal_reset();
 	makescrn_reset();
 	timing_reset();
@@ -204,7 +190,7 @@ UINT pccore_getraster(UINT *h) {
 	return(vl);
 }
 
-void nvitem_vdisp(UINT id) {
+void neitem_disp(UINT id) {
 
 	corestat.vsync = 1;
 	pcg.r.vsync = 1;
@@ -212,10 +198,10 @@ void nvitem_vdisp(UINT id) {
 		scrnupdate();
 	}
 	nevent_set(id, (corestat.tl - corestat.vl) * 250,
-											nvitem_vsync, NEVENT_RELATIVE);
+											neitem_vsync, NEVENT_RELATIVE);
 }
 
-void nvitem_vsync(UINT id) {
+void neitem_vsync(UINT id) {
 
 	corestat.vsync = 2;
 	(void)id;
@@ -233,7 +219,7 @@ void pccore_exec(BRESULT draw) {
 	corestat.vl = min(corestat.tl, crtc.e.dl);
 	corestat.vsync = 0;
 	nevent_set(NEVENT_FRAMES, corestat.vl * 250,
-											nvitem_vdisp, NEVENT_RELATIVE);
+											neitem_disp, NEVENT_RELATIVE);
 	do {
 #if !defined(SINGLESTEPONLY)
 		if (CPU_REMCLOCK > 0) {

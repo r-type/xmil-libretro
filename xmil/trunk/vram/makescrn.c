@@ -466,8 +466,8 @@ void makescrn_initialize(void) {
 
 void makescrn_reset(void) {
 
-	fillupdatetmp();
 	changemodes();
 	changecrtc();
+	flashupdatetmp();
 }
 

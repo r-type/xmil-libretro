@@ -107,6 +107,29 @@ REG8 IOINPCALL sndboard_psgsta(UINT port) {
 
 // ----
 
+void sndboard_update(void) {
+
+	UINT	i;
+
+	if (romeo_exist) {
+		for (i=0; i<14; i++) {
+			juliet_YMF288A((REG8)i, sndboard.psgdat[i]);
+		}
+		for (i=0x20; i<0x100; i++) {
+			juliet_YM2151W((REG8)i, sndboard.opmdat[i]);
+		}
+	}
+	else {
+		for (i=0; i<14; i++) {
+			psggen_setreg(&psggen, (REG8)i, sndboard.psgdat[i]);
+		}
+		for (i=0x20; i<0x100; i++) {
+TRACEOUT(("%.2x %.2x", (REG8)i, sndboard.opmdat[i]));
+			opmgen_setreg((REG8)i, sndboard.opmdat[i]);
+		}
+	}
+}
+
 void sndboard_reset(void) {
 
 	ZeroMemory(&sndboard, sizeof(sndboard));

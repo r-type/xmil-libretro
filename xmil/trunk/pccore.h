@@ -61,16 +61,16 @@ extern	CORESTAT	corestat;
 extern	BYTE		*RAM0r;
 extern	BYTE		*RAM0w;
 
-extern	BYTE	mMAIN[0x10000];
-extern	BYTE	mBIOS[0x8000];
+extern	UINT8	mMAIN[0x10000];
+extern	UINT8	mBIOS[0x8000];
 #if defined(SUPPORT_BANKMEM)
-extern	BYTE	mBANK[16][0x8000];
+extern	UINT8	mBANK[16][0x8000];
 #endif
 
 
 UINT pccore_getraster(UINT *h);
-void nvitem_vdisp(UINT id);
-void nvitem_vsync(UINT id);
+void neitem_disp(UINT id);
+void neitem_vsync(UINT id);
 
 void pccore_initialize(void);
 void pccore_reset(void);

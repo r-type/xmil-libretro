@@ -180,10 +180,21 @@ static const IOOUT defout[0x20] = {
 			memio_ram,			port1fxx_o};
 
 
+typedef void (*INITFN)(void);
+
+static const INITFN initfn[] = {
+			cgrom_reset,	cmt_reset,		crtc_reset,
+			ctc_reset,		dmac_reset,		fdc_reset,
+			memio_reset,	pcg_reset,		ppi_reset,
+			sio_reset,		sndboard_reset,	subcpu_reset,
+			vramio_reset};
+
 
 // ----
 
 void iocore_reset(void) {
+
+	UINT	i;
 
 	ZeroMemory(&iocore, sizeof(iocore));
 	CopyMemory(iocore.e.inpfn, definp, sizeof(definp));
@@ -203,6 +214,9 @@ void iocore_reset(void) {
 	if (pccore.SOUND_SW) {
 		iocore.e.inpfn[0x07] = opm_i;
 		iocore.e.outfn[0x07] = opm_o;
+	}
+	for (i=0; i<NELEMENTS(initfn); i++) {
+		(initfn[i])();
 	}
 }
 

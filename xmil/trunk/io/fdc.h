@@ -61,7 +61,7 @@ typedef struct {
 extern "C" {
 #endif
 
-void nvitem_fdcbusy(UINT id);
+void neitem_fdcbusy(UINT id);
 
 void IOOUTCALL fdc_o(UINT port, REG8 value);		// x1_fdc_w
 REG8 IOINPCALL fdc_i(UINT port);					// x1_fdc_r

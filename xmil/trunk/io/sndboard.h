@@ -13,6 +13,8 @@ typedef struct {
 extern "C" {
 #endif
 
+void sndboard_update(void);
+
 void IOOUTCALL opm_o(UINT port, REG8 dat);
 REG8 IOINPCALL opm_i(UINT port);
 

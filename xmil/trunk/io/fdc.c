@@ -13,7 +13,7 @@
 static const UINT8 fdctype[] = {1,1,1,1,1,1,1,1,2,2,2,2,3,4,3,3};
 
 
-void nvitem_fdcbusy(UINT id) {
+void neitem_fdcbusy(UINT id) {
 
 	fdc.s.busy = FALSE;
 	if (fdc.s.bufdir) {
@@ -26,7 +26,7 @@ void nvitem_fdcbusy(UINT id) {
 static void setbusy(UINT clock) {
 
 	fdc.s.busy = TRUE;
-	nevent_set(NEVENT_FDC, clock, nvitem_fdcbusy, NEVENT_ABSOLUTE);
+	nevent_set(NEVENT_FDC, clock, neitem_fdcbusy, NEVENT_ABSOLUTE);
 }
 
 static REG8 getstat(void) {
@@ -439,5 +439,6 @@ void fdc_reset(void) {
 	FDDMTR_INIT;
 	ZeroMemory(&fdc, sizeof(fdc));
 	fdc.s.step = 1;
+	fdc.s.equip = xmilcfg.fddequip;
 }
 
