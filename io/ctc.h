@@ -10,6 +10,7 @@ typedef struct {
 	UINT8	basecnt[4];
 	SINT32	count[4];
 	SINT32	countmax[4];
+	SINT32	range[4];
 } CTCCH;
 
 typedef struct {

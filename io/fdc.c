@@ -167,7 +167,7 @@ static REG8 type2cmd(REG8 sc) {
 	}
 	size = sizeof(fdc.s.buffer);
 	fdd = fddfile + fdc.s.drv;
-	TRACEOUT(("read %.2x %d %d", fdc.s.drv, track, sc));
+//	TRACEOUT(("read %.2x %d %d", fdc.s.drv, track, sc));
 	stat = fdd->read(fdd, fdc.s.media, track, sc, p, &size);
 	if (stat & FDDSTAT_RECNFND) {
 		size = 0;
@@ -198,7 +198,7 @@ static REG8 type2cmd(REG8 sc) {
 		curclock -= fdc.s.motorclock[fdc.s.drv];
 		if (curclock < (SINT32)pccore.realclock) {
 			nextclock = pccore.realclock - curclock;
-			TRACEOUT(("motor starting busy %d", nextclock));
+//			TRACEOUT(("motor starting busy %d", nextclock));
 			clock += nextclock;
 		}
 	}
@@ -212,8 +212,8 @@ static REG8 type2cmd(REG8 sc) {
 		if (nextclock < 0) {
 			nextclock += fdc.s.loopclock;
 		}
-		TRACEOUT(("wait clock -> %d [%d/%d]", nextclock,
-									LOW16(secinfo), LOW16(secinfo >> 16)));
+//		TRACEOUT(("wait clock -> %d [%d/%d]", nextclock,
+//									LOW16(secinfo), LOW16(secinfo >> 16)));
 		clock += nextclock;
 	}
 	setbusy(max(clock, 500));
@@ -244,7 +244,7 @@ static REG8 crccmd(void) {
 
 	track = (fdc.s.c << 1) + fdc.s.h;
 	fdd = fddfile + fdc.s.drv;
-TRACEOUT(("fdd->crc %d %d %d", fdc.s.drv, track, fdc.s.crcnum));
+// TRACEOUT(("fdd->crc %d %d %d", fdc.s.drv, track, fdc.s.crcnum));
 	stat = fdd->crc(fdd, fdc.s.media, track, fdc.s.crcnum, fdc.s.buffer);
 	if (stat & FDDSTAT_RECNFND) {
 		fdc.s.crcnum = 0;
@@ -310,13 +310,13 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 	if ((port & (~7)) != 0x0ff8) {
 		return;
 	}
-	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
+//	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
 	switch(port & 7) {
 		case 0:									// コマンド
 			fdc.s.cmd = value;
 			cmd = (REG8)(value >> 4);
 			fdc.s.type = fdctype[cmd];
-			TRACEOUT(("fdc cmd: %.2x", value));
+//			TRACEOUT(("fdc cmd: %.2x", value));
 			if (fdc.s.bufwrite) {
 				fdc.s.stat = type2flash();
 			}
@@ -473,7 +473,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 			if (!(ret & 0x02)) {
 				dmac_sendready(FALSE);
 			}
-			TRACEOUT(("ret->%.2x", ret));
+//			TRACEOUT(("ret->%.2x", ret));
 			return(ret);
 
 		case 1:									// トラック
@@ -486,7 +486,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 			if (fdc.s.motor) {
 				if (fdc.s.bufdir == FDCDIR_IN) {
 					fdc.s.data = fdc.s.buffer[fdc.s.bufpos];
-TRACEOUT(("read %.2x - %.2x [%.4x]", fdc.s.bufpos, fdc.s.data, Z80_PC));
+// TRACEOUT(("read %.2x - %.2x [%.4x]", fdc.s.bufpos, fdc.s.data, Z80_PC));
 					bufposinc();
 				}
 			}

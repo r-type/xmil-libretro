@@ -54,7 +54,7 @@ void z80dmap(void) {
 				iocore_out(addr, dat);
 			}
 			else {
-				TRACEOUT(("dma->%.4x", addr));
+TRACEOUT(("dma!"));
 				z80mem_write8(addr, dat);
 			}
 		}
