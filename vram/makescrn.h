@@ -48,8 +48,9 @@ extern	BYTE	scrnallflash;
 extern	DWORD	drawtime;
 
 
-void init_draw(void);
 void scrnupdate(void);
+void makescrn_initialize(void);
+void makescrn_reset(void);
 
 #ifdef __cplusplus
 }

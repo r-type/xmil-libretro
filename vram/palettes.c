@@ -229,7 +229,7 @@ static void pal4096to64(RGB32 *pal, const UINT16 *map) {
 	} while(--r);
 }
 
-void palettes(void) {
+void pal_update(void) {
 
 	int		i, j;
 	BYTE	bit;
@@ -331,13 +331,18 @@ void palettes(void) {
 		}
 		xm_palettes = 64+8;
 	}
+#if defined(SUPPORT_16BPP)
+	if (scrnmng_getbpp() == 16) {
+		pals_cnv16pal(x1n_pal16, x1n_pal32, xm_palettes);
+	}
+#endif
 	scrndraw_changepalette();
 }
 
 
 // ----
 
-void reflesh_palette(void) {
+void pal_reset(void) {
 
 	REG8	i;
 	REG8	j;

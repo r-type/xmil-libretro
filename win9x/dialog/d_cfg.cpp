@@ -136,7 +136,7 @@ static void cfgupdate(HWND hWnd) {
 		renewalflg = TRUE;
 	}
 	if (renewalflg) {
-		reflesh_palette();
+		pal_reset();
 		makescrn.palandply = 1;
 		updateflag |= SYS_UPDATECFG;
 	}

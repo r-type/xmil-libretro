@@ -263,7 +263,7 @@ void xmenu_setskipline(UINT8 value) {
 	value &= 1;
 	xmilcfg.SKIP_LINE = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_SKIPLINE, MFCHECK(value));
-	reflesh_palette();
+	pal_reset();
 	makescrn.palandply = 1;
 }
 

@@ -25,15 +25,6 @@ static	BYTE	blinktime = 1;
 		DWORD	drawtime = 0;
 
 
-void init_draw(void) {
-
-	makesub_initialize();
-	reflesh_palette();
-	lastdisp = 0;
-	dispflg = UPDATE_TRAM | UPDATE_VRAM0;
-	dispp = &GRP_RAM[GRAM_BANK0];
-}
-
 static void fillupdatetmp(void) {
 
 	UINT32	*p;
@@ -245,9 +236,26 @@ static BRESULT updateblink(void) {
 }
 
 
-// ---------------------------------------------------------------------------
+// ----
 
-static void x1vram_adjust(void) {
+static void changemodes(void) {
+
+	lastdisp = dispmode;
+	if (!(dispmode & SCRN_BANK1)) {
+		dispp = GRP_RAM + GRAM_BANK0;
+		dispp2 = GRP_RAM + GRAM_BANK1;
+		dispflg = UPDATE_TRAM | UPDATE_VRAM0;
+	}
+	else {
+		dispp = GRP_RAM + GRAM_BANK1;
+		dispp2 = GRP_RAM + GRAM_BANK0;
+		dispflg = UPDATE_TRAM | UPDATE_VRAM1;
+	}
+	scrnallflash = 1;
+	makescrn.palandply = 1;
+}
+
+static void changecrtc(void) {
 
 	REG8	widthmode;
 	UINT	fontcy;
@@ -342,24 +350,12 @@ void scrnupdate(void) {
 
 	ddrawflash = FALSE;
 	if (lastdisp != dispmode) {
-		lastdisp = dispmode;
-		scrnallflash = 1;
-		makescrn.palandply = 1;
-		if (!(dispmode & SCRN_BANK1)) {
-			dispp = GRP_RAM + GRAM_BANK0;
-			dispp2 = GRP_RAM + GRAM_BANK1;
-			dispflg = UPDATE_TRAM | UPDATE_VRAM0;
-		}
-		else {
-			dispp = GRP_RAM + GRAM_BANK1;
-			dispp2 = GRP_RAM + GRAM_BANK0;
-			dispflg = UPDATE_TRAM | UPDATE_VRAM1;
-		}
+		changemodes();
 	}
 	if (scrnallflash) {
 		scrnallflash = 0;
 		fillupdatetmp();
-		x1vram_adjust();
+		changecrtc();
 		makescrn.scrnflash = 1;
 	}
 	if (makescrn.remakeattr) {
@@ -368,7 +364,7 @@ void scrnupdate(void) {
 	}
 	if (makescrn.palandply) {
 		makescrn.palandply = 0;
-		palettes();
+		pal_update();
 		ddrawflash = 1;
 	}
 	if (makescrn.existblink) {
@@ -437,5 +433,18 @@ void scrnupdate(void) {
 		scrndraw_draw(FALSE);
 		drawtime++;
 	}
+}
+
+
+void makescrn_initialize(void) {
+
+	makesub_initialize();
+}
+
+void makescrn_reset(void) {
+
+	fillupdatetmp();
+	changemodes();
+	changecrtc();
 }
 

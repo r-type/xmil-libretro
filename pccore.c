@@ -4,19 +4,20 @@
 #include	"soundmng.h"
 #include	"sysmng.h"
 #include	"timemng.h"
+#include	"xmilver.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"timing.h"
+#include	"calendar.h"
+#include	"keystat.h"
+#include	"palettes.h"
 #include	"makescrn.h"
 #include	"sound.h"
 #include	"sndctrl.h"
 #include	"font.h"
-#include	"xmilver.h"
 #include	"fddfile.h"
-#include	"calendar.h"
-#include	"timing.h"
 #include	"defrom.res"
-#include	"keystat.h"
 
 
 const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
@@ -73,7 +74,7 @@ void ipl_load(void) {
 	èâä˙âª
 ***********************************************************************/
 
-BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
+static BRESULT reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 
 	pccore.HSYNC_CLK = 250;
 	pccore.ROM_TYPE = ROM_TYPE;
@@ -116,6 +117,8 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 	subcpu_reset();
 	vramio_reset();
 
+	pal_reset();
+	makescrn_reset();
 	timing_reset();
 	return(SUCCESS);
 }
@@ -131,15 +134,15 @@ static	BYTE	keyintcnt = 0;
 void pccore_initialize(void) {
 
 	sndctrl_initialize();
+	makescrn_initialize();
 
-	init_draw();
 	font_load(NULL, TRUE);
 
 	crtc_initialize();
 	pcg_initialize();
 	ppi_initialize();
 
-	reset_x1(xmilcfg.ROM_TYPE, xmilcfg.SOUND_SW, xmilcfg.DIP_SW);
+//	reset_x1(xmilcfg.ROM_TYPE, xmilcfg.SOUND_SW, xmilcfg.DIP_SW);
 
 //	keystat_initialize();
 //	keystat_reset();
