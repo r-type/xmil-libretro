@@ -18,21 +18,19 @@
 #include "resource.h"
 #include "scrnmng.h"
 
-extern bool wrapperMouseDown(EventRef event);
-
 static const EventTypeSpec appEventList[] = {
                 {kEventClassCommand, 	kEventCommandProcess },
 				{kEventClassAppleEvent,	kEventAppleEvent},
 				{kEventClassMouse,		kEventMouseDown},
+				{kEventClassMouse,		kEventMouseUp},
 				{kEventClassMouse,		kEventMouseMoved},
 				{kEventClassMouse,		kEventMouseDragged},
-				{kEventClassMouse,		kEventMouseUp},
 				{kEventClassKeyboard,	kEventRawKeyModifiersChanged},
 			};
 
 static const EventTypeSpec windEventList[] = {
 				{kEventClassWindow,		kEventWindowClose},
-//				{kEventClassWindow,		kEventWindowActivated},
+				{kEventClassWindow,		kEventWindowActivated},
 //				{kEventClassWindow,		kEventWindowToolbarSwitchMode},
 				{kEventClassWindow,		kEventWindowDragStarted},
 				{kEventClassWindow,		kEventWindowDragCompleted},
@@ -75,7 +73,7 @@ static pascal OSStatus appevent (EventHandlerCallRef myHandlerChain, EventRef ev
                     long start, fin;
                     const char	urlStr[] = "http://retropc.net/tk800/xmil/help/help.html";
 
-                    ICStart(&inst, 'xMil');
+                    ICStart(&inst, 'XMil');
                     start = 0;
                     fin = strlen(urlStr);
                     ICLaunchURL(inst, "\p", urlStr, strlen(urlStr), &start, &fin);
@@ -171,13 +169,17 @@ static pascal OSStatus windowevent(EventHandlerCallRef myHandler,  EventRef even
                     result = noErr;
                     break;
                 case kEventRawKeyDown:
+					if (!xmilrunning) {
+						result = noErr;
+						break;
+					}
                     if (modif & cmdKey) {
-                        wrapperMouseDown(event);
+                        wrapperKeyDown(event);
                     }
                     else {
                         mackbd_keydown(key, TRUE);
                     }
-                    result = noErr;
+					result = noErr;
                     break;
                 default: 
                     break;             

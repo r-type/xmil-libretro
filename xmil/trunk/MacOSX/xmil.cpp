@@ -79,8 +79,25 @@ static void MenuBarInit(void) {
 		DeleteMenuItem(GetMenuRef(IDM_OTHER), 7);
 	}
 
-	DeleteMenu(IDM_FDD2);
-	DeleteMenu(IDM_FDD3);
+    DisableAllMenuItems(GetMenuHandle(IDM_EDIT));
+
+	if (!(xmilcfg.fddequip & (1 << 3))) {
+		DeleteMenu(IDM_FDD3);
+	} else {
+		ChangeMenuAttributes(GetMenuRef(IDM_FDD3), 0, kMenuAttrHidden);
+	}
+	if (!(xmilcfg.fddequip & (1 << 2))) {
+		DeleteMenu(IDM_FDD2);
+	} else {
+		ChangeMenuAttributes(GetMenuRef(IDM_FDD2), 0, kMenuAttrHidden);
+	}
+	if (!(xmilcfg.fddequip & (1 << 1))) {
+		DeleteMenu(IDM_FDD1);
+	}
+	if (!(xmilcfg.fddequip & (1 << 0))) {
+		DeleteMenu(IDM_FDD0);
+	}
+
 }
 
 static void HandleMenuChoice(long wParam) {
@@ -120,6 +137,7 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_FDD0EJECT:
 			diskdrv_setfdd(0, NULL, 0);
+			//DisableMenuItem(GetMenuRef(IDM_FDD0), IDM_FDD0EJECT);
 			break;
 
 		case IDM_FDD1OPEN:
@@ -128,6 +146,7 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_FDD1EJECT:
 			diskdrv_setfdd(1, NULL, 0);
+			//DisableMenuItem(GetMenuRef(IDM_FDD1), IDM_FDD1EJECT);
 			break;
 
 		case IDM_FDD2OPEN:
@@ -136,6 +155,7 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_FDD2EJECT:
 			diskdrv_setfdd(2, NULL, 0);
+			//DisableMenuItem(GetMenuRef(IDM_FDD2), IDM_FDD2EJECT);
 			break;
 
 		case IDM_FDD3OPEN:
@@ -144,6 +164,7 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_FDD3EJECT:
 			diskdrv_setfdd(3, NULL, 0);
+			//DisableMenuItem(GetMenuRef(IDM_FDD3), IDM_FDD3EJECT);
 			break;
 
 		case IDM_TURBOZ:
@@ -182,17 +203,11 @@ static void HandleMenuChoice(long wParam) {
 			break;
 
 		case IDM_WIDTH80:
-			crtc.s.TXT_XL = 80;
-//			crtc.s.GRP_XL = 640;
-			vrambank_patch();
-			scrnallflash = 1;
+			crtc_forcesetwidth(80);
 			break;
 
 		case IDM_WIDTH40:
-			crtc.s.TXT_XL = 40;
-//			crtc.s.GRP_XL = 320;
-			vrambank_patch();
-			scrnallflash = 1;
+			crtc_forcesetwidth(40);
 			break;
 
 		case IDM_DISPSYNC:
@@ -681,10 +696,20 @@ int main(int argc, char *argv[]) {
 	return(0);
 }
 
-
 void wrapperMouseDown(EventRef event) {
     EventRecord	eve;
 	
     ConvertEventRefToEventRecord( event,&eve );
 	HandleMouseDown(&eve);
+}
+
+void wrapperKeyDown(EventRef event) {
+    EventRecord	eve;
+	
+    ConvertEventRefToEventRecord( event,&eve );
+	soundmng_stop();
+	mousemng_disable(MOUSEPROC_MACUI);
+	HandleMenuChoice(MenuEvent(&eve));
+	mousemng_enable(MOUSEPROC_MACUI);
+	soundmng_play();
 }

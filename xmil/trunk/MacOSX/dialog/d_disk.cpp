@@ -17,6 +17,24 @@ void dialog_changefdd(BYTE drv) {
 	if (drv < 4) {
 		if (dlgs_selectfile(fname, sizeof(fname))) {
 			diskdrv_setfdd(drv, fname, 0);
+
+			switch (drv) {
+				case 0:
+					EnableMenuItem(GetMenuHandle(IDM_FDD0), IDM_FDD0EJECT);
+					break;
+				case 1:
+					EnableMenuItem(GetMenuHandle(IDM_FDD1), IDM_FDD1EJECT);
+					break;
+				case 2:
+					EnableMenuItem(GetMenuHandle(IDM_FDD2), IDM_FDD2EJECT);
+					break;
+				case 3:
+					EnableMenuItem(GetMenuHandle(IDM_FDD3), IDM_FDD3EJECT);
+					break;
+				default:
+					break;
+			}
+
 		}
 	}
 }

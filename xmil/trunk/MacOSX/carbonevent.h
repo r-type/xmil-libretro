@@ -8,3 +8,5 @@
 
 bool window_initialize(void);
 
+extern void wrapperMouseDown(EventRef event);
+extern void wrapperKeyDown(EventRef event);
