@@ -123,7 +123,6 @@ REG8 IOINPCALL pcg_i(UINT port) {
 	UINT	knj;
 	UINT	addr;
 
-	TRACEOUT(("pcg->%.4x", port));
 	upper = port & 0x0300;
 	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
 		waithsync();

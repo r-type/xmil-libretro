@@ -18,6 +18,7 @@ void width80x25_200h(void) {								// 80x25 200line
 	UINT8	*lp;
 	UINT	x;
 	REG8	udtmp;
+	REG8	dirty;
 	UINT8	work[MAKETEXT_STEP * 2];
 const UINT8	*src;
 	UINT	lines;
@@ -33,17 +34,25 @@ const UINT8	*src;
 		x = makescrn.surfcx;
 		do {
 			udtmp = updatetmp[pos];
-			if (udtmp & makescrn.dispflag) {
-				updatetmp[pos] = (UINT8)(udtmp & (~makescrn.dispflag));
+			dirty = udtmp & makescrn.dispflag;
+			if (dirty) {
+				updatetmp[pos] = (UINT8)(udtmp ^ dirty);
 				newline = TRUE;
-				ZeroMemory(work, sizeof(work));
-				makechr16(work, pos, fontcy, udtmp);
-				src = makescrn.disp1 + (pos << 5);
-				makemix_mix(dst, SURFACE_WIDTH * 2, work, src, fontcy);
-				makemix_mix(dst + SURFACE_WIDTH, SURFACE_WIDTH * 2,
-									work + MAKETEXT_STEP, src, fontcy);
+				if (dirty & UPDATE_TRAM) {
+					ZeroMemory(work, sizeof(work));
+					makechr16(work, pos, fontcy, udtmp);
+					makemix_mixtext(dst, SURFACE_WIDTH * 2, work, fontcy);
+					makemix_mixtext(dst + SURFACE_WIDTH, SURFACE_WIDTH * 2,
+											work + MAKETEXT_STEP, fontcy);
+				}
+				if (dirty & UPDATE_VRAM) {
+					src = makescrn.disp1 + (pos << 5);
+					makemix_mixgrph(dst, SURFACE_WIDTH * 2, src, fontcy);
+					makemix_mixgrph(dst + SURFACE_WIDTH, SURFACE_WIDTH * 2,
+															src, fontcy);
+				}
 				if (fontcy < makescrn.fontcy) {
-					makemix_remcpy(dst, fontcy * 2, makescrn.fontcy * 2);
+					makemix_cpy400(dst, fontcy * 2, makescrn.fontcy * 2);
 				}
 			}
 			pos = LOW11(pos + 1);
@@ -95,18 +104,28 @@ const UINT8	*src;
 		x = makescrn.surfcx;
 		do {
 			udtmp = updatetmp[pos];
-			if (udtmp & UPDATE_VRAM) {
-				updatetmp[pos] = (UINT8)(udtmp & (~UPDATE_VRAM));
+			if (udtmp & UPDATE_TVRAM) {
+				updatetmp[pos] = (UINT8)(udtmp & (~UPDATE_TVRAM));
 				newline = TRUE;
-				ZeroMemory(work, sizeof(work));
-				makechr16(work, pos, fontcy, udtmp);
+				if (udtmp & UPDATE_TRAM) {
+					ZeroMemory(work, sizeof(work));
+					makechr16(work, pos, fontcy, udtmp);
+					makemix_mixtext(dst + SURFACE_WIDTH * 0, SURFACE_WIDTH * 2,
+												work, fontcy);
+					makemix_mixtext(dst + SURFACE_WIDTH * 1, SURFACE_WIDTH * 2,
+												work + MAKETEXT_STEP, fontcy);
+				}
 				src = gram + (pos << 5);
-				makemix_mix(dst + SURFACE_WIDTH * 0, SURFACE_WIDTH * 2,
-							work, src + GRAM_BANK0, fontcy);
-				makemix_mix(dst + SURFACE_WIDTH * 1, SURFACE_WIDTH * 2,
-							work + MAKETEXT_STEP, src + GRAM_BANK1, fontcy);
+				if (udtmp & UPDATE_VRAM0) {
+					makemix_mixgrph(dst + SURFACE_WIDTH * 0, SURFACE_WIDTH * 2,
+												src + GRAM_BANK0, fontcy);
+				}
+				if (udtmp & UPDATE_VRAM1) {
+					makemix_mixgrph(dst + SURFACE_WIDTH * 1, SURFACE_WIDTH * 2,
+												src + GRAM_BANK1, fontcy);
+				}
 				if (fontcy < makescrn.fontcy) {
-					makemix_remcpy(dst, fontcy * 2, makescrn.fontcy * 2);
+					makemix_cpy400(dst, fontcy * 2, makescrn.fontcy * 2);
 				}
 			}
 			pos = LOW11(pos + 1);
@@ -143,6 +162,7 @@ void width80x12_200h(void) {								// 80x12 200line
 	UINT8	*lp;
 	UINT	x;
 	REG8	udtmp;
+	REG8	dirty;
 	UINT8	work[MAKETEXT_STEP * 2];
 const UINT8	*src;
 	UINT	lines;
@@ -158,18 +178,26 @@ const UINT8	*src;
 		x = makescrn.surfcx;
 		do {
 			udtmp = updatetmp[pos];
-			if (udtmp & makescrn.dispflag) {
-				updatetmp[pos] = (UINT8)(udtmp & (~makescrn.dispflag));
+			dirty = udtmp & makescrn.dispflag;
+			if (dirty) {
+				updatetmp[pos] = (UINT8)(udtmp ^ dirty);
 				newline = TRUE;
-				ZeroMemory(work, sizeof(work));
-				makechr16(work, pos, fontcy, udtmp);
-				src = makescrn.disp1 + (LOW10(pos) << 5);
-				makemix_mix(dst, SURFACE_WIDTH * 4, work, src, fontcy);
-				makemix_mix(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
-						work + MAKETEXT_STEP, src + GRAM_HALFSTEP, fontcy);
-				makemix_doubler(dst, fontcy * 2, 0);
+				if (dirty & UPDATE_TRAM) {
+					ZeroMemory(work, sizeof(work));
+					makechr16(work, pos, fontcy, udtmp);
+					makemix_mixtext(dst, SURFACE_WIDTH * 4, work, fontcy);
+					makemix_mixtext(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
+											work + MAKETEXT_STEP, fontcy);
+				}
+				if (dirty & UPDATE_VRAM) {
+					src = makescrn.disp1 + (LOW10(pos) << 5);
+					makemix_mixgrph(dst, SURFACE_WIDTH * 4, src, fontcy);
+					makemix_mixgrph(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
+											src + GRAM_HALFSTEP, fontcy);
+				}
+			//	makemix_doubler(dst, fontcy * 2, 0);
 				if (fontcy < makescrn.fontcy) {
-					makemix_remcpy(dst, fontcy * 4, makescrn.fontcy * 4);
+					makemix_cpy200(dst, fontcy * 2, makescrn.fontcy * 2);
 				}
 			}
 			pos = LOW11(pos + 1);
@@ -221,22 +249,36 @@ const UINT8	*src;
 		x = makescrn.surfcx;
 		do {
 			udtmp = updatetmp[pos];
-			if (udtmp & UPDATE_VRAM) {
-				updatetmp[pos] = (UINT8)(udtmp & (~UPDATE_VRAM));
+			if (udtmp & UPDATE_TVRAM) {
+				updatetmp[pos] = (UINT8)(udtmp & (~UPDATE_TVRAM));
 				newline = TRUE;
-				ZeroMemory(work, sizeof(work));
-				makechr16(work, pos, fontcy, udtmp);
+				if (udtmp & UPDATE_TRAM) {
+					ZeroMemory(work, sizeof(work));
+					makechr16(work, pos, fontcy, udtmp);
+					makemix_mixtext(dst + SURFACE_WIDTH * 0, SURFACE_WIDTH * 4,
+											work, fontcy);
+					makemix_mixtext(dst + SURFACE_WIDTH * 1, SURFACE_WIDTH * 4,
+											work, fontcy);
+					makemix_mixtext(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
+											work + MAKETEXT_STEP, fontcy);
+					makemix_mixtext(dst + SURFACE_WIDTH * 3, SURFACE_WIDTH * 4,
+											work + MAKETEXT_STEP, fontcy);
+				}
 				src = gram + (LOW10(pos) << 5);
-				makemix_mix(dst + SURFACE_WIDTH * 0, SURFACE_WIDTH * 4,
-							work, src + GRAM_BANK0L, fontcy);
-				makemix_mix(dst + SURFACE_WIDTH * 1, SURFACE_WIDTH * 4,
-							work, src + GRAM_BANK1L, fontcy);
-				makemix_mix(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
-							work + MAKETEXT_STEP, src + GRAM_BANK0H, fontcy);
-				makemix_mix(dst + SURFACE_WIDTH * 3, SURFACE_WIDTH * 4,
-							work + MAKETEXT_STEP, src + GRAM_BANK1H, fontcy);
+				if (udtmp & UPDATE_VRAM0) {
+					makemix_mixgrph(dst + SURFACE_WIDTH * 0, SURFACE_WIDTH * 4,
+												src + GRAM_BANK0L, fontcy);
+					makemix_mixgrph(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
+												src + GRAM_BANK0H, fontcy);
+				}
+				if (udtmp & UPDATE_VRAM1) {
+					makemix_mixgrph(dst + SURFACE_WIDTH * 1, SURFACE_WIDTH * 4,
+												src + GRAM_BANK1L, fontcy);
+					makemix_mixgrph(dst + SURFACE_WIDTH * 3, SURFACE_WIDTH * 4,
+												src + GRAM_BANK1H, fontcy);
+				}
 				if (fontcy < makescrn.fontcy) {
-					makemix_remcpy(dst, fontcy * 4, makescrn.fontcy * 4);
+					makemix_cpy400(dst, fontcy * 4, makescrn.fontcy * 4);
 				}
 			}
 			pos = LOW11(pos + 1);
@@ -292,14 +334,13 @@ void width80x20h(void) {
 				newline = TRUE;
 				ZeroMemory(work, sizeof(work));
 				makechr16(work, pos, fontcy, udtmp);
-				makemix_txt(dst, SURFACE_WIDTH * 2, work, fontcy);
-				makemix_txt(dst + SURFACE_WIDTH, SURFACE_WIDTH * 2,
+				makemix_settext(dst, SURFACE_WIDTH * 2, work, fontcy);
+				makemix_settext(dst + SURFACE_WIDTH, SURFACE_WIDTH * 2,
 												work + MAKETEXT_STEP, fontcy);
 				if (fontcy < makescrn.fontcy) {
-					makemix_remcpy(dst, fontcy * 2, makescrn.fontcy * 2);
+					makemix_cpy400(dst, fontcy * 2, makescrn.fontcy * 2);
 				}
-				makemix_ul20(dst + SURFACE_WIDTH * makescrn.fontcy * 2,
-																	pos, 0);
+				makemix_ul20(dst + SURFACE_WIDTH * makescrn.fontcy * 2, pos);
 			}
 			pos = LOW11(pos + 1);
 			dst += 8;
@@ -354,15 +395,13 @@ void width80x10h(void) {
 				newline = TRUE;
 				ZeroMemory(work, sizeof(work));
 				makechr16(work, pos, fontcy, udtmp);
-				makemix_txt(dst, SURFACE_WIDTH * 4, work, fontcy);
-				makemix_txt(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
+				makemix_settext(dst, SURFACE_WIDTH * 4, work, fontcy);
+				makemix_settext(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
 											work + MAKETEXT_STEP, fontcy);
-				makemix_doubler(dst, fontcy * 2, 0);
 				if (fontcy < makescrn.fontcy) {
-					makemix_remcpy(dst, fontcy * 4, makescrn.fontcy * 4);
+					makemix_cpy200(dst, fontcy * 2, makescrn.fontcy * 2);
 				}
-				makemix_ul10(dst + SURFACE_WIDTH * makescrn.fontcy * 4,
-																	pos, 0);
+				makemix_ul10(dst + SURFACE_WIDTH * makescrn.fontcy * 4, pos);
 			}
 			pos = LOW11(pos + 1);
 			dst += 8;

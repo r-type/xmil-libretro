@@ -45,13 +45,21 @@ void makechr16(UINT8 *dst, UINT pos, UINT count, REG8 udtmp);
 
 // ---- make mixer
 
-void makemix_txt(UINT8 *dst, UINT align, const UINT8 *txt, UINT count);
-void makemix_mix(UINT8 *dst, UINT align,
-							const UINT8 *txt, const UINT8 *grp, UINT count);
-void makemix_doubler(UINT8 *dst, UINT count, UINT32 skipline);
-void makemix_remcpy(UINT8 *dst, UINT pos, UINT count);
-void makemix_ul20(UINT8 *dst, UINT pos, UINT32 skipline);
-void makemix_ul10(UINT8 *dst, UINT pos, UINT32 skipline);
+void makemix_mixtext(UINT8 *dst, UINT align, const UINT8 *txt, UINT count);
+void makemix_mixgrph(UINT8 *dst, UINT align, const UINT8 *grp, UINT count);
+
+void makemix_settext(UINT8 *dst, UINT align, const UINT8 *txt, UINT count);
+void makemix_ul20(UINT8 *dst, UINT pos);
+void makemix_ul10(UINT8 *dst, UINT pos);
+
+void makemix_cpy200(UINT8 *dst, UINT pos, UINT count);
+void makemix_cpy400(UINT8 *dst, UINT pos, UINT count);
+
+// void makemix_txt(UINT8 *dst, UINT align, const UINT8 *txt, UINT count);
+// void makemix_mix(UINT8 *dst, UINT align,
+//							const UINT8 *txt, const UINT8 *grp, UINT count);
+// void makemix_doubler(UINT8 *dst, UINT count, UINT32 skipline);
+// void makemix_remcpy(UINT8 *dst, UINT pos, UINT count);
 
 
 // ---- make screens
