@@ -269,7 +269,7 @@ void scrnupdate(void) {
 	}
 	corestat.drawframe = 0;
 
-	ddrawflash = FALSE;
+	ddrawflash = makescrn.nextdraw;
 	allflash = FALSE;
 	if (lastdisp != crtc.e.dispmode) {
 		changemodes();
@@ -350,13 +350,13 @@ void scrnupdate(void) {
 					}
 					break;
 			}
-			ddrawflash = 1;
+			ddrawflash = TRUE;
 		}
 	}
 
 	if (ddrawflash) {
 		ddrawflash = 0;
-		scrndraw_draw(allflash);
+		makescrn.nextdraw = scrndraw_draw(allflash);
 		drawtime++;
 	}
 }

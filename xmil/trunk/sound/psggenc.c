@@ -153,7 +153,7 @@ void psggen_setreg(PSGGEN psg, REG8 reg, REG8 value) {
 		case 13:
 			psg->envmode = psgenv_pat[value & 0x0f];
 			psg->envvolcnt = 16;
-			psg->envcnt = 1;
+			psg->envcnt = 0;
 			break;
 	}
 }

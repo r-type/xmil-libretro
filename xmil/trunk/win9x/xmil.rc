@@ -107,7 +107,7 @@ BEGIN
         MENUITEM "Width 40",                    IDM_WIDTH40
         MENUITEM SEPARATOR
         MENUITEM "DispVsync",                   IDM_DISPSYNC
-        MENUITEM "Raster",                      IDM_RASTER, GRAYED
+        MENUITEM "Raster",                      IDM_RASTER
         MENUITEM "&No Wait",                    IDM_NOWAIT
         MENUITEM SEPARATOR
         MENUITEM "&Auto frame",                 IDM_AUTOFPS

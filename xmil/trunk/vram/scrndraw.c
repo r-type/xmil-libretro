@@ -63,10 +63,10 @@ void scrndraw_changepalette(void) {
 
 // ----
 
-#if 0
-#if defined(SUPPORT_RASTER)
+#if defined(SUPPORT_PALEVENT)
 static REG8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 
+	UINT8		rgbp[8];
 	SINT32		rasterclock;
 	SINT32		clock;
 	PAL1EVENT	*event;
@@ -74,6 +74,7 @@ static REG8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 	int			nextupdate;
 	int			y;
 
+	CopyMemory(rgbp, palevent.rgbp, 8);
 	rasterclock = crtc.e.rasterclock8;
 	if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
 		rasterclock = rasterclock * 2;
@@ -90,11 +91,12 @@ static REG8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 		clock += rasterclock;
 		// ‚¨•Ù“–‚Í‚ ‚Á‚½H
 		if (clock > (event->clock << 8)) {
+			pal_update1(rgbp);
 			(*sdrawfn)(sdraw, y);
 			nextupdate = y;
 			// ‚¨•Ù“–‚ðH‚×‚é
 			while(clock > (event->clock << 8)) {
-//				((BYTE *)pal)[event->color] = event->value;
+				((UINT8 *)rgbp)[event->rgbp] = event->value;
 				event++;
 				if (event >= eventterm) {
 					break;
@@ -103,26 +105,15 @@ static REG8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 		}
 	}
 	if (y < maxy) {
-		if (!(np2cfg.LCD_MODE & 1)) {
-			pal_makeanalog(pal, 0xffff);
-		}
-		else {
-			pal_makeanalog_lcd(pal, 0xffff);
-		}
-		if (np2cfg.skipline) {
-			np2_pal32[0].d = np2_pal32[NP2PAL_SKIP].d;
-#if defined(SUPPORT_16BPP)
-			np2_pal16[0] = np2_pal16[NP2PAL_SKIP];
-#endif
-		}
+		pal_update1(rgbp);
 		(*sdrawfn)(sdraw, maxy);
 	}
-	if (palevent.vsyncpal) {
-		return(2);
-	}
-	else if (nextupdate) {
+	// –ß‚·‚·‚·‚·
+	pal_update1(crtc.s.rgbp);
+
+	if (nextupdate) {
 		for (y=0; y<nextupdate; y+=2) {
-			*(UINT16 *)(renewal_line + y) |= 0x8080;
+			*(UINT16 *)(renewalline + y) |= 0x0101;
 		}
 		return(1);
 	}
@@ -131,24 +122,24 @@ static REG8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 	}
 }
 #endif
-#endif
 
 
 // ----
 
 REG8 scrndraw_draw(REG8 redraw) {
 
+	REG8		ret;
 const SCRNSURF	*surf;
 const SDRAWFN	*sdrawfn;
 	SDRAWFN		fn;
 	_SDRAW		sdraw;
 	UINT		i;
-	REG8		ret;
 
 	if (redraw) {
 		updateallline(0x01010101);
 	}
 
+	ret = 0;
 	surf = scrnmng_surflock();
 	if (surf == NULL) {
 		goto sddr_exit1;
@@ -189,21 +180,16 @@ const SDRAWFN	*sdrawfn;
 	sdraw.y = 0;
 	sdraw.xalign = surf->xalign;
 	sdraw.yalign = surf->yalign;
-	ret = 0;
-#if 1
-	(*fn)(&sdraw, 400);
-#else
 #if !defined(SUPPORT_PALEVENT)
 	(*fn)(&sdraw, 400);
 #else
-	if (((dispmode & SCRN64_MASK) != SCRN64_INVALID) ||
-		(palevent.events >= PALEVENTMAX)) {
+	if (((crtc.e.dispmode & SCRN64_MASK) != SCRN64_INVALID) ||
+		(palevent.events >= SUPPORT_PALEVENT)) {
 		(*fn)(&sdraw, 400);
 	}
 	else {
 		ret = rasterdraw(*sdrawfn, &sdraw, 400);
 	}
-#endif
 #endif
 
 sddr_exit2:
