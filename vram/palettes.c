@@ -7,13 +7,16 @@
 #include	"makescrn.h"
 
 
-	UINT	xmil_palettes;
-	RGB32	xmil_pal32[XMILPAL_MAX];			// xm_palette
+	UINT		xmil_palettes;
+	RGB32		xmil_pal32[XMILPAL_MAX];			// xm_palette
 #if defined(SUPPORT_16BPP)
-	RGB16	xmil_pal16[XMILPAL_MAX];
+	RGB16		xmil_pal16[XMILPAL_MAX];
+#endif
+#if defined(SUPPORT_PALEVENT)
+	PALEVENT	palevent;
 #endif
 
-
+#if defined(SUPPORT_TURBOZ)
 static const UINT16 pal4096banktbl[2][64] = {
 			{	0x000, 0x008, 0x080, 0x088, 0x800, 0x808, 0x880, 0x888,
 				0x004, 0x00C, 0x084, 0x08C, 0x804, 0x80C, 0x884, 0x88C,
@@ -32,7 +35,7 @@ static const UINT16 pal4096banktbl[2][64] = {
 				0x101, 0x103, 0x121, 0x123, 0x301, 0x303, 0x321, 0x323,
 				0x110, 0x112, 0x130, 0x132, 0x310, 0x312, 0x330, 0x332,
 				0x111, 0x113, 0x131, 0x133, 0x311, 0x313, 0x331, 0x333}};
-
+#endif
 
 
 
@@ -273,7 +276,7 @@ void pal_update1(const UINT8 *rgbp) {
 			}
 		}
 		else {
-			bcnt = (crtc.s.BLACKPAL & 15) - 8;
+			bcnt = (rgbp[CRTC_BLACK] & 15) - 8;
 			for (j=i+8; j<64; j+=8) {
 				bcnt--;
 				if (bcnt) {
@@ -354,6 +357,20 @@ void pal_update(void) {
 #endif
 	scrndraw_changepalette();
 }
+
+#if defined(SUPPORT_PALEVENT)
+void pal_eventclear(void) {
+
+	if ((!corestat.drawframe) ||
+		(!xmilcfg.RASTER) || (scrnmng_getbpp() == 8)) {
+		palevent.events = SUPPORT_PALEVENT;
+	}
+	else {
+		CopyMemory(palevent.rgbp, crtc.s.rgbp, CRTC_RGBPMAX);
+		palevent.events = 0;
+	}
+}
+#endif
 
 
 // ----
