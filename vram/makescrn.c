@@ -265,6 +265,7 @@ static void changecrtc(void) {
 	}
 
 	surfsy = charcy * surfcy * 2;
+	// ハイドライド３で画面が消えないのでロジックを修正すべし
 	x = min(scrnxmax, makescrn.surfcx);
 	if (surfcx < x) {								// 小さくなった
 		x = (x - surfcx) * 8;
@@ -302,12 +303,14 @@ void scrnupdate(void) {
 	ddrawflash = makescrn.nextdraw;
 	allflash = FALSE;
 	if (makescrn.dispmode != crtc.e.dispmode) {
+		TRACEOUT(("change mode!"));
 		changemodes();
 	}
 	if (scrnallflash) {
 		scrnallflash = 0;
-		fillupdatetmp();
 		changecrtc();
+		TRACEOUT(("flash! %dx%d", makescrn.surfcx, makescrn.surfcy));
+		fillupdatetmp();
 		ddrawflash = TRUE;
 		allflash = TRUE;
 		makescrn.scrnflash = 1;
