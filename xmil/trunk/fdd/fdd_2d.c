@@ -1,14 +1,11 @@
 #include	"compiler.h"
 #include	"dosio.h"
 #include	"pccore.h"
-#include	"x1_io.h"
-#include	"x1_fdc.h"
+#include	"iocore.h"
 #include	"fddfile.h"
 #include	"fdd_mtr.h"
 
 
-extern	BYTE		WRITEPT[];
-extern	BYTE		DISKNUM[];
 static	WORD		sec_now[4] = {0, 0, 0, 0};
 static	BYTE		sec_write[4] = {0, 0, 0, 0};
 static	BYTE		sec_data[4][256];
@@ -79,19 +76,23 @@ short fdd_crc_2d(void) {
 
 BYTE fdd_stat_2d(void) {
 
-	BYTE	type, cmnd;
+	FDDFILE	fdd;
+	REG8	cmd;
+	BYTE	type;
 	BYTE	ans = 0;
 
+	fdd = fddfile + fdc.drv;
+
 	// NOT READY
-	if (DISKNUM[fdc.drv] != DRV_FMT2D) {
+	if (fdd->type != DISKTYPE_BETA) {
 		return(0x80);
 	}
 	type = fdc.type;
-	cmnd = (BYTE)(fdc.cmnd >> 4);
+	cmd = (REG8)(fdc.cmd >> 4);
 
 	if (type == 0 || type == 1 || type == 4 ||					// !!!
-		cmnd == 0x0a || cmnd == 0x0b || cmnd == 0x0f) {
-		if (WRITEPT[fdc.drv]) {				// WRITE PROTECT
+		cmd == 0x0a || cmd == 0x0b || cmd == 0x0f) {
+		if (fdd->protect) {				// WRITE PROTECT
 			ans |= 0x40;
 		}
 	}
@@ -118,7 +119,7 @@ BYTE fdd_stat_2d(void) {
 		if ((type == 2) && (fdc.r) && (fdc.off < 256)) {
 			ans |= 0x03;					// DATA REQUEST / BUSY
 		}
-		else if (cmnd == 0x0f) {
+		else if (cmd == 0x0f) {
 			ans |= 0x04;					// error!
 		}
 	}
@@ -147,13 +148,13 @@ void fdd_write_2d(void) {
 
 BYTE fdd_incoff_2d(void) {
 
-	BYTE cmnd;
+	REG8	cmd;
 
 	if (++fdc.off < 256) {
 		return(0);
 	}
-	cmnd = (BYTE)(fdc.cmnd >> 4);
-	if (cmnd == 0x09 || cmnd == 0x0b) {
+	cmd = (REG8)(fdc.cmd >> 4);
+	if ((cmd == 0x09) || (cmd == 0x0b)) {
 		if (fdc.r < 16) {
 			fdc.r++;
 			fdc.rreg++;
@@ -170,14 +171,28 @@ BYTE fdd_incoff_2d(void) {
 
 // ----
 
-BRESULT fdd2d_eject(REG8 drv) {
+BRESULT fdd2d_set(FDDFILE fdd, REG8 drv, const OEMCHAR *fname) {
 
-	FDDFILE	fdd;
+	short	attr;
+
+	attr = file_attr(fname);
+	if (attr & 0x18) {
+		return(FAILURE);
+	}
+	file_cpyname(fdd->fname, fname, NELEMENTS(fdd->fname));
+	fdd->type = DISKTYPE_BETA;
+	fdd->protect = (UINT8)(attr & 1);
+	sec_now[drv] = -1;
+	sec_write[drv] = 0;
+	return(SUCCESS);
+}
+
+BRESULT fdd2d_eject(FDDFILE fdd, REG8 drv) {
+
 	FILEH	fh;
 	long	seekp;
 	BRESULT	ret = 0;
 
-	fdd = fddfile + drv;
 	while(1) {
 		if ((!sec_write[drv]) || (sec_now[drv] == -1)) {
 			break;
@@ -198,27 +213,9 @@ BRESULT fdd2d_eject(REG8 drv) {
 		break;
 	}
 	fdd->fname[0] = '\0';
-	DISKNUM[drv] = 0;
+	fdd->type = DISKTYPE_NOTREADY;
 	sec_now[drv] = -1;
 	sec_write[drv] = 0;
 	return(ret);
-}
-
-BRESULT fdd2d_set(REG8 drv, const OEMCHAR *fname) {
-
-	FDDFILE	fdd;
-	short	attr;
-
-	fdd = fddfile + drv;
-	attr = file_attr(fname);
-	if (attr & 0x18) {
-		return(FAILURE);
-	}
-	DISKNUM[drv] = DRV_FMT2D;
-	file_cpyname(fdd->fname, fname, NELEMENTS(fdd->fname));
-	WRITEPT[drv] = (BYTE)(attr & 1);
-	sec_now[drv] = -1;
-	sec_write[drv] = 0;
-	return(SUCCESS);
 }
 

@@ -6,6 +6,7 @@
 	CMT			cmt;
 	CTC			ctc;
 	DMAC		dma;
+	FDC			fdc;
 	PCG			pcg;
 	PPI			ppi;
 	SIO			sio;

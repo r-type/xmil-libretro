@@ -476,6 +476,10 @@ SOURCE=..\IO\DMAC.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\IO\FDC.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\IO\IOCORE.C
 # End Source File
 # Begin Source File
@@ -501,10 +505,6 @@ SOURCE=..\IO\SUBCPU.C
 # Begin Source File
 
 SOURCE=..\CAVELV2\X1_CRTC.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\CAVELV2\X1_FDC.C
 # End Source File
 # Begin Source File
 

@@ -5,16 +5,11 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"fddfile.h"
-#include	"x1_io.h"
-#include	"x1_fdc.h"
 #include	"fdd_2d.h"
 #include	"fdd_d88.h"
 
 
 	_FDDFILE	fddfile[MAX_FDDFILE];
-
-extern	BYTE		WRITEPT[];
-extern	BYTE		DISKNUM[];
 
 
 void fddfile_initialize(void) {
@@ -45,29 +40,33 @@ const OEMCHAR	*ext;
 
 	ext = file_getext(fname);
 	if (!milstr_cmp(ext, str_e2d)) {
-		return(DRV_FMT2D);
+		return(DISKTYPE_BETA);
 	}
 	if ((!milstr_cmp(ext, str_d88)) || (!milstr_cmp(ext, str_88d))) {
-		return(DRV_FMT88);
+		return(DISKTYPE_D88);
 	}
-	return(DRV_EMPTY);
+	return(DISKTYPE_NOTREADY);
 }
 
 BRESULT fdd_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
 
-	fdd_eject(drv);
+	FDDFILE		fdd;
+
 	if (drv >= MAX_FDDFILE) {
 		return(FAILURE);
 	}
+	fdd_eject(drv);
+	fdd = fddfile + drv;
 	switch(getfdtype(fname)) {
-		case DRV_EMPTY:
+		case DISKTYPE_NOTREADY:
 			return(FAILURE);
 
-		case DRV_FMT2D:
-			return(fdd2d_set(drv, fname));
+		case DISKTYPE_BETA:
+			return(fdd2d_set(fdd, drv, fname));
 
+		case DISKTYPE_D88:
 		default:
-			return(fddd88_set(drv, fname));
+			return(fddd88_set(fdd, drv, fname));
 	}
 	return(FAILURE);
 }
@@ -80,15 +79,16 @@ BRESULT fdd_eject(REG8 drv) {
 		return(FAILURE);
 	}
 	fdd = fddfile + drv;
-	switch(DISKNUM[drv]) {
-		case DRV_EMPTY:
+	switch(fdd->type) {
+		case DISKTYPE_NOTREADY:
 			return(FAILURE);
 
-		case DRV_FMT2D:
-			return(fdd2d_eject(drv));
+		case DISKTYPE_BETA:
+			return(fdd2d_eject(fdd, drv));
 
+		case DISKTYPE_D88:
 		default:
-			return(fddd88_eject(drv));
+			return(fddd88_eject(fdd, drv));
 	}
 	return(FAILURE);
 }

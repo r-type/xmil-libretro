@@ -3,8 +3,8 @@
 extern "C" {
 #endif
 
-BRESULT fdd2d_eject(REG8 drv);
-BRESULT fdd2d_set(REG8 drv, const OEMCHAR *fname);
+BRESULT fdd2d_set(FDDFILE fdd, REG8 drv, const OEMCHAR *fname);
+BRESULT fdd2d_eject(FDDFILE fdd, REG8 drv);
 
 short fdd_crc_2d(void);
 BYTE fdd_stat_2d(void);

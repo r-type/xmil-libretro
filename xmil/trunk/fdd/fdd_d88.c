@@ -1,11 +1,10 @@
 #include	"compiler.h"
 #include	"dosio.h"
 #include	"pccore.h"
-#include	"x1_io.h"
-#include	"x1_fdc.h"
-#include	"fdd_mtr.h"
-#include	"fdd_d88.h"
+#include	"iocore.h"
 #include	"fddfile.h"
+#include	"fdd_d88.h"
+#include	"fdd_mtr.h"
 
 
 static	D88_HEADER	d88head[4];
@@ -22,9 +21,6 @@ static	BYTE		hole = 0;
 static	BYTE		*curdata;
 static	WORD		crcnum = 0;
 static	BYTE		crcerror = FALSE;
-
-extern	BYTE		WRITEPT[];
-extern	BYTE		DISKNUM[];
 
 extern	WORD		readdiag;
 
@@ -270,16 +266,19 @@ crcerror_d88:;
 
 BYTE fdd_stat_d88(void) {
 
-	BYTE		type, cmnd;
+	FDDFILE		fdd;
+	BYTE		type;
+	REG8		cmd;
 	BYTE		ans = 0;
 	int			seekable;
 	WORD		trk;
 
-	if (DISKNUM[fdc.drv] == DRV_EMPTY) {
+	fdd = fddfile + fdc.drv;
+	if (fdd->type != DISKTYPE_D88) {
 		return(0x80);						// NOT READY
 	}
 	type = fdc.type;
-	cmnd = (BYTE)(fdc.cmnd >> 4);
+	cmd = (REG8)(fdc.cmd >> 4);
 	trk = (fdc.c << 1) + (WORD)fdc.h;
 	seekable = seeksector(fdc.drv, trk, fdc.r);
 	if (!fdc.r) {
@@ -287,12 +286,12 @@ BYTE fdd_stat_d88(void) {
 	}
 
 	if (type == 0 || type == 1 || type == 4 ||
-		cmnd == 0x0a || cmnd == 0x0b || cmnd == 0x0f) {
-		if (d88head[fdc.drv].protect & 0x10) {	// WRITE PROTECT
+		cmd == 0x0a || cmd == 0x0b || cmd == 0x0f) {
+		if (fdd->protect) {					// WRITE PROTECT
 			ans |= 0x40;
 		}
 	}
-	if (type == 2 || cmnd == 0x0f) {
+	if (type == 2 || cmd == 0x0f) {
 		if (fdc.r && cursec.del_flg) {
 			ans |= 0x20;					// RECODE TYPE / WRITE FAULT
 		}
@@ -305,7 +304,7 @@ BYTE fdd_stat_d88(void) {
 			ans |= 0x08;					// CRC ERROR
 		}
 	}
-	if (cmnd == 0x0c) {
+	if (cmd == 0x0c) {
 		if (curtrkerr) {
 			ans |= 0x10;
 		}
@@ -331,13 +330,13 @@ BYTE fdd_stat_d88(void) {
 		if ((type == 2) && ((WORD)fdc.off < cursec.size)) {
 			ans |= 0x03; 					// DATA REQUEST / BUSY
 		}
-		else if ((cmnd == 0x0e) && (readdiag < 0x1a00)) {
+		else if ((cmd == 0x0e) && (readdiag < 0x1a00)) {
 			ans |= 0x03;
 		}
-		else if ((cmnd == 0x0c) && (fdc.crc_off < 6)) {		// ver0.25
+		else if ((cmd == 0x0c) && (fdc.crc_off < 6)) {		// ver0.25
 			ans |= 0x03;
 		}
-		else if (cmnd == 0x0f) {
+		else if (cmd == 0x0f) {
 			if (tao.flag == 3) {
 				if (++tao.lostdatacnt > LOSTDATA_COUNT) {
 					tao.flag = 4;
@@ -372,17 +371,17 @@ void fdd_write_d88(void) {
 
 BYTE fdd_incoff_d88(void) {
 
-	BYTE	cmnd;
+	REG8	cmd;
 	WORD	trk;
 
-	cmnd = (BYTE)(fdc.cmnd >> 4);
+	cmd = (REG8)(fdc.cmd >> 4);
 	trk = (fdc.c << 1) + (WORD)fdc.h;
 	seeksector(fdc.drv, trk, fdc.r);
 	if ((WORD)(++fdc.off) < cursec.size) {
 		return(0);
 	}
 	fdc.off = cursec.size;
-	if (cmnd == 0x09 || cmnd == 0x0b) {
+	if ((cmd == 0x09) || (cmd == 0x0b)) {
 		fdc.rreg = fdc.r + 1;						// ver0.25
 		if (seeksector(fdc.drv, trk, fdc.rreg)) {
 			fdc.r++;
@@ -625,26 +624,21 @@ void fdd_wtao_d88(BYTE data) {
 
 // ----
 
-BRESULT fddd88_eject(REG8 drv) {
-
-	FDDFILE	fdd;
+BRESULT fddd88_eject(FDDFILE fdd, REG8 drv) {
 
 	drvflush(drv);
-	fdd = fddfile + drv;
 	ZeroMemory(&d88head[drv], sizeof(D88_HEADER));
 	fdd->fname[0] = '\0';
-	DISKNUM[drv] = 0;
+	fdd->type = DISKTYPE_NOTREADY;
 	return(SUCCESS);
 }
 
-BRESULT fddd88_set(REG8 drv, const OEMCHAR *fname) {
+BRESULT fddd88_set(FDDFILE fdd, REG8 drv, const OEMCHAR *fname) {
 
-	FDDFILE	fdd;
 	short	attr;
 	FILEH	fh;
 	UINT	rsize;
 
-	fdd = fddfile + drv;
 	attr = file_attr(fname);
 	if (attr & 0x18) {
 		goto fdst_err;
@@ -658,11 +652,12 @@ BRESULT fddd88_set(REG8 drv, const OEMCHAR *fname) {
 	if (rsize != sizeof(D88_HEADER)) {
 		goto fdst_err;
 	}
-	if (attr & 1) {
-		d88head[drv].protect |= (WORD)0x10;
+	if (d88head[drv].protect & 0x10) {
+		attr |= 1;
 	}
 	milstr_ncpy(fdd->fname, fname, NELEMENTS(fdd->fname));
-	DISKNUM[drv] = 1;
+	fdd->type = DISKTYPE_D88;
+	fdd->protect = (UINT8)(attr & 1);
 	return(SUCCESS);
 
 fdst_err:

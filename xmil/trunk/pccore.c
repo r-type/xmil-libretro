@@ -10,7 +10,6 @@
 #include	"x1_io.h"
 #include	"x1_crtc.h"
 #include	"x1_vram.h"
-#include	"x1_fdc.h"
 #include	"draw.h"
 #include	"sound.h"
 #include	"sndctrl.h"
@@ -124,7 +123,6 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 
 	calendar_initialize();
 
-	init_fdc();
 	subcpu_reset();
 	ppi_reset();
 	init_crtc();
@@ -134,6 +132,7 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 	cmt_reset();
 	ctc_reset();
 	dmac_reset();
+	fdc_reset();
 	pcg_reset();
 	sio_reset();
 	sndboard_reset();

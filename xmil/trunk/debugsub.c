@@ -7,7 +7,6 @@
 
 #include	"x1_io.h"
 #include	"x1_crtc.h"
-#include	"x1_fdc.h"
 // #include	"ddraws.h"
 
 

@@ -41,6 +41,7 @@ typedef struct {
 #include	"ctc.h"
 #include	"dipsw.h"
 #include	"dmac.h"
+#include	"fdc.h"
 #include	"pcg.h"
 #include	"ppi.h"
 #include	"sio.h"
@@ -57,6 +58,7 @@ extern	CGROM		cgrom;
 extern	CMT			cmt;
 extern	CTC			ctc;
 extern	DMAC		dma;
+extern	FDC			fdc;
 extern	PCG			pcg;
 extern	PPI			ppi;
 extern	SIO			sio;
