@@ -140,6 +140,7 @@
 				96848A3306CA586300B6C950,
 				960F8C6F06C817B600937580,
 				960F8C7106C817B600937580,
+				96FD6BBB06CDF8EA00CD159F,
 				960F8C8006C817B600937580,
 				960F8C8206C817B600937580,
 				960F8C9806C817B600937580,
@@ -373,6 +374,7 @@
 				960F9C1D06C8E2D300937580,
 				96848A3206CA584300B6C950,
 				96848A3406CA586300B6C950,
+				96FD6BBC06CDF8EA00CD159F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2635,6 +2637,8 @@
 				96848A3506CA588000B6C950,
 				960F8C7006C817B600937580,
 				960F9B4B06C893B400937580,
+				96FD6BBD06CDF90C00CD159F,
+				96FD6BBE06CDF90C00CD159F,
 				960F8C8106C817B600937580,
 				960F9B4806C893A700937580,
 				960F8C9706C817B600937580,
@@ -2915,6 +2919,39 @@
 			);
 			isa = PBXGroup;
 			name = Icons;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96FD6BBB06CDF8EA00CD159F = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			name = statsave.c;
+			path = ../statsave.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96FD6BBC06CDF8EA00CD159F = {
+			fileRef = 96FD6BBB06CDF8EA00CD159F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		96FD6BBD06CDF90C00CD159F = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = statsave.h;
+			path = ../statsave.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96FD6BBE06CDF90C00CD159F = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			name = statsave.tbl;
+			path = ../statsave.tbl;
 			refType = 4;
 			sourceTree = "<group>";
 		};

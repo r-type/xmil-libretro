@@ -24,12 +24,24 @@
 #include	"fdd_ini.h"
 #include	"x1f.h"
 #include	"carbonevent.h"
+#if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
+#include	"statsave.h"
+#endif
 
 
 // #define	USE_RESUME
 
 
-		XMILOSCFG	xmiloscfg = {100, 100,  0, 0, 0, 0, 0, 0};
+		XMILOSCFG	xmiloscfg = {	100, 100,
+									0, 0, 0,
+									0, 0,
+#if defined(SUPPORT_RESUME)
+									0,
+#endif
+#if defined(SUPPORT_STATSAVE)
+									1,
+#endif
+									0};
 
 		WindowPtr	hWndMain;
 		BRESULT		xmilrunning;
@@ -42,7 +54,68 @@ static	REG8		scrnmode;
 
 static	char	target[MAX_PATH] = DEFAULTPATH;
 
-static const char np2resume[] = "sav";
+
+static const char xmilapp[] = "xmil";
+
+
+// ---- stat save...
+
+#if defined(SUPPORT_RESUME)
+static const char xmilresumeext[] = ".sav";
+#endif
+#if defined(SUPPORT_STATSAVE)
+static const char xmilflagext[] = ".sv%u";
+#endif
+
+#if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
+static void getstatfilename(char *path, const char *ext, UINT size) {
+
+	file_cpyname(path, file_getcd(xmilapp), size);
+	file_catname(path, ext, size);
+}
+
+static void flagsave(const char *ext) {
+
+	char	path[MAX_PATH];
+
+	getstatfilename(path, ext, NELEMENTS(path));
+	statsave_save(path);
+}
+
+static void flagdelete(const char *ext) {
+
+	char	path[MAX_PATH];
+
+	getstatfilename(path, ext, NELEMENTS(path));
+	file_delete(path);
+}
+
+static int flagload(const char *ext, BRESULT force) {
+
+	int		ret;
+	char	path[MAX_PATH];
+	char	buf[1024];
+	int		r;
+
+	ret = IDOK;
+	getstatfilename(path, ext, NELEMENTS(path));
+	r = statsave_check(path, buf, NELEMENTS(buf));
+	if (r & (~STATFLAG_DISKCHG)) {
+		ResumeErrorDialogProc();
+		ret = IDCANCEL;
+	}
+	else if ((!force) && (r & STATFLAG_DISKCHG)) {
+		ret = ResumeWarningDialogProc(buf);
+	}
+	else {
+		ret = IDOK;
+	}
+	if (ret == IDOK) {
+		statsave_load(path);
+	}
+	return(ret);
+}
+#endif
 
 
 // ---- ‚¨‚Ü‚¶‚È‚¢
@@ -97,13 +170,24 @@ static void MenuBarInit(void) {
 	if (!(xmilcfg.fddequip & (1 << 0))) {
 		DeleteMenu(IDM_FDD0);
 	}
+	
+#if defined(SUPPORT_STATSAVE)
+	if (!xmiloscfg.statsave) {
+#endif
+		DeleteMenu(IDM_STATSAVE);
+#if defined(SUPPORT_STATSAVE)
+	}
+#endif
 
 }
 
 static void HandleMenuChoice(long wParam) {
 
 	UINT	update;
-	Str255	applname;
+#if defined(SUPPORT_STATSAVE)
+	UINT	num;
+	char	ext[16];
+#endif
 
 	update = 0;
 	switch(wParam) {
@@ -137,7 +221,7 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_FDD0EJECT:
 			diskdrv_setfdd(0, NULL, 0);
-			//DisableMenuItem(GetMenuRef(IDM_FDD0), IDM_FDD0EJECT);
+			DisableMenuItem(GetMenuRef(IDM_FDD0), IDM_FDD0EJECT);
 			break;
 
 		case IDM_FDD1OPEN:
@@ -146,7 +230,7 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_FDD1EJECT:
 			diskdrv_setfdd(1, NULL, 0);
-			//DisableMenuItem(GetMenuRef(IDM_FDD1), IDM_FDD1EJECT);
+			DisableMenuItem(GetMenuRef(IDM_FDD1), IDM_FDD1EJECT);
 			break;
 
 		case IDM_FDD2OPEN:
@@ -155,7 +239,7 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_FDD2EJECT:
 			diskdrv_setfdd(2, NULL, 0);
-			//DisableMenuItem(GetMenuRef(IDM_FDD2), IDM_FDD2EJECT);
+			DisableMenuItem(GetMenuRef(IDM_FDD2), IDM_FDD2EJECT);
 			break;
 
 		case IDM_FDD3OPEN:
@@ -164,7 +248,7 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_FDD3EJECT:
 			diskdrv_setfdd(3, NULL, 0);
-			//DisableMenuItem(GetMenuRef(IDM_FDD3), IDM_FDD3EJECT);
+			DisableMenuItem(GetMenuRef(IDM_FDD3), IDM_FDD3EJECT);
 			break;
 
 		case IDM_TURBOZ:
@@ -316,27 +400,25 @@ static void HandleMenuChoice(long wParam) {
 			break;
 
 		default:
+#if defined(SUPPORT_STATSAVE)
+			if (HiWord(wParam) == IDM_STATSAVE) {
+				num = LoWord(wParam);
+				if ((num >= 1) && (num < (1 + 10))) {
+					OEMSPRINTF(ext, xmilflagext, num - 1);
+					flagsave(ext);
+				}
+				else if ((num >= 12) && (num < (12 + 10))) {
+					OEMSPRINTF(ext, xmilflagext, num - 12);
+					flagload(ext, TRUE);
+				}
+			}
+#endif
 			break;
 	}
 	sysmng_update(update);
 	HiliteMenu(0);
 }
-#if 0
-static void HandleUpdateEvent(EventRecord *pevent) {
 
-	WindowPtr	hWnd;
-
-	hWnd = (WindowPtr)pevent->message;
-	BeginUpdate(hWnd);
-	if (xmilrunning) {
-		scrndraw_redraw();
-	}
-	else {
-//		np2open();
-	}
-	EndUpdate(hWnd);
-}
-#endif
 static void HandleMouseDown(EventRecord *pevent) {
 
 	WindowPtr	hWnd;
@@ -353,114 +435,6 @@ static void HandleMouseDown(EventRecord *pevent) {
 			break;
 	}
 }
-#if 0
-static void eventproc(EventRecord *event) {
-
-	int		keycode;
-
-	keycode = (event->message & keyCodeMask) >> 8;
-	switch(event->what) {
-		case mouseDown:
-			HandleMouseDown(event);
-			break;
-
-		case updateEvt:
-			HandleUpdateEvent(event);
-			break;
-
-		case keyDown:
-		case autoKey:
-			if (!xmilrunning) {
-				break;
-			}
-			if ((keycode == 0x6f) && (xmiloscfg.F12KEY == 0)) {
-				HandleMenuChoice(IDM_MOUSE);
-				break;
-			}
-			if (event->modifiers & cmdKey) {
-#if !TARGET_API_MAC_CARBON
-				if (mackbd_keydown(keycode, TRUE)) {
-					break;
-				}
-#endif
-				soundmng_stop();
-				mousemng_disable(MOUSEPROC_MACUI);
-				HandleMenuChoice(MenuEvent(event));
-				mousemng_enable(MOUSEPROC_MACUI);
-				soundmng_play();
-			}
-			else {
-				mackbd_keydown(keycode, FALSE);
-			}
-			break;
-
-		case keyUp:
-			mackbd_keyup(keycode);
-			break;
-
-		case mouseUp:
-			mousemng_buttonevent(MOUSEMNG_LEFTUP);
-			mousemng_buttonevent(MOUSEMNG_RIGHTUP);
-			break;
-
-		case activateEvt:
-			mackbd_activate((event->modifiers & activeFlag)?TRUE:FALSE);
-			break;
-	}
-}
-#endif
-
-#if 0
-// ----
-
-static void getstatfilename(char *path, const char *ext, int size) {
-
-	file_cpyname(path, file_getcd(np2app), size);
-	file_catname(path, str_dot, size);
-	file_catname(path, ext, size);
-}
-
-static void flagsave(const char *ext) {
-
-	char	path[MAX_PATH];
-
-	getstatfilename(path, ext, sizeof(path));
-	statsave_save(path);
-}
-
-static void flagdelete(const char *ext) {
-
-	char	path[MAX_PATH];
-
-	getstatfilename(path, ext, sizeof(path));
-	file_delete(path);
-}
-
-static int flagload(const char *ext) {
-
-	int		ret;
-	char	path[MAX_PATH];
-	char	buf[1024];
-	int		r;
-
-	ret = IDOK;
-	getstatfilename(path, ext, sizeof(path));
-	r = statsave_check(path, buf, sizeof(buf));
-	if (r & (~STATFLAG_DISKCHG)) {
-		ResumeErrorDialogProc();
-		ret = IDCANCEL;
-	}
-	else if (r & STATFLAG_DISKCHG) {
-		ret = ResumeWarningDialogProc(buf);
-	}
-	if (ret == IDOK) {
-		statsave_load(path);
-	}
-	return(ret);
-}
-#endif
-
-
 // ----
 
 static	UINT	framecnt = 0;
@@ -581,9 +555,9 @@ int main(int argc, char *argv[]) {
 	pccore_initialize();
 	pccore_reset();
 
-#if 0
-	if (np2oscfg.resume) {
-		flagload(np2resume);
+#if defined(SUPPORT_RESUME)
+	if (xmiloscfg.resume) {
+		flagload(xmilresumeext, FALSE);
 	}
 #endif
 
@@ -666,12 +640,12 @@ int main(int argc, char *argv[]) {
 
 	xmilrunning = FALSE;
 
-#if 0
-	if (np2oscfg.resume) {
-		flagsave(np2resume);
+#if defined(SUPPORT_RESUME)
+	if (xmiloscfg.resume) {
+		flagsave(xmilresumeext);
 	}
 	else {
-		flagdelete(np2resume);
+		flagdelete(xmilresumeext);
 	}
 #endif
 
