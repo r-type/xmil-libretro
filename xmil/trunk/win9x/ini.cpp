@@ -188,7 +188,7 @@ static const INITBL iniitem[] = {
 	{"backgrnd", INIAND_UINT8,		&xmiloscfg.background,	0x03},
 	{"DspClock", INIAND_UINT8,		&xmiloscfg.DISPCLK,		0x03},
 
-	{"StartDir", INITYPE_STR,		fddfolder,				MAX_PATH},
+	{"FDfolder", INITYPE_STR,		fddfolder,				MAX_PATH},
 	{"bmap_Dir", INITYPE_STR,		bmpfilefolder,			MAX_PATH},
 
 	{"IPL_TYPE", INIMAX_UINT8,		&xmilcfg.ROM_TYPE,		3},

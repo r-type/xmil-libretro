@@ -275,7 +275,7 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 	modify = crtc.s.SCRN_BITS ^ value;
 	crtc.s.SCRN_BITS = value;
 	if (modify & SCRN_DISPCHANGE) {
-		reflesh_palette();
+//		pal_reset();					// Ç»ÇÒÇ≈ÅH
 		scrnallflash = 1;
 		makescrn.palandply = 1;
 		crtc_updt();
@@ -572,7 +572,7 @@ void crtc_reset(void) {
 		crtc.s.FNT_YL = 16;
 	}
 
-	reflesh_palette();
+	pal_reset();
 	crtc_updt();
 
 	vrambank_patch();

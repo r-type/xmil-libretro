@@ -279,7 +279,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					updateflag = SYS_UPDATECFG;
 					break;
 
-				case IDM_RASTER:
+				case IDM_AUTOFPS:
 					xmenu_setframe(0);
 					updateflag = SYS_UPDATECFG;
 					break;

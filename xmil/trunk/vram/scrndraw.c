@@ -55,11 +55,6 @@ void scrndraw_changepalette(void) {
 		return;
 	}
 #endif
-#if defined(SUPPORT_16BPP)
-	if (scrnmng_getbpp() == 16) {
-		pals_cnv16pal(x1n_pal16, x1n_pal32, xm_palettes);
-	}
-#endif
 	updateallline(0x01010101);					// fillrenewalline(0x03030303)
 }
 
@@ -123,9 +118,8 @@ sddr_exit1:
 void scrndraw_redraw(void) {
 
 	scrnmng_allflash();
-	scrnmng_palchanged();						// ?
+	pal_update();
 	updateallline(0x01010101);					// fillrenewalline(0x03030303)
-	palettes();
 	scrndraw_draw(FALSE);
 }
 

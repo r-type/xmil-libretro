@@ -250,7 +250,7 @@ static void paletteinit(void) {
 		ddraw.pal[i+START_PAL+TOTAL_PALS].peGreen = dclockpal.pal32[i].p.g;
 		ddraw.pal[i+START_PAL+TOTAL_PALS].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
-	reflesh_palette();
+	pal_reset();
 	ddraw.ddraw2->CreatePalette(DDPCAPS_8BIT, ddraw.pal, &ddraw.palette, 0);
 	ddraw.primsurf->SetPalette(ddraw.palette);
 	scrnmng.palchanged = 0;
@@ -402,8 +402,6 @@ BRESULT scrnmng_create(UINT8 mode) {
 		}
 		else {
 			make16mask(ddpf.dwBBitMask, ddpf.dwRBitMask, ddpf.dwGBitMask);
-			scrndraw_changepalette();			// åƒÇ‘ïKóvÇ†ÇÈÇÃÅH
-			reflesh_palette();
 			dclock_init16();
 		}
 
@@ -456,13 +454,10 @@ BRESULT scrnmng_create(UINT8 mode) {
 		}
 		else if (bitcolor == 16) {
 			make16mask(ddpf.dwBBitMask, ddpf.dwRBitMask, ddpf.dwGBitMask);
-			reflesh_palette();
 		}
 		else if (bitcolor == 24) {
-			reflesh_palette();
 		}
 		else if (bitcolor == 32) {
-			reflesh_palette();
 		}
 		else {
 			goto scre_err;
