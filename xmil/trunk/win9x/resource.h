@@ -73,23 +73,24 @@
 #define IDM_JOYSTICK                    40035
 #define IDM_MOUSE                       40036
 #define IDM_SEEKSND                     40037
-#define IDM_WIDTH40                     40038
-#define IDM_WIDTH80                     40039
-#define IDM_Z80SAVE                     40040
-#define IDM_BMPSAVE                     40041
-#define IDM_OPMLOG                      40042
-#define IDM_DISPCLOCK                   40043
-#define IDM_DISPFRAME                   40044
-#define IDM_JOYX                        40045
-#define IDM_RAPID                       40046
-#define IDM_ABOUT                       40047
+#define IDM_SOUNDOPT                    40038
+#define IDM_WIDTH40                     40039
+#define IDM_WIDTH80                     40040
+#define IDM_Z80SAVE                     40041
+#define IDM_BMPSAVE                     40042
+#define IDM_OPMLOG                      40043
+#define IDM_DISPCLOCK                   40044
+#define IDM_DISPFRAME                   40045
+#define IDM_JOYX                        40046
+#define IDM_RAPID                       40047
+#define IDM_ABOUT                       40048
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        107
-#define _APS_NEXT_COMMAND_VALUE         40048
+#define _APS_NEXT_COMMAND_VALUE         40049
 #define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

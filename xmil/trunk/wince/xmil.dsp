@@ -434,6 +434,10 @@ SOURCE=..\EMBED\MENU\DLGABOUT.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\EMBED\MENU\DLGCFG.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\EMBED\MENU\FILESEL.C
 # End Source File
 # Begin Source File

@@ -18,7 +18,8 @@ void sndctrl_initialize(void) {
 	sound_create(rate, xmilcfg.delayms);
 	opmgen_initialize(rate);
 	psggen_initialize(rate);
-	psggen_setvol(64);
+	opmgen_setvol(xmilcfg.vol_fm);
+	psggen_setvol(xmilcfg.vol_ssg);
 }
 
 void sndctrl_deinitialize(void) {

@@ -84,7 +84,12 @@ static const MSYSITEM s_fdd1[] = {
 
 static const MSYSITEM s_ipl[] = {
 		{str_x1rom,			NULL,		MID_X1ROM,			0},
-		{str_turbo,			NULL,		MID_TURBO,			MENU_DELETED}};
+		{str_turbo,			NULL,		MID_TURBO,
+#if defined(SUPPORT_TURBOZ)
+															0},
+		{str_turboz,		NULL,		MID_TURBOZ,
+#endif
+															MENU_DELETED}};
 
 static const MSYSITEM s_dipsw[] = {
 		{str_boot2d,		NULL,		MID_BOOT2D,			0},
