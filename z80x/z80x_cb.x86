@@ -1,0 +1,165 @@
+
+%include '../z80x/z80x.inc'
+%include '../z80x/z80x.mcr'
+
+section .text
+
+	global	@_code_cb2@0
+	global	@_ixcb_proc2@0
+	global	@_iycb_proc2@0
+
+	global	code_cb
+	global	ixcb_proc
+	global	iycb_proc
+
+	extern	memrd8_ecx_dl
+	extern	memrd16_ecx_ax
+	extern	lea_ecx_ecx
+	extern	_ZSPtable
+
+
+				align	16
+_cb_rlc:		rol		al, 1
+				ret
+				align	4
+_cb_rrc:		ror		al, 1
+				ret
+				align	4
+_cb_rl:			bt		dword [edi + R_Z80AF], 0
+				rcl		al, 1
+				ret
+				align	4
+_cb_rr:			bt		dword [edi + R_Z80AF], 0
+				rcr		al, 1
+				ret
+				align	4
+_cb_sla:		shl		al, 1
+				ret
+				align	4
+_cb_sra:		sar		al, 1
+				ret
+				align	4
+_cb_sll:		stc
+				rcl		al, 1
+				ret
+				align	4
+_cb_srl:		shr		al, 1
+				ret
+
+				align	8
+cb_reg			db	R_Z80B,R_Z80C,R_Z80D,R_Z80E,R_Z80H,R_Z80L,0,R_Z80A
+rorsht_tbl		dd	_cb_rlc,_cb_rrc,_cb_rl,	_cb_rr
+				dd	_cb_sla,_cb_sra,_cb_sll,_cb_srl
+
+
+				align	16
+@_code_cb2@0:
+code_cb:		inc		byte [edi + R_Z80R]
+				GETPCDL
+				movzx	eax, dl
+				mov		ebx, eax
+				shr		ebx, 3
+				and		eax, byte 7
+				and		ebx, byte 7
+				cmp		eax, byte 6
+				je		short cb_xhl
+
+cb_regs:		movzx	eax, byte [cb_reg + eax]
+				lea		ecx, [edi + eax]
+				Z80WORK	byte 8
+				cmp		dl, 40h
+				jc		short .sft
+				js		short .set
+				jge		short .bit
+				btr		dword [ecx], ebx			; 80~bf
+				ret
+.set:			bts		dword [ecx], ebx			; c0~ff
+				ret
+.bit:			mov		al, [edi + R_Z80F]			; 40~7f
+				and		al, C_FLAG
+				bt		dword [ecx], ebx
+				jnc		short .bitz
+				cmp		ebx, byte 7
+				jne		short .bitnsz
+				or		al, (H_FLAG | S_FLAG)
+				jmp		short .bitret
+.bitnsz:		or		al, H_FLAG
+				jmp		short .bitret
+.bitz:			or		al, (H_FLAG | Z_FLAG)
+.bitret:		mov		[edi + R_Z80F], al
+				ret
+.sft:			mov		al, [ecx]					; 00~3f
+				call	[rorsht_tbl + ebx*4]
+				movzx	edx, al
+				mov		ah, [_ZSPtable + edx]
+				adc		ah, 0
+				mov		[ecx], al
+				mov		[edi + R_Z80F], ah
+				ret
+
+cb_xhl:			movzx	ecx, word [edi + R_Z80HL]
+				call	lea_ecx_ecx
+cb_memory:		cmp		dl, 40h
+				jc		short cbmem_sft
+				js		short cbmem_set
+				jge		short cbmem_bit
+cbmem_rst:		Z80WORK	byte 15						; 80~bf
+				btr		dword [ecx], ebx
+				ret
+cbmem_set:		Z80WORK	byte 15						; c0~ff
+				bts		dword [ecx], ebx
+				ret
+cbmem_bit:		Z80WORK	byte 12						; 40~7f
+				mov		al, [edi + R_Z80F]
+				and		al, C_FLAG
+				bt		dword [ecx], ebx
+				jnc		short .bitz
+				cmp		ebx, byte 7
+				jne		short .bitnsz
+				or		al, (H_FLAG | S_FLAG)
+				jmp		short .bitret
+.bitnsz:		or		al, H_FLAG
+				jmp		short .bitret
+.bitz:			or		al, (H_FLAG | Z_FLAG)
+.bitret:		mov		[edi + R_Z80F], al
+				ret
+cbmem_sft:		Z80WORK	byte 15						; 00~3f
+				mov		al, [ecx]
+				call	[rorsht_tbl + ebx*4]
+				movzx	edx, al
+				mov		ah, [_ZSPtable + edx]
+				adc		ah, 0
+				mov		[ecx], al
+				mov		[edi + R_Z80F], ah
+				ret
+
+				align	16
+@_ixcb_proc2@0:
+ixcb_proc:		GETPCAX
+				mov		dl, ah
+				cbw
+				add		ax, word [edi + R_Z80IX]
+				movzx	ecx, ax
+				Z80WORK	byte 8
+				movzx	ebx, dl
+				shr		ebx, 3
+				and		ebx, byte 7
+				push	dword cb_memory
+				jmp		lea_ecx_ecx
+
+				align	16
+@_iycb_proc2@0:
+iycb_proc:		GETPCAX
+				mov		dl, ah
+				cbw
+				add		ax, word [edi + R_Z80IY]
+				movzx	ecx, ax
+				Z80WORK	byte 8
+				movzx	ebx, dl
+				shr		ebx, 3
+				and		ebx, byte 7
+				push	dword cb_memory
+				jmp		lea_ecx_ecx
+
+	ends
+
