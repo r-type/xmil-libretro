@@ -17,11 +17,12 @@
 
 
 	Z80CORE	z80core;
+	UINT8	mainmem[0x10000];
 
-	UINT8	ZSPtable[256];
-	UINT8 	z80inc_flag[256];
-	UINT8	z80dec_flag[256];
+	UINT8 	z80inc_flag2[256];
+	UINT8	z80dec_flag2[256];
 	UINT8	z80szc_flag[512];
+	UINT8	z80szp_flag[256];
 
 	const UINT8 cycles_main[256] = {
 					 4,10, 7, 6, 4, 4, 7, 4, 4,11, 7, 6, 4, 4, 7, 4,
@@ -98,27 +99,25 @@ void CPUCALL z80c_initialize(void) {
 			}
 		}
 
-		ZSPtable[i] = (UINT8)f;
+		z80szp_flag[i] = (UINT8)f;
 
-		z80inc_flag[i] = (UINT8)(f & (~V_FLAG));
+		z80inc_flag2[(i - 1) & 0xff] = (UINT8)(f & (~V_FLAG));
 		if (!(i & 0x0f)) {
-			z80inc_flag[i] |= H_FLAG;
+			z80inc_flag2[(i - 1) & 0xff] |= H_FLAG;
 		}
-		z80dec_flag[i] = (UINT8)(f & (~V_FLAG)) | N_FLAG;
+		z80dec_flag2[(i + 1) & 0xff] = (UINT8)(f & (~V_FLAG)) | N_FLAG;
 		if ((i & 0x0f) == 0x0f) {
-			z80dec_flag[i] |= H_FLAG;
+			z80dec_flag2[(i + 1) & 0xff] |= H_FLAG;
 		}
 
 		z80szc_flag[i] = (UINT8)(f & (~V_FLAG));
 		z80szc_flag[i+256] = (UINT8)(f & (~V_FLAG)) | C_FLAG;
 	}
-	z80inc_flag[0x80] |= V_FLAG;
-	z80dec_flag[0x7f] |= V_FLAG;
+	z80inc_flag2[0x80 - 1] |= V_FLAG;
+	z80dec_flag2[0x7f + 1] |= V_FLAG;
 }
 
 void CPUCALL z80c_reset(void) {
-
-	z80c_initialize();
 
 	ZeroMemory(&z80core.s, sizeof(z80core.s));
 	R_Z80R = rand_get();

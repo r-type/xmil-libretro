@@ -94,7 +94,8 @@ typedef struct {
 } Z80STAT;
 
 typedef struct {
-	UINT	dummy;
+	UINT8	*memread;
+	UINT8	*memwrite;
 } Z80EXT;
 
 typedef struct {
@@ -111,6 +112,7 @@ extern "C" {
 #endif
 
 extern	Z80CORE		z80core;
+extern	UINT8		mainmem[0x10000];
 
 void CPUCALL z80c_initialize(void);
 void CPUCALL z80c_reset(void);

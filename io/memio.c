@@ -4,22 +4,29 @@
 #include	"iocore.h"
 
 
+	UINT8	biosmem[0x8000];
+#if defined(SUPPORT_BANKMEM)
+	UINT8	bankmem[16][0x8000];
+#endif
+
+
 void memio_update(void) {
 
 #if defined(SUPPORT_BANKMEM)
 	if (memio.bank & 0x10) {
 #endif
 		if (!memio.ram) {
-			RAM0r = mBIOS;
-			RAM0w = mMAIN;
+			z80core.e.memread = biosmem;
 		}
 		else {
-			RAM0r = RAM0w = mMAIN;
+			z80core.e.memread = mainmem;
 		}
+		z80core.e.memwrite = mainmem;
 #if defined(SUPPORT_BANKMEM)
 	}
 	else {
-		RAM0r = RAM0w = mBANK[memio.bank & 15];
+		z80core.e.memread = bankmem[memio.bank & 15];
+		z80core.e.memwrite = bankmem[memio.bank & 15];
 	}
 #endif
 }
@@ -45,7 +52,7 @@ void IOOUTCALL memio_rom(UINT port, REG8 dat) {
 #if defined(SUPPORT_BANKMEM)
 	if (memio.bank & 0x10) {
 #endif
-		RAM0r = mBIOS;
+		z80core.e.memread = biosmem;
 #if defined(SUPPORT_BANKMEM)
 	}
 #endif
@@ -59,7 +66,7 @@ void IOOUTCALL memio_ram(UINT port, REG8 dat) {
 #if defined(SUPPORT_BANKMEM)
 	if (memio.bank & 0x10) {
 #endif
-		RAM0r = mMAIN;
+		z80core.e.memread = mainmem;
 #if defined(SUPPORT_BANKMEM)
 	}
 #endif

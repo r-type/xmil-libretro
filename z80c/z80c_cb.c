@@ -19,7 +19,7 @@ static REG8 CPUCALL _cb_rlc(REG8 v) {
 
 	R_Z80F = v >> 7;
 	ret = (v << 1) | R_Z80F;
-	R_Z80F |= ZSPtable[(UINT8)ret];
+	R_Z80F |= z80szp_flag[(UINT8)ret];
 	return(ret);
 }
 
@@ -29,7 +29,7 @@ static REG8 CPUCALL _cb_rrc(REG8 v) {
 
 	R_Z80F = v & 1;
 	ret = (v >> 1) | (R_Z80F << 7);
-	R_Z80F |= ZSPtable[(UINT8)ret];
+	R_Z80F |= z80szp_flag[(UINT8)ret];
 	return(ret);
 }
 
@@ -38,7 +38,7 @@ static REG8 CPUCALL _cb_rl(REG8 v) {
 	REG8	ret;
 
 	ret = (v << 1) | (R_Z80F & 1);
-	R_Z80F = ZSPtable[(UINT8)ret] | (v >> 7);
+	R_Z80F = z80szp_flag[(UINT8)ret] | (v >> 7);
 	return(ret);
 }
 
@@ -47,7 +47,7 @@ static REG8 CPUCALL _cb_rr(REG8 v) {
 	REG8	ret;
 
 	ret = (v >> 1) | (R_Z80F << 7);
-	R_Z80F = ZSPtable[(UINT8)ret] | (v & 1);
+	R_Z80F = z80szp_flag[(UINT8)ret] | (v & 1);
 	return(ret);
 }
 
@@ -56,7 +56,7 @@ static REG8 CPUCALL _cb_sla(REG8 v) {
 	REG8	ret;
 
 	ret = (v << 1);
-	R_Z80F = ZSPtable[(UINT8)ret] | (v >> 7);
+	R_Z80F = z80szp_flag[(UINT8)ret] | (v >> 7);
 	return(ret);
 }
 
@@ -65,7 +65,7 @@ static REG8 CPUCALL _cb_sra(REG8 v) {
 	REG8	ret;
 
 	ret = (((SINT8)v) >> 1);
-	R_Z80F = ZSPtable[(UINT8)ret] | (v & 1);
+	R_Z80F = z80szp_flag[(UINT8)ret] | (v & 1);
 	return(ret);
 }
 
@@ -74,7 +74,7 @@ static REG8 CPUCALL _cb_sll(REG8 v) {
 	REG8	ret;
 
 	ret = (v << 1) | 1;
-	R_Z80F = ZSPtable[(UINT8)ret] | (v >> 7);
+	R_Z80F = z80szp_flag[(UINT8)ret] | (v >> 7);
 	return(ret);
 }
 
@@ -83,7 +83,7 @@ static REG8 CPUCALL _cb_srl(REG8 v) {
 	REG8	ret;
 
 	ret = v >> 1;
-	R_Z80F = ZSPtable[ret] | (v & 1);
+	R_Z80F = z80szp_flag[ret] | (v & 1);
 	return(ret);
 }
 

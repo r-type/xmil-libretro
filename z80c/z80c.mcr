@@ -66,14 +66,14 @@
 
 #define	MCR_INC(reg) {													\
 		R_Z80F &= C_FLAG;												\
+		R_Z80F |= z80inc_flag2[(reg)];									\
 		(reg)++;														\
-		R_Z80F |= z80inc_flag[(reg)];									\
 	}
 
 #define	MCR_DEC(reg) {													\
 		R_Z80F &= C_FLAG;												\
+		R_Z80F |= z80dec_flag2[(reg)];									\
 		(reg)--;														\
-		R_Z80F |= z80dec_flag[(reg)];									\
 	}
 
 #define	LDB_b(reg) {													\
@@ -193,7 +193,7 @@
 			}															\
 		}																\
 		R_Z80A = (UINT8)dst;											\
-		R_Z80F = flg | ZSPtable[dst & 0xff];							\
+		R_Z80F = flg | z80szp_flag[dst & 0xff];							\
 	}
 
 #define	MCR_JRFLG(flg) {												\
@@ -226,21 +226,19 @@
 	}
 
 #define MCR_INC_MEM(adrs) {												\
-		UINT8 tmp;														\
+		REG8 tmp;														\
 		tmp = mem_read8((adrs));										\
-		tmp++;															\
-		mem_write8((adrs), tmp);										\
 		R_Z80F &= C_FLAG;												\
-		R_Z80F |= z80inc_flag[tmp];										\
+		R_Z80F |= z80inc_flag2[tmp];									\
+		mem_write8((adrs), (REG8)(tmp + 1));							\
 	}
 
 #define	MCR_DEC_MEM(adrs) {												\
-		UINT8 tmp;														\
+		REG8 tmp;														\
 		tmp = mem_read8((adrs));										\
-		tmp--;															\
-		mem_write8((adrs), tmp);										\
 		R_Z80F &= C_FLAG;												\
-		R_Z80F |= z80dec_flag[tmp];										\
+		R_Z80F |= z80dec_flag2[tmp];									\
+		mem_write8((adrs), (REG8)(tmp - 1));							\
 	}
 
 #define LDB_xhl_b {														\
@@ -343,7 +341,7 @@
 
 #define	MCR_AND(b) {													\
 		R_Z80A &= (b);													\
-		R_Z80F = ZSPtable[R_Z80A];										\
+		R_Z80F = z80szp_flag[R_Z80A];									\
 	}
 
 #define	MCR_AND_XHL {													\
@@ -354,7 +352,7 @@
 
 #define	MCR_XOR(b) {													\
 		R_Z80A ^= (b);													\
-		R_Z80F = ZSPtable[R_Z80A];										\
+		R_Z80F = z80szp_flag[R_Z80A];									\
 	}
 
 #define	MCR_XOR_XHL {													\
@@ -366,7 +364,7 @@
 
 #define	MCR_OR(b) {														\
 		R_Z80A |= (b);													\
-		R_Z80F = ZSPtable[R_Z80A];										\
+		R_Z80F = z80szp_flag[R_Z80A];									\
 	}
 
 #define	MCR_OR_XHL {													\

@@ -11,6 +11,11 @@ typedef struct {
 extern "C" {
 #endif
 
+extern	UINT8	biosmem[0x8000];
+#if defined(SUPPORT_BANKMEM)
+extern	UINT8	bankmem[16][0x8000];
+#endif
+
 void memio_update(void);
 
 #if defined(SUPPORT_BANKMEM)

@@ -1,10 +1,10 @@
 
+%include '../z80x/z80x.inc'
 
 section .bss
 
-	extern	_mMAIN
-	extern	_RAM0r
-	extern	_RAM0w
+	extern	_z80core
+	extern	_mainmem
 
 
 section .text
@@ -24,18 +24,18 @@ section .text
 				align	16
 lea_ecx_ecx:	cmp		ecx, 8000h
 				jc		short .low
-				add		ecx, _mMAIN
+				add		ecx, _mainmem
 				ret
-.low:			add		ecx, [_RAM0r]
+.low:			add		ecx, [_z80core + z80core_t.memread]
 				ret
 
 
 				align	16
 memfetch:		cmp		ecx, 8000h
 				jc		short .low
-				movzx	eax, byte [_mMAIN + ecx]
+				movzx	eax, byte [_mainmem + ecx]
 				ret
-.low:			mov		edx, [_RAM0r]
+.low:			mov		edx, [_z80core + z80core_t.memread]
 				movzx	eax, byte [edx + ecx]
 				ret
 
@@ -43,18 +43,18 @@ memfetch:		cmp		ecx, 8000h
 @z80mem_read8@4:
 memrd8_ecx_al:	cmp		ecx, 8000h
 				jc		short .low
-				mov		al, [_mMAIN + ecx]
+				mov		al, [_mainmem + ecx]
 				ret
-.low:			mov		edx, [_RAM0r]
+.low:			mov		edx, [_z80core + z80core_t.memread]
 				mov		al, [edx + ecx]
 				ret
 
 				align	16
 memrd8_ecx_dl:	cmp		ecx, 8000h
 				jc		short .low
-				mov		dl, [_mMAIN + ecx]
+				mov		dl, [_mainmem + ecx]
 				ret
-.low:			mov		edx, [_RAM0r]
+.low:			mov		edx, [_z80core + z80core_t.memread]
 				mov		dl, [edx + ecx]
 				ret
 
@@ -62,9 +62,9 @@ memrd8_ecx_dl:	cmp		ecx, 8000h
 @z80mem_write8@8:
 memwr8_ecx_dl:	cmp		ecx, 8000h
 				jc		short .low
-				mov		[_mMAIN + ecx], dl
+				mov		[_mainmem + ecx], dl
 				ret
-.low:			mov		eax, [_RAM0w]
+.low:			mov		eax, [_z80core + z80core_t.memwrite]
 				mov		[eax + ecx], dl
 				ret
 
@@ -73,18 +73,18 @@ memrd16_ecx_ax:	cmp		cx, 0xffff
 				jo		short .a7fff
 				js		short .a8000
 				je		short .affff
-				mov		eax, [_RAM0r]
+				mov		eax, [_z80core + z80core_t.memread]
 				mov		ax, [eax + ecx]
 				ret
-.a7fff:			mov		eax, [_RAM0r]
+.a7fff:			mov		eax, [_z80core + z80core_t.memread]
 				mov		al, [eax + ecx]
-				mov		ah, [_mMAIN + ecx + 1]
+				mov		ah, [_mainmem + ecx + 1]
 				ret
-.a8000:			mov		ax, [_mMAIN + ecx]
+.a8000:			mov		ax, [_mainmem + ecx]
 				ret
-.affff:			mov		eax, [_RAM0r]
+.affff:			mov		eax, [_z80core + z80core_t.memread]
 				mov		ah, [eax]
-				mov		al, [_mMAIN + ecx]
+				mov		al, [_mainmem + ecx]
 				ret
 
 				align	16
@@ -92,17 +92,17 @@ memwr16_ecx_dx:	cmp		cx, 0xffff
 				jo		short .a7fff
 				js		short .a8000
 				je		short .affff
-				mov		eax, [_RAM0w]
+				mov		eax, [_z80core + z80core_t.memwrite]
 				mov		[eax + ecx], dx
 				ret
-.a7fff:			mov		eax, [_RAM0w]
-				mov		[_mMAIN + ecx + 1], dh
+.a7fff:			mov		eax, [_z80core + z80core_t.memwrite]
+				mov		[_mainmem + ecx + 1], dh
 				mov		[eax + ecx], dl
 				ret
-.a8000:			mov		[_mMAIN + ecx], dx
+.a8000:			mov		[_mainmem + ecx], dx
 				ret
-.affff:			mov		eax, [_RAM0w]
-				mov		[_mMAIN + ecx], dl
+.affff:			mov		eax, [_z80core + z80core_t.memwrite]
+				mov		[_mainmem + ecx], dl
 				mov		[eax], dh
 				ret
 

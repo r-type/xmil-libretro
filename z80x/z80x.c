@@ -5,6 +5,7 @@
 
 
 	Z80CORE	z80core;
+	UINT8	mainmem[0x10000];
 
 	UINT8	ZSPtable[256];
 	UINT8 	z80inc_flag[256];
@@ -105,8 +106,6 @@ void z80x_initialize(void) {
 }
 
 void z80x_reset(void) {
-
-	z80x_initialize();
 
 	ZeroMemory(&z80core.s, sizeof(z80core.s));
 	z80core.s.r1 = rand_get();
