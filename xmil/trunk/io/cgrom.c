@@ -6,16 +6,16 @@
 
 void IOOUTCALL cgrom_o(UINT port, REG8 value) {
 
-	switch(port & 0x0f) {
-		case 0:				// 0x0e80
+	switch(port) {
+		case 0x0e80:
 			cgrom.reg[0] = value;
 			break;
 
-		case 1:				// 0x0e81
+		case 0x0e81:
 			cgrom.reg[1] = value;
 			break;
 
-		case 2:				// 0x0e82
+		case 0x0e82:
 			cgrom.face = (LOADINTELWORD(cgrom.reg) & (~15));
 			break;
 	}
@@ -25,19 +25,18 @@ REG8 IOINPCALL cgrom_i(UINT port) {
 
 	REG8	ret;
 
+	if ((port & (~1)) != 0x0e80) {
+		return(0xff);
+	}
 	ret = 0;
-	port &= 0x000f;
 	if (cgrom.reg[1]) {
-		switch(port) {
-			case 0:			// 0x0e80
-				ret = font_knjx1[cgrom.face + cgrom.count];
-				cgrom.flag |= 1;
-				break;
-
-			case 1:			// 0x0e81
-				ret = font_knjx1[cgrom.face + cgrom.count + FONTX1_LR];
-				cgrom.flag |= 2;
-				break;
+		if (!(port & 1)) {		// 0x0e80
+			ret = font_knjx1[cgrom.face + cgrom.count];
+			cgrom.flag |= 1;
+		}
+		else {					// 0x0e81
+			ret = font_knjx1[cgrom.face + cgrom.count + FONTX1_LR];
+			cgrom.flag |= 2;
 		}
 		if (cgrom.flag == 3) {
 			cgrom.flag = 0;
@@ -45,7 +44,7 @@ REG8 IOINPCALL cgrom_i(UINT port) {
 		}
 	}
 	else {
-		if (port == 0) {			// 0x0e80
+		if (!(port & 1)) {		// 0x0e80
 			if (cgrom.reg[0] >= 0x30) {
 				ret = 0x40 + ((cgrom.reg[0] - 0x30) * 6);
 			}

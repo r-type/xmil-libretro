@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 short x1_sub_int(void);
-void IOOUTCALL subcpu_o(UINT port, REG8 value);		// x1_sub_w
+void IOOUTCALL subcpu_o(UINT port, REG8 dat);		// x1_sub_w
 REG8 IOINPCALL subcpu_i(UINT port);					// x1_sub_r
 
 void subcpu_reset(void);

@@ -35,7 +35,7 @@ extern "C" {
 #endif
 
 void sio_int(void);
-void IOOUTCALL sio_o(UINT port, REG8 value);		// x1_sio_w
+void IOOUTCALL sio_o(UINT port, REG8 dat);			// x1_sio_w
 REG8 IOINPCALL sio_i(UINT port);					// x1_sio_r
 
 void sio_reset(void);

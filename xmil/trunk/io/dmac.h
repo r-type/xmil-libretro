@@ -61,7 +61,7 @@ typedef struct {
 extern "C" {
 #endif
 
-void IOOUTCALL dmac_o(UINT port, REG8 value);		// x1_dma_w
+void IOOUTCALL dmac_o(UINT port, REG8 dat);			// x1_dma_w
 REG8 IOINPCALL dmac_i(UINT port);					// x1_dma_r
 
 void dmac_reset(void);

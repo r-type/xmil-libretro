@@ -31,7 +31,7 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 							1,
 							1, 0};
 
-	PCCORE		pccore = {250, 0, 1, 1, 0};
+	PCCORE		pccore = {250, 0, 1, 0};
 	BYTE		mMAIN[0x10000];
 	BYTE		mBIOS[0x8000];
 	BYTE		mBANK[16][0x8000];
@@ -40,7 +40,6 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 
 	BYTE		*RAM0r;
 	BYTE		*RAM0w;
-	BYTE		lastmem;
 	DWORD		h_cntbase;
 	BRESULT		soundrenewal;
 
@@ -73,23 +72,12 @@ void ipl_load(void) {
 
 
 /***********************************************************************
-	FONT-ROM LOAD
-***********************************************************************/
-
-void fnt_load(void) {
-
-	font_load(NULL, TRUE);
-}
-
-
-/***********************************************************************
 	èâä˙âª
 ***********************************************************************/
 
 BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 
 	pccore.HSYNC_CLK = 250;
-	pccore.ROM_SW = 1;
 	pccore.ROM_TYPE = ROM_TYPE;
 	pccore.SOUND_SW = SOUND_SW;
 	pccore.DIP_SW = DIP_SW;
@@ -108,8 +96,8 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 	ipl_load();
 
 	Z80_RESET();
+	iocore_reset();
 
-	lastmem = 0x78;
 	RAM0r = mBIOS;
 	RAM0w = mMAIN;
 	h_cntbase = 0;
@@ -123,6 +111,7 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 	ctc_reset();
 	dmac_reset();
 	fdc_reset();
+	memio_reset();
 	pcg_reset();
 	ppi_reset();
 	sio_reset();
@@ -149,8 +138,9 @@ void pccore_initialize(void) {
 	sndctrl_initialize();
 
 	init_draw();
-	fnt_load();
+	font_load(NULL, TRUE);
 
+	crtc_initialize();
 	pcg_initialize();
 	ppi_initialize();
 

@@ -10,12 +10,12 @@ typedef struct {
 extern "C" {
 #endif
 
-void IOOUTCALL sndboard_opmreg(UINT port, REG8 value);
-void IOOUTCALL sndboard_opmdat(UINT port, REG8 value);
+void IOOUTCALL sndboard_opmreg(UINT port, REG8 dat);
+void IOOUTCALL sndboard_opmdat(UINT port, REG8 dat);
 REG8 IOINPCALL sndboard_opmsta(UINT port);
 
-void IOOUTCALL sndboard_psgreg(UINT port, REG8 value);
-void IOOUTCALL sndboard_psgdat(UINT port, REG8 value);
+void IOOUTCALL sndboard_psgreg(UINT port, REG8 dat);
+void IOOUTCALL sndboard_psgdat(UINT port, REG8 dat);
 REG8 IOINPCALL sndboard_psgsta(UINT port);
 
 void sndboard_reset(void);

@@ -600,6 +600,10 @@ SOURCE=..\IO\IOCORE.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\IO\MEMIO.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\IO\PCG.C
 # End Source File
 # Begin Source File
@@ -617,10 +621,6 @@ SOURCE=..\IO\SNDBOARD.C
 # Begin Source File
 
 SOURCE=..\IO\SUBCPU.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\CAVELV2\X1_IO.C
 # End Source File
 # End Group
 # Begin Group "vram"

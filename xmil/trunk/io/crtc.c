@@ -542,34 +542,32 @@ REG8 IOINPCALL blackctrl_i(UINT port) {
 
 // ----
 
+static void resetpal(void) {
+
+	CopyMemory(crtc_TEXTPAL, def_TEXTPAL, 8);
+	CopyMemory(crtc_GRPHPAL[0], def_GRPHPAL, 64*2);
+	CopyMemory(crtc_GRPHPAL[1], def_GRPHPAL, 64*2);
+}
+
 void crtc_initialize(void) {
 
+	UINT	p;
 
+	resetpal();
+	for (p=0; p<4096; p++) {
+		crtc_PAL4096[p] = p;
+	}
 }
 
 void crtc_reset(void) {
-
-static	BYTE	initcrtc = 0;
-	UINT	p;
 
 	crtc.s = crtcdefault;
 
 	palandply = 1;
 	dispmode = SCRN64_INVALID;
 	pal_bank = pal_disp = PAL_NORMAL;
-	if (!initcrtc) {
-		initcrtc++;
-		memcpy(crtc_TEXTPAL, def_TEXTPAL, 8);
-		memcpy(crtc_GRPHPAL[0], def_GRPHPAL, 64*2);
-		memcpy(crtc_GRPHPAL[1], def_GRPHPAL, 64*2);
-		for (p=0; p<4096; p++) {
-			crtc_PAL4096[p] = p;
-		}
-	}
-	else if (pccore.ROM_TYPE < 3) {
-		memcpy(crtc_TEXTPAL, def_TEXTPAL, 8);
-		memcpy(crtc_GRPHPAL[0], def_GRPHPAL, 64*2);
-		memcpy(crtc_GRPHPAL[1], def_GRPHPAL, 64*2);
+	if (pccore.ROM_TYPE < 3) {
+		resetpal();
 	}
 	if ((pccore.ROM_TYPE >= 2) && (!(pccore.DIP_SW & 1))) {
 		crtc.s.SCRN_BITS = SCRN_200LINE;
