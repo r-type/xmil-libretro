@@ -39,7 +39,7 @@ void fddmtr_init(void) {
 	FillMemory(fddmtr.head, sizeof(fddmtr.head), 24);
 }
 
-void fddmtr_callback(DWORD time) {
+void fddmtr_callback(UINT32 time) {
 
 	if ((fddmtr.curevent) && (time >= fddmtr.nextevent)) {
 		fddmtr_event();
@@ -90,7 +90,7 @@ void fddmtr_motormove(void) {
 	}
 }
 
-void fddmtr_waitsec(BYTE value) {
+void fddmtr_waitsec(UINT8 value) {
 
 	if (!xmilcfg.MOTOR) {
 		return;

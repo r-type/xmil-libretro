@@ -131,7 +131,7 @@ REG8 IOINPCALL pcg_i(UINT port) {
 
 	UINT	off;
 	int		l;
-	BYTE	chr,knj,val;
+	UINT8	chr,knj,val;
 
 	val = 0xff;
 	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
@@ -141,8 +141,8 @@ REG8 IOINPCALL pcg_i(UINT port) {
 			chr = tram[TRAM_ANK + off];
 			knj = tram[TRAM_KNJ + off];
 			if (knj & 0x80) {
-				DWORD p;
-				p = ((((DWORD)knj << 8) | chr) & 0x1fff) << 4;
+				UINT p;
+				p = (((knj << 8) | chr) & 0x1fff) << 4;
 				if (knj & 0x40) {
 					val = font_knjx1t[p + l + FONTX1T_LR];
 				}

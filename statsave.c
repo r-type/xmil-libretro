@@ -146,7 +146,7 @@ sfo_err1:
 static int statflag_closesection(SFFILEH sffh) {
 
 	UINT	leng;
-	BYTE	zero[16];
+	UINT8	zero[16];
 
 	if (sffh == NULL) {
 		goto sfcs_err1;

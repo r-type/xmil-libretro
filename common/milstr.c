@@ -328,7 +328,7 @@ int STRCALL mileuc_memcmp(const char *str, const char *cmp) {
 			if (((c - 'a') & 0xff) < 26) {
 				c -= 0x20;
 			}
-			s = (BYTE)*str++;
+			s = (UINT8)*str++;
 			if (((s - 'a') & 0xff) < 26) {
 				s -= 0x20;
 			}
@@ -461,7 +461,7 @@ int STRCALL milutf8_cmp(const char *str, const char *cmp) {
 		if (((s - 'a') & 0xff) < 26) {
 			s -= 0x20;
 		}
-		c = (BYTE)*cmp++;
+		c = (UINT8)*cmp++;
 		if (((c - 'a') & 0xff) < 26) {
 			c -= 0x20;
 		}
@@ -576,7 +576,7 @@ int STRCALL milstr_extendcmp(const OEMCHAR *str, const OEMCHAR *cmp) {
 
 	do {
 		while(1) {
-			c = (BYTE)*cmp++;
+			c = (UINT8)*cmp++;
 			if (!c) {
 				return(0);
 			}

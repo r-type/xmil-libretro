@@ -4,10 +4,6 @@
 #include	"sndctrl.h"
 
 
-// extern	int		s_cnt;
-// extern	DWORD	basedclk;
-
-
 	PSGGENCFG	psggencfg;
 
 const UINT8 psggen_deftbl[0x10] =

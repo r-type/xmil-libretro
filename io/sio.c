@@ -93,7 +93,7 @@ static void mouse_read(SIOCH *ch) {
 
 	SINT16	mx;
 	SINT16	my;
-	BYTE	dat0, dat1, dat2;
+	UINT8	dat0, dat1, dat2;
 
 	dat0 = mousemng_getstat(&mx, &my, TRUE) & 3;
 
@@ -106,7 +106,7 @@ static void mouse_read(SIOCH *ch) {
 		dat0 |= 0x20;
 	}
 	else {
-		dat1 = (char)mx;
+		dat1 = (UINT8)mx;
 	}
 	if (my > 127) {
 		dat2 = 0x7f;
@@ -117,7 +117,7 @@ static void mouse_read(SIOCH *ch) {
 		dat0 |= 0x80;
 	}
 	else {
-		dat2 = (char)my;
+		dat2 = (UINT8)my;
 	}
 	if ((ch->wr[1] & 0x18) == 0x08) {
 		fifo_w(&ch->RxD, dat0, 1);		// 最初の１バイトだけ受信割り込み

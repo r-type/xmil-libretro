@@ -36,8 +36,8 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 #if defined(SUPPORT_BANKMEM)
 	UINT8		mBANK[16][0x8000];
 #endif
-	BYTE		*RAM0r;
-	BYTE		*RAM0w;
+	UINT8		*RAM0r;
+	UINT8		*RAM0w;
 
 
 // ----

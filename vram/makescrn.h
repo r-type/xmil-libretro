@@ -44,8 +44,7 @@ extern "C" {
 
 extern	MAKESCRN	makescrn;
 
-extern	BYTE	updatetmp[0x800+0x101];
-extern	BYTE	scrnallflash;
+extern	UINT8	scrnallflash;
 extern	UINT	drawtime;
 
 

@@ -58,8 +58,8 @@ extern const OEMCHAR xmilversion[];
 extern	XMILCFG		xmilcfg;
 extern	PCCORE		pccore;
 extern	CORESTAT	corestat;
-extern	BYTE		*RAM0r;
-extern	BYTE		*RAM0w;
+extern	UINT8		*RAM0r;
+extern	UINT8		*RAM0w;
 
 extern	UINT8	mMAIN[0x10000];
 extern	UINT8	mBIOS[0x8000];
