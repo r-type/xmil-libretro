@@ -81,7 +81,7 @@ UINT __stdcall file_write(FILEH handle, const void *data, UINT length) {
 	return(0);
 }
 
-short __stdcall file_close(FILEH handle) {
+BRESULT __stdcall file_close(FILEH handle) {
 
 	CloseHandle(handle);
 	return(0);
@@ -92,19 +92,52 @@ UINT __stdcall file_getsize(FILEH handle) {
 	return(GetFileSize(handle, NULL));
 }
 
-short __stdcall file_delete(const OEMCHAR *path) {
+static BRESULT cnvdatetime(FILETIME *file, DOSDATE *dosdate, DOSTIME *dostime) {
 
-	return(DeleteFile(path)?0:-1);
+	FILETIME	localtime;
+	SYSTEMTIME	systime;
+
+	if ((FileTimeToLocalFileTime(file, &localtime) == 0) ||
+		(FileTimeToSystemTime(&localtime, &systime) == 0)) {
+		return(FAILURE);
+	}
+	if (dosdate) {
+		dosdate->year = (UINT16)systime.wYear;
+		dosdate->month = (UINT8)systime.wMonth;
+		dosdate->day = (UINT8)systime.wDay;
+	}
+	if (dostime) {
+		dostime->hour = (UINT8)systime.wHour;
+		dostime->minute = (UINT8)systime.wMinute;
+		dostime->second = (UINT8)systime.wSecond;
+	}
+	return(SUCCESS);
 }
 
-short __stdcall file_attr(const OEMCHAR *path) {
+BRESULT __stdcall file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime) {
 
-	return((short)GetFileAttributes(path));
+	FILETIME	lastwrite;
+
+	if ((GetFileTime(handle, NULL, NULL, &lastwrite) == 0) ||
+		(cnvdatetime(&lastwrite, dosdate, dostime) != SUCCESS)) {
+		return(FAILURE);
+	}
+	return(SUCCESS);
 }
 
-short __stdcall file_dircreate(const OEMCHAR *path) {
+BRESULT __stdcall file_delete(const OEMCHAR *path) {
 
-	return(CreateDirectory(path, NULL)?0:-1);
+	return(DeleteFile(path)?SUCCESS:FAILURE);
+}
+
+SINT16 __stdcall file_attr(const OEMCHAR *path) {
+
+	return((SINT16)GetFileAttributes(path));
+}
+
+BRESULT __stdcall file_dircreate(const OEMCHAR *path) {
+
+	return(CreateDirectory(path, NULL)?SUCCESS:FAILURE);
 }
 
 
@@ -144,14 +177,14 @@ FILEH __stdcall file_create_c(const OEMCHAR *path) {
 	return(file_create(curpath));
 }
 
-short __stdcall file_delete_c(const OEMCHAR *path) {
+BRESULT __stdcall file_delete_c(const OEMCHAR *path) {
 
 	*curfilep = '\0';
 	file_catname(curpath, path, NELEMENTS(curpath));
 	return(file_delete(curpath));
 }
 
-short __stdcall file_attr_c(const OEMCHAR *path) {
+SINT16 __stdcall file_attr_c(const OEMCHAR *path) {
 
 	*curfilep = '\0';
 	file_catname(curpath, path, NELEMENTS(curpath));
@@ -225,7 +258,7 @@ void __stdcall file_cutseparator(OEMCHAR *path) {
 
 	int		pos;
 
-	pos = STRLEN(path) - 1;
+	pos = OEMSTRLEN(path) - 1;
 	if ((pos > 0) &&							// 2文字以上でー
 		(path[pos] == '\\') &&					// ケツが \ でー
 		(!milstr_kanji2nd(path, pos)) &&		// 漢字の2バイト目ぢゃなくてー
@@ -239,7 +272,7 @@ void __stdcall file_setseparator(OEMCHAR *path, int maxlen) {
 
 	int		pos;
 
-	pos = STRLEN(path) - 1;
+	pos = OEMSTRLEN(path) - 1;
 	if ((pos < 0) ||
 		((pos == 1) && (path[1] == ':')) ||
 		((path[pos] == '\\') && (!milstr_kanji2nd(path, pos))) ||

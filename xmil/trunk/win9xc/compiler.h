@@ -105,5 +105,5 @@ typedef signed __int64		SINT64;
 
 #define	SUPPORT_X1F
 
-#define	SOUNDRESERVE	20
+#define	SOUNDRESERVE		20
 

@@ -1,12 +1,24 @@
 
-#define		FILEH				HANDLE
-#define		FILEH_INVALID		(INVALID_HANDLE_VALUE)
+#define	FILEH			HANDLE
+#define	FILEH_INVALID	(INVALID_HANDLE_VALUE)
 
 enum {
 	FSEEK_SET	= 0,
 	FSEEK_CUR	= 1,
 	FSEEK_END	= 2
 };
+
+typedef struct {
+	UINT16	year;		// cx
+	UINT8	month;		// dh
+	UINT8	day;		// dl
+} DOSDATE;
+
+typedef struct {
+	UINT8	hour;		// ch
+	UINT8	minute;		// cl
+	UINT8	second;		// dh
+} DOSTIME;
 
 
 #ifdef __cplusplus
@@ -23,11 +35,12 @@ FILEH __stdcall file_create(const OEMCHAR *path);
 long __stdcall file_seek(FILEH handle, long pointer, int method);
 UINT __stdcall file_read(FILEH handle, void *data, UINT length);
 UINT __stdcall file_write(FILEH handle, const void *data, UINT length);
-short __stdcall file_close(FILEH handle);
+BRESULT __stdcall file_close(FILEH handle);
 UINT __stdcall file_getsize(FILEH handle);
-short __stdcall file_delete(const OEMCHAR *path);
-short __stdcall file_attr(const OEMCHAR *path);
-short __stdcall file_dircreate(const OEMCHAR *path);
+BRESULT __stdcall file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
+BRESULT __stdcall file_delete(const OEMCHAR *path);
+SINT16 __stdcall file_attr(const OEMCHAR *path);
+BRESULT __stdcall file_dircreate(const OEMCHAR *path);
 
 											// カレントファイル操作
 void __stdcall file_setcd(const OEMCHAR *exename);
@@ -35,7 +48,8 @@ OEMCHAR * __stdcall file_getcd(const OEMCHAR *path);
 FILEH __stdcall file_open_c(const OEMCHAR *path);
 FILEH __stdcall file_open_rb_c(const OEMCHAR *path);
 FILEH __stdcall file_create_c(const OEMCHAR *path);
-short __stdcall file_attr_c(const OEMCHAR *path);
+BRESULT __stdcall file_delete_c(const OEMCHAR *path);
+SINT16 __stdcall file_attr_c(const OEMCHAR *path);
 
 #define	file_cpyname(a, b, c)	milstr_ncpy(a, b, c)
 #define	file_catname(a, b, c)	milstr_ncat(a, b, c)
