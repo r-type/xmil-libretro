@@ -741,7 +741,8 @@ void scrnmng_dispclock(void) {
 
 	DDSURFACEDESC	dest;
 
-	if ((ddraw.clocksurf) && (dclock_disp())) {
+	if ((ddraw.clocksurf) &&
+		(ddraw.scrn.top >= DCLOCK_Y) && (dclock_disp())) {
 		dclock_make();
 		ZeroMemory(&dest, sizeof(dest));
 		dest.dwSize = sizeof(dest);
@@ -755,7 +756,7 @@ void scrnmng_dispclock(void) {
 			ddraw.clocksurf->Unlock(NULL);
 		}
 		if (ddraw.primsurf->BltFast(640 - DCLOCK_X - 4,
-									480 - DCLOCK_Y - 8,
+									ddraw.height - DCLOCK_Y,
 									ddraw.clocksurf, (RECT *)&rectclk,
 									DDBLTFAST_WAIT) == DDERR_SURFACELOST) {
 			ddraw.primsurf->Restore();
