@@ -174,6 +174,38 @@ DEP_CPP_PARTS=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ARM\PARTS.S
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilsig3\Rel
+InputPath=.\ARM\PARTS.S
+InputName=PARTS
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -1331,6 +1363,38 @@ DEP_CPP_OPMGEN=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ARM\OPMGENG.S
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilsig3\Rel
+InputPath=.\ARM\OPMGENG.S
+InputName=OPMGENG
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 

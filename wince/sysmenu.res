@@ -66,6 +66,6 @@ enum {
 };
 
 enum {
-	MICON_NP2		= MICON_USER
+	MICON_XMIL		= MICON_USER
 };
 

@@ -16,7 +16,7 @@ enum {
 #if defined(SIZE_QVGA)
 static const MENUPRM res_about[] = {
 			{DLGTYPE_ICON,		DID_ICON,		0,
-				(void *)MICON_NP2,						  7,   7,  24,  24},
+				(void *)MICON_XMIL,						  7,   7,  24,  24},
 			{DLGTYPE_LTEXT,		DID_VER,		0,
 				NULL,									 40,  14, 128,  11},
 			{DLGTYPE_BUTTON,	DID_OK,			MENU_TABSTOP,
@@ -24,7 +24,7 @@ static const MENUPRM res_about[] = {
 #else
 static const MENUPRM res_about[] = {
 			{DLGTYPE_ICON,		DID_ICON,		0,
-				(void *)MICON_NP2,						 14,  12,  32,  32},
+				(void *)MICON_XMIL,						 14,  12,  32,  32},
 			{DLGTYPE_LTEXT,		DID_VER,		0,
 				NULL,									 64,  24, 180,  13},
 			{DLGTYPE_BUTTON,	DID_OK,			MENU_TABSTOP,

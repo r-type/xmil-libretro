@@ -366,6 +366,7 @@ DEP_CPP_PARTS=\
 
 !ELSEIF  "$(CFG)" == "xmilppc - Win32 (WCE ARM) Release"
 
+# PROP Exclude_From_Build 1
 DEP_CPP_PARTS=\
 	"..\common.h"\
 	"..\COMMON\_memory.h"\
@@ -377,6 +378,33 @@ DEP_CPP_PARTS=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ARM\PARTS.S
+
+!IF  "$(CFG)" == "xmilppc - Win32 (WCE MIPS) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilppc - Win32 (WCE SH3) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilppc - Win32 (WCE ARM) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilppc\ARM
+InputPath=.\ARM\PARTS.S
+InputName=PARTS
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
 
 !ENDIF 
 
@@ -3963,6 +3991,7 @@ DEP_CPP_OPMGEN=\
 
 !ELSEIF  "$(CFG)" == "xmilppc - Win32 (WCE ARM) Release"
 
+# PROP Exclude_From_Build 1
 DEP_CPP_OPMGEN=\
 	"..\common.h"\
 	"..\COMMON\_memory.h"\
@@ -3977,6 +4006,33 @@ DEP_CPP_OPMGEN=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ARM\OPMGENG.S
+
+!IF  "$(CFG)" == "xmilppc - Win32 (WCE MIPS) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilppc - Win32 (WCE SH3) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilppc - Win32 (WCE ARM) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilppc\ARM
+InputPath=.\ARM\OPMGENG.S
+InputName=OPMGENG
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
 
 !ENDIF 
 
@@ -6665,7 +6721,9 @@ DEP_CPP_SCRNM=\
 	".\scrnmng.h"\
 	".\wce\compiler.h"\
 	".\xmilbmp.res"\
-	{$(INCLUDE)}"gx.h"\
+	
+NODEP_CPP_SCRNM=\
+	".\x.h"\
 	
 
 !ENDIF 
@@ -7102,7 +7160,9 @@ DEP_CPP_WINKB=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	".\winkbd.h"\
-	{$(INCLUDE)}"gx.h"\
+	
+NODEP_CPP_WINKB=\
+	".\x.h"\
 	
 
 !ENDIF 
@@ -7287,7 +7347,9 @@ DEP_CPP_XMIL_=\
 	".\wce\compiler.h"\
 	".\winkbd.h"\
 	".\xmil.h"\
-	{$(INCLUDE)}"gx.h"\
+	
+NODEP_CPP_XMIL_=\
+	".\x.h"\
 	
 
 !ENDIF 

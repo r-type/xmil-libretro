@@ -244,8 +244,8 @@ BRESULT sysmenu_create(void) {
 	if (menubase_create() != SUCCESS) {
 		goto smcre_err;
 	}
-	menuicon_regist(MICON_NP2, &np2icon);
-	if (menusys_create(s_main, sys_cmd, MICON_NP2, str_xmil)) {
+	menuicon_regist(MICON_XMIL, &xmilicon);
+	if (menusys_create(s_main, sys_cmd, MICON_XMIL, str_xmil)) {
 		goto smcre_err;
 	}
 #if defined(SUPPORT_SOFTKBD)
