@@ -37,7 +37,11 @@
 .r2				resb	1
 .iff			resw	1
 				resw	1
-.icount			resd	1
+.reqirq			resd	1
+.remainclock	resd	1
+.baseclock		resd	1
+.clock			resd	1
+
 				endstruc
 
 S_FLAG		equ		0x80

@@ -18,9 +18,9 @@ void z80dmap(void) {
 	r = dma.DMA_CMND;
 	if ((r & 3) == 0) return;
 	if (dma.DMA_ENBL == 0) return;
-	if (dma.ENDB_FLG != 0) return;
+	if (dma.ENDB_FLG != 0) return;				// mod
 	if (r & 2) {
-		if (dma.MACH_FLG != 0) return;
+		if (dma.MACH_FLG != 0) return;			// mod
 	}
 	if (dma.DMA_MODE != 1) {
 		if ((dma.WR[5] ^ dma.DMA_REDY) & 8) return;

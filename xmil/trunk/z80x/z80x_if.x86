@@ -9,13 +9,14 @@ section .text
 	global	@z80x_interrupt2@4
 	global	_z80x_nonmaskedinterrupt
 	global	_z80x_execute
+	global	_z80x_step
 
 	extern	_z80core
+	extern	_z80dmap
 	extern	memfetch
 	extern	memrd16_ecx_ax
 	extern	memwr16_ecx_dx
 	extern	_cycles_main
-
 	extern	opcode_main
 
 
@@ -29,7 +30,7 @@ _z80x_ableinterrupt:
 				align	16
 @z80x_interrupt@4:
 				mov		edx, _z80core
-				btr		word [edx + R_Z80IFF], IFF_HALT
+				btr		dword [edx + R_Z80IFF], IFF_HALT
 				jnc		short .haltclr
 				inc		word [edx + R_Z80PC]
 .haltclr:		or		byte [edx + R_Z80IFF], ((1 << IFF_IRQ) | (1 << IFF_IFLAG))
@@ -58,7 +59,7 @@ int_im1:		Z80WORK	byte 11
 				align	16
 @z80x_interrupt2@4:
 				mov		edx, _z80core
-				btr		word [edx + R_Z80IFF], IFF_HALT
+				btr		dword [edx + R_Z80IFF], IFF_HALT
 				jnc		short .haltclr
 				inc		word [edx + R_Z80PC]
 .haltclr:		or		byte [edx + R_Z80IFF], (1 << IFF_IFLAG)
@@ -99,9 +100,27 @@ _z80x_nonmaskedinterrupt:
 				jmp		memwr16_ecx_dx
 .cantnmi:		ret
 
+				align	16
+_z80x_execute	push	ebx
+				push	edi
+				mov		edi, _z80core
+.lp:			inc		byte [edi + R_Z80R]
+				movzx	ecx, word [edi + R_Z80PC]
+				inc		word [edi + R_Z80PC]
+				call	memfetch
+				movzx	edx, byte [_cycles_main + eax]
+				Z80WORK	edx
+				call	dword [opcode_main + eax*4]
+				call	_z80dmap
+				mov		eax, [edi + z80core_t.remainclock]
+				cmp		eax, byte 0
+				jg		short .lp
+				pop		edi
+				pop		ebx
+				ret
 
 				align	16
-_z80x_execute:	push	ebx
+_z80x_step:		push	ebx
 				push	edi
 				mov		edi, _z80core
 				inc		byte [edi + R_Z80R]
@@ -111,7 +130,7 @@ _z80x_execute:	push	ebx
 				movzx	edx, byte [_cycles_main + eax]
 				Z80WORK	edx
 				call	dword [opcode_main + eax*4]
-%if 1
+%if 0
 				inc		byte [edi + R_Z80R]
 				movzx	ecx, word [edi + R_Z80PC]
 				inc		word [edi + R_Z80PC]
@@ -122,7 +141,7 @@ _z80x_execute:	push	ebx
 %endif
 				pop		edi
 				pop		ebx
-				ret
+				jmp		_z80dmap
 
 	ends
 

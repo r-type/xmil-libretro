@@ -34,7 +34,7 @@ static struct {
 void sysmng_workclockreset(void) {
 
 	workclock.tick = GETTICK();
-	workclock.clock = h_cnt + h_cntbase;	// CPU_CLOCK;
+	workclock.clock = CPU_CLOCK;
 	workclock.draws = drawtime;				// drawcount;
 }
 
@@ -49,8 +49,8 @@ BRESULT sysmng_workclockrenewal(void) {
 	workclock.tick += tick;
 	workclock.fps = ((drawtime - workclock.draws) * 10000) / tick;
 	workclock.draws = drawtime;
-	workclock.khz = (h_cnt + h_cntbase - workclock.clock) / tick;
-	workclock.clock = h_cnt + h_cntbase;
+	workclock.khz = (CPU_CLOCK - workclock.clock) / tick;
+	workclock.clock = CPU_CLOCK;
 	return(TRUE);
 }
 

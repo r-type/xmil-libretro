@@ -3,6 +3,7 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"nevent.h"
 #include	"fddfile.h"
 #include	"fdd_2d.h"
 #include	"fdd_d88.h"
@@ -12,30 +13,19 @@
 static const UINT8 fdctype[] = {1,1,1,1,1,1,1,1,2,2,2,2,3,4,3,3};
 
 
-static void setbusy(UINT clock) {
+void nvitem_fdcbusy(UINT id) {
 
-	fdc.s.busystart = h_cntbase + h_cnt;
-	fdc.s.busyclock = clock;
+	fdc.s.busy = FALSE;
+	if (fdc.s.bufdir) {
+		TRACEOUT(("dma ready!"));
+		dma.DMA_REDY = 0;
+	}
 }
 
-REG8 fdcisbusy(void) {
+static void setbusy(UINT clock) {
 
-	UINT	clock;
-
-	if (fdc.s.busyclock) {
-		clock = h_cntbase + h_cnt;
-		if ((clock - fdc.s.busystart) < fdc.s.busyclock) {
-			return(0x01);
-		}
-		fdc.s.busyclock = 0;
-		if ((fdc.s.type == 2) || (fdc.s.cmd == 0x0c) || (fdc.s.cmd == 0x0e)) {
-			if (fdc.s.bufpos < fdc.s.bufsize) {
-				TRACEOUT(("dma ready!"));
-				dma.DMA_REDY = 0;
-			}
-		}
-	}
-	return(0x00);
+	fdc.s.busy = TRUE;
+	nevent_set(NEVENT_FDC, clock, nvitem_fdcbusy, NEVENT_ABSOLUTE);
 }
 
 static REG8 getstat(void) {
@@ -119,6 +109,7 @@ static REG8 type2cmd(REG8 sc) {
 	}
 	size = sizeof(fdc.s.buffer);
 	fdd = fddfile + fdc.s.drv;
+	TRACEOUT(("read %.2x %d %d", fdc.s.drv, track, sc));
 	stat = fdd->read(fdd, fdc.s.media, track, sc, p, &size);
 	if (stat & FDDSTAT_RECNFND) {
 		size = 0;
@@ -186,7 +177,7 @@ static void bufposinc(void) {
 	BRESULT	r;
 	REG8	stat;
 
-	if (fdcisbusy()) {
+	if (fdc.s.busy) {
 		return;
 	}
 	fdc.s.bufpos++;
@@ -240,6 +231,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 		if (fdc.s.bufwrite) {
 			fdc.s.stat = type2flash();
 		}
+		fdc.s.bufdir = FDCDIR_NONE;
 		setbusy(20);
 		switch(cmd) {
 			case 0x00:								// ƒŠƒXƒgƒA
@@ -419,7 +411,7 @@ static	short	last_off;
 	}
 	switch(port) {
 		case 0x8:	// ½Ã°À½
-			ret = fdcisbusy();
+			ret = fdc.s.busy;
 			if (ret) {
 				return(ret);
 			}

@@ -39,11 +39,10 @@ typedef struct {
 	UINT	bufsize;
 	UINT	bufpos;
 
+	UINT8	busy;
 	UINT8	hole;
-	UINT8	padding[3];
+	UINT8	padding[2];
 	UINT	crcnum;
-	UINT32	busyclock;
-	UINT32	busystart;
 
 	UINT8	buffer[FDC_BUFFERS];
 } FDCSTAT;
@@ -61,7 +60,7 @@ typedef struct {
 extern "C" {
 #endif
 
-REG8 fdcisbusy(void);
+void nvitem_fdcbusy(UINT id);
 
 void IOOUTCALL fdc_o(UINT port, REG8 value);		// x1_fdc_w
 REG8 IOINPCALL fdc_i(UINT port);					// x1_fdc_r

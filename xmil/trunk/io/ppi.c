@@ -79,9 +79,12 @@ void IOOUTCALL ppi_o(UINT port, REG8 value) {
 
 REG8 IOINPCALL ppi_i(UINT port) {
 
+	UINT	v;
+
 	ppi.PORT_B = cmt_test(); // | cmt_read();	// THUNDER BALL
 
-	if (v_cnt < crtc.s.CRT_YL) {
+	v = pccore_getraster(NULL);
+	if (v < crtc.s.CRT_YL) {
 		ppi.PORT_B |= 0x80;					// 1:DISP
 	}
 	if (subcpu.IBF) {
@@ -95,7 +98,7 @@ REG8 IOINPCALL ppi_i(UINT port) {
 		ppi.PORT_B |= 0x10;					// 1:RAM
 	}
 #if 1
-	if (!(v_cnt < crtc.e.vs)) {
+	if (!(v < crtc.e.vs)) {
 		ppi.PORT_B |= 0x04;					// V-SYNC
 	}
 #else								// ラプラステスト…VYSNCが長すぎるらしい

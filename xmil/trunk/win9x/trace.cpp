@@ -8,7 +8,7 @@
 
 #ifdef TRACE
 
-#define FILEBUFSIZE			(1 << 20)
+#define FILEBUFSIZE			(1 << 12)
 // #define FILELASTBUFONLY
 
 #ifdef STRICT

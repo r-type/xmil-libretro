@@ -11,6 +11,7 @@
 
 	UINT	sys_updates;
 
+
 void sysmng_scrnwidth(REG8 mode) {
 
 	menu_setwidth(mode);
@@ -33,7 +34,7 @@ static struct {
 void sysmng_workclockreset(void) {
 
 	workclock.tick = GETTICK();
-	workclock.clock = h_cnt + h_cntbase;	// CPU_CLOCK;
+	workclock.clock = CPU_CLOCK;
 	workclock.draws = drawtime;				// drawcount;
 }
 
@@ -48,8 +49,8 @@ BRESULT sysmng_workclockrenewal(void) {
 	workclock.tick += tick;
 	workclock.fps = ((drawtime - workclock.draws) * 10000) / tick;
 	workclock.draws = drawtime;
-	workclock.khz = (h_cnt + h_cntbase - workclock.clock) / tick;
-	workclock.clock = h_cnt + h_cntbase;
+	workclock.khz = (CPU_CLOCK - workclock.clock) / tick;
+	workclock.clock = CPU_CLOCK;
 	return(TRUE);
 }
 
@@ -74,7 +75,7 @@ void sysmng_updatecaption(REG8 flag) {
 		clock[0] = '\0';
 		if (xmiloscfg.DISPCLK & 2) {
 			if (workclock.fps) {
-				SPRINTF(clock, OEMTEXT(" - %u.%1uFPS"),
+				OEMSPRINTF(clock, OEMTEXT(" - %u.%1uFPS"),
 									workclock.fps / 10, workclock.fps % 10);
 			}
 			else {
@@ -82,7 +83,7 @@ void sysmng_updatecaption(REG8 flag) {
 			}
 		}
 		if (xmiloscfg.DISPCLK & 1) {
-			SPRINTF(work, OEMTEXT(" %u.%03uMHz"),
+			OEMSPRINTF(work, OEMTEXT(" %u.%03uMHz"),
 								workclock.khz / 1000, workclock.khz % 1000);
 			if (clock[0] == '\0') {
 				milstr_ncpy(clock, OEMTEXT(" -"), NELEMENTS(clock));

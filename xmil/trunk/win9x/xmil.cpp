@@ -677,8 +677,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	file_setcd(modulefile);
 	initload();
 
-//	rand_setseed((unsigned)time(NULL));
-
 	hWnd = FindWindow(szClassName, NULL);
 	if (hWnd != NULL) {
 		ShowWindow(hWnd, SW_RESTORE);

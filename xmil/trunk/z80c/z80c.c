@@ -212,14 +212,23 @@ void CPUCALL z80c_execute(void) {
 
 	UINT	op;
 
-	R_Z80R++;
-	GET_PC_BYTE(op);
-	Z80_COUNT(cycles_main[op]);
-	z80c_mainop[op]();
+	do {
+		R_Z80R++;
+		GET_PC_BYTE(op);
+		Z80_COUNT(cycles_main[op]);
+		z80c_mainop[op]();
+		z80dmap();
+	} while(CPU_REMCLOCK > 0);
+}
+
+void CPUCALL z80c_step(void) {
+
+	UINT	op;
 
 	R_Z80R++;
 	GET_PC_BYTE(op);
 	Z80_COUNT(cycles_main[op]);
 	z80c_mainop[op]();
+	z80dmap();
 }
 

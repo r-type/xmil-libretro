@@ -1,8 +1,7 @@
 
 %macro	Z80WORK		1
-			add		dword [edi + z80core_t.icount], %1
+			sub		dword [edi + z80core_t.remainclock], %1
 %endmacro
-
 
 %macro	FETCH		0
 			inc		cx

@@ -9,7 +9,7 @@
 
 #define Z80_COUNT(clock)												\
 	do {																\
-		Z80_ICOUNT += (clock);											\
+		CPU_REMCLOCK -= (clock);										\
 	} while (/*CONSTCOND*/ 0)
 
 #define	Z80IRQCHECKTERM													\
@@ -566,14 +566,18 @@
 	}
 
 #define MCR_EI {														\
-		UINT op;														\
-		Z80_IFF &= ~(1 << IFF_IFLAG);									\
-		op = mem_read8(R_Z80PC);										\
-		if (op != 0xfb) {												\
-			R_Z80PC++;													\
-			R_Z80R++;													\
-			Z80_COUNT(cycles_main[op]);									\
-			z80c_mainop[op]();											\
+		REG8 iff;														\
+		SINT32 rem;														\
+		iff = Z80_IFF;													\
+		if (iff & (1 << IFF_IFLAG)) {									\
+			Z80_IFF = (UINT8)(iff & (~(1 << IFF_IFLAG)));				\
+			rem = CPU_REMCLOCK - 1;										\
+			if ((rem < 0) ||											\
+				((!(iff & ((1 << IFF_IRQ) | (1 << IFF_NMI)))) &&		\
+					(CPU_REQIRQ != 0))) {								\
+				CPU_BASECLOCK -= rem;									\
+				CPU_REMCLOCK = 1;										\
+			}															\
 		}																\
 	}
 
