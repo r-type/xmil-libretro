@@ -112,7 +112,7 @@ void menu_initialize(void) {
 
 	hMenu = GetMenu(hWndMain);
 	if (xmiloscfg.Z80SAVE) {
-		hSubMenu = GetSubMenu(hMenu, 7);
+		hSubMenu = GetSubMenu(hMenu, 8);
 		insertresmenu(hSubMenu, 7, MF_BYPOSITION | MF_STRING,
 												IDM_Z80SAVE, IDS_Z80SAVE);
 	}
