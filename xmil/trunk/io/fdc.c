@@ -23,10 +23,57 @@ void neitem_fdcbusy(UINT id) {
 	(void)id;
 }
 
-static void setbusy(UINT clock) {
+static void setbusy(SINT32 clock) {
 
-	fdc.s.busy = TRUE;
-	nevent_set(NEVENT_FDC, clock, neitem_fdcbusy, NEVENT_ABSOLUTE);
+	if (clock > 0) {
+		fdc.s.busy = TRUE;
+		nevent_set(NEVENT_FDC, clock, neitem_fdcbusy, NEVENT_ABSOLUTE);
+	}
+}
+
+static void setmotor(REG8 drvcmd) {
+
+	UINT	drv;
+	SINT32	clock;
+
+	drv = drvcmd & 3;
+	clock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+	if (drvcmd & 0x80) {
+		if (fdc.s.motorevent[drv] == FDCMOTOR_STOP) {
+			fdc.s.motorevent[drv] = FDCMOTOR_STARTING;
+			fdc.s.motorclock[drv] = clock;
+		}
+		else if (fdc.s.motorevent[drv] == FDCMOTOR_STOPING) {
+			fdc.s.motorevent[drv] = FDCMOTOR_READY;
+		}
+	}
+	else {
+		if ((fdc.s.motorevent[drv] == FDCMOTOR_STARTING) ||
+			(fdc.s.motorevent[drv] == FDCMOTOR_READY)) {
+			fdc.s.motorevent[drv] = FDCMOTOR_STOPING;
+			fdc.s.motorclock[drv] = clock;
+		}
+	}
+}
+
+void fdc_callback(void) {
+
+	SINT32	clock;
+	UINT	i;
+
+	clock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+	for (i=0; i<4; i++) {
+		if (fdc.s.motorevent[i] == FDCMOTOR_STARTING) {
+			if ((clock - fdc.s.motorclock[i]) >= (SINT32)pccore.realclock) {
+				fdc.s.motorevent[i] = FDCMOTOR_READY;
+			}
+		}
+		else if (fdc.s.motorevent[i] == FDCMOTOR_STOPING) {
+			if ((clock - fdc.s.motorclock[i]) >= (SINT32)pccore.realclock) {
+				fdc.s.motorevent[i] = FDCMOTOR_STOP;
+			}
+		}
+	}
 }
 
 static REG8 getstat(void) {
@@ -98,6 +145,12 @@ static REG8 type2cmd(REG8 sc) {
 	FDDFILE	fdd;
 	UINT	size;
 	REG8	stat;
+#if defined(SUPPORT_DISKEXT)
+	SINT32	clock;
+	SINT32	curclock;
+	SINT32	nextclock;
+	UINT32	secinfo;
+#endif
 
 	track = (fdc.s.c << 1) + fdc.s.h;
 	if (!(fdc.s.cmd & 0x20)) {
@@ -132,6 +185,37 @@ static REG8 type2cmd(REG8 sc) {
 	fdc.s.bufpos = 0;
 	fdc.s.bufsize = size;
 	fdc.s.curtime = 0;
+
+#if defined(SUPPORT_DISKEXT)
+	// ウェイト値を計算
+	clock = 0;
+	if (fdc.s.motorevent[fdc.s.drv] == FDCMOTOR_STARTING) {
+		curclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+		curclock -= fdc.s.motorclock[fdc.s.drv];
+		if (curclock < (SINT32)pccore.realclock) {
+			nextclock = pccore.realclock - curclock;
+			TRACEOUT(("motor starting busy %d", nextclock));
+			clock += nextclock;
+		}
+	}
+	secinfo = fdd->sec(fdd, fdc.s.media, track, sc);
+	if (secinfo) {
+		nextclock = LOW16(secinfo);
+		nextclock *= fdc.s.loopclock;
+		nextclock /= LOW16(secinfo >> 16);
+		curclock = nevent_getwork(NEVENT_RTC);
+		nextclock -= curclock;
+		if (nextclock < 0) {
+			nextclock += fdc.s.loopclock;
+		}
+		TRACEOUT(("wait clock -> %d [%d/%d]", nextclock,
+									LOW16(secinfo), LOW16(secinfo >> 16)));
+		clock += nextclock;
+	}
+	setbusy(max(clock, 500));
+#else
+	setbusy(500);
+#endif
 	return(stat);
 }
 
@@ -199,21 +283,16 @@ static void bufposinc(void) {
 				}
 				fdc.s.stat = stat;
 			}
-			if (r) {
-				fdc.s.rreg = fdc.s.r + 1;
-				stat = type2cmd(fdc.s.rreg);
-				if (!(stat & FDDSTAT_RECNFND)) {
-					fdc.s.r = fdc.s.r + 1;
-					fdc.s.stat = stat;
-				}
-				else {
-					r = FALSE;
-				}
-			}
 		}
-		if (!r) {
-			fdc.s.bufdir = FDCDIR_NONE;
-			dmac_sendready(FALSE);
+		fdc.s.bufdir = FDCDIR_NONE;
+		dmac_sendready(FALSE);
+		if (r) {
+			fdc.s.rreg = fdc.s.r + 1;
+			stat = type2cmd(fdc.s.rreg);
+			if (!(stat & FDDSTAT_RECNFND)) {
+				fdc.s.r = fdc.s.r + 1;
+				fdc.s.stat = stat;
+			}
 		}
 	}
 }
@@ -225,7 +304,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 	if ((port & (~7)) != 0x0ff8) {
 		return;
 	}
-//	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
+	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
 	switch(port & 7) {
 		case 0:									// コマンド
 			fdc.s.cmd = value;
@@ -297,7 +376,6 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				case 0x09:
 				case 0x0a:								// ライトデータ
 				case 0x0b:
-					setbusy(500);
 					fdc.s.stat = type2cmd(fdc.s.r);
 					break;
 
@@ -358,27 +436,20 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				fdc.s.r = 0;						// SACOM TELENET
 				fdc.s.rreg = 0;
 			}
+			setmotor(value);
 			break;
 	}
 }
 
 REG8 IOINPCALL fdc_i(UINT port) {
 
-// static	BYTE	timeoutwait;
-// static	BYTE	last_r;
-// static	short	last_off;
 	REG8	ret;
+
+	TRACEOUT(("fdc inp %.4x", port));
 
 	if ((port & (~7)) != 0x0ff8) {
 		return(0xff);
 	}
-#if 0
-	if ((port &= 0xf) != 8) {
-		last_r = -1;
-		last_off = -1;
-		timeoutwait = 4;
-	}
-#endif
 	switch(port & 7) {
 		case 0:									// ステータス
 			ret = fdc.s.busy;
@@ -398,6 +469,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 			if (!(ret & 0x02)) {
 				dmac_sendready(FALSE);
 			}
+			TRACEOUT(("ret->%.2x", ret));
 			return(ret);
 
 		case 1:									// トラック
@@ -410,7 +482,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 			if (fdc.s.motor) {
 				if (fdc.s.bufdir == FDCDIR_IN) {
 					fdc.s.data = fdc.s.buffer[fdc.s.bufpos];
-TRACEOUT(("read %.2x %.2x [%.4x]", fdc.s.data, fdc.s.bufpos, Z80_PC));
+// TRACEOUT(("read %.2x %.2x [%.4x]", fdc.s.data, fdc.s.bufpos, Z80_PC));
 					bufposinc();
 				}
 			}
@@ -440,5 +512,6 @@ void fdc_reset(void) {
 	ZeroMemory(&fdc, sizeof(fdc));
 	fdc.s.step = 1;
 	fdc.s.equip = xmilcfg.fddequip;
+	fdc.s.loopclock = pccore.realclock / 5;
 }
 

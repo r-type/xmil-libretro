@@ -94,6 +94,25 @@ static REG8 fdd2d_crc(FDDFILE fdd, REG8 media, UINT track, UINT num,
 }
 
 
+#if defined(SUPPORT_DISKEXT)
+static UINT32 fdd2d_sec(FDDFILE fdd, REG8 media, UINT track, REG8 sc) {
+
+	UINT32	ret;
+
+	if ((media != 0) || (track >= 80)) {
+		return(0);
+	}
+	if ((sc == 0) || (sc > 16)) {
+		ret = 16;
+	}
+	else {
+		ret = sc;
+	}
+	return((16 << 16) + ret);
+}
+#endif
+
+
 // ----
 
 BRESULT fdd2d_set(FDDFILE fdd, const OEMCHAR *fname) {
@@ -110,6 +129,9 @@ BRESULT fdd2d_set(FDDFILE fdd, const OEMCHAR *fname) {
 	fdd->read = fdd2d_read;
 	fdd->write = fdd2d_write;
 	fdd->crc = fdd2d_crc;
+#if defined(SUPPORT_DISKEXT)
+	fdd->sec = fdd2d_sec;
+#endif
 	return(SUCCESS);
 }
 

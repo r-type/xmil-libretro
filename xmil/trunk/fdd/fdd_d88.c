@@ -18,6 +18,7 @@ typedef struct {
 	UINT	track;
 	long	fptr;
 	UINT	size;
+	UINT	sectors;
 	UINT8	buf[D88BUFSIZE];
 } _D88TRK, *D88TRK;
 
@@ -71,9 +72,14 @@ dtfd_err1:
 
 static D88TRK trackread(D88TRK trk, FDDFILE fdd, REG8 media, UINT track) {
 
-	FILEH	fh;
-	UINT32	fptr;
-	UINT32	size;
+	FILEH		fh;
+	UINT32		fptr;
+	UINT		size;
+const _D88SEC	*sec;
+	UINT		rem;
+	UINT		maxsectors;
+	UINT		sectors;
+	UINT		secsize;
 
 	trackflush(trk);
 	if (media != (REG8)((fdd->inf.d88.head.fd_type >> 4))) {
@@ -106,6 +112,27 @@ static D88TRK trackread(D88TRK trk, FDDFILE fdd, REG8 media, UINT track) {
 	trk->track = track;
 	trk->fptr = fptr;
 	trk->size = size;
+
+	// セクタ数チェック
+	sec = (D88SEC)trk->buf;
+	rem = size;
+	maxsectors = 0;
+	if (rem >= sizeof(_D88SEC)) {
+		maxsectors = LOADINTELWORD(sec->sectors);
+	}
+	sectors = 0;
+	while(sectors < maxsectors) {
+		secsize = LOADINTELWORD(sec->size);
+		secsize += sizeof(_D88SEC);
+		if (rem < secsize) {
+			break;
+		}
+		rem -= secsize;
+		maxsectors = LOADINTELWORD(sec->sectors);
+		sec = (D88SEC)(((UINT8 *)sec) + secsize);
+		sectors++;
+	}
+	trk->sectors = sectors;
 	return(trk);
 
 dtrd_err2:
@@ -139,32 +166,19 @@ static D88TRK trackseek(FDDFILE fdd, REG8 media, UINT track) {
 static D88SEC sectorseek(const _D88TRK *trk, REG8 r) {
 
 const _D88SEC	*sec;
-	UINT		rem;
-	UINT		secnum;
 	UINT		sectors;
 	UINT		size;
 
 	sec = (D88SEC)trk->buf;
-	rem = trk->size;
-	sectors = LOADINTELWORD(sec->sectors);
-	if (sectors) {
-		secnum = 0;
-		do {
-			size = LOADINTELWORD(sec->size);
-			size += sizeof(_D88SEC);
-			if (rem < size) {
-				break;
-			}
-			if (sec->r == r) {
-				return((D88SEC)sec);
-			}
-			secnum++;
-			sectors = LOADINTELWORD(sec->sectors);
-			if (secnum >= sectors) {
-				break;
-			}
-			sec = (D88SEC)(((UINT8 *)sec) + size);
-		} while(secnum < 40);
+	sectors = trk->sectors;
+	while(sectors) {
+		sectors--;
+		if (sec->r == r) {
+			return((D88SEC)sec);
+		}
+		size = LOADINTELWORD(sec->size);
+		size += sizeof(_D88SEC);
+		sec = (D88SEC)(((UINT8 *)sec) + size);
 	}
 	return(NULL);
 }
@@ -251,36 +265,22 @@ static REG8 fddd88_crc(FDDFILE fdd, REG8 media, UINT track, UINT num,
 
 const _D88TRK	*trk;
 const _D88SEC	*sec;
-	UINT		secnum;
-	UINT		rem;
-	UINT		size;
 	UINT		sectors;
+	UINT		size;
 
 	trk = trackseek(fdd, media, track);
 	if (trk == NULL) {
 		return(FDDSTAT_RECNFND);
 	}
 	sec = (D88SEC)trk->buf;
-	sectors = LOADINTELWORD(sec->sectors);
-	if (sectors == 0) {
+	sectors = trk->sectors;
+	if (sectors >= num) {
 		return(FDDSTAT_RECNFND);
 	}
-	secnum = 0;
-	rem = trk->size;
-	while(1) {
+	while(num) {
+		num--;
 		size = LOADINTELWORD(sec->size);
 		size += sizeof(_D88SEC);
-		if (rem < size) {
-			return(FDDSTAT_RECNFND);
-		}
-		if (num == secnum) {
-			break;
-		}
-		secnum++;
-		sectors = LOADINTELWORD(sec->sectors);
-		if (secnum >= sectors) {
-			return(FDDSTAT_RECNFND);
-		}
 		sec = (D88SEC)(((UINT8 *)sec) + size);
 	}
 	ptr[0] = sec->c;
@@ -295,6 +295,35 @@ const _D88SEC	*sec;
 	}
 	return(0x00);
 }
+
+#if defined(SUPPORT_DISKEXT)
+static UINT32 fddd88_sec(FDDFILE fdd, REG8 media, UINT track, REG8 sc) {
+
+const _D88TRK	*trk;
+const _D88SEC	*sec;
+	UINT		sectors;
+	UINT		num;
+	UINT		size;
+
+	trk = trackseek(fdd, media, track);
+	if (trk == NULL) {
+		return(0);
+	}
+	sec = (D88SEC)trk->buf;
+	sectors = trk->sectors;
+	num = 0;
+	while(num < sectors) {
+		if (sec->r == sc) {
+			break;
+		}
+		size = LOADINTELWORD(sec->size);
+		size += sizeof(_D88SEC);
+		sec = (D88SEC)(((UINT8 *)sec) + size);
+		num++;
+	}
+	return((UINT32)(sectors << 16) + num);
+}
+#endif
 
 
 // ----
@@ -335,6 +364,9 @@ BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname) {
 	fdd->read = fddd88_read;
 	fdd->write = fddd88_write;
 	fdd->crc = fddd88_crc;
+#if defined(SUPPORT_DISKEXT)
+	fdd->sec = fddd88_sec;
+#endif
 	return(SUCCESS);
 
 fdst_err:

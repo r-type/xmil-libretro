@@ -1,5 +1,6 @@
 #include	"compiler.h"
 #include	"scrnmng.h"
+#include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"vram.h"

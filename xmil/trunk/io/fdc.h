@@ -9,6 +9,13 @@ enum {
 	FDC_BUFFERS		= 0x3000
 };
 
+enum {
+	FDCMOTOR_STOP		= 0,
+	FDCMOTOR_STARTING	= 1,
+	FDCMOTOR_READY		= 2,
+	FDCMOTOR_STOPING	= 3
+};
+
 typedef struct {
 	UINT8	cmd;
 	UINT8	type;
@@ -45,6 +52,11 @@ typedef struct {
 	UINT8	equip;
 	UINT	crcnum;
 
+	SINT32	loopclock;
+
+	UINT8	motorevent[4];
+	SINT32	motorclock[4];
+
 	UINT8	buffer[FDC_BUFFERS];
 } FDCSTAT;
 
@@ -62,6 +74,7 @@ extern "C" {
 #endif
 
 void neitem_fdcbusy(UINT id);
+void fdc_callback(void);
 
 void IOOUTCALL fdc_o(UINT port, REG8 value);		// x1_fdc_w
 REG8 IOINPCALL fdc_i(UINT port);					// x1_fdc_r

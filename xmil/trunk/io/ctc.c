@@ -6,6 +6,40 @@
 #include	"ievent.h"
 
 
+static SINT32 minclock(const CTCCH *ch) {
+
+	UINT32	event;
+	UINT	i;
+	UINT32	clock;
+
+	event = 0x01000000;
+	for (i=0; i<3; i++) {
+		if ((ch->cmd[i] & 0x82) == 0x80) {
+			clock = ch->count[i];
+			if (ch->cmd[i] & 0x40) {
+				clock = clock * 2;
+			}
+			event = min(event, clock);
+		}
+	}
+	if ((ch->cmd[3] & 0x82) == 0x80) {
+		clock = ch->count[3];
+		if (ch->cmd[3] & 0x40) {
+			clock = (clock - 1) * ch->countmax[0];
+			clock += ch->count[0];
+			if (ch->cmd[0] & 0x40) {
+				clock = clock * 2;
+			}
+		}
+		event = min(event, clock);
+	}
+	event = event / 2;
+	if (event == 0) {
+		event = 1;
+	}
+	return(event);
+}
+
 static REG8 ctcwork(CTCCH *ch) {
 
 	UINT32	baseclock;
@@ -100,38 +134,11 @@ static void ctcstep(CTCCH *ch) {
 static void ctcnextevent(CTCCH *ch) {
 
 	UINT32	event;
-	UINT	i;
-	UINT32	clock;
 
 	if (ch->intr) {
 		return;
 	}
-	event = 0x01000000;
-	for (i=0; i<3; i++) {
-		if ((ch->cmd[i] & 0x82) == 0x80) {
-			clock = ch->count[i];
-			if (ch->cmd[i] & 0x40) {
-				clock = clock * 2;
-			}
-			event = min(event, clock);
-		}
-	}
-	if ((ch->cmd[3] & 0x82) == 0x80) {
-		clock = ch->count[3];
-		if (ch->cmd[3] & 0x40) {
-			clock = (clock - 1) * ch->countmax[0];
-			clock += ch->count[0];
-			if (ch->cmd[0] & 0x40) {
-				clock = clock * 2;
-			}
-		}
-		event = min(event, clock);
-	}
-	event *= pccore.multiple;
-	event /= 2;
-	if (event == 0) {
-		event = 1;
-	}
+	event = minclock(ch) * pccore.multiple;
 	nevent_set(NEVENT_CTC0 + ch->num, event, neitem_ctc, NEVENT_ABSOLUTE);
 }
 
@@ -166,8 +173,10 @@ BRESULT ieitem_ctc(UINT id) {
 	if (intr) {
 		for (i=0, bit=1; i<4; i++, bit<<=1) {
 			if (intr & bit) {
-#if 1			// アークスのタイミング→あとで修正
+#if 0			// アークスのタイミング→あとで修正
 				if (0)
+#elif 1
+				if ((ch->countmax[i] - ch->count[i]) >= 256)
 #elif 0
 				if (((ch->count[i] * 17) >> 4) < ch->countmax[i])
 #else
@@ -182,6 +191,7 @@ BRESULT ieitem_ctc(UINT id) {
 				else if (!r) {
 					r = TRUE;
 					intr ^= bit;
+//					TRACEOUT(("ctc int %d", i));
 					Z80_INTERRUPT((REG8)(ch->vector + (i << 1)));
 				}
 			}
@@ -223,6 +233,7 @@ static void ctcch_o(CTCCH *ch, UINT port, REG8 value) {
 			}
 		}
 		count <<= scale;
+		ch->scale[port] = scale;
 		ch->countmax[port] = count;
 		ch->count[port] = count;
 		ch->cmd[port] &= ~6;
@@ -240,24 +251,13 @@ static void ctcch_o(CTCCH *ch, UINT port, REG8 value) {
 
 static REG8 ctcch_i(CTCCH *ch, UINT port) {
 
-	REG8	scale;
-
 	port &= 3;
 	if (port != 3) {
 		return(ch->basecnt[port]);
 	}
 	else {
 		ctcstep(ch);
-		scale = 0;
-		if (!(ch->cmd[3] & 0x40)) {
-			if (ch->cmd[3] & 0x20) {
-				scale = 8;
-			}
-			else {
-				scale = 4;
-			}
-		}
-		return((REG8)(ch->count[3] >> scale));
+		return((REG8)(ch->count[3] >> ch->scale[3]));
 	}
 }
 
@@ -316,6 +316,7 @@ void ctc_reset(void) {
 		ctc.ch[i].num = (UINT8)i;
 		for (j=0; j<4; j++) {
 			ctc.ch[i].cmd[j] = 0x03;
+			ctc.ch[i].scale[j] = 8;
 			ctc.ch[i].count[j] = 256 << 8;
 			ctc.ch[i].countmax[j] = 256 << 8;
 		}

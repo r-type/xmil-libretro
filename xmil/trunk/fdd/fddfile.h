@@ -1,4 +1,7 @@
 
+#define	SUPPORT_DISKEXT
+
+
 #include	"d88head.h"
 
 enum {
@@ -44,6 +47,10 @@ typedef REG8 (*FDDWRITE)(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
 												const UINT8 *ptr, UINT size);
 typedef REG8 (*FDDCRC)(FDDFILE fdd, REG8 media, UINT track, UINT num,
 												UINT8 *ptr);
+#if defined(SUPPORT_DISKEXT)
+typedef UINT32 (*FDDSEC)(FDDFILE fdd, REG8 media, UINT track, REG8 sc);
+#endif
+
 
 typedef struct {
 	UINT32		fd_size;
@@ -59,6 +66,9 @@ struct _fddfile {
 	FDDREAD		read;
 	FDDWRITE	write;
 	FDDCRC		crc;
+#if defined(SUPPORT_DISKEXT)
+	FDDSEC		sec;
+#endif
 	union {
 		_D88INFO	d88;
 	} inf;

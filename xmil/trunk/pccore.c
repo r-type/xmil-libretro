@@ -191,6 +191,8 @@ void neitem_vsync(UINT id) {
 }
 
 
+// ----
+
 // #define	SINGLESTEPONLY
 
 void pccore_exec(BRESULT draw) {
@@ -214,7 +216,7 @@ void pccore_exec(BRESULT draw) {
 		}
 #else
 		while(CPU_REMCLOCK > 0) {
-			TRACEOUT(("%.4x", Z80_PC));
+			//	TRACEOUT(("%.4x", Z80_PC));
 #if defined(TRACE) && IPTRACE
 			treip[trpos & (IPTRACE - 1)] = Z80_PC;
 			trpos++;
@@ -228,5 +230,6 @@ void pccore_exec(BRESULT draw) {
 
 	scrnupdate();
 	sound_sync();
+	fdc_callback();
 }
 

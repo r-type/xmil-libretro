@@ -6,6 +6,7 @@ typedef struct {
 	UINT8	num;
 	UINT8	padding;
 	UINT8	cmd[4];
+	UINT8	scale[4];
 	UINT8	basecnt[4];
 	SINT32	count[4];
 	SINT32	countmax[4];
