@@ -5,6 +5,7 @@
 #include	"iocore.h"
 #include	"scrndraw.h"
 #include	"palettes.h"
+#include	"makescrn.h"
 #include	"scrnsave.h"
 
 
@@ -29,16 +30,79 @@ typedef struct {
 } SCRNDATA;
 
 
-static void screenmix80(PALNUM *dst, const UINT8 *src) {
+static void screenmix32s(PALNUM *dst, const UINT8 *src) {
 
-	int		i;
+	int		y;
+	int		x;
+	REG8	c;
 
-	for (i=0; i<(SURFACE_WIDTH * SURFACE_HEIGHT); i++) {
-		dst[i] = src[i];
+	for (y=0; y<(SURFACE_HEIGHT/2); y++) {
+		for (x=0; x<(SURFACE_WIDTH/2); x++) {
+			c = src[x];
+			dst[x*2+0] = (PALNUM)c;
+			dst[x*2+1] = (PALNUM)c;
+			dst[x*2+SURFACE_WIDTH+0] = (PALNUM)(c + 0x40);
+			dst[x*2+SURFACE_WIDTH+1] = (PALNUM)(c + 0x40);
+		}
+		dst += SURFACE_WIDTH * 2;
+		src += SURFACE_WIDTH * 2;
 	}
 }
 
-static void screenmix40(PALNUM *dst, const UINT8 *src) {
+static void screenmix62s(PALNUM *dst, const UINT8 *src) {
+
+	int		y;
+	int		x;
+	REG8	c;
+
+	for (y=0; y<(SURFACE_HEIGHT/2); y++) {
+		for (x=0; x<SURFACE_WIDTH; x++) {
+			c = src[x];
+			dst[x] = (PALNUM)c;
+			dst[x+SURFACE_WIDTH] = (PALNUM)(c + 0x40);
+		}
+		dst += SURFACE_WIDTH * 2;
+		src += SURFACE_WIDTH * 2;
+	}
+}
+
+static void screenmix32h(PALNUM *dst, const UINT8 *src) {
+
+	int		y;
+	int		x;
+	REG8	c;
+
+	for (y=0; y<(SURFACE_HEIGHT/2); y++) {
+		for (x=0; x<(SURFACE_WIDTH/2); x++) {
+			c = src[x];
+			dst[x*2+0] = (PALNUM)c;
+			dst[x*2+1] = (PALNUM)c;
+			dst[x*2+SURFACE_WIDTH+0] = (PALNUM)c;
+			dst[x*2+SURFACE_WIDTH+1] = (PALNUM)c;
+		}
+		dst += SURFACE_WIDTH * 2;
+		src += SURFACE_WIDTH * 2;
+	}
+}
+
+static void screenmix62h(PALNUM *dst, const UINT8 *src) {
+
+	int		y;
+	int		x;
+	REG8	c;
+
+	for (y=0; y<(SURFACE_HEIGHT/2); y++) {
+		for (x=0; x<SURFACE_WIDTH; x++) {
+			c = src[x];
+			dst[x] = (PALNUM)c;
+			dst[x+SURFACE_WIDTH] = (PALNUM)c;
+		}
+		dst += SURFACE_WIDTH * 2;
+		src += SURFACE_WIDTH * 2;
+	}
+}
+
+static void screenmix34(PALNUM *dst, const UINT8 *src) {
 
 	int		y;
 	int		x;
@@ -51,7 +115,16 @@ static void screenmix40(PALNUM *dst, const UINT8 *src) {
 			dst[x*2+1] = (PALNUM)c;
 		}
 		dst += SURFACE_WIDTH;
-		src += (SURFACE_WIDTH / 2);
+		src += SURFACE_WIDTH;
+	}
+}
+
+static void screenmix64(PALNUM *dst, const UINT8 *src) {
+
+	int		i;
+
+	for (i=0; i<(SURFACE_WIDTH * SURFACE_HEIGHT); i++) {
+		dst[i] = src[i];
 	}
 }
 
@@ -64,15 +137,26 @@ static void screenmixz(PALNUM *dst, const UINT8 *src) {
 
 	for (y=0; y<SURFACE_HEIGHT; y++) {
 		for (x=0; x<(SURFACE_WIDTH/2); x++) {
-			c = ((src[320] << 8) | src[0]) + XMILPAL_4096G;
+			c = ((src[x+320] << 8) | src[x]) + XMILPAL_4096G;
 			dst[x*2+0] = c;
 			dst[x*2+1] = c;
 		}
 		dst += SURFACE_WIDTH;
-		src += (SURFACE_WIDTH / 2);
+		src += SURFACE_WIDTH;
 	}
 }
 #endif
+
+typedef void (*SCMIX)(PALNUM *dst, const UINT8 *src);
+
+static const SCMIX scmix[] = {
+			screenmix32s,	screenmix62s,
+			screenmix32h,	screenmix62h,
+			screenmix34,	screenmix64,
+#if defined(SUPPORT_TURBOZ)
+			screenmixz,
+#endif
+};
 
 
 // ----
@@ -84,7 +168,6 @@ SCRNSAVE scrnsave_get(void) {
 	SCRNDATA	*sd;
 	PALNUM		*dat;
 	UINT		scrnsize;
-	void		(*mix)(PALNUM *dst, const UINT8 *src);
 	PALNUM		*s;
 	UINT		pals;
 	PALNUM		remap[XMILPAL_MAX];
@@ -108,23 +191,7 @@ SCRNSAVE scrnsave_get(void) {
 
 	dat = sd->dat;
 	scrnsize = SURFACE_WIDTH * SURFACE_HEIGHT;
-	switch(scrn.widthmode) {
-		case SCRNWIDTHMODE_WIDTH80:
-		default:
-			mix = screenmix80;
-			break;
-
-		case SCRNWIDTHMODE_WIDTH40:
-			mix = screenmix40;
-			break;
-
-#if defined(SUPPORT_TURBOZ)
-		case SCRNWIDTHMODE_4096:
-			mix = screenmixz;
-			break;
-#endif
-	}
-	(*mix)(sd->dat, screenmap);
+	scmix[makescrn.drawmode](sd->dat, screenmap);
 
 	// パレット最適化
 	s = sd->dat;

@@ -36,6 +36,14 @@ enum {
 	FDDSTAT_NOTREADY	= 0x80
 };
 
+typedef struct {
+	UINT8	c;
+	UINT8	h;
+	UINT8	r;
+	UINT8	n;
+	UINT	size;
+} TAOSEC;
+
 
 typedef struct _fddfile		_FDDFILE;
 typedef struct _fddfile		*FDDFILE;

@@ -21,6 +21,9 @@ static REG8 getportb(void) {
 	if (clock < crtc.e.dispclock) {
 		ret |= 0x80;						// 1:DISP
 	}
+
+	// 実機の動きを見ると　どうも 読み込んだらリセットされるようだ？
+	// 有効範囲が絞れるならそうすべき(VSYNCを取りこぼすソフトがある
 	clock -= crtc.e.vsyncstart;
 	if ((clock >= 0) && (clock < crtc.e.vpulseclock)) {
 		ret |= 0x04;						// 1:V-SYNC

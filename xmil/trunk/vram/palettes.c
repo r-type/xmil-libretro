@@ -302,7 +302,11 @@ void pal_update(void) {
 	pal_update1(crtc.s.rgbp);
 	xmil_palettes = 64 + 64;
 #else
-	if (crtc.e.pal_disp & PAL_4096) {
+	if (!(crtc.e.dispmode & SCRN64_ENABLE)) {
+		pal_update1(crtc.s.rgbp);
+		xmil_palettes = 64 + 64;
+	}
+	else if (crtc.e.pal_disp & PAL_4096) {
 		switch(crtc.e.pal_disp & 0xf) {
 			case PAL_4096H:
 				pal4096to64(xmil_pal32, pal4096banktbl[0]);
@@ -332,10 +336,6 @@ void pal_update(void) {
 		for (i=0; i<8; i++) {
 			xmil_pal32[xmil_palettes++].d = pals.text[i].d;
 		}
-	}
-	else if ((crtc.e.dispmode & SCRN64_MASK) == SCRN64_INVALID) {
-		pal_update1(crtc.s.rgbp);
-		xmil_palettes = 64 + 64;
 	}
 	else {
 		for (i=0; i<64; i++) {

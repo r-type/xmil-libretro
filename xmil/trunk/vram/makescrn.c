@@ -1,5 +1,6 @@
 #include	"compiler.h"
 #include	"scrnmng.h"
+#include	"sysmng.h"
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"vram.h"
@@ -9,12 +10,10 @@
 #include	"makesub.h"
 
 
-		MAKESCRN	makescrn;
+	MAKESCRN	makescrn;
 
-		UINT8	scrnallflash;
-static	UINT8	lastdisp = 0;
-static	UINT8	blinktime = 1;
-		UINT	drawtime = 0;
+	UINT8	scrnallflash;
+	UINT	drawtime = 0;
 
 
 static void fillupdatetmp(void) {
@@ -101,12 +100,12 @@ static BRESULT updateblink(void) {
 	REG8	update;
 	UINT	r;
 
-	if (blinktime) {
-		blinktime--;
+	if (makescrn.blinktime) {
+		makescrn.blinktime--;
 		return(FALSE);
 	}
 	else {
-		blinktime = 30 - 1;
+		makescrn.blinktime = 30 - 1;
 		pos = makescrn.vramtop;
 		makescrn.blinktest ^= 0x10;
 		update = 0;
@@ -132,18 +131,80 @@ static BRESULT updateblink(void) {
 
 // ----
 
+typedef void (*MAKEFN)(void);
+
+static void width_dummy(void) { }
+
+static const UINT8 screendraw[] = {
+				MAKESCRN_320x200S,	MAKESCRN_320x400,
+				MAKESCRN_320x200S,	MAKESCRN_320x400,
+				MAKESCRN_320x200S,	MAKESCRN_320x400,
+				MAKESCRN_320x200S,	MAKESCRN_320x200H,
+
+				MAKESCRN_320x200S,	MAKESCRN_320x400,
+				MAKESCRN_320x200S,	MAKESCRN_320x400,
+				MAKESCRN_320x200S,	MAKESCRN_320x200H,
+				MAKESCRN_320x200S,	MAKESCRN_320x200H,
+
+#if defined(SUPPORT_TURBOZ)
+				MAKESCRN_320x200H,	MAKESCRN_320x200H,
+				MAKESCRN_320x200H,	MAKESCRN_320x200H,
+				MAKESCRN_320x200H,	MAKESCRN_320x200H,
+				MAKESCRN_320x200H,	MAKESCRN_320x200H,
+
+				MAKESCRN_320x200H,	MAKESCRN_320x200H,
+				MAKESCRN_320x200H,	MAKESCRN_320x200H,
+				MAKESCRN_320x200H,	MAKESCRN_320x200H,
+				MAKESCRN_320x200H,	MAKESCRN_320x200H,
+#endif
+};
+
+static const MAKEFN screenmake[] = {
+				width80x25_200l,	width80x25_400h,
+				width80x25_200l,	width80x25_200h,
+				width80x12_200l,	width80x12_400h,
+				width80x12_200l,	width80x12_200h,
+
+				width80x20l,		width80x20h,
+				width80x20l,		width80x20h,
+				width80x10l,		width80x10h,
+				width80x10l,		width80x10h,
+
+#if defined(SUPPORT_TURBOZ)
+				width_dummy,		width_dummy,
+				width_dummy,		width_dummy,
+				width_dummy,		width_dummy,
+				width_dummy,		width_dummy,
+
+				width_dummy,		width_dummy,
+				width_dummy,		width_dummy,
+				width_dummy,		width_dummy,
+				width_dummy,		width_dummy,
+#endif
+};
+
+
 static void changemodes(void) {
 
-	lastdisp = crtc.e.dispmode;
-	if (!(lastdisp & SCRN_BANK1)) {
+	REG8	dispmode;
+
+	dispmode = crtc.e.dispmode;
+	makescrn.dispmode = dispmode;
+	makescrn.drawmode = screendraw[dispmode & DISPMODE_MASKMODE];
+	if (dispmode & DISPMODE_WIDTH80) {
+		makescrn.drawmode |= 1;
+	}
+	sysmng_scrnwidth((dispmode & DISPMODE_WIDTH80) == 0);
+
+	if (!(dispmode & DISPMODE_BANK1)) {
 		makescrn.disp1 = gram + GRAM_BANK0;
 		makescrn.disp2 = gram + GRAM_BANK1;
-		makescrn.dispflag = UPDATE_TRAM | UPDATE_VRAM0;
+		makescrn.dispflag = UPDATE_TRAM + UPDATE_VRAM0;
 	}
 	else {
 		makescrn.disp1 = gram + GRAM_BANK1;
 		makescrn.disp2 = gram + GRAM_BANK0;
-		makescrn.dispflag = UPDATE_TRAM | UPDATE_VRAM1;
+		makescrn.dispflag = UPDATE_TRAM + UPDATE_VRAM1;
 	}
 	scrnallflash = 1;
 	makescrn.palandply = 1;
@@ -155,7 +216,6 @@ static void changecrtc(void) {
 	UINT	scrnymax;
 	UINT	textxl;
 	UINT	surfcx;
-	REG8	widthmode;
 	UINT	fontcy;
 	UINT	underlines;
 	REG8	y2;
@@ -168,33 +228,21 @@ static void changecrtc(void) {
 
 	makescrn.vramtop = crtc.e.pos;
 
-	scrnxmax = (crtc.s.width40)?40:80;
+	scrnxmax = (makescrn.dispmode & DISPMODE_WIDTH80)?80:40;
 	scrnymax = 200;
-	if (crtc.s.width40) {
-		if (lastdisp & SCRN_DRAW4096) {
-			widthmode = SCRNWIDTHMODE_4096;
-		}
-		else {
-			widthmode = SCRNWIDTHMODE_WIDTH40;
-		}
-	}
-	else {
-		widthmode = SCRNWIDTHMODE_WIDTH80;
-	}
-	scrndraw_changewidth(widthmode);
 
 	textxl = crtc.s.reg[CRTCREG_HDISP];
 	surfcx = min(scrnxmax, textxl);
 
 	fontcy = crtc.e.fonty;
-	underlines = (crtc.s.SCRN_BITS & SCRN_UNDERLINE)?2:0;
+	underlines = (makescrn.dispmode & DISPMODE_UNDERLINE)?2:0;
 	if (fontcy > underlines) {
 		fontcy -= underlines;
 	}
 	else {
 		fontcy = 0;
 	}
-	y2 = (crtc.s.SCRN_BITS & SCRN_TEXTYx2)?1:0;
+	y2 = (makescrn.dispmode & DISPMODE_TEXTYx2)?1:0;
 	fontcy >>= y2;
 #if 0
 	if (((dispmode & SCRN64_MASK) != SCRN64_INVALID) && (fontcy > 8)) {
@@ -241,24 +289,6 @@ static void changecrtc(void) {
 //	scrnmng_setheight(0, charcy * surfcy * 2);
 }
 
-
-// -------------------------------------------------------------------------
-
-typedef void (*DRAWFN)(void);
-
-static const DRAWFN screendraw[8] = {
-				width80x25_200l,	width80x25_400h,
-				width80x25_200l,	width80x25_200h,
-				width80x12_200l,	width80x12_400h,
-				width80x12_200l,	width80x12_200h};
-
-static const DRAWFN screendraw2[8] = {
-				width80x20l,		width80x20h,
-				width80x20l,		width80x20h,
-				width80x10l,		width80x10h,
-				width80x10l,		width80x10h};
-
-
 void scrnupdate(void) {
 
 	BRESULT	ddrawflash;
@@ -271,7 +301,7 @@ void scrnupdate(void) {
 
 	ddrawflash = makescrn.nextdraw;
 	allflash = FALSE;
-	if (lastdisp != crtc.e.dispmode) {
+	if (makescrn.dispmode != crtc.e.dispmode) {
 		changemodes();
 	}
 	if (scrnallflash) {
@@ -299,6 +329,8 @@ void scrnupdate(void) {
 		makescrn.scrnflash = 0;
 		if (makescrn.vramsize) {
 			makescrn.fontycnt = 0;
+			screenmake[makescrn.dispmode & DISPMODE_MASKMODE]();
+#if 0
 			switch(lastdisp & SCRN64_MASK) {
 				case SCRN64_320x200:
 //					width40x25_64s();
@@ -343,19 +375,19 @@ void scrnupdate(void) {
 //				case SCRN64_INVALID:
 				default:
 					if (!(crtc.s.SCRN_BITS & SCRN_UNDERLINE)) {
-						screendraw[crtc.s.SCRN_BITS & 7]();
+						screenmake[(crtc.s.SCRN_BITS & 7) + 0]();
 					}
 					else {
-						screendraw2[crtc.s.SCRN_BITS & 7]();
+						screenmake[(crtc.s.SCRN_BITS & 7) + 8]();
 					}
 					break;
 			}
+#endif
 			ddrawflash = TRUE;
 		}
 	}
 
 	if (ddrawflash) {
-		ddrawflash = 0;
 		makescrn.nextdraw = scrndraw_draw(allflash);
 		drawtime++;
 	}
