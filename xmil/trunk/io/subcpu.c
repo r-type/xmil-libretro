@@ -10,8 +10,8 @@
 
 
 //							    e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef
-static const UINT8 CMD_TBL[] = { 0, 1, 0, 0, 1, 0, 1, 0, 0, 3, 0, 3, 0};
-static const UINT8 DAT_TBL[] = { 3, 0, 0, 2, 0, 1, 0, 1, 1, 0, 3, 0, 3};
+static const UINT8 cmdtbl[] = { 0, 1, 0, 0, 1, 0, 1, 0, 0, 3, 0, 3, 0};
+static const UINT8 dattbl[] = { 3, 0, 0, 2, 0, 1, 0, 1, 1, 0, 3, 0, 3};
 
 
 //**********************************************************************
@@ -20,7 +20,6 @@ void neitem_scpu(UINT id) {
 
 	nevent_repeat(id);
 	if (keystat.req_int) {
-		TRACEOUT(("keystat.req_int"));
 		keystat.req_int = 0;
 		ievent_set(IEVENT_SUBCPU);
 	}
@@ -30,7 +29,6 @@ BRESULT ieitem_scpu(UINT id) {
 
 	UINT	key;
 
-	TRACEOUT(("ieitem_scpu"));
 	if ((subcpu.cmdcnt) || (subcpu.datacnt)) {
 		ievent_set(IEVENT_SUBCPU);
 		return(FALSE);
@@ -63,55 +61,10 @@ BRESULT ieitem_scpu(UINT id) {
 	subcpu.OBF = 0;
 	subcpu.IBF = 1;
 
-	Z80_INT(subcpu.Ex[4][0]);
+	Z80_INTERRUPT(subcpu.Ex[4][0]);
 	(void)id;
 	return(TRUE);
 }
-
-
-#if 0
-// キーボード割り込み
-short x1_sub_int(void) {								// 990922
-
-	UINT	key;
-
-	if ((!keystat.req_int) || (subcpu.cmdcnt) || (subcpu.datacnt) ||
-		(!Z80_ABLEINTERRUPT())) {						// 割り込めなかったら
-		return(1);										// また来週～
-	}
-	keystat.req_int = 0;
-	if (!subcpu.Ex[4][0]) {				// 割り込み不要だったら捨てる
-		return(1);
-	}
-	if (keystat.shift & 0x40) {					// キーが押された場合
-		key = keystat_getflag();
-		subcpu.Ex[0x06][0] = (UINT8)(key >> 0);
-		subcpu.Ex[0x06][1] = (UINT8)(key >> 8);
-		if (!subcpu.Ex[0x06][1]) {		// 無効なキーだったら捨てる
-			return(1);
-		}
-		subcpu.INT_SW = 1;
-	}
-	else {
-		if (!subcpu.INT_SW) {			// 何も押されてなかったら割り込まない
-			return(1);
-		}
-		subcpu.INT_SW = 0;
-		key = keystat_getflag();
-		subcpu.Ex[0x06][0] = (UINT8)(key >> 0);
-		subcpu.Ex[0x06][1] = (UINT8)(key >> 8);
-	}
-	subcpu.mode = 0xe6;
-	subcpu.cmdcnt = 0;
-	subcpu.datacnt = 2;
-	subcpu.dataptr = offsetof(SUBCPU, Ex[0xe6 - 0xe0][0]);
-	subcpu.OBF = 0;
-	subcpu.IBF = 1;
-
-	Z80_INT2(subcpu.Ex[4][0]);
-	return(0);
-}
-#endif
 
 
 // ----
@@ -127,17 +80,17 @@ void IOOUTCALL subcpu_o(UINT port, REG8 value) {
 		subcpu.mode = (UINT8)value;
 		subcpu.cmdcnt = 0;
 		subcpu.datacnt = 0;
-		if (value >= 0xd0 && value <= 0xd7) {
+		if ((value >= 0xd0) && (value <= 0xd7)) {
 			subcpu.cmdcnt = 6;
 			subcpu.datacnt = 0;
 		}
-		else if (value >= 0xd8 && value <= 0xdf) {
+		else if ((value >= 0xd8) && (value <= 0xdf)) {
 			subcpu.cmdcnt = 0;
 			subcpu.datacnt = 6;
 		}
-		else if (value >= 0xe3 && value <= 0xef) {
-			subcpu.cmdcnt = CMD_TBL[value - 0xe3];
-			subcpu.datacnt = DAT_TBL[value - 0xe3];
+		else if ((value >= 0xe3) && (value <= 0xef)) {
+			subcpu.cmdcnt = cmdtbl[value - 0xe3];
+			subcpu.datacnt = dattbl[value - 0xe3];
 		}
 		if (value < 0xe0) {
 			subcpu.dataptr = offsetof(SUBCPU, Dx[value - 0xd0][0]);
@@ -285,7 +238,7 @@ void subcpu_reset(void) {
 
 	ZeroMemory(&subcpu, sizeof(subcpu));
 	subcpu.OBF = 1;
-	nevent_set(NEVENT_SUBCPU, pccore.realclock / 400,
+	nevent_set(NEVENT_SUBCPU, pccore.realclock / 480,
 												neitem_scpu, NEVENT_ABSOLUTE);
 }
 

@@ -117,7 +117,6 @@ void CPUCALL z80c_reset(void);
 void CPUCALL z80c_maketable(void);
 REG8 CPUCALL z80c_ableinterrupt(void);
 void CPUCALL z80c_interrupt(REG8 irq);
-void CPUCALL z80c_interrupt2(REG8 irq);
 void CPUCALL z80c_nonmaskedinterrupt(void);
 void CPUCALL z80c_execute(void);
 void CPUCALL z80c_step(void);
@@ -166,8 +165,7 @@ void CPUCALL z80c_step(void);
 #define	Z80_DEINITIALIZE()		
 #define	Z80_RESET				z80c_reset
 #define	Z80_ABLEINTERRUPT		z80c_ableinterrupt
-#define	Z80_INT(a)				z80c_interrupt(a)
-#define	Z80_INT2(a)				z80c_interrupt2(a)
+#define	Z80_INTERRUPT(a)		z80c_interrupt(a)
 #define	Z80_NMI					z80c_nonmaskedinterrupt
 #define	Z80_EXECUTE				z80c_execute
 #define	Z80_STEP				z80c_step

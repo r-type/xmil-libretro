@@ -37,6 +37,7 @@ static REG8 fifo_r(SIOFIFO *sf) {
 	return(data);
 }
 
+#if 0
 static REG8 fifo_chk(SIOFIFO *sf) {
 
 	REG8	ret;
@@ -86,6 +87,7 @@ void sio_int(void) {
 	if (x1_sio1(sio.ch + SIOCH_A)) return;
 	if (x1_sio1(sio.ch + SIOCH_B)) return;
 }
+#endif
 
 static void mouse_read(SIOCH *ch) {
 

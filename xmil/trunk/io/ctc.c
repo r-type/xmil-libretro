@@ -93,7 +93,6 @@ static void ctcstep(CTCCH *ch) {
 	intr = ctcwork(ch);
 	if (intr) {
 		ch->intr |= intr;
-		TRACEOUT(("-> ievent_set"));
 		ievent_set(IEVENT_CTC0 + ch->num);
 	}
 }
@@ -114,7 +113,6 @@ static void ctcnextevent(CTCCH *ch) {
 			if (ch->cmd[i] & 0x40) {
 				clock = clock * 2;
 			}
-			TRACEOUT(("ch %d -> %d :%.2x:%.8x", i, clock, ch->cmd[i], ch->count[i]));
 			event = min(event, clock);
 		}
 	}
@@ -127,13 +125,11 @@ static void ctcnextevent(CTCCH *ch) {
 				clock = clock * 2;
 			}
 		}
-		TRACEOUT(("ch %d -> %d", 3, clock));
 		event = min(event, clock);
 	}
 	event /= 2;
 	event *= pccore.multiple;
 	nevent_set(NEVENT_CTC0 + ch->num, event, neitem_ctc, NEVENT_ABSOLUTE);
-	TRACEOUT(("ctc -> %d (%x)", event, event));
 }
 
 void neitem_ctc(UINT id) {
@@ -145,7 +141,6 @@ void neitem_ctc(UINT id) {
 	intr = ctcwork(ch);
 	if (intr) {
 		ch->intr |= intr;
-		TRACEOUT(("-> ievent_set"));
 		ievent_set(IEVENT_CTC0 + ch->num);
 	}
 	else {
@@ -164,7 +159,6 @@ BRESULT ieitem_ctc(UINT id) {
 	ch = ctc.ch + (id - IEVENT_CTC0);
 	intr = ctcwork(ch);
 	intr |= ch->intr;
-	TRACEOUT(("ieitem_ctc %d - %.2x", id - IEVENT_CTC0, intr));
 	r = FALSE;
 	if (intr) {
 		for (i=0, bit=1; i<4; i++, bit<<=1) {
@@ -185,16 +179,13 @@ BRESULT ieitem_ctc(UINT id) {
 				else if (!r) {
 					r = TRUE;
 					intr ^= bit;
-					TRACEOUT(("z80int %d", i));
-					Z80_INT((REG8)(ch->vector + (i << 1)));
+					Z80_INTERRUPT((REG8)(ch->vector + (i << 1)));
 				}
 			}
 		}
 	}
-	TRACEOUT(("--> %.2x", intr));
 	ch->intr = intr;
 	if (intr) {
-		TRACEOUT(("-> ievent_set"));
 		ievent_set(IEVENT_CTC0 + ch->num);
 	}
 	else {
@@ -202,84 +193,6 @@ BRESULT ieitem_ctc(UINT id) {
 	}
 	return(r);
 }
-
-
-
-
-#if 0
-void x1_ctc_int(void) {
-
-	CTCCH	*ch;
-	UINT	r;
-	SINT32	clk0;
-	SINT32	clk4;
-	SINT32	clk2;
-	SINT32	subcnt;
-	UINT	i;
-	REG8	bit;
-	REG8	ctcint_flg;
-
-	ctcint_flg = Z80_ABLEINTERRUPT();
-
-	clk4 = pccore.HSYNC_CLK;
-	clk2 = clk4 >> 1;
-
-	if (pccore.ROM_TYPE >= 2) {
-		ch = ctc.ch + 0;
-		r = 3;
-	}
-	else {
-		ch = ctc.ch + 2;
-		r = 1;
-	}
-
-	do {
-		clk0 = 0;
-		bit = 1;
-		for (i=0; i<4; i++) {
-			if (!(ch->cmd[i] & 0x02)) {
-				if (ch->count[i] <= 0) {
-					ch->count[i] += ch->countmax[i];
-				}
-				if (!(ch->cmd[i] & 0x40)) {
-					subcnt = clk4;
-				}
-				else if (i == 3) {
-					subcnt = clk0;
-				}
-				else {
-					subcnt = clk2;
-				}
-				ch->count[i] -= subcnt;
-				if (ch->count[i] <= 0) {
-					ch->int_flag |= bit;
-					if (!i) {
-						clk0 = 1;
-					}
-				}
-			}
-			bit <<= 1;
-		}
-
-		bit = 1;
-		for (i=0; i<4; i++) {
-			if (ch->int_flag & bit) {
-				if (!(ch->cmd[i] & 0x80)) {
-					ch->int_flag ^= bit;
-				}
-				else if (ctcint_flg) {
-					ctcint_flg = 0;
-					ch->int_flag ^= bit;
-//					TRACEOUT(("ctc%u int -- %d", 3 - r, i));
-					Z80_INT((REG8)(ch->vector + (i << 1)));
-				}
-			}
-			bit <<= 1;
-		}
-		ch++;
-	} while(--r);
-}
-#endif
 
 
 // ----
@@ -367,7 +280,7 @@ void IOOUTCALL ctc_o(UINT port, REG8 value) {
 
 	CTCCH	*ch;
 
-	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
+//	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
 	ch = getctcch(port);
 	if (ch != NULL) {
 		ctcch_o(ch, port, value);

@@ -75,7 +75,7 @@ static BRESULT reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 	pccore.baseclock = 2000000;
 	pccore.multiple = 2;
 	pccore.realclock = pccore.baseclock * pccore.multiple;
-	pccore.HSYNC_CLK = 250;
+
 	pccore.ROM_TYPE = ROM_TYPE;
 	pccore.SOUND_SW = SOUND_SW;
 	pccore.DIP_SW = DIP_SW;
@@ -141,6 +141,16 @@ void pccore_initialize(void) {
 	ppi_initialize();
 }
 
+void pccore_deinitialize(void) {
+
+	sndctrl_deinitialize();
+
+	fddfile_eject(0);
+	fddfile_eject(1);
+	fddfile_eject(2);
+	fddfile_eject(3);
+}
+
 void pccore_reset(void) {
 
 	soundmng_stop();
@@ -157,17 +167,6 @@ void pccore_reset(void) {
 	soundmng_play();
 }
 
-void pccore_deinitialize(void) {
-
-	sndctrl_deinitialize();
-
-//	keyboard_term();
-
-	fddfile_eject(0);
-	fddfile_eject(1);
-	fddfile_eject(2);
-	fddfile_eject(3);
-}
 
 
 // ----

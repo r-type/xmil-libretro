@@ -113,7 +113,6 @@ void z80x_reset(void);
 void z80x_maketable(void);
 REG8 z80x_ableinterrupt(void);
 void __fastcall z80x_interrupt(REG8 irq);
-void __fastcall z80x_interrupt2(REG8 irq);
 void z80x_nonmaskedinterrupt(void);
 void z80x_execute(void);
 void z80x_step(void);
@@ -162,8 +161,7 @@ void z80x_step(void);
 #define	Z80_DEINITIALIZE()		
 #define	Z80_RESET				z80x_reset
 #define	Z80_ABLEINTERRUPT		z80x_ableinterrupt
-#define	Z80_INT(a)				z80x_interrupt(a)
-#define	Z80_INT2(a)				z80x_interrupt2(a)
+#define	Z80_INTERRUPT(a)		z80x_interrupt(a)
 #define	Z80_NMI					z80x_nonmaskedinterrupt
 #define	Z80_EXECUTE				z80x_execute
 #define	Z80_STEP				z80x_step

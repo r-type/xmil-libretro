@@ -6,6 +6,9 @@
 #include	"ievent.h"
 
 
+// ここでデイジーチェイン
+
+
 	IEVENT	ievent;
 
 
