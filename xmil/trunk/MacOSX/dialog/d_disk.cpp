@@ -9,7 +9,7 @@
 #include	"diskdrv.h"
 #include	"newdisk.h"
 #include	"xmil.h"
-
+#include	"fdefine.h"
 
 void dialog_changefdd(BYTE drv) {
 
@@ -17,7 +17,7 @@ void dialog_changefdd(BYTE drv) {
 
 	if (drv < 4) {
 		if (dlgs_selectfile(fname, sizeof(fname), hWndMain, OPEN_FDD)) {
-			diskdrv_setfdd(drv, fname, 0);
+			diskdrv_setfddex(drv, fname, file_getftype(fname), 0);
 
 			switch (drv) {
 				case 0:

@@ -248,7 +248,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>4</integer>
+									<integer>1</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -385,11 +385,13 @@
 	<array>
 		<string>960F8E1D06C87E7800937580</string>
 		<string>9643CCCB06CF52AD001307C4</string>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>960F8D5F06C818A300937580</string>
-		<string>1C0AD2B3069F1EA900FABCE6</string>
+		<string>1CD10A99069EF8BA00B06720</string>
+		<string>9643CDEF06CF75C1001307C4</string>
+		<string>9643CE4006CF7DD3001307C4</string>
 		<string>/Users/tora/Documents/Project Builder/CVS/xmil/MacOSX/xmil.xcode</string>
+		<string>1C0AD2B3069F1EA900FABCE6</string>
+		<string>1C530D57069F1CE1000CFCEE</string>
 	</array>
 	<key>WindowString</key>
 	<string>32 432 690 397 0 0 1280 832 </string>
@@ -421,7 +423,7 @@
 										<key>PBXProjectModuleLabel</key>
 										<string>d_disk.cpp</string>
 										<key>bookmark</key>
-										<string>9643CDCD06CF72F4001307C4</string>
+										<string>9643CE4706CF7E2E001307C4</string>
 										<key>history</key>
 										<array>
 											<string>9643CCAD06CF509E001307C4</string>
@@ -614,7 +616,7 @@
 			<key>WindowToolGUID</key>
 			<string>1CD10A99069EF8BA00B06720</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>FirstTimeWindowDisplayed</key>
@@ -635,7 +637,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>dialogs.h</string>
+										<string>d_disk.cpp</string>
 										<key>PBXSplitModuleInNavigatorKey</key>
 										<dict>
 											<key>Split0</key>
@@ -643,16 +645,18 @@
 												<key>PBXProjectModuleGUID</key>
 												<string>1CD0528D0623707200166675</string>
 												<key>PBXProjectModuleLabel</key>
-												<string>dialogs.h</string>
+												<string>d_disk.cpp</string>
 												<key>bookmark</key>
-												<string>9643CDCE06CF72F4001307C4</string>
+												<string>9643CE4806CF7E2E001307C4</string>
 												<key>history</key>
 												<array>
 													<string>9643CCFB06CF61BC001307C4</string>
 													<string>9643CCFC06CF61BC001307C4</string>
-													<string>9643CCFD06CF61BC001307C4</string>
 													<string>9643CCFE06CF61BC001307C4</string>
-													<string>9643CCFF06CF61BC001307C4</string>
+													<string>9643CE1C06CF79FC001307C4</string>
+													<string>9643CE1D06CF79FC001307C4</string>
+													<string>9643CE2506CF7A0B001307C4</string>
+													<string>9643CE2606CF7A0B001307C4</string>
 												</array>
 												<key>prevStack</key>
 												<array>
@@ -666,6 +670,10 @@
 													<string>9643CD0206CF61BC001307C4</string>
 													<string>9643CD0306CF61BC001307C4</string>
 													<string>9643CD0406CF61BC001307C4</string>
+													<string>9643CE2006CF79FC001307C4</string>
+													<string>9643CE2106CF79FC001307C4</string>
+													<string>9643CE2206CF79FC001307C4</string>
+													<string>9643CE2706CF7A0B001307C4</string>
 												</array>
 											</dict>
 											<key>SplitCount</key>
