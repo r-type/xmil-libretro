@@ -16,6 +16,8 @@ typedef struct tagLocals3216{
 
 #define PalmAPI(a,b)	(gCall68KFuncP)(gEmulStateP,PceNativeTrapNo(a),&b,sizeof(b))
 
+#define	setAddress(a,b)	a.hi=ByteSwap16(b>>16);a.lo=ByteSwap16(b&0xffff)
+
 void ARM_TYPE_pointerinvoid (void* ptr, UINT trapID) {
 	ArgOne params;
 	params.ptr = ByteSwap32(ptr);
@@ -37,15 +39,14 @@ void ARM_TYPE_ptr16ptrinvoid(void* frm, UINT16 id, void* text, UINT trapID) {
 	typedef struct tagLocals{
 		UInt32	ptr;
 		UINT16	objid;
-		UINT16	texthi;
-		UINT16	textlo;
+		UINT16	hi;
+		UINT16	lo;
 	} Locals;
 	Locals params;
 	
 	params.ptr = ByteSwap32(frm);
 	params.objid = ByteSwap16(id);
-	params.texthi = ByteSwap16(text >> 16);
-	params.textlo = ByteSwap16(text & 0xffff);
+	setAddress(params, text);
 	
 	PalmAPI(trapID, params);
 }
@@ -395,5 +396,18 @@ void print(char *format, ...) {
 	arg = ByteSwap32(format);
 
 	(gCall68KFuncP)(gEmulStateP, (unsigned long)Callback_print, &arg, 4);
+}
+
+UINT16 ARM_SysBatteryInfo(UINT8* battery) {
+	typedef struct tagLocals{
+		UInt8	nul[22];
+		UInt16	hi;
+		UInt16  lo;
+	} Locals;
+	Locals params;
+	
+	ZeroMemory(params.nul, 22);
+	setAddress(params, battery);
+	return((UINT16)PalmAPI(sysTrapSysBatteryInfo, params));
 }
 

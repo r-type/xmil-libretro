@@ -115,5 +115,5 @@
 #define	IDM_CAPS		4053
 #define	IDM_MAIN		4999
 
-#define	XMILVER_PALMOS	"version 2005/02/26"
+#define	XMILVER_PALMOS	"version 2005/02/28"
 
