@@ -1,6 +1,7 @@
 #include	"compiler.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"nevent.h"
 #include	"makescrn.h"
 
 
@@ -9,14 +10,22 @@
 static REG8 getportb(void) {
 
 	REG8	ret;
-	UINT	v;
+	SINT32	clock;
 
 	ret = cmt_test(); // | cmt_read();		// THUNDER BALL
 
-	v = pccore_getraster(NULL);
-	if (v < crtc.e.dl) {
+	clock = nevent_getwork(NEVENT_FRAMES);
+	if (corestat.vsync) {
+		clock += corestat.dispclock;
+	}
+	if (clock < crtc.e.dispclock) {
 		ret |= 0x80;						// 1:DISP
 	}
+	clock -= crtc.e.vsyncstart;
+	if ((clock >= 0) && (clock < crtc.e.vpulseclock)) {
+		ret |= 0x04;						// 1:V-SYNC
+	}
+
 	if (subcpu.IBF) {
 		subcpu.IBF = 0;
 		ret |= 0x40;						// 1:SUB-CPU BUSY
@@ -27,15 +36,6 @@ static REG8 getportb(void) {
 	if (memio.ram) {
 		ret |= 0x10;						// 1:RAM
 	}
-#if 1
-	if (!(v < crtc.e.vs)) {
-		ret |= 0x04;						// V-SYNC
-	}
-#else								// ラプラステスト…VYSNCが長すぎるらしい
-	if (v_cnt == crtc.e.vs) {
-		ret |= 0x04;
-	}
-#endif
 	return(ret);
 }
 
@@ -45,7 +45,7 @@ static void setportc(REG8 dat) {
 	UINT8	xl;
 
 	oldc = ppi.portc;
-	if (crtc.s.TXT_XL == 40) {
+	if (crtc.s.reg[CRTCREG_HDISP] == 40) {
 		oldc |= 0x40;
 	}
 	else {
@@ -58,9 +58,8 @@ static void setportc(REG8 dat) {
 		iocore.s.mode = 1;
 	}
 	xl = ((dat & 0x40)?40:80);
-	if (crtc.s.TXT_XL != xl) {
-		crtc.s.TXT_XL = (UINT8)xl;
-//		crtc.s.GRP_XL = xl << 3;
+	if (crtc.s.reg[CRTCREG_HDISP] != xl) {
+		crtc.s.reg[CRTCREG_HDISP] = (UINT8)xl;
 		crtc_bankupdate();
 		scrnallflash = 1;
 	}
@@ -121,7 +120,7 @@ REG8 IOINPCALL ppi_i(UINT port) {
 
 		case 2:
 #if 1
-			if (crtc.s.TXT_XL == 40) {
+			if (crtc.s.reg[CRTCREG_HDISP] == 40) {
 				ppi.portc |= 0x40;
 			}
 			else {

@@ -173,7 +173,7 @@ void iptrace_out(void) {
 }
 #endif
 
-
+#if 0
 UINT pccore_getraster(UINT *h) {
 
 	SINT32	work;
@@ -189,6 +189,7 @@ UINT pccore_getraster(UINT *h) {
 	}
 	return(vl);
 }
+#endif
 
 void neitem_disp(UINT id) {
 
@@ -197,8 +198,7 @@ void neitem_disp(UINT id) {
 	if (xmilcfg.DISPSYNC & 1) {
 		scrnupdate();
 	}
-	nevent_set(id, (corestat.tl - corestat.vl) * 250,
-											neitem_vsync, NEVENT_RELATIVE);
+	nevent_set(id, corestat.syncclock, neitem_vsync, NEVENT_RELATIVE);
 }
 
 void neitem_vsync(UINT id) {
@@ -212,14 +212,18 @@ void neitem_vsync(UINT id) {
 
 void pccore_exec(BRESULT draw) {
 
+	SINT32	frameclock;
+	SINT32	dispclock;
+
 	corestat.drawframe = draw;
 	soundmng_sync();
 
-	corestat.tl = 266 * pccore.multiple / 2;
-	corestat.vl = min(corestat.tl, crtc.e.dl);
+	frameclock = 266 * RASTER_CLOCK * pccore.multiple / 2;
+	dispclock = min(frameclock, crtc.e.dispclock);
+	corestat.dispclock = dispclock;
+	corestat.syncclock = frameclock - dispclock;
 	corestat.vsync = 0;
-	nevent_set(NEVENT_FRAMES, corestat.vl * 250,
-											neitem_disp, NEVENT_RELATIVE);
+	nevent_set(NEVENT_FRAMES, dispclock, neitem_disp, NEVENT_RELATIVE);
 	do {
 #if !defined(SINGLESTEPONLY)
 		if (CPU_REMCLOCK > 0) {

@@ -39,7 +39,7 @@ int statflag_write(STFLAGH sfh, const void *ptr, UINT size);
 void statflag_seterr(STFLAGH sfh, const OEMCHAR *str);
 
 int statsave_save(const OEMCHAR *filename);
-int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, int size);
+int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, UINT size);
 int statsave_load(const OEMCHAR *filename);
 
 #ifdef __cplusplus

@@ -2,6 +2,7 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"nevent.h"
 #include	"vram.h"
 #include	"font.h"
 
@@ -48,15 +49,22 @@ static UINT knj_offset(void) {
 
 static UINT nowsyncoffset(void) {
 
-	UINT	ret;
+	SINT32	clock;
 	UINT	h;
 	UINT	v;
+	UINT	ret;
+	UINT	line;
 
-	v = pccore_getraster(&h);
-
-	ret = ((v / crtc.e.fonty) * crtc.s.TXT_XL) + crtc.s.TXT_TOP;
-	ret += (h * crtc.s.TXT_XL) / 250;
-
+	clock = nevent_getwork(NEVENT_FRAMES);
+	if (corestat.vsync) {
+		clock += corestat.dispclock;
+	}
+	v = clock / RASTER_CLOCK;
+	h = clock - (v * RASTER_CLOCK);
+	ret = v / crtc.e.fonty;
+	line = v - (ret * crtc.e.fonty);
+	ret = (ret * crtc.s.reg[CRTCREG_HDISP]) + crtc.e.pos;
+	ret += (h * crtc.s.reg[CRTCREG_HDISP]) / RASTER_CLOCK;
 	if (ret >= 0x0800) {
 		ret = 0x07ff;		// オーバーフロー
 	}
