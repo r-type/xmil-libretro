@@ -366,7 +366,7 @@ void opmgen_reset(void) {
 		ch++;
 	}
 	for (i=0x20; i<0x100; i++) {
-		opmgen_setreg((REG8)i, 0);
+		opmgen_setreg((REG8)i, 0xff);
 	}
 }
 
