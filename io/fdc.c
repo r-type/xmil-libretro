@@ -79,6 +79,9 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 
 	REG8	cmd;
 
+	if ((port & (~7)) != 0x0ff8) {
+		return;
+	}
 	port &= 0xf;
 	if (port == 8) {						// ƒRƒ}ƒ“ƒh
 		driveset = 0;
@@ -303,8 +306,10 @@ static	short	last_off;
 		BYTE	ans;
 		REG8	cmd;
 
+	if ((port & (~7)) != 0x0ff8) {
+		return(0xff);
+	}
 	cmd = (REG8)(fdc.cmd >> 4);
-
 	if ((port &= 0xf) != 8) {
 		last_r = -1;
 		last_off = -1;

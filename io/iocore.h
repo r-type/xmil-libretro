@@ -6,7 +6,7 @@
 #define	IOINPCALL
 #endif
 
-typedef	void (IOOUTCALL *IOOUT)(UINT port, REG8 val);
+typedef	void (IOOUTCALL *IOOUT)(UINT port, REG8 dat);
 typedef	REG8 (IOINPCALL *IOINP)(UINT port);
 
 typedef void (*IOCBFN)(void);
@@ -27,12 +27,13 @@ typedef union {
 } INPHTBL;
 
 typedef struct {
-	UINT	mode;
-	IOOUT	outv[3];
-	IOINP	inpv[3];
+	UINT8	mode;
+	UINT8	padding[15];
+	IOINP	inpt[4];
+	IOOUT	outt[4];
 	UINT8	iofg[0x20];
-	OUTHTBL	outh[0x20];
 	INPHTBL	inph[0x20];
+	OUTHTBL	outh[0x20];
 } IOCORE;
 
 
@@ -43,6 +44,7 @@ typedef struct {
 #include	"dipsw.h"
 #include	"dmac.h"
 #include	"fdc.h"
+#include	"memio.h"
 #include	"pcg.h"
 #include	"ppi.h"
 #include	"sio.h"
@@ -62,6 +64,7 @@ extern	CRTC		crtc;
 extern	CTC			ctc;
 extern	DMAC		dma;
 extern	FDC			fdc;
+extern	MEMIO		memio;
 extern	PCG			pcg;
 extern	PPI			ppi;
 extern	SIO			sio;
@@ -70,13 +73,14 @@ extern	SUBCPU		subcpu;
 
 
 void iocore_reset(void);
-void iocore_regouthigh(UINT port, IOOUT fn);
-void iocore_regoutlow(UINT port, IOOUT fn);
-void iocore_reginphigh(UINT port, IOINP fn);
-void iocore_reginplow(UINT port, IOINP fn);
+void iocore_regoutmsb(UINT msb, IOOUT fn);
+void iocore_reginpmsb(UINT msb, IOINP fn);
 
-// void IOOUTCALL iocore_out(UINT port, REG8 dat);
-// REG8 IOINPCALL iocore_inp(UINT port);
+void iocore_regout(UINT port, IOOUT fn);
+void iocore_reginp(UINT port, IOINP fn);
+
+void IOOUTCALL iocore_out(UINT port, REG8 dat);
+REG8 IOINPCALL iocore_inp(UINT port);
 
 #ifdef __cplusplus
 }

@@ -91,7 +91,7 @@ REG8 IOINPCALL ppi_i(UINT port) {
 	if (subcpu.OBF) {
 		ppi.PORT_B |= 0x20;					// 1:SUB-CPU Data empty
 	}
-	if (!pccore.ROM_SW) {
+	if (memio.ram) {
 		ppi.PORT_B |= 0x10;					// 1:RAM
 	}
 #if 1

@@ -33,7 +33,6 @@ typedef struct {
 typedef struct {
 	UINT16	HSYNC_CLK;
 	UINT8	ROM_TYPE;
-	UINT8	ROM_SW;
 	UINT8	DIP_SW;
 	UINT8	SOUND_SW;
 } PCCORE;
@@ -54,7 +53,6 @@ extern	XMILCFG	xmilcfg;
 extern	PCCORE	pccore;
 extern	BYTE	*RAM0r;
 extern	BYTE	*RAM0w;
-extern	BYTE	lastmem;
 extern	DWORD	h_cntbase;
 
 extern	BYTE	mMAIN[0x10000];

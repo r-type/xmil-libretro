@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 void x1_ctc_int(void);
-void IOOUTCALL ctc_o(UINT port, REG8 value);		// x1_ctc_w
+void IOOUTCALL ctc_o(UINT port, REG8 dat);			// x1_ctc_w
 REG8 IOINPCALL ctc_i(UINT port);					// x1_ctc_r
 
 void ctc_reset(void);
