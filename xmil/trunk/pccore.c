@@ -205,6 +205,7 @@ void pccore_exec(BRESULT draw) {
 	REG8	inttiming;
 
 	corestat.drawframe = draw;
+	soundmng_sync();
 
 	v_cnt = 0;
 	s_cnt = 0;
@@ -244,8 +245,8 @@ void pccore_exec(BRESULT draw) {
 			}
 		}
 	}
-	sound_sync();
-	calendar_inc();
 	scrnupdate();
+	calendar_inc();
+	sound_sync();
 }
 
