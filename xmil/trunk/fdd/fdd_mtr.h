@@ -27,8 +27,8 @@ extern	_FDDMTR		fddmtr;
 
 void fddmtr_init(void);
 void fddmtr_motormove(void);
-void fddmtr_callback(DWORD time);
-void fddmtr_waitsec(BYTE value);
+void fddmtr_callback(UINT32 time);
+void fddmtr_waitsec(UINT8 value);
 void fddmtr_drvset(void);
 
 #ifdef __cplusplus

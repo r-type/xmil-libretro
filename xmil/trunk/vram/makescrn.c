@@ -11,9 +11,9 @@
 
 		MAKESCRN	makescrn;
 
-		BYTE	scrnallflash;
-static	BYTE	lastdisp = 0;
-static	BYTE	blinktime = 1;
+		UINT8	scrnallflash;
+static	UINT8	lastdisp = 0;
+static	UINT8	blinktime = 1;
 		UINT	drawtime = 0;
 
 
