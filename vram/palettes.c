@@ -35,9 +35,21 @@ static const UINT16 pal4096banktbl[2][64] = {
 				0x101, 0x103, 0x121, 0x123, 0x301, 0x303, 0x321, 0x323,
 				0x110, 0x112, 0x130, 0x132, 0x310, 0x312, 0x330, 0x332,
 				0x111, 0x113, 0x131, 0x133, 0x311, 0x313, 0x331, 0x333}};
+
+static void pal4096to64(RGB32 *pal, const UINT16 *map) {
+
+	UINT	r;
+
+	r = 64;
+	do {
+		pal->d = xmil_pal32[XMILPAL_4096G + (*map++)].d;
+		pal++;
+	} while(--r);
+}
 #endif
 
 
+// ----
 
 void pal_makegrad(RGB32 *pal, int pals, UINT32 bg, UINT32 fg) {
 
@@ -214,20 +226,6 @@ void pal_setgrph4096(UINT num) {
 
 
 // ----
-
-#if defined(SUPPORT_TURBOZ)
-static void pal4096to64(RGB32 *pal, const UINT16 *map) {
-
-	UINT	r;
-
-	r = 64;
-	do {
-		pal->d = xmil_pal32[XMILPAL_4096G + (*map++)].d;
-		pal++;
-	} while(--r);
-}
-#endif
-
 
 void pal_update1(const UINT8 *rgbp) {
 

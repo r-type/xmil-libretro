@@ -73,24 +73,12 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_EXIT
     END
-    POPUP "FDD-&0"
-    BEGIN
-        MENUITEM "&Open...",                    IDM_FDD0OPEN
-        MENUITEM SEPARATOR
-        MENUITEM "&Eject",                      IDM_FDD0EJECT
-    END
-    POPUP "FDD-&1"
-    BEGIN
-        MENUITEM "&Open...",                    IDM_FDD1OPEN
-        MENUITEM SEPARATOR
-        MENUITEM "&Eject",                      IDM_FDD1EJECT
-    END
     POPUP "&IPL-ROM"
     BEGIN
         MENUITEM "&X1",                         IDM_X1ROM
         MENUITEM "&turbo",                      IDM_TURBO
     END
-    POPUP "&DIP-SW"
+    POPUP "DIP-&SW"
     BEGIN
         MENUITEM "boot 2D",                     IDM_BOOT2D
         MENUITEM "boot 2HD",                    IDM_BOOT2HD
@@ -102,9 +90,6 @@ BEGIN
     BEGIN
         MENUITEM "&Window",                     IDM_WINDOW
         MENUITEM "&FullScreen",                 IDM_FULLSCREEN
-        MENUITEM SEPARATOR
-        MENUITEM "Width 80",                    IDM_WIDTH80
-        MENUITEM "Width 40",                    IDM_WIDTH40
         MENUITEM SEPARATOR
         MENUITEM "DispVsync",                   IDM_DISPSYNC
         MENUITEM "Raster",                      IDM_RASTER
@@ -261,11 +246,18 @@ BEGIN
     IDS_SNAPENABLE          "&Window Snap"
     IDS_BACKGROUND          "&Background"
     IDS_BGSOUND             "Back&ground Sound"
-    IDS_WAVEREC             "&Wave Record"
-    IDS_TURBOZ              "turbo&Z"
-    IDS_Z80SAVE             "&Z80 save"
+    IDS_FDD0                "FDD-&0"
+    IDS_FDD1                "FDD-&1"
+    IDS_FDD2                "FDD-&2"
+    IDS_FDD3                "FDD-&3"
     IDS_OPEN                "&Open..."
     IDS_EJECT               "&Eject"
+    IDS_TURBOZ              "turbo&Z"
+    IDS_DEBUG               "D&ebug"
+    IDS_WIDTH40             "Width &40"
+    IDS_WIDTH80             "Width &80"
+    IDS_Z80SAVE             "&Z80 save"
+    IDS_WAVEREC             "&Wave Record"
 END
 
 #endif    // “ú–{Œê resources
