@@ -16,6 +16,7 @@
 #define	OSLINEBREAK_CRLF
 
 #ifndef __GNUC__
+typedef signed int			SINT;
 typedef signed char			SINT8;
 typedef unsigned char		UINT8;
 typedef	signed short		SINT16;

@@ -54,7 +54,7 @@ void z80dmap(void) {
 			dat = iocore_inp(addr);
 		}
 		else {
-			dat = Z80_RDMEM((REG16)addr);
+			dat = mem_read8(addr);
 		}
 		if (dma.DMA_CMND & 1) {
 			addr = *off2;
@@ -65,7 +65,7 @@ void z80dmap(void) {
 				iocore_out(addr, dat);
 			}
 			else {
-				Z80_WRMEM((REG16)addr, dat);
+				mem_write8(addr, dat);
 			}
 		}
 		if (dma.DMA_CMND & 2) {

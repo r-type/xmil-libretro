@@ -49,6 +49,9 @@ enum {
 #define	REG16		UINT16
 #endif
 
+#ifndef LOW8
+#define	LOW8(a)					((UINT8)(a))
+#endif
 #ifndef LOW10
 #define	LOW10(a)				((a) & 0x03ff)
 #endif
