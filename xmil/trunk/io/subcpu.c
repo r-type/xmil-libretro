@@ -131,6 +131,7 @@ void IOOUTCALL subcpu_o(UINT port, REG8 value) {
 	}
 	subcpu.OBF = (UINT8)(subcpu.datacnt?0:1);
 	subcpu.IBF = (UINT8)(subcpu.datacnt?1:0);
+	(void)port;
 }
 
 REG8 IOINPCALL subcpu_i(UINT port) {
@@ -215,6 +216,7 @@ REG8 IOINPCALL subcpu_i(UINT port) {
 	subcpu.datacnt--;
 	subcpu.OBF = (UINT8)(subcpu.datacnt?0:1);
 	subcpu.IBF = (UINT8)(subcpu.datacnt?1:0);
+	(void)port;
 	return(ret);
 }
 

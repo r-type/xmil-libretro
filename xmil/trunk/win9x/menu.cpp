@@ -136,15 +136,6 @@ void xmenu_setbootmedia(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_BOOT2HD, MFCHECK(value));
 }
 
-void xmenu_setwidth(UINT8 value) {
-
-	HMENU	hmenu;
-
-	hmenu = GetMenu(hWndMain);
-	CheckMenuItem(hmenu, IDM_WIDTH80, MFCHECK(!value));
-	CheckMenuItem(hmenu, IDM_WIDTH40, MFCHECK(value));
-}
-
 void xmenu_setresolute(UINT8 value) {
 
 	HMENU	hmenu;
@@ -155,6 +146,15 @@ void xmenu_setresolute(UINT8 value) {
 	xmilcfg.DIP_SW |= value;
 	CheckMenuItem(hmenu, IDM_HIGHRES, MFCHECK(!value));
 	CheckMenuItem(hmenu, IDM_LOWRES, MFCHECK(value));
+}
+
+void xmenu_setwidth(UINT8 value) {
+
+	HMENU	hmenu;
+
+	hmenu = GetMenu(hWndMain);
+	CheckMenuItem(hmenu, IDM_WIDTH80, MFCHECK(!value));
+	CheckMenuItem(hmenu, IDM_WIDTH40, MFCHECK(value));
 }
 
 void xmenu_setdispmode(UINT8 value) {

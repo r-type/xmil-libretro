@@ -7,11 +7,13 @@
 
 BRESULT is_d8ufile(const OEMCHAR *fname) {
 
+	(void)fname;
 	return(FALSE);
 }
 
 BRESULT fdd_ini(const OEMCHAR *filename) {
 
+	(void)filename;
 	return(SUCCESS);
 }
 

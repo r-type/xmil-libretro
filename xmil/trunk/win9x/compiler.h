@@ -93,7 +93,6 @@ typedef signed __int64		SINT64;
 #define	SUPPORT_16BPP
 #define	SUPPORT_24BPP
 #define	SUPPORT_32BPP
-#define SUPPORT_NORMALDISP
 
 #define	SUPPORT_X1F
 

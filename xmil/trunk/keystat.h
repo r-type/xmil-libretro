@@ -142,6 +142,7 @@ void keystat_initialize(void);
 
 void keystat_keydown(REG8 ref);
 void keystat_keyup(REG8 ref);
+void keystat_resetjoykey(void);
 void keystat_allrelease(void);
 
 

@@ -2,6 +2,7 @@
 #include	"joymng.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"sound.h"
 #include	"sndctrl.h"
 #include	"keystat.h"
 #include	"x1f.h"
@@ -47,6 +48,7 @@ REG8 IOINPCALL opm_i(UINT port) {
 void IOOUTCALL sndboard_psgreg(UINT port, REG8 dat) {
 
 	sndboard.psgreg = dat;
+	(void)port;
 }
 
 void IOOUTCALL sndboard_psgdat(UINT port, REG8 dat) {
@@ -59,6 +61,7 @@ void IOOUTCALL sndboard_psgdat(UINT port, REG8 dat) {
 		x1f_psg(reg, dat);
 		psggen_setreg(&psggen, reg, dat);
 	}
+	(void)port;
 }
 
 REG8 IOINPCALL sndboard_psgsta(UINT port) {
@@ -86,6 +89,7 @@ REG8 IOINPCALL sndboard_psgsta(UINT port) {
 		return(ret);
 	}
 	else {
+		(void)port;
 		return(0xff);
 	}
 }

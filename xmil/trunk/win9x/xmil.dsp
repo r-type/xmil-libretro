@@ -815,7 +815,7 @@ SOURCE=..\FONT\FONTMAKE.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\FONT\X1FONT.C
+SOURCE=..\FONT\FONTX1.C
 # End Source File
 # End Group
 # Begin Group "win9x"
