@@ -241,14 +241,14 @@ static void paletteinit(void) {
 	hdc = GetDC(hWndMain);
 	GetSystemPaletteEntries(hdc, 0, 256, ddraw.pal);
 	ReleaseDC(hWndMain, hdc);
-	for (i=START_PAL; i<(START_PAL + TOTAL_PALS); i++) {
-		ddraw.pal[i].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
+	for (i=0; i<XMILPAL_TOTAL; i++) {
+		ddraw.pal[i + START_PAL].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
 	for (i=0; i<4; i++) {
-		ddraw.pal[i+START_PAL+TOTAL_PALS].peBlue = dclockpal.pal32[i].p.b;
-		ddraw.pal[i+START_PAL+TOTAL_PALS].peRed = dclockpal.pal32[i].p.r;
-		ddraw.pal[i+START_PAL+TOTAL_PALS].peGreen = dclockpal.pal32[i].p.g;
-		ddraw.pal[i+START_PAL+TOTAL_PALS].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
+		ddraw.pal[i + START_PALORG].peBlue = dclockpal.pal32[i].p.b;
+		ddraw.pal[i + START_PALORG].peRed = dclockpal.pal32[i].p.r;
+		ddraw.pal[i + START_PALORG].peGreen = dclockpal.pal32[i].p.g;
+		ddraw.pal[i + START_PALORG].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
 	pal_reset();
 	ddraw.ddraw2->CreatePalette(DDPCAPS_8BIT, ddraw.pal, &ddraw.palette, 0);

@@ -1,8 +1,7 @@
 #include	"compiler.h"
+#include	"dosio.h"
 #include	"pccore.h"
-// #include	"dosio.h"
-// #include	"x1_fdc.h"
-// #include	"ini.h"
+#include	"fdd_ini.h"
 
 
 BRESULT is_d8ufile(const OEMCHAR *fname) {

@@ -22,13 +22,10 @@
 
 const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 
-	XMILCFG		xmilcfg = {	0, 0, 1,
-							2, 0, 1,
-							22050, 1000, 0, 80,
-							0, 0,
-							0, 0,
-							0, 0, 0,
-							1, 0};
+	XMILCFG		xmilcfg = { 2, 0, 1,
+							1, 0, 0, 0,
+							22050, 500, 0, 0, 80,
+							0, 0, 0, 0};
 
 	PCCORE		pccore = {250, 0, 1, 0};
 	CORESTAT	corestat;
@@ -141,11 +138,6 @@ void pccore_initialize(void) {
 	crtc_initialize();
 	pcg_initialize();
 	ppi_initialize();
-
-//	reset_x1(xmilcfg.ROM_TYPE, xmilcfg.SOUND_SW, xmilcfg.DIP_SW);
-
-//	keystat_initialize();
-//	keystat_reset();
 }
 
 void pccore_reset(void) {
@@ -220,7 +212,7 @@ void pccore_exec(BRESULT draw) {
 
 	while(s_cnt < 266) {
 		while(h_cnt < pccore.HSYNC_CLK) {
-#if IPTRACE
+#if defined(TRACE) && IPTRACE
 			treip[trpos & (IPTRACE - 1)] = Z80_PC;
 			trpos++;
 #endif

@@ -108,6 +108,7 @@ BEGIN
         MENUITEM "Width 40",                    IDM_WIDTH40
         MENUITEM SEPARATOR
         MENUITEM "DispVsync",                   IDM_DISPSYNC
+        MENUITEM "Raster",                      IDM_RASTER
         MENUITEM "&No Wait",                    IDM_NOWAIT
         MENUITEM SEPARATOR
         MENUITEM "&Auto frame",                 IDM_AUTOFPS
@@ -134,12 +135,9 @@ BEGIN
         MENUITEM "&BMP Save",                   IDM_BMPSAVE
         MENUITEM "&OPM LOG",                    IDM_OPMLOG
         MENUITEM "&Clock Disp",                 IDM_DISPCLOCK
-        MENUITEM "&Flame Disp",                 IDM_DISPFRAME
-        MENUITEM "&SkipLine",                   IDM_SKIPLINE
+        MENUITEM "&Frame Disp",                 IDM_DISPFRAME
         MENUITEM "Joy Re&verse",                IDM_JOYX
         MENUITEM "Joy &Rapid",                  IDM_RAPID
-        MENUITEM "&Half-BMP",                   IDM_HALFBMP
-        MENUITEM "&Z80 Save",                   IDM_Z80SAVE
         MENUITEM SEPARATOR
         MENUITEM "&About...",                   IDM_ABOUT
     END
@@ -151,7 +149,7 @@ END
 // Dialog
 //
 
-IDD_CONFIG DIALOG DISCARDABLE  0, 0, 194, 140
+IDD_CONFIG DIALOG DISCARDABLE  0, 0, 194, 126
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Configure"
 FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
@@ -166,24 +164,13 @@ BEGIN
     LTEXT           "ms",IDC_STATIC,116,37,10,8
     LTEXT           "Seek Volume",IDC_STATIC,16,52,38,8
     EDITTEXT        IDC_SEEKVOL,80,50,20,12
-    GROUPBOX        "Screen",IDC_STATIC,8,72,181,62
-    LTEXT           "Text Type",IDC_STATIC,16,86,31,8
-    CONTROL         "Real",IDC_TXTREAL,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,54,85,27,10
-    CONTROL         "Enhanced",IDC_TXTENHANCED,"Button",BS_AUTORADIOBUTTON,
-                    84,85,44,10
-    LTEXT           "Text Effect",IDC_STATIC,14,101,34,8
-    CONTROL         "Real",IDC_TXTEXTEND,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,54,100,29,10
-    CONTROL         "400line",IDC_TXT400,"Button",BS_AUTORADIOBUTTON,84,100,
-                    33,10
-    CONTROL         "Custom",IDC_TXTCSTM,"Button",BS_AUTORADIOBUTTON,120,100,
-                    38,10
-    EDITTEXT        IDC_TXTVALUE,160,99,20,12,WS_GROUP
-    LTEXT           "Black Light",IDC_STATIC,14,118,34,8
-    EDITTEXT        IDC_BLKLIGHT,52,116,20,12
-    LTEXT           "Skipline Light",IDC_STATIC,90,118,40,8
-    EDITTEXT        IDC_LINEDEPTH,134,116,20,12,ES_AUTOHSCROLL
+    GROUPBOX        "Screen",IDC_STATIC,9,72,180,48
+    CONTROL         "Use skipline revisions",IDC_SKIPLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,16,86,81,10
+    LTEXT           "Ratio",IDC_STATIC,28,101,16,8
+    CONTROL         "Slider1",IDC_SKIPLIGHT,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,52,101,96,10
+    RTEXT           "",IDC_LIGHTSTR,152,100,16,10,SS_SUNKEN
     DEFPUSHBUTTON   "&OK",IDOK,144,12,44,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,30,44,14
 END
@@ -233,9 +220,9 @@ BEGIN
     IDD_CONFIG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 188
+        RIGHTMARGIN, 189
         TOPMARGIN, 7
-        BOTTOMMARGIN, 134
+        BOTTOMMARGIN, 121
     END
 
     IDD_NEWDISK, DIALOG
@@ -276,6 +263,10 @@ BEGIN
     IDS_SNAPENABLE          "&Window Snap"
     IDS_BACKGROUND          "&Background"
     IDS_BGSOUND             "Back&ground Sound"
+    IDS_WAVEREC             "&Wave Record"
+    IDS_Z80SAVE             "&Z80 save"
+    IDS_OPEN                "&Open..."
+    IDS_EJECT               "&Eject"
 END
 
 #endif    // “ú–{Œê resources

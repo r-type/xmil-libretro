@@ -14,7 +14,7 @@
 
 void sysmng_scrnwidth(REG8 mode) {
 
-	xmenu_setwidth(mode);
+	menu_setwidth(mode);
 }
 
 

@@ -25,7 +25,7 @@ void joymng_initialize(void) {
 
 	if ((!joyGetNumDevs()) ||
 		(joyGetPos(JOYSTICKID1, &ji) == JOYERR_UNPLUGGED)) {
-		xmenu_setjoystick(xmiloscfg.JOYSTICK | 2);
+		menu_setjoystick(xmiloscfg.JOYSTICK | 2);
 	}
 }
 

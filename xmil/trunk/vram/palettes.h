@@ -1,4 +1,9 @@
 
+enum {
+	XMILPAL_TOTAL	= 64 + 64 + 8
+};
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

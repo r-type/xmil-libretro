@@ -9,7 +9,7 @@
 extern	BYTE	blinktest;
 
 
-UINT32 makechr8(UINT8 *dst, UINT pos, UINT count, REG8 udtmp) {
+void makechr8(UINT8 *dst, UINT pos, UINT count, REG8 udtmp) {
 
 	REG8		atr;
 	REG8		ank;
@@ -42,7 +42,6 @@ const UINT8		*pat;
 		}
 		(*fn)(dst, dst + count, pat);
 		(*makeatr8[atr & 15])(dst, dst + count);
-		return(0x40404040);
 	}
 	else {										// PCG
 		if (!(knj & 0x90)) {					// PCGÇÃèoóÕ
@@ -54,11 +53,10 @@ const UINT8		*pat;
 			fn = makeknj8fn[udtmp & 15];
 		}
 		makeatr_pcg8(dst, count, pat, atr, fn);
-		return(0x80808080);
 	}
 }
 
-UINT32 makechr16(UINT8 *dst, UINT pos, UINT count, REG8 udtmp) {
+void makechr16(UINT8 *dst, UINT pos, UINT count, REG8 udtmp) {
 
 	REG8		atr;
 	REG8		ank;
@@ -91,7 +89,6 @@ const UINT8		*pat;
 		(*makeatr8[atr & 15])(dst, dst + count);
 		(*makeatr8[atr & 15])(dst + MAKETEXT_STEP,
 								dst + MAKETEXT_STEP + count);
-		return(0x40404040);
 	}
 	else {										// PCG
 		if (!(knj & 0x90)) {					// PCGÇÃèoóÕ
@@ -103,7 +100,6 @@ const UINT8		*pat;
 			fn = maketxt16fn[udtmp & 15];
 		}
 		makeatr_pcg16(dst, count, pat, atr, fn);
-		return(0x80808080);
 	}
 }
 

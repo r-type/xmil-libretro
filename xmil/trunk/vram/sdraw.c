@@ -7,7 +7,7 @@
 
 #if defined(SUPPORT_8BPP)
 #define	SDSYM(sym)				sdraw8##sym
-#define	SDSETPIXEL(ptr, pal)	*(ptr) = x1n_pal32[(pal)].p.e
+#define	SDSETPIXEL(ptr, pal)	*(ptr) = (UINT8)((pal) + START_PAL)
 #include	"sdraw.mcr"
 #undef	SDSYM
 #undef	SDSETPIXEL
