@@ -12,6 +12,8 @@ typedef struct {
 	UINT16	samplingrate;
 	UINT16	delayms;
 	UINT8	SOUND_SW;
+	UINT8	vol_fm;
+	UINT8	vol_ssg;
 	UINT8	MOTOR;
 	UINT8	MOTORVOL;
 

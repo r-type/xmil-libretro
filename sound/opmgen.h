@@ -12,7 +12,7 @@ enum {
 #define	EVC_BITS		10
 #define	ENV_BITS		16
 #define	KF_BITS			6
-#define	FREQ_BITS		20			// 16			// 20
+#define	FREQ_BITS		20
 #define	ENVTBL_BIT		14
 #define	SINTBL_BIT		14
 
@@ -115,6 +115,7 @@ extern "C" {
 #endif
 
 void opmgen_initialize(UINT rate);
+void opmgen_setvol(UINT vol);
 void opmgen_reset(void);
 void opmgen_setreg(REG8 reg, REG8 value);
 

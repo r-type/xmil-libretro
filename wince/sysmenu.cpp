@@ -18,7 +18,7 @@
 #include	"sysmenu.res"
 #include	"sysmenu.str"
 #include	"filesel.h"
-// #include	"dlgcfg.h"
+#include	"dlgcfg.h"
 // #include	"dlgscr.h"
 #include	"dlgabout.h"
 
@@ -37,10 +37,9 @@ static void sys_cmd(MENUID id) {
 			Z80_NMI();
 			break;
 
-//		case MID_CONFIG:
-//			menudlg_create(DLGCFG_WIDTH, DLGCFG_HEIGHT,
-//											(char *)mstr_cfg, dlgcfg_cmd);
-//			break;
+		case MID_CONFIG:
+			menudlg_create(DLGCFG_WIDTH, DLGCFG_HEIGHT, mstr_cfg, dlgcfg_cmd);
+			break;
 
 		case MID_FDD0OPEN:
 			filesel_fdd(0);

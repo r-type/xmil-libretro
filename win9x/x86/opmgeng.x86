@@ -281,20 +281,20 @@ og_calcch_nt:	add		esi, ch_t.size
 				jmp		near og_fmout_lp
 og_nextsamp:	neg		ebx
 				mov		[_opmgen + opmgen_t.calcremain], ebx
-				mov		ecx, eax
+				mov		edx, eax
+				mov		ecx, [_opmcfg + opmcfg_t.fmvol]
 				imul	eax, [_opmgen + opmgen_t.outdl]
+				imul	edx, [_opmgen + opmgen_t.outdr]
 				add		eax, [esp + OPN_SAMPL]
-			;	imul	dword [_opmcfg + opmcfg_t.fmvol]
-			;	add		[ebp], edx
-				sar		eax, (OPM_OUTSB + FMDIV_BITS + 1 - FMVOL_SFTBIT)
-				add		[ebp], eax
-				mov		eax, [_opmgen + opmgen_t.outdr]
-				imul	ecx
-				add		eax, [esp + OPN_SAMPR]
-			;	imul	dword [_opmcfg + opmcfg_t.fmvol]
-			;	add		[ebp+4], edx
-				sar		eax, (OPM_OUTSB + FMDIV_BITS + 1 - FMVOL_SFTBIT)
-				add		[ebp+4], eax
+				add		edx, [esp + OPN_SAMPR]
+				sar		eax, 8
+				sar		edx, 8
+				imul	eax, ecx
+				imul	edx, ecx
+				sar		eax, (OPM_OUTSB + FMDIV_BITS + 1 + 6 - FMVOL_SFTBIT - 8)
+				sar		edx, (OPM_OUTSB + FMDIV_BITS + 1 + 6 - FMVOL_SFTBIT - 8)
+				add		[ebp+0], eax
+				add		[ebp+4], edx
 				add		ebp, byte 8
 				dec		dword [esp + OPN_LENG]
 				jne		near og_fmout_st

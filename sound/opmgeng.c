@@ -131,14 +131,14 @@ void SOUNDCALL opmgen_getpcm(void *hdl, SINT32 *pcm, UINT count) {
 			}
 		}
 		samp_l += opmgen.outdl * opmgen.calcremain;
-//		samp_l >>= 8;
-//		samp_l *= opmcfg.fmvol;
-		samp_l >>= (OPM_OUTSB + FMDIV_BITS + 1 + 0 - FMVOL_SFTBIT - 0);
+		samp_l >>= 8;
+		samp_l *= opmcfg.fmvol;
+		samp_l >>= (OPM_OUTSB + FMDIV_BITS + 1 + 6 - FMVOL_SFTBIT - 8);
 		pcm[0] += samp_l;
 		samp_r += opmgen.outdr * opmgen.calcremain;
-//		samp_r >>= 8;
-//		samp_r *= opmcfg.fmvol;
-		samp_r >>= (OPM_OUTSB + FMDIV_BITS + 1 + 0 - FMVOL_SFTBIT - 0);
+		samp_r >>= 8;
+		samp_r *= opmcfg.fmvol;
+		samp_r >>= (OPM_OUTSB + FMDIV_BITS + 1 + 6 - FMVOL_SFTBIT - 8);
 		pcm[1] += samp_r;
 		opmgen.calcremain -= opmcfg.calc1024;
 		pcm += 2;

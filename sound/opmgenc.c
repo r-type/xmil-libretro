@@ -118,6 +118,11 @@ void opmgen_initialize(UINT rate) {
 	detune2table[3] = D2(3.0);
 }
 
+void opmgen_setvol(UINT vol) {
+
+	opmcfg.fmvol = vol;
+}
+
 
 // ----
 
