@@ -1,30 +1,24 @@
 
 typedef struct {
-	UINT8	KEY_MODE;
-	UINT8	SOUND_SW;
-	UINT8	SKIP_LINE;
-
 	UINT8	ROM_TYPE;
 	UINT8	CPU8MHz;
 	UINT8	DIP_SW;
 
+	UINT8	DISPSYNC;
+	UINT8	RASTER;
+	UINT8	skipline;
+	UINT16	skiplight;
+
 	UINT16	samplingrate;
 	UINT16	delayms;
+	UINT8	SOUND_SW;
 	UINT8	MOTOR;
 	UINT8	MOTORVOL;
 
+	UINT8	MOUSE_SW;
+	UINT8	KEY_MODE;
 	UINT8	BTN_RAPID;
 	UINT8	BTN_MODE;
-
-	UINT8	LINEDEPTH;
-	UINT8	BLKLIGHT;
-
-	UINT8	TEXTMODE;
-	UINT8	TEXT400L;
-	UINT8	LINETEXT;
-
-	UINT8	DISPSYNC;
-	UINT8	MOUSE_SW;
 } XMILCFG;
 
 typedef struct {
@@ -54,9 +48,9 @@ extern const OEMCHAR xmilversion[];
 extern	XMILCFG		xmilcfg;
 extern	PCCORE		pccore;
 extern	CORESTAT	corestat;
-extern	BYTE	*RAM0r;
-extern	BYTE	*RAM0w;
-extern	DWORD	h_cntbase;
+extern	BYTE		*RAM0r;
+extern	BYTE		*RAM0w;
+extern	DWORD		h_cntbase;
 
 extern	BYTE	mMAIN[0x10000];
 extern	BYTE	mBIOS[0x8000];

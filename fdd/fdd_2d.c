@@ -3,6 +3,7 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"fddfile.h"
+#include	"fdd_2d.h"
 #include	"fdd_mtr.h"
 
 

@@ -187,35 +187,31 @@ static const INITBL iniitem[] = {
 	{"Win_Snap", INITYPE_BOOL,		&xmiloscfg.WINSNAP,		0},
 	{"backgrnd", INIAND_UINT8,		&xmiloscfg.background,	0x03},
 	{"DspClock", INIAND_UINT8,		&xmiloscfg.DISPCLK,		0x03},
-
+	{"s_NOWAIT", INITYPE_BOOL,		&xmiloscfg.NOWAIT,		0},
+	{"SkpFrame", INITYPE_UINT8,		&xmiloscfg.DRAW_SKIP,	0},
 	{"FDfolder", INITYPE_STR,		fddfolder,				MAX_PATH},
 	{"bmap_Dir", INITYPE_STR,		bmpfilefolder,			MAX_PATH},
 
 	{"IPL_TYPE", INIMAX_UINT8,		&xmilcfg.ROM_TYPE,		3},
 	{"cpu_8MHz", INITYPE_BOOL,		&xmilcfg.CPU8MHz,		0},
-
 	{"Resolute", INITYPE_HEX8,		&xmilcfg.DIP_SW,		0},
-	{"SkipLine", INITYPE_BOOL,		&xmilcfg.SKIP_LINE,		0},
-	{"s_NOWAIT", INITYPE_BOOL,		&xmiloscfg.NOWAIT,		0},
-	{"SkpFrame", INITYPE_UINT8,		&xmiloscfg.DRAW_SKIP,	0},
-	{"LinLIGHT", INITYPE_HEX8,		&xmilcfg.LINEDEPTH,		0},
-	{"BlkLIGHT", INITYPE_HEX8,		&xmilcfg.BLKLIGHT,		0},
-	{"TxtLIGHT", INITYPE_HEX8,		&xmilcfg.LINETEXT,		0},
-	{"Text_Ext", INITYPE_BOOL,		&xmilcfg.TEXTMODE,		0},
-	{"Text_400", INITYPE_HEX8,		&xmilcfg.TEXT400L,		0},
 
-	{"OPMsound", INITYPE_BOOL,		&xmilcfg.SOUND_SW,		0},
+	{"DispSync", INITYPE_BOOL,		&xmilcfg.DISPSYNC,		0},
+	{"Real_Pal", INITYPE_BOOL,		&xmilcfg.RASTER,		0},
+	{"skipline", INITYPE_BOOL,		&xmilcfg.skipline,		0},
+	{"skplight", INITYPE_UINT16,	&xmilcfg.skiplight,		0},
+
 	{"SampleHz", INITYPE_UINT16,	&xmilcfg.samplingrate,	0},
 	{"Latencys", INITYPE_UINT16,	&xmilcfg.delayms,		0},
+	{"OPMsound", INITYPE_BOOL,		&xmilcfg.SOUND_SW,		0},
 	{"Seek_Snd", INITYPE_BOOL,		&xmilcfg.MOTOR,			0},
 	{"Seek_Vol", INIMAX_UINT8,		&xmilcfg.MOTORVOL,		100},
 
+	{"MouseInt", INITYPE_BOOL,		&xmilcfg.MOUSE_SW,		0},
 	{"btnRAPID", INITYPE_BOOL,		&xmilcfg.BTN_RAPID,		0},
 	{"btn_MODE", INITYPE_BOOL,		&xmilcfg.BTN_MODE,		0},
-	{"MouseInt", INITYPE_BOOL,		&xmilcfg.MOUSE_SW,		0},
 
 	{"Joystick", INITYPE_BOOL,		&xmiloscfg.JOYSTICK,	0},
-
 	{"clocknow", INITYPE_UINT8,		&xmiloscfg.clockx,		0},
 	{"clockfnt", INITYPE_UINT8,		&xmiloscfg.clockfnt,	0},
 	{"clock_up", INIROAND_HEX32,	&xmiloscfg.clockcolor1,	0xffffff},

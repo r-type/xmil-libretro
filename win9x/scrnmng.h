@@ -1,6 +1,7 @@
 
 enum {
-	START_PAL	= 0x0a
+	START_PALORG	= 0x0a,
+	START_PAL		= 0x10
 };
 
 enum {
@@ -76,12 +77,4 @@ void scrnmng_querypalette(void);					// ddraws_palette
 void scrnmng_fullscrnmenu(int y);
 void scrnmng_topwinui(void);						// ddraws_topwinui
 void scrnmng_clearwinui(void);						// ddraws_clearwinui
-
-
-
-
-#define	USE_PALS		0xc0
-#define	START_EXT		(START_PAL + USE_PALS)
-#define	EXT_PALS		0x28
-#define	TOTAL_PALS		(USE_PALS + EXT_PALS)
 

@@ -215,37 +215,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					break;
 
 				case IDM_TURBOZ:
-					xmenu_setiplrom(3);
+					menu_setiplrom(3);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_TURBO:
-					xmenu_setiplrom(2);
+					menu_setiplrom(2);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_X1ROM:
-					xmenu_setiplrom(1);
+					menu_setiplrom(1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_BOOT2D:
-					xmenu_setbootmedia(0);
+					menu_setbootmedia(0);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_BOOT2HD:
-					xmenu_setbootmedia(DIPSW_BOOTMEDIA);
+					menu_setbootmedia(DIPSW_BOOTMEDIA);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_HIGHRES:
-					xmenu_setresolute(0);
+					menu_setresolute(0);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_LOWRES:
-					xmenu_setresolute(DIPSW_RESOLUTE);
+					menu_setresolute(DIPSW_RESOLUTE);
 					updateflag = SYS_UPDATECFG;
 					break;
 
@@ -272,80 +272,80 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					break;
 
 				case IDM_DISPSYNC:
-					xmenu_setdispmode(xmilcfg.DISPSYNC ^ 1);
+					menu_setdispmode(xmilcfg.DISPSYNC ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
-//				case IDM_RASTER:
-//					menu_setraster(xmilcfg.RASTER ^ 1);
-//					updateflag = SYS_UPDATECFG;
-//					break;
+				case IDM_RASTER:
+					menu_setraster(xmilcfg.RASTER ^ 1);
+					updateflag = SYS_UPDATECFG;
+					break;
 
 				case IDM_NOWAIT:
-					xmenu_setwaitflg(xmiloscfg.NOWAIT ^ 1);
+					menu_setwaitflg(xmiloscfg.NOWAIT ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_AUTOFPS:
-					xmenu_setframe(0);
+					menu_setframe(0);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_60FPS:
-					xmenu_setframe(1);
+					menu_setframe(1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_30FPS:
-					xmenu_setframe(2);
+					menu_setframe(2);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_20FPS:
-					xmenu_setframe(3);
+					menu_setframe(3);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_15FPS:
-					xmenu_setframe(4);
+					menu_setframe(4);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_KEY:
-					xmenu_setkey(0);
+					menu_setkey(0);
 					break;
 
 				case IDM_JOY1:
-					xmenu_setkey(1);
+					menu_setkey(1);
 					break;
 
 				case IDM_JOY2:
-					xmenu_setkey(2);
+					menu_setkey(2);
 					break;
 
 				case IDM_FMBOARD:
-					xmenu_setsound(xmilcfg.SOUND_SW ^ 1);
+					menu_setsound(xmilcfg.SOUND_SW ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_JOYSTICK:
-					xmenu_setjoystick(xmiloscfg.JOYSTICK ^ 1);
+					menu_setjoystick(xmiloscfg.JOYSTICK ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_MOUSE:
 				//	mousemng_toggle(MOUSEPROC_SYSTEM);
-					xmenu_setmouse(xmilcfg.MOUSE_SW ^ 1);
+					menu_setmouse(xmilcfg.MOUSE_SW ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_8MHZ:
-					xmenu_setcpuspeed(xmilcfg.CPU8MHz ^ 1);
+					menu_setcpuspeed(xmilcfg.CPU8MHz ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_SEEKSND:
-					xmenu_setmotorflg(xmilcfg.MOTOR ^ 1);
+					menu_setmotorflg(xmilcfg.MOTOR ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
@@ -362,34 +362,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					break;
 
 				case IDM_DISPCLOCK:
-					xmenu_setdispclk(xmiloscfg.DISPCLK ^ 1);
+					menu_setdispclk(xmiloscfg.DISPCLK ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_DISPFRAME:
-					xmenu_setdispclk(xmiloscfg.DISPCLK ^ 2);
-					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_SKIPLINE:
-					xmenu_setskipline(xmilcfg.SKIP_LINE ^ 1);
+					menu_setdispclk(xmiloscfg.DISPCLK ^ 2);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_JOYX:
-					xmenu_setbtnmode(xmilcfg.BTN_MODE ^ 1);
+					menu_setbtnmode(xmilcfg.BTN_MODE ^ 1);
 					updateflag = SYS_UPDATECFG;
 					break;
 
 				case IDM_RAPID:
-					xmenu_setbtnrapid(xmilcfg.BTN_RAPID ^ 1);
+					menu_setbtnrapid(xmilcfg.BTN_RAPID ^ 1);
 					updateflag = SYS_UPDATECFG;
-					break;
-
-				case IDM_HALFBMP:
-					winuienter();
-					bmpsavehalf();
-					winuileave();
 					break;
 
 				case IDM_Z80SAVE:
@@ -504,7 +493,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case WM_KEYDOWN:
 			if (wParam == VK_F12) {
 				mousemng_toggle(MOUSEPROC_SYSTEM);
-			//	xmenu_setmouse(np2oscfg.MOUSE_SW ^ 1);
+			//	menu_setmouse(np2oscfg.MOUSE_SW ^ 1);
 			//	sysmng_update(SYS_UPDATECFG);
 			}
 			else {
@@ -584,7 +573,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_MBUTTONDOWN:
 			mousemng_toggle(MOUSEPROC_SYSTEM);
-		//	xmenu_setmouse(np2oscfg.MOUSE_SW ^ 1);
+		//	menu_setmouse(np2oscfg.MOUSE_SW ^ 1);
 		//	sysmng_update(SYS_UPDATECFG);
 			break;
 
@@ -732,30 +721,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	hWndMain = hWnd;
 	scrnmng_initialize();
 
-	xmenu_setiplrom(xmilcfg.ROM_TYPE);
-	xmenu_setbootmedia(xmilcfg.DIP_SW);
-	xmenu_setresolute(xmilcfg.DIP_SW);
-	xmenu_setdispmode(xmilcfg.DISPSYNC);
-//	xmenu_setraster(xmilcfg.RASTER);
-	xmenu_setwaitflg(xmiloscfg.NOWAIT);
-	xmenu_setframe(xmiloscfg.DRAW_SKIP);
-	xmenu_setkey(0);
-	xmenu_setsound(xmilcfg.SOUND_SW);
-	xmenu_setjoystick(xmiloscfg.JOYSTICK);
-	xmenu_setmouse(xmilcfg.MOUSE_SW);
-	xmenu_setcpuspeed(xmilcfg.CPU8MHz);
-	xmenu_setmotorflg(xmilcfg.MOTOR);
-	xmenu_setdispclk(xmiloscfg.DISPCLK);
-	xmenu_setskipline(xmilcfg.SKIP_LINE);
-	xmenu_setbtnmode(xmilcfg.BTN_MODE);
-	xmenu_setbtnrapid(xmilcfg.BTN_RAPID);
-	xmenu_setz80save(xmiloscfg.Z80SAVE);
+	menu_setiplrom(xmilcfg.ROM_TYPE);
+	menu_setbootmedia(xmilcfg.DIP_SW);
+	menu_setresolute(xmilcfg.DIP_SW);
+	menu_setdispmode(xmilcfg.DISPSYNC);
+	menu_setraster(xmilcfg.RASTER);
+	menu_setwaitflg(xmiloscfg.NOWAIT);
+	menu_setframe(xmiloscfg.DRAW_SKIP);
+	menu_setkey(0);
+	menu_setsound(xmilcfg.SOUND_SW);
+	menu_setjoystick(xmiloscfg.JOYSTICK);
+	menu_setmouse(xmilcfg.MOUSE_SW);
+	menu_setcpuspeed(xmilcfg.CPU8MHz);
+	menu_setmotorflg(xmilcfg.MOTOR);
+	menu_setdispclk(xmiloscfg.DISPCLK);
+	menu_setbtnmode(xmilcfg.BTN_MODE);
+	menu_setbtnrapid(xmilcfg.BTN_RAPID);
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
 	sysmenu_initialize();
-//	xmenu_initialize();
+	menu_initialize();
 	DrawMenuBar(hWnd);
 
 	sysmenu_setwinsnap(xmiloscfg.WINSNAP);

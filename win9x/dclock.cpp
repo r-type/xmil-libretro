@@ -299,7 +299,7 @@ void dclock_init8(void) {
 			}
 		}
 		for (j=0; j<4; j++) {
-			dclockpal.pal8[j][i] = work * ((START_PAL + TOTAL_PALS) + j);
+			dclockpal.pal8[j][i] = work * (START_PALORG + j);
 		}
 	}
 }

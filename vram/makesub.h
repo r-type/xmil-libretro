@@ -39,8 +39,8 @@ void makeatr_pcg16(UINT8 *dst, UINT cnt,
 
 // ---- make character
 
-UINT32 makechr8(UINT8 *dst, UINT pos, UINT count, REG8 udtmp);
-UINT32 makechr16(UINT8 *dst, UINT pos, UINT count, REG8 udtmp);
+void makechr8(UINT8 *dst, UINT pos, UINT count, REG8 udtmp);
+void makechr16(UINT8 *dst, UINT pos, UINT count, REG8 udtmp);
 
 
 // ---- make mixer

@@ -1,4 +1,5 @@
 #include	"compiler.h"
+#include	<commctrl.h>
 #include	"strres.h"
 #include	"xmil.h"
 #include	"resource.h"
@@ -20,8 +21,7 @@ static const UINT32 ratehz[] = {48000, 44100, 33075, 32000,
 
 static void cfgcreate(HWND hWnd) {
 
-	OEMCHAR		work[32];
-	WORD		res;
+	OEMCHAR	work[32];
 
 	dlgs_setlistuint32(hWnd, IDC_SAMPLERATE, ratehz, NELEMENTS(ratehz));
 
@@ -31,35 +31,24 @@ static void cfgcreate(HWND hWnd) {
 	SetDlgItemText(hWnd, IDC_SNDBUFFER, work);
 	SPRINTF(work, str_u, xmilcfg.MOTORVOL);
 	SetDlgItemText(hWnd, IDC_SEEKVOL, work);
-	if (xmilcfg.TEXTMODE) {
-		res = IDC_TXTENHANCED;
-	}
-	else {
-		res = IDC_TXTREAL;
-	}
-	SetDlgItemCheck(hWnd, res, TRUE);
-	switch(xmilcfg.TEXT400L) {
-		case 0:
-			res = IDC_TXTEXTEND;
-			break;
 
-		case 1:
-			res = IDC_TXT400;
-			break;
+	SetDlgItemCheck(hWnd, IDC_SKIPLINE, xmilcfg.skipline);
+	SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_SETRANGE, TRUE,
+														MAKELONG(0, 256));
+	SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_SETPOS, TRUE,
+														xmilcfg.skiplight);
+	SPRINTF(work, str_d, xmilcfg.skiplight);
+	SetDlgItemText(hWnd, IDC_LIGHTSTR, work);
+}
 
-		default:
-			res = IDC_TXTCSTM;
-			break;
-	}
-	SetDlgItemCheck(hWnd, res, TRUE);
-	EnableWindow(GetDlgItem(hWnd, IDC_TXTVALUE), (res == IDC_TXTCSTM));
+static void lightstr(HWND hWnd) {
 
-	SPRINTF(work, str_u, xmilcfg.LINETEXT);
-	SetDlgItemText(hWnd, IDC_TXTVALUE, work);
-	SPRINTF(work, str_u, xmilcfg.BLKLIGHT);
-	SetDlgItemText(hWnd, IDC_BLKLIGHT, work);
-	SPRINTF(work, str_u, xmilcfg.LINEDEPTH);
-	SetDlgItemText(hWnd, IDC_LINEDEPTH, work);
+	UINT	val;
+	OEMCHAR	work[32];
+
+	val = (UINT)SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_GETPOS, 0, 0);
+	SPRINTF(work, str_d, val);
+	SetDlgItemText(hWnd, IDC_LIGHTSTR, work);
 }
 
 static void cfgupdate(HWND hWnd) {
@@ -97,47 +86,22 @@ static void cfgupdate(HWND hWnd) {
 		updateflag |= SYS_UPDATEOSCFG;
 	}
 
-	bval = (UINT8)GetDlgItemCheck(hWnd, IDC_TXTENHANCED);
-	if (xmilcfg.TEXTMODE != bval) {
-		xmilcfg.TEXTMODE = bval;
-		updateflag |= SYS_UPDATECFG;
-	}
-
 	renewalflg = FALSE;
-	if (GetDlgItemCheck(hWnd, IDC_TXTEXTEND)) {
-		bval = 0;
-	}
-	else if (GetDlgItemCheck(hWnd, IDC_TXT400)) {
-		bval = 1;
-	}
-	else {
-		bval = 2;
-	}
-	if (xmilcfg.TEXT400L != bval) {
-		xmilcfg.TEXT400L = bval;
+	bval = GetDlgItemCheck(hWnd, IDC_SKIPLINE);
+	if (xmilcfg.skipline != bval) {
+		xmilcfg.skipline = bval;
 		renewalflg = TRUE;
 	}
-	GetDlgItemText(hWnd, IDC_TXTVALUE, work, NELEMENTS(work));
-	bval = (UINT8)LIMITS(milstr_solveINT(work), 0, 255);
-	if (xmilcfg.LINETEXT != bval) {
-		xmilcfg.LINETEXT = bval;
-		renewalflg = TRUE;
+	wval = (UINT16)SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_GETPOS, 0, 0);
+	if (wval > 256) {
+		wval = 256;
 	}
-	GetDlgItemText(hWnd, IDC_BLKLIGHT, work, NELEMENTS(work));
-	bval = (UINT8)LIMITS(milstr_solveINT(work), 0, 255);
-	if (xmilcfg.BLKLIGHT != bval) {
-		xmilcfg.BLKLIGHT = bval;
-		renewalflg = TRUE;
-	}
-	GetDlgItemText(hWnd, IDC_LINEDEPTH, work, NELEMENTS(work));
-	bval = (UINT8)LIMITS(milstr_solveINT(work), 0, 255);
-	if (xmilcfg.LINEDEPTH != bval) {
-		xmilcfg.LINEDEPTH = bval;
-		renewalflg = TRUE;
+	if (xmilcfg.skiplight != wval) {
+		xmilcfg.skiplight = wval;
+		renewalflg = 1;
 	}
 	if (renewalflg) {
 		pal_reset();
-		makescrn.palandply = 1;
 		updateflag |= SYS_UPDATECFG;
 	}
 	sysmng_update(updateflag);
@@ -148,38 +112,33 @@ LRESULT CALLBACK CfgDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 	switch (msg) {
 		case WM_INITDIALOG:
 			cfgcreate(hWnd);
-			return(FALSE);
+			break;
 
 		case WM_COMMAND:
 			switch (LOWORD(wp)) {
 				case IDOK:
 					cfgupdate(hWnd);
 					EndDialog(hWnd, IDOK);
-					break;
+					return(TRUE);
 
 				case IDCANCEL:
 					EndDialog(hWnd, IDCANCEL);
-					break;
+					return(TRUE);
+			}
+			break;
 
-				case IDC_TXTEXTEND:
-				case IDC_TXT400:
-				case IDC_TXTCSTM:
-					EnableWindow(GetDlgItem(hWnd, IDC_TXTVALUE),
-										GetDlgItemCheck(hWnd, IDC_TXTCSTM));
-					return(FALSE);
-
-				default:
-					return(FALSE);
+		case WM_HSCROLL:
+			switch(GetDlgCtrlID((HWND)lp)) {
+				case IDC_SKIPLIGHT:
+					lightstr(hWnd);
+					return(TRUE);
 			}
 			break;
 
 		case WM_CLOSE:
 			PostMessage(hWnd, WM_COMMAND, IDCANCEL, 0);
-			break;
-
-		default:
-			return(FALSE);
+			return(TRUE);
 	}
-	return(TRUE);
+	return(FALSE);
 }
 

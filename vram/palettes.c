@@ -70,14 +70,11 @@ void pal_makegrad(RGB32 *pal, int pals, UINT32 bg, UINT32 fg) {
 
 // ----
 
-static	WORD	halfgrp = 0;
-static	WORD	halftxt = 0;
-
-
 typedef struct {
 	UINT8	blankcol;
-	UINT8	padding[3];
-	RGB32	text[24];
+	UINT8	padding;
+	UINT16	skipline;
+	RGB32	text[16];
 	RGB32	grph[2][16];
 	RGB32	grph64[2][64];
 } PALS;
@@ -117,20 +114,10 @@ void pal_settext(REG8 num) {
 		x1z_pal16[4096 + num] = scrnmng_makepal16(rgb);
 	}
 #endif
-
 	pals.text[num].d = rgb.d;
-	pals.text[num].p.e = num + START_EXT;
-
-	pals.text[num+8].p.b = (halftxt * rgb.p.b) / 255;
-	pals.text[num+8].p.g = (halftxt * rgb.p.g) / 255;
-	pals.text[num+8].p.r = (halftxt * rgb.p.r) / 255;
-	pals.text[num+8].p.e = num + START_EXT + 0x08;
-
-	pals.text[num+16].p.b = (halfgrp * rgb.p.b) / 255;
-	pals.text[num+16].p.g = (halfgrp * rgb.p.g) / 255;
-	pals.text[num+16].p.r = (halfgrp * rgb.p.r) / 255;
-	pals.text[num+16].p.e = num + START_EXT + 0x10;
-
+	pals.text[num+8].p.b = (UINT8)((pals.skipline * rgb.p.b) >> 8);
+	pals.text[num+8].p.g = (UINT8)((pals.skipline * rgb.p.g) >> 8);
+	pals.text[num+8].p.r = (UINT8)((pals.skipline * rgb.p.r) >> 8);
 	makescrn.palandply = 1;
 }
 
@@ -142,6 +129,7 @@ void pal_setgrph(REG8 bank, REG8 num) {
 
 	grphpal = crtc_GRPHPAL[bank][num];
 	black = 0;
+	rgb.p.e = 0;
 	rgb.p.b = ((grphpal >> 0) & 0x0f) * 0x11;
 	if (rgb.p.b < pals.blankcol) {
 		black |= 1;
@@ -160,15 +148,12 @@ void pal_setgrph(REG8 bank, REG8 num) {
 		rgb.p.r = pals.blankcol;
 	}
 	pals.grph64[bank][num].d = rgb.d;
-	pals.grph64[bank][num].p.e = num + START_PAL;
 	if (!(((num >> 3) ^ num) & 7)) {
 		num &= 7;
 		pals.grph[bank][num+0].d = rgb.d;
-		pals.grph[bank][num+0].p.e = num + START_EXT + 0x18;
-		pals.grph[bank][num+8].p.b = (halfgrp * rgb.p.b) / 0xff;
-		pals.grph[bank][num+8].p.g = (halfgrp * rgb.p.g) / 0xff;
-		pals.grph[bank][num+8].p.r = (halfgrp * rgb.p.r) / 0xff;
-		pals.grph[bank][num+8].p.e = num + START_EXT + 0x20;
+		pals.grph[bank][num+8].p.b = (UINT8)((pals.skipline * rgb.p.b) >> 8);
+		pals.grph[bank][num+8].p.g = (UINT8)((pals.skipline * rgb.p.g) >> 8);
+		pals.grph[bank][num+8].p.r = (UINT8)((pals.skipline * rgb.p.r) >> 8);
 	}
 	makescrn.palandply = 1;
 }
@@ -224,12 +209,14 @@ static void pal4096to64(RGB32 *pal, const UINT16 *map) {
 
 void pal_update(void) {
 
-	int		i, j;
-	BYTE	bit;
-	BYTE	c;
-	BYTE	skip8 = 0;
-	BYTE	skip16 = 0;
+	UINT	i;
+	UINT	j;
+	REG8	bit;
+	UINT	c;
+	UINT	skip8;
+	UINT	bcnt;
 
+	skip8 = 0;
 	if (pal_disp & PAL_4096) {
 		switch(pal_disp & 0xf) {
 			case PAL_4096H:
@@ -262,9 +249,8 @@ void pal_update(void) {
 		}
 	}
 	else if ((dispmode & SCRN64_MASK) == SCRN64_INVALID) {
-		if ((xmilcfg.SKIP_LINE) && (!(crtc.s.SCRN_BITS & SCRN_24KHZ))) {
+		if (!(crtc.s.SCRN_BITS & SCRN_24KHZ)) {
 			skip8 = 8;
-			skip16 = 16;
 		}
 		for (i=0, bit=1; i<8; i++, bit<<=1) {
 			if (!(crtc.s.EXTPALMODE & 0x80)) {
@@ -283,37 +269,29 @@ void pal_update(void) {
 				c = i;
 			}
 			x1n_pal32[i].d = pals.grph[pal_disp][c].d;
-			x1n_pal32[i+64].d = x1n_pal32[i+128].d
-										= pals.grph[pal_disp][c+skip8].d;
+			x1n_pal32[i+64].d = pals.grph[pal_disp][c + skip8].d;
 			if (crtc.s.PLY & bit) {
 				for (j=i+8; j<64; j+=8) {
 					x1n_pal32[j].d = x1n_pal32[i].d;
-					x1n_pal32[j+64].d = x1n_pal32[j+128].d
-													= x1n_pal32[i+64].d;
+					x1n_pal32[j+64].d = x1n_pal32[i + 64].d;
 				}
 			}
 			else {
-				BYTE cnt = (crtc.s.BLACKPAL & 15) - 8;
+				bcnt = (crtc.s.BLACKPAL & 15) - 8;
 				for (j=i+8; j<64; j+=8) {
-					if (--cnt) {
-						c = crtc.s.TEXT_PAL[j>>3];
+					bcnt--;
+					if (bcnt) {
+						c = crtc.s.TEXT_PAL[j >> 3];
 					}
 					else {
 						c = 0;
 					}
 					x1n_pal32[j].d = pals.text[c].d;
-					x1n_pal32[j+64].d = pals.text[c+skip8].d;
-					x1n_pal32[j+128].d = pals.text[c+skip16].d;
+					x1n_pal32[j+64].d = pals.text[c + skip8].d;
 				}
 			}
 		}
-		for (i=0; i<24; i++) {
-			x1n_pal32[i+192].d = pals.text[i].d;
-		}
-		for (i=0; i<16; i++) {
-			x1n_pal32[i+192+24].d = pals.grph[pal_disp][i].d;
-		}
-		xm_palettes = 64+64+64+24+16;
+		xm_palettes = 64 + 64;
 	}
 	else {
 		for (i=0; i<64; i++) {
@@ -322,7 +300,7 @@ void pal_update(void) {
 		for (i=0; i<8; i++) {
 			x1n_pal32[i+64].d = pals.text[i].d;
 		}
-		xm_palettes = 64+8;
+		xm_palettes = 64 + 8;
 	}
 #if defined(SUPPORT_16BPP)
 	if (scrnmng_getbpp() == 16) {
@@ -344,25 +322,8 @@ void pal_reset(void) {
 	REG8	j;
 	UINT	k;
 
-	pals.blankcol = xmilcfg.BLKLIGHT;
-	if ((!xmilcfg.SKIP_LINE) || (crtc.s.SCRN_BITS & SCRN_24KHZ)) {
-		pals.blankcol >>= 1;
-	}
-	halfgrp = xmilcfg.LINEDEPTH;
-	switch(xmilcfg.TEXT400L) {
-		case 0:
-			halftxt = xmilcfg.LINEDEPTH;
-			break;
-
-		case 1:
-			halftxt = 0xff;
-			break;
-
-		default:
-			halftxt = xmilcfg.LINETEXT;
-			break;
-	}
-
+	pals.blankcol = 0;
+	pals.skipline = (xmilcfg.skipline)?xmilcfg.skiplight:0;
 	for (i=0; i<8; i++) {
 		pal_settext(i);
 	}

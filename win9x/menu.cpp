@@ -104,7 +104,38 @@ void sysmenu_setbgsound(UINT8 value) {
 
 // ----
 
-void xmenu_disablewindow(void) {
+void menu_initialize(void) {
+
+	HMENU	hMenu;
+	HMENU	hSubMenu;
+//	UINT	i;
+
+	hMenu = GetMenu(hWndMain);
+	if (xmiloscfg.Z80SAVE) {
+		hSubMenu = GetSubMenu(hMenu, 7);
+		insertresmenu(hSubMenu, 7, MF_BYPOSITION | MF_STRING,
+												IDM_Z80SAVE, IDS_Z80SAVE);
+	}
+#if defined(SUPPORT_WAVEREC)
+	hSubMenu = GetSubMenu(hMenu, 7);
+	insertresmenu(hSubMenu, 2, MF_BYPOSITION | MF_STRING,
+												IDM_WAVEREC, IDS_WAVEREC);
+#endif
+
+//	for (i=4; i--;) {
+//		if (np2cfg.fddequip & (1 << i)) {
+//			insdiskmenu(hMenu, 1, fddmenu + i);
+//		}
+//	}
+
+#if defined(SUPPORT_STATSAVE)
+	if (np2oscfg.statsave) {
+		addstatsavemenu(hMenu, 1);
+	}
+#endif
+}
+
+void menu_disablewindow(void) {
 
 	HMENU	hmenu;
 
@@ -113,7 +144,7 @@ void xmenu_disablewindow(void) {
 	EnableMenuItem(hmenu, IDM_FULLSCREEN, MF_GRAYED);
 }
 
-void xmenu_setiplrom(UINT8 num) {
+void menu_setiplrom(UINT8 num) {
 
 	HMENU	hmenu;
 
@@ -124,7 +155,7 @@ void xmenu_setiplrom(UINT8 num) {
 	CheckMenuItem(hmenu, IDM_X1ROM, MFCHECK(num == 1));
 }
 
-void xmenu_setbootmedia(UINT8 value) {
+void menu_setbootmedia(UINT8 value) {
 
 	HMENU	hmenu;
 
@@ -136,7 +167,7 @@ void xmenu_setbootmedia(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_BOOT2HD, MFCHECK(value));
 }
 
-void xmenu_setresolute(UINT8 value) {
+void menu_setresolute(UINT8 value) {
 
 	HMENU	hmenu;
 
@@ -148,7 +179,7 @@ void xmenu_setresolute(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_LOWRES, MFCHECK(value));
 }
 
-void xmenu_setwidth(UINT8 value) {
+void menu_setwidth(UINT8 value) {
 
 	HMENU	hmenu;
 
@@ -157,21 +188,28 @@ void xmenu_setwidth(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_WIDTH40, MFCHECK(value));
 }
 
-void xmenu_setdispmode(UINT8 value) {
+void menu_setdispmode(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.DISPSYNC = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_DISPSYNC, MFCHECK(value));
 }
 
-void xmenu_setwaitflg(UINT8 value) {
+void menu_setraster(UINT8 value) {
+
+	value &= 1;
+	xmilcfg.RASTER = value;
+	CheckMenuItem(GetMenu(hWndMain), IDM_RASTER, MFCHECK(value));
+}
+
+void menu_setwaitflg(UINT8 value) {
 
 	value &= 1;
 	xmiloscfg.NOWAIT = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_NOWAIT, MFCHECK(value));
 }
 
-void xmenu_setframe(UINT8 value) {
+void menu_setframe(UINT8 value) {
 
 	HMENU	hmenu;
 
@@ -184,7 +222,7 @@ void xmenu_setframe(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_15FPS, MFCHECK(value == 4));
 }
 
-void xmenu_setkey(UINT8 value) {
+void menu_setkey(UINT8 value) {
 
 	HMENU	hmenu;
 
@@ -198,13 +236,13 @@ void xmenu_setkey(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_JOY2, MFCHECK(value == 2));
 }
 
-void xmenu_setsound(UINT8 value) {
+void menu_setsound(UINT8 value) {
 
 	xmilcfg.SOUND_SW = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_FMBOARD, MFCHECK(value));
 }
 
-void xmenu_setjoystick(UINT8 value) {
+void menu_setjoystick(UINT8 value) {
 
 	HMENU	hmenu;
 
@@ -219,33 +257,33 @@ void xmenu_setjoystick(UINT8 value) {
 	}
 }
 
-void xmenu_setmouse(UINT8 value) {
+void menu_setmouse(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.MOUSE_SW = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_MOUSE, MFCHECK(value));
 }
 
-void xmenu_setcpuspeed(UINT8 value) {
+void menu_setcpuspeed(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.CPU8MHz = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_8MHZ, MFCHECK(value));
 }
 
-void xmenu_setmotorflg(UINT8 value) {
+void menu_setmotorflg(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.MOTOR = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_SEEKSND, MFCHECK(value));
 }
 
-void xmenu_opmlog(UINT8 value) {
+void menu_opmlog(UINT8 value) {
 
 	CheckMenuItem(GetMenu(hWndMain), IDM_OPMLOG, MFCHECK(value));
 }
 
-void xmenu_setdispclk(UINT8 value) {
+void menu_setdispclk(UINT8 value) {
 
 	HMENU	hmenu;
 
@@ -258,33 +296,17 @@ void xmenu_setdispclk(UINT8 value) {
 	sysmng_updatecaption(3);
 }
 
-void xmenu_setskipline(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.SKIP_LINE = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_SKIPLINE, MFCHECK(value));
-	pal_reset();
-	makescrn.palandply = 1;
-}
-
-void xmenu_setbtnmode(UINT8 value) {
+void menu_setbtnmode(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.BTN_MODE = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_JOYX, MFCHECK(value));
 }
 
-void xmenu_setbtnrapid(UINT8 value) {
+void menu_setbtnrapid(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.BTN_RAPID = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_RAPID, MFCHECK(value));
-}
-
-void xmenu_setz80save(UINT8 value) {
-
-	if (!value) {
-		EnableMenuItem(GetMenu(hWndMain), IDM_Z80SAVE, MF_GRAYED);
-	}
 }
 
