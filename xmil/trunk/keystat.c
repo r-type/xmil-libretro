@@ -59,7 +59,7 @@ UINT keystat_getflag(void) {
 		kf = keyflag[keystat.lastkey];
 		ks |= (kf & 0x80);								// function
 		if (ks & 0x04) {								// kana
-			if (ks & 0x02) {							// shift
+			if (!(ks & 0x02)) {							// shift
 				tbl = 4;
 			}
 			else {
