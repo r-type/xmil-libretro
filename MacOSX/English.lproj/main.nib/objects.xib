@@ -4,7 +4,7 @@
   <object name="rootObject" class="NSCustomObject" id="1">
     <string name="customClass">NSApplication</string>
   </object>
-  <array count="182" name="allObjects">
+  <array count="164" name="allObjects">
     <object class="IBCarbonMenu" id="29">
       <string name="title">main</string>
       <array count="14" name="items">
@@ -33,10 +33,13 @@
               <object class="IBCarbonMenuItem" id="200">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">IPL Reset</string>
+                <string name="keyEquivalent">r</string>
               </object>
               <object class="IBCarbonMenuItem" id="203">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">NMI Reset</string>
+                <string name="keyEquivalent">r</string>
+                <int name="keyEquivalentModifier">1572864</int>
               </object>
               <object class="IBCarbonMenuItem" id="204">
                 <boolean name="separator">TRUE</boolean>
@@ -45,10 +48,12 @@
               <object class="IBCarbonMenuItem" id="205">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">Configure...</string>
+                <string name="keyEquivalent">,</string>
               </object>
               <object class="IBCarbonMenuItem" id="206">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">New Disk...</string>
+                <string name="keyEquivalent">n</string>
                 <ostype name="command">new </ostype>
               </object>
             </array>
@@ -311,18 +316,17 @@
             <string name="title">IPL-ROM</string>
             <int name="menuID">136</int>
             <array count="3" name="items">
-              <object class="IBCarbonMenuItem" id="231">
-                <boolean name="disabled">TRUE</boolean>
+              <object class="IBCarbonMenuItem" id="233">
                 <boolean name="updateSingleItem">TRUE</boolean>
-                <string name="title">TurboZ</string>
+                <string name="title">X1</string>
               </object>
               <object class="IBCarbonMenuItem" id="232">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">turbo</string>
               </object>
-              <object class="IBCarbonMenuItem" id="233">
+              <object class="IBCarbonMenuItem" id="231">
                 <boolean name="updateSingleItem">TRUE</boolean>
-                <string name="title">X1</string>
+                <string name="title">TurboZ</string>
               </object>
             </array>
           </object>
@@ -395,22 +399,27 @@
               <object class="IBCarbonMenuItem" id="250">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">Auto frame</string>
+                <string name="keyEquivalent">u</string>
               </object>
               <object class="IBCarbonMenuItem" id="251">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">Full frame</string>
+                <string name="keyEquivalent">1</string>
               </object>
               <object class="IBCarbonMenuItem" id="252">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">1/2 frame</string>
+                <string name="keyEquivalent">2</string>
               </object>
               <object class="IBCarbonMenuItem" id="253">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">1/3 frame</string>
+                <string name="keyEquivalent">3</string>
               </object>
               <object class="IBCarbonMenuItem" id="254">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">1/4 frame</string>
+                <string name="keyEquivalent">4</string>
               </object>
             </array>
           </object>
@@ -425,10 +434,12 @@
               <object class="IBCarbonMenuItem" id="257">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">Keyboard</string>
+                <string name="keyEquivalent">k</string>
               </object>
               <object class="IBCarbonMenuItem" id="258">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">JoyKey-1</string>
+                <string name="keyEquivalent">j</string>
               </object>
               <object class="IBCarbonMenuItem" id="259">
                 <boolean name="updateSingleItem">TRUE</boolean>
@@ -503,12 +514,16 @@
           <string name="title">Window</string>
           <object name="submenu" class="IBCarbonMenu" id="195">
             <string name="title">Window</string>
-            <array count="7" name="items">
+            <array count="8" name="items">
               <object class="IBCarbonMenuItem" id="286">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">Close Window</string>
                 <string name="keyEquivalent">w</string>
                 <ostype name="command">clos</ostype>
+              </object>
+              <object class="IBCarbonMenuItem" id="383">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
               </object>
               <object class="IBCarbonMenuItem" id="197">
                 <string name="title">Zoom Window</string>
@@ -710,7 +725,7 @@
       </array>
     </object>
     <object class="IBCarbonWindow" id="325">
-      <string name="windowRect">300 162 417 482 </string>
+      <string name="windowRect">489 177 606 497 </string>
       <string name="title">SetJoyPad</string>
       <reference name="rootControl" idRef="324"/>
       <boolean name="isResizable">FALSE</boolean>
@@ -721,15 +736,11 @@
     <reference idRef="326"/>
     <reference idRef="327"/>
     <reference idRef="328"/>
-    <object class="IBCarbonStaticText" id="329">
-      <string name="bounds">1074 18619 1090 18719 </string>
-      <string name="title">Aボタン</string>
-    </object>
     <object class="IBCarbonUserPane" id="330">
-      <string name="bounds">49 20 369 380 </string>
-      <array count="15" name="subviews">
+      <string name="bounds">49 20 279 380 </string>
+      <array count="8" name="subviews">
         <object class="IBCarbonRadioGroup" id="372">
-          <string name="bounds">72 184 131 335 </string>
+          <string name="bounds">71 184 130 335 </string>
           <ostype name="controlSignature">Rate</ostype>
           <string name="helpTagText">少ない方が音質は悪くなりますが、CPUの負担が小さくなります。</string>
           <int name="numRows">3</int>
@@ -748,188 +759,55 @@
           </array>
         </object>
         <object class="IBCarbonStaticText" id="346">
-          <string name="bounds">70 80 86 176 </string>
+          <string name="bounds">69 64 85 160 </string>
           <ostype name="controlSignature">stxt</ostype>
           <string name="title">サンプルレート:</string>
         </object>
         <object class="IBCarbonStaticText" id="356">
-          <string name="bounds">157 80 173 176 </string>
+          <string name="bounds">154 64 170 160 </string>
           <ostype name="controlSignature">stxt</ostype>
           <int name="controlID">1</int>
           <string name="title">バッファサイズ:</string>
         </object>
         <object class="IBCarbonEditText" id="333">
-          <string name="bounds">156 187 172 264 </string>
+          <string name="bounds">154 187 170 264 </string>
           <ostype name="controlSignature">Bufr</ostype>
           <string name="title">100</string>
           <string name="helpTagText">少ない方が音の遅れが少なくなりますが、CPUの負担は大きくなります。</string>
         </object>
         <object class="IBCarbonStaticText" id="344">
-          <string name="bounds">158 275 174 351 </string>
+          <string name="bounds">156 275 172 351 </string>
           <ostype name="controlSignature">stxt</ostype>
           <int name="controlID">3</int>
           <string name="title">ms</string>
         </object>
-        <object class="IBCarbonCheckBox" id="364">
-          <string name="bounds">239 80 257 321 </string>
-          <ostype name="controlSignature">sond</ostype>
-          <string name="title">サウンドエミュレーションを優先する</string>
+        <object class="IBCarbonEditText" id="385">
+          <string name="bounds">223 223 239 264 </string>
+          <ostype name="controlSignature">slte</ostype>
+          <string name="title">0</string>
         </object>
-        <object class="IBCarbonStaticText" id="337">
-          <string name="bounds">336 40 352 58 </string>
-          <ostype name="controlSignature">stxt</ostype>
-          <int name="controlID">4</int>
-          <string name="title">0%</string>
+        <object class="IBCarbonCheckBox" id="386">
+          <string name="bounds">222 64 240 201 </string>
+          <ostype name="controlSignature">slin</ostype>
+          <string name="title">スキップライン修正</string>
+          <string name="helpTagText">チェックされているとモニターのカラーを32000色に変更します。</string>
         </object>
-        <object class="IBCarbonStaticText" id="360">
-          <string name="bounds">336 186 352 227 </string>
-          <ostype name="controlSignature">stxt</ostype>
-          <int name="controlID">5</int>
-          <string name="title">100%</string>
-        </object>
-        <object class="IBCarbonSlider" id="362">
-          <string name="bounds">304 40 330 356 </string>
-          <ostype name="controlSignature">volm</ostype>
-          <ostype name="command">volm</ostype>
-          <boolean name="isLive">TRUE</boolean>
-          <int name="numTickMarks">5</int>
-          <int name="initialValue">256</int>
-          <int name="maximumValue">512</int>
-        </object>
-        <object class="IBCarbonStaticText" id="331">
-          <string name="bounds">202 238 218 250 </string>
-          <string name="title">%</string>
-        </object>
-        <object class="IBCarbonStaticText" id="334">
-          <string name="bounds">336 336 352 376 </string>
-          <ostype name="controlSignature">stxt</ostype>
-          <int name="controlID">6</int>
-          <string name="title">200%</string>
-        </object>
-        <object class="IBCarbonStaticText" id="339">
-          <string name="bounds">199 40 215 175 </string>
-          <ostype name="controlSignature">stxt</ostype>
-          <int name="controlID">2</int>
-          <string name="title">シーク音のボリューム:</string>
-        </object>
-        <object class="IBCarbonEditText" id="340">
-          <string name="bounds">200 186 216 227 </string>
-          <ostype name="controlSignature">seek</ostype>
-          <string name="title">80</string>
-        </object>
-        <object class="IBCarbonSeparator" id="341">
-          <string name="bounds">281 80 282 356 </string>
-        </object>
-        <object class="IBCarbonStaticText" id="357">
-          <string name="bounds">274 40 291 71 </string>
-          <string name="title">音量</string>
+        <object class="IBCarbonStaticText" id="400">
+          <string name="bounds">222 275 238 389 </string>
+          <string name="title">(0~255)</string>
         </object>
       </array>
       <ostype name="controlSignature">PRTB</ostype>
       <int name="controlID">1000</int>
+      <string name="title">コンフィグ</string>
       <int name="featureBits">2</int>
-    </object>
-    <reference idRef="331"/>
-    <object class="IBCarbonSeparator" id="332">
-      <string name="bounds">250 40 251 360 </string>
     </object>
     <reference idRef="333"/>
-    <reference idRef="334"/>
-    <object class="IBCarbonStaticText" id="335">
-      <string name="bounds">142 71 158 193 </string>
-      <ostype name="controlSignature">stxt</ostype>
-      <int name="controlID">8</int>
-      <string name="title">テキストエフェクト:</string>
-    </object>
-    <object class="IBCarbonBevelButton" id="336">
-      <string name="bounds">144 40 166 140 </string>
-      <ostype name="controlSignature">jplf</ostype>
-      <string name="title">左</string>
-      <ostype name="command">jplf</ostype>
-      <int name="contentType">0</int>
-      <boolean name="rounded">TRUE</boolean>
-    </object>
-    <reference idRef="337"/>
-    <object class="IBCarbonStaticText" id="338">
-      <string name="bounds">174 260 190 360 </string>
-      <string name="title">右</string>
-    </object>
-    <reference idRef="339"/>
-    <reference idRef="340"/>
-    <reference idRef="341"/>
-    <object class="IBCarbonUserPane" id="342">
-      <string name="bounds">49 20 369 380 </string>
-      <array count="13" name="subviews">
-        <reference idRef="336"/>
-        <object class="IBCarbonBevelButton" id="367">
-          <string name="bounds">144 260 166 360 </string>
-          <ostype name="controlSignature">jprt</ostype>
-          <string name="title">右</string>
-          <ostype name="command">jprt</ostype>
-          <int name="contentType">0</int>
-          <boolean name="rounded">TRUE</boolean>
-        </object>
-        <object class="IBCarbonBevelButton" id="352">
-          <string name="bounds">280 91 302 191 </string>
-          <ostype name="controlSignature">jpab</ostype>
-          <string name="title">Aボタン</string>
-          <ostype name="command">jpab</ostype>
-          <int name="contentType">0</int>
-          <boolean name="rounded">TRUE</boolean>
-        </object>
-        <object class="IBCarbonBevelButton" id="371">
-          <string name="bounds">90 148 112 248 </string>
-          <ostype name="controlSignature">jpup</ostype>
-          <string name="title">上</string>
-          <ostype name="command">jpup</ostype>
-          <int name="contentType">0</int>
-          <boolean name="rounded">TRUE</boolean>
-        </object>
-        <object class="IBCarbonBevelButton" id="374">
-          <string name="bounds">280 209 302 309 </string>
-          <ostype name="controlSignature">jpbb</ostype>
-          <string name="title">Bボタン</string>
-          <ostype name="command">jpbb</ostype>
-          <int name="contentType">0</int>
-          <boolean name="rounded">TRUE</boolean>
-        </object>
-        <object class="IBCarbonBevelButton" id="369">
-          <string name="bounds">196 148 218 248 </string>
-          <ostype name="controlSignature">jpdn</ostype>
-          <string name="title">下</string>
-          <ostype name="command">jpdn</ostype>
-          <int name="contentType">0</int>
-          <boolean name="rounded">TRUE</boolean>
-        </object>
-        <reference idRef="332"/>
-        <object class="IBCarbonStaticText" id="353">
-          <string name="bounds">120 148 136 248 </string>
-          <string name="title">上</string>
-        </object>
-        <object class="IBCarbonStaticText" id="349">
-          <string name="bounds">226 148 242 248 </string>
-          <string name="title">下</string>
-        </object>
-        <reference idRef="338"/>
-        <object class="IBCarbonStaticText" id="351">
-          <string name="bounds">174 40 190 140 </string>
-          <string name="title">左</string>
-        </object>
-        <reference idRef="329"/>
-        <object class="IBCarbonStaticText" id="345">
-          <string name="bounds">310 209 326 309 </string>
-          <string name="title">Bボタン</string>
-        </object>
-      </array>
-      <ostype name="controlSignature">PRTB</ostype>
-      <int name="controlID">1002</int>
-      <int name="featureBits">2</int>
-    </object>
     <object class="IBCarbonRootControl" id="343">
-      <string name="bounds">0 0 421 400 </string>
+      <string name="bounds">0 0 331 400 </string>
       <array count="3" name="subviews">
         <object class="IBCarbonButton" id="373">
-          <string name="bounds">381 280 401 380 </string>
+          <string name="bounds">291 280 311 380 </string>
           <ostype name="controlSignature">CfOK</ostype>
           <int name="controlID">1</int>
           <string name="title">OK</string>
@@ -937,7 +815,7 @@
           <int name="buttonType">1</int>
         </object>
         <object class="IBCarbonButton" id="358">
-          <string name="bounds">381 168 401 268 </string>
+          <string name="bounds">291 168 311 268 </string>
           <ostype name="controlSignature">CfCL</ostype>
           <int name="controlID">4</int>
           <string name="title">キャンセル</string>
@@ -945,102 +823,109 @@
           <int name="buttonType">2</int>
         </object>
         <object class="IBCarbonTab" id="361">
-          <string name="bounds">12 20 369 380 </string>
-          <array count="3" name="subviews">
+          <string name="bounds">12 20 279 380 </string>
+          <array count="2" name="subviews">
             <reference idRef="330"/>
             <object class="IBCarbonUserPane" id="350">
-              <string name="bounds">49 20 369 380 </string>
-              <array count="11" name="subviews">
-                <object class="IBCarbonRadioGroup" id="347">
-                  <string name="bounds">141 201 209 297 </string>
-                  <ostype name="controlSignature">tefx</ostype>
-                  <int name="numRows">3</int>
-                  <int name="intercellHeight">5</int>
-                  <array count="3" name="radioTitles">
-                    <array count="1">
-                      <string>リアル</string>
-                    </array>
-                    <array count="1">
-                      <string>400ライン</string>
-                    </array>
-                    <array count="1">
-                      <string>カスタム</string>
-                    </array>
-                  </array>
+              <string name="bounds">49 20 279 380 </string>
+              <array count="13" name="subviews">
+                <object class="IBCarbonStaticText" id="387">
+                  <string name="bounds">159 148 175 248 </string>
+                  <string name="title">下</string>
+                  <int name="justification">1</int>
                 </object>
-                <object class="IBCarbonEditText" id="368">
-                  <string name="bounds">275 204 291 245 </string>
-                  <ostype name="controlSignature">slte</ostype>
-                  <string name="title">0</string>
+                <object class="IBCarbonBevelButton" id="388">
+                  <string name="bounds">129 148 151 248 </string>
+                  <ostype name="controlSignature">jpdn</ostype>
+                  <string name="title">下</string>
+                  <ostype name="command">jpdn</ostype>
+                  <int name="contentType">0</int>
+                  <boolean name="rounded">TRUE</boolean>
                 </object>
-                <object class="IBCarbonEditText" id="359">
-                  <string name="bounds">234 204 250 245 </string>
-                  <ostype name="controlSignature">blte</ostype>
-                  <string name="title">0</string>
+                <object class="IBCarbonStaticText" id="389">
+                  <string name="bounds">243 91 259 191 </string>
+                  <string name="title">Aボタン</string>
+                  <int name="justification">1</int>
                 </object>
-                <reference idRef="335"/>
-                <object class="IBCarbonStaticText" id="370">
-                  <string name="bounds">70 97 86 193 </string>
-                  <ostype name="controlSignature">stxt</ostype>
-                  <int name="controlID">7</int>
-                  <string name="title">テキストタイプ:</string>
+                <object class="IBCarbonBevelButton" id="390">
+                  <string name="bounds">99 40 121 140 </string>
+                  <ostype name="controlSignature">jplf</ostype>
+                  <string name="title">左</string>
+                  <ostype name="command">jplf</ostype>
+                  <int name="contentType">0</int>
+                  <boolean name="rounded">TRUE</boolean>
                 </object>
-                <object class="IBCarbonRadioGroup" id="348">
-                  <string name="bounds">72 201 122 315 </string>
-                  <ostype name="controlSignature">ttyp</ostype>
-                  <int name="intercellHeight">5</int>
-                  <array count="2" name="radioTitles">
-                    <array count="1">
-                      <string>リアル</string>
-                    </array>
-                    <array count="1">
-                      <string>エンハンスド</string>
-                    </array>
-                  </array>
+                <object class="IBCarbonStaticText" id="391">
+                  <string name="bounds">129 40 145 140 </string>
+                  <string name="title">左</string>
+                  <int name="justification">1</int>
                 </object>
-                <object class="IBCarbonStaticText" id="363">
-                  <string name="bounds">233 97 249 193 </string>
-                  <ostype name="controlSignature">stxt</ostype>
-                  <int name="controlID">9</int>
-                  <string name="title">黒部分の明るさ:</string>
+                <object class="IBCarbonBevelButton" id="392">
+                  <string name="bounds">213 209 235 309 </string>
+                  <ostype name="controlSignature">jpbb</ostype>
+                  <string name="title">Bボタン</string>
+                  <ostype name="command">jpbb</ostype>
+                  <int name="contentType">0</int>
+                  <boolean name="rounded">TRUE</boolean>
                 </object>
-                <object class="IBCarbonStaticText" id="375">
-                  <string name="bounds">274 45 290 193 </string>
-                  <ostype name="controlSignature">stxt</ostype>
-                  <int name="controlID">10</int>
-                  <string name="title">スキップラインの明るさ:</string>
+                <object class="IBCarbonStaticText" id="393">
+                  <string name="bounds">99 148 115 248 </string>
+                  <string name="title">上</string>
+                  <int name="justification">1</int>
                 </object>
-                <object class="IBCarbonEditText" id="354">
-                  <string name="bounds">189 308 209 358 </string>
-                  <ostype name="controlSignature">cstm</ostype>
-                  <string name="title">value</string>
+                <object class="IBCarbonStaticText" id="394">
+                  <string name="bounds">243 209 259 309 </string>
+                  <string name="title">Bボタン</string>
+                  <int name="justification">1</int>
                 </object>
-                <object class="IBCarbonCheckBox" id="365">
-                  <string name="bounds">333 71 359 274 </string>
-                  <ostype name="controlSignature">chgc</ostype>
-                  <string name="title">カラーの変更を許可する</string>
-                  <string name="helpTagText">チェックされているとモニターのカラーを32000色に変更します。</string>
+                <object class="IBCarbonBevelButton" id="395">
+                  <string name="bounds">213 91 235 191 </string>
+                  <ostype name="controlSignature">jpab</ostype>
+                  <string name="title">Aボタン</string>
+                  <ostype name="command">jpab</ostype>
+                  <int name="contentType">0</int>
+                  <boolean name="rounded">TRUE</boolean>
                 </object>
-                <object class="IBCarbonSeparator" id="366">
-                  <string name="bounds">313 45 314 361 </string>
+                <object class="IBCarbonBevelButton" id="396">
+                  <string name="bounds">69 148 91 248 </string>
+                  <ostype name="controlSignature">jpup</ostype>
+                  <string name="title">上</string>
+                  <ostype name="command">jpup</ostype>
+                  <int name="contentType">0</int>
+                  <boolean name="rounded">TRUE</boolean>
+                </object>
+                <object class="IBCarbonStaticText" id="397">
+                  <string name="bounds">129 260 145 360 </string>
+                  <string name="title">右</string>
+                  <int name="justification">1</int>
+                </object>
+                <object class="IBCarbonBevelButton" id="398">
+                  <string name="bounds">99 260 121 360 </string>
+                  <ostype name="controlSignature">jprt</ostype>
+                  <string name="title">右</string>
+                  <ostype name="command">jprt</ostype>
+                  <int name="contentType">0</int>
+                  <boolean name="rounded">TRUE</boolean>
+                </object>
+                <object class="IBCarbonSeparator" id="399">
+                  <string name="bounds">183 40 184 360 </string>
                 </object>
               </array>
               <ostype name="controlSignature">PRTB</ostype>
               <int name="controlID">1001</int>
               <int name="featureBits">2</int>
             </object>
-            <reference idRef="342"/>
           </array>
           <ostype name="controlSignature">PRTT</ostype>
           <int name="controlID">1000</int>
-          <array count="3" name="tabItems">
+          <array count="2" name="tabItems">
             <dictionary count="4">
               <string>contentResID</string>
               <string>0</string>
               <string>tabEnabled</string>
               <string>1</string>
               <string>tabName</string>
-              <string>サウンド</string>
+              <string>コンフィグ</string>
               <string>userPane</string>
               <reference idRef="330"/>
             </dictionary>
@@ -1050,37 +935,19 @@
               <string>tabEnabled</string>
               <string>1</string>
               <string>tabName</string>
-              <string>スクリーン</string>
-              <string>userPane</string>
-              <reference idRef="350"/>
-            </dictionary>
-            <dictionary count="4">
-              <string>contentResID</string>
-              <string>0</string>
-              <string>tabEnabled</string>
-              <string>1</string>
-              <string>tabName</string>
               <string>ジョイスティック</string>
               <string>userPane</string>
-              <reference idRef="342"/>
+              <reference idRef="350"/>
             </dictionary>
           </array>
         </object>
       </array>
     </object>
     <reference idRef="344"/>
-    <reference idRef="345"/>
     <reference idRef="346"/>
-    <reference idRef="347"/>
-    <reference idRef="348"/>
-    <reference idRef="349"/>
     <reference idRef="350"/>
-    <reference idRef="351"/>
-    <reference idRef="352"/>
-    <reference idRef="353"/>
-    <reference idRef="354"/>
     <object class="IBCarbonWindow" id="355">
-      <string name="windowRect">112 181 533 581 </string>
+      <string name="windowRect">221 523 552 923 </string>
       <string name="title">環境設定</string>
       <reference name="rootControl" idRef="343"/>
       <boolean name="receiveActivates">FALSE</boolean>
@@ -1095,25 +962,10 @@
       <boolean name="isConstrained">FALSE</boolean>
     </object>
     <reference idRef="356"/>
-    <reference idRef="357"/>
     <reference idRef="358"/>
-    <reference idRef="359"/>
-    <reference idRef="360"/>
     <reference idRef="361"/>
-    <reference idRef="362"/>
-    <reference idRef="363"/>
-    <reference idRef="364"/>
-    <reference idRef="365"/>
-    <reference idRef="366"/>
-    <reference idRef="367"/>
-    <reference idRef="368"/>
-    <reference idRef="369"/>
-    <reference idRef="370"/>
-    <reference idRef="371"/>
     <reference idRef="372"/>
     <reference idRef="373"/>
-    <reference idRef="374"/>
-    <reference idRef="375"/>
     <object class="IBCarbonWindow" id="376">
       <string name="windowRect">299 427 431 684 </string>
       <string name="title">New Disk</string>
@@ -1177,8 +1029,25 @@
     <reference idRef="380"/>
     <reference idRef="381"/>
     <reference idRef="382"/>
+    <reference idRef="383"/>
+    <reference idRef="385"/>
+    <reference idRef="386"/>
+    <reference idRef="387"/>
+    <reference idRef="388"/>
+    <reference idRef="389"/>
+    <reference idRef="390"/>
+    <reference idRef="391"/>
+    <reference idRef="392"/>
+    <reference idRef="393"/>
+    <reference idRef="394"/>
+    <reference idRef="395"/>
+    <reference idRef="396"/>
+    <reference idRef="397"/>
+    <reference idRef="398"/>
+    <reference idRef="399"/>
+    <reference idRef="400"/>
   </array>
-  <array count="182" name="allParents">
+  <array count="164" name="allParents">
     <reference idRef="1"/>
     <reference idRef="29"/>
     <reference idRef="131"/>
@@ -1307,53 +1176,18 @@
     <reference idRef="324"/>
     <reference idRef="324"/>
     <reference idRef="324"/>
-    <reference idRef="342"/>
     <reference idRef="361"/>
     <reference idRef="330"/>
-    <reference idRef="342"/>
-    <reference idRef="330"/>
-    <reference idRef="330"/>
-    <reference idRef="350"/>
-    <reference idRef="342"/>
-    <reference idRef="330"/>
-    <reference idRef="342"/>
-    <reference idRef="330"/>
-    <reference idRef="330"/>
-    <reference idRef="330"/>
-    <reference idRef="361"/>
     <reference idRef="355"/>
     <reference idRef="330"/>
-    <reference idRef="342"/>
     <reference idRef="330"/>
-    <reference idRef="350"/>
-    <reference idRef="350"/>
-    <reference idRef="342"/>
     <reference idRef="361"/>
-    <reference idRef="342"/>
-    <reference idRef="342"/>
-    <reference idRef="342"/>
-    <reference idRef="350"/>
     <reference idRef="1"/>
     <reference idRef="330"/>
-    <reference idRef="330"/>
     <reference idRef="343"/>
-    <reference idRef="350"/>
-    <reference idRef="330"/>
     <reference idRef="343"/>
     <reference idRef="330"/>
-    <reference idRef="350"/>
-    <reference idRef="330"/>
-    <reference idRef="350"/>
-    <reference idRef="350"/>
-    <reference idRef="342"/>
-    <reference idRef="350"/>
-    <reference idRef="342"/>
-    <reference idRef="350"/>
-    <reference idRef="342"/>
-    <reference idRef="330"/>
     <reference idRef="343"/>
-    <reference idRef="342"/>
-    <reference idRef="350"/>
     <reference idRef="1"/>
     <reference idRef="376"/>
     <reference idRef="377"/>
@@ -1361,6 +1195,23 @@
     <reference idRef="377"/>
     <reference idRef="377"/>
     <reference idRef="377"/>
+    <reference idRef="195"/>
+    <reference idRef="330"/>
+    <reference idRef="330"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="350"/>
+    <reference idRef="330"/>
   </array>
   <dictionary count="10" name="nameTable">
     <string>Files Owner</string>
@@ -1372,17 +1223,17 @@
     <string>MenuBar</string>
     <reference idRef="29"/>
     <string>NSCustomView1</string>
-    <reference idRef="336"/>
+    <reference idRef="390"/>
     <string>NSCustomView11</string>
-    <reference idRef="369"/>
+    <reference idRef="388"/>
     <string>NSCustomView13</string>
-    <reference idRef="352"/>
+    <reference idRef="395"/>
     <string>NSCustomView14</string>
-    <reference idRef="374"/>
+    <reference idRef="392"/>
     <string>NewDiskWindow</string>
     <reference idRef="376"/>
     <string>PreferenceWindow</string>
     <reference idRef="355"/>
   </dictionary>
-  <unsigned_int name="nextObjectID">383</unsigned_int>
+  <unsigned_int name="nextObjectID">401</unsigned_int>
 </object>

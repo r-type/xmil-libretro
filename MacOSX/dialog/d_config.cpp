@@ -9,138 +9,272 @@
 #include	"palettes.h"
 
 
-static void setrate(ControlHandle *btn, UINT rate) {
+enum {kTabMasterSig = 'PRTT',kTabMasterID = 1000,kTabPaneSig= 'PRTB',kPrefControlsSig = 'PREF'};
+enum {kDummyValue = 0,kMaxNumTabs= 3};
 
-	SetControlValue(btn[0], (rate == 11025)?1:0);
-	SetControlValue(btn[1], (rate == 22050)?1:0);
-	SetControlValue(btn[2], (rate == 44100)?1:0);
+static void setupJoyConfig(OSType type, WindowRef win);
+static void setTitle(OSType type, char* elementName, WindowRef win);
+static pascal OSStatus PrefsTabEventHandlerProc( EventHandlerCallRef inCallRef, EventRef inEvent, void* inUserData );
+static void SetInitialTabState(WindowRef theWindow);
+
+static void setConfig(WindowRef win) {
+    UInt32	dval;
+    UInt16	wval;
+    UInt8	mval;
+    bool	bval;
+	UINT	update = 0;
+	UINT	renewal = 0;
+    
+    dval=GetControlValue(getControlRefByID('Rate', 0, win));
+    if (dval==1) {
+        wval = 11025;
+    }
+    else if (dval==2) {
+        wval = 22050;
+    }
+    else {
+        wval = 44100;
+    }
+	if (xmilcfg.samplingrate != wval) {
+		xmilcfg.samplingrate = wval;
+		update |= SYS_UPDATECFG;
+		corestat.soundrenewal = 1;
+	}
+    
+    dval = getFieldValue('Bufr', win);
+	if (dval < 50) {
+		dval = 50;
+	}
+	else if (dval > 1000) {
+		dval = 1000;
+	}
+    if (dval != xmilcfg.delayms) {
+		xmilcfg.delayms = dval;
+		update |= SYS_UPDATECFG;
+		corestat.soundrenewal = 1;
+    }
+//    dval = getFieldValue('seek');
+//    if (dval != xmilcfg.MOTORVOL) {
+//	INIT_RENEWAL xmilcfg.MOTORVOL = dval;
+//    }
+    dval = getFieldValue('slte', win);
+	if (dval > 255) {
+		dval = 255;
+	}
+    if (dval != xmilcfg.skiplight) {
+		xmilcfg.skiplight = dval;
+		renewal = 1;
+    }
+    bval=GetControlValue(getControlRefByID('slin', 0, win));
+    if (bval != xmilcfg.skipline) {
+		xmilcfg.skipline = bval;
+		renewal = 1;
+    }
+	if (renewal) {
+		pal_reset();
+		update |= SYS_UPDATECFG;
+	}
+	sysmng_update(update);
 }
 
+#define	setCheckBox(a,b)	SetControlValue(getControlRefByID(b,0,win), a)
+#define	setValue(a,b)		setCheckBox(a,b)
 
-void ConfigDialogProc(void) {
+static void setControlText(long data, OSType sign, WindowRef win) {
+    Str255	title;
 
-	DialogPtr		hDlg;
-	ControlHandle	ratebtn[3];
-	ControlHandle	skipbtn;
-	char			work[32];
-	Str255			workstr;
-	UINT			rate;
-	UINT			ms;
-	UINT			skipline;
-	UINT			val;
-	int				done;
-	SInt16			item;
-	UINT			update;
-	UINT			renewal;
-
-	hDlg = GetNewDialog(IDD_CONFIGURE, NULL, (WindowPtr)-1);
-	if (!hDlg) {
-		return;
-	}
-	ratebtn[0] = (ControlHandle)GetDlgItem(hDlg, IDC_RATE11);
-	ratebtn[1] = (ControlHandle)GetDlgItem(hDlg, IDC_RATE22);
-	ratebtn[2] = (ControlHandle)GetDlgItem(hDlg, IDC_RATE44);
-	skipbtn = (ControlHandle)GetDlgItem(hDlg, IDC_SKIPLINE);
-
-	rate = xmilcfg.samplingrate;
-	if ((rate != 0) && (rate != 11025) && (rate != 44100)) {
-		rate = 22050;
-	}
-	setrate(ratebtn, rate);
-	ms = xmilcfg.delayms;
-	if (ms < 50) {
-		ms = 50;
-	}
-	else if (ms > 1000) {
-		ms = 1000;
-	}
-	SPRINTF(work, str_u, ms);
-	mkstr255(workstr, work);
-	SetDialogItemText(GetDlgItem(hDlg, IDC_SOUNDBUF), workstr);
-
-	skipline = (xmilcfg.skipline)?1:0;
-	SetControlValue(skipbtn, skipline);
-	SPRINTF(work, str_u, xmilcfg.skiplight);
-	mkstr255(workstr, work);
-	SetDialogItemText(GetDlgItem(hDlg, IDC_SKIPLIGHT), workstr);
-
-	SetDialogDefaultItem(hDlg, IDOK);
-	SetDialogCancelItem(hDlg, IDCANCEL);
-
-	done = 0;
-	while(!done) {
-		ModalDialog(NULL, &item);
-		switch(item) {
-			case IDOK:
-				update = 0;
-				if (xmilcfg.samplingrate != rate) {
-					xmilcfg.samplingrate = rate;
-					update |= SYS_UPDATECFG;
-					corestat.soundrenewal = 1;
-				}
-				GetDialogItemText(GetDlgItem(hDlg, IDC_SOUNDBUF), workstr);
-				mkcstr(work, sizeof(work), workstr);
-				ms = milstr_solveINT(work);
-				if (ms < 50) {
-					ms = 50;
-				}
-				else if (ms > 1000) {
-					ms = 1000;
-				}
-				if (xmilcfg.delayms != ms) {
-					xmilcfg.delayms = ms;
-					corestat.soundrenewal = 1;
-					update |= SYS_UPDATECFG;
-				}
-
-				renewal = 0;
-				if (xmilcfg.skipline != skipline) {
-					xmilcfg.skipline = skipline;
-					renewal = 1;
-				}
-				GetDialogItemText(GetDlgItem(hDlg, IDC_SKIPLIGHT), workstr);
-				mkcstr(work, sizeof(work), workstr);
-				val = milstr_solveINT(work);
-				if (val > 256) {
-					val = 256;
-				}
-				if (xmilcfg.skiplight != (UINT16)val) {
-					xmilcfg.skiplight = (UINT16)val;
-					renewal = 1;
-				}
-				if (renewal) {
-					pal_reset();
-					update |= SYS_UPDATECFG;
-				}
-				sysmng_update(update);
-				done = IDOK;
-				break;
-
-			case IDCANCEL:
-				done = IDCANCEL;
-				break;
-
-			case IDC_RATE11:
-				rate = 11025;
-				setrate(ratebtn, rate);
-				break;
-
-			case IDC_RATE22:
-				rate = 22050;
-				setrate(ratebtn, rate);
-				break;
-
-			case IDC_RATE44:
-				rate = 44100;
-				setrate(ratebtn, rate);
-				break;
-
-			case IDC_SKIPLINE:
-				skipline ^= 1;
-				SetControlValue(skipbtn, skipline);
-				break;
-		}
-	}
-	DisposeDialog(hDlg);
+    NumToString(data, title);
+    SetControlData(getControlRefByID(sign, 0, win), kControlNoPart, kControlStaticTextTextTag, *title, title+1);
 }
 
+static void setName (OSType type, WindowRef win) {
+    char elementName[256] = "----";
+//    if (getJoypadName(type, elementName)) {
+        if (elementName) {
+            setTitle(type, elementName, win);
+        }
+//    }
+}
+
+static void initPrefWindow(WindowRef win) {
+    int	data;
+
+    if (xmilcfg.samplingrate == 11025) {
+        data=1;
+    }
+    else if (xmilcfg.samplingrate == 22050) {
+        data=2;
+    }
+    else {
+        data=3;
+    }
+    setValue(data, 'Rate');
+    setControlText(xmilcfg.delayms, 'Bufr', win);
+//    setControlText(xmilcfg.MOTORVOL, 'seek');
+    setControlText(xmilcfg.skiplight, 'slte', win);
+	setValue(xmilcfg.skipline, 'slin');
+
+//    setName(JOYPAD_UP, win);
+//    setName(JOYPAD_DOWN, win);
+//    setName(JOYPAD_LEFT, win);
+//    setName(JOYPAD_RIGHT, win);
+//    setName(JOYPAD_ABUTTON, win);
+//    setName(JOYPAD_BBUTTON, win);
+
+//    initTemporal();
+}
+
+static pascal OSStatus joyWinproc(EventHandlerCallRef myHandler, EventRef event, void* userData) {
+    OSStatus	err = eventNotHandledErr;
+    HICommand	cmd;
+
+    if (GetEventClass(event)==kEventClassCommand && GetEventKind(event)==kEventCommandProcess ) {
+        GetEventParameter(event, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &cmd);
+        switch (cmd.commandID)
+        {
+            case 'notJ':
+                HideSheetWindow((WindowRef)userData);
+                DisposeWindow((WindowRef)userData);
+                err = noErr;
+                break;
+            default:
+                break;
+        }
+    }
+
+    return err;
+}
+
+static OSErr pushJoy (OSType type, WindowRef win) {
+    setupJoyConfig(type, win);
+    return noErr;
+}
+
+static pascal OSStatus pfWinproc(EventHandlerCallRef myHandler, EventRef event, void* userData) {
+    OSStatus	err = eventNotHandledErr;
+    HICommand	cmd;
+    
+    if (GetEventClass(event)==kEventClassCommand && GetEventKind(event)==kEventCommandProcess ) {
+        GetEventParameter(event, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &cmd);
+        switch (cmd.commandID)
+        {
+            case kHICommandCancel:
+                QuitAppModalLoopForWindow((WindowRef)userData);
+                err=noErr;
+                break;
+                
+            case kHICommandOK:
+                setConfig((WindowRef)userData);
+//                changeJoyPadSetup();                
+                QuitAppModalLoopForWindow((WindowRef)userData);
+                err=noErr;
+                break;
+
+//            case JOYPAD_UP:
+//            case JOYPAD_DOWN:
+//            case JOYPAD_LEFT:
+//            case JOYPAD_RIGHT:
+//            case JOYPAD_ABUTTON:
+//            case JOYPAD_BBUTTON:
+			case 'jpup':
+                err=pushJoy(cmd.commandID, (WindowRef)userData);
+                break;
+
+            default :
+                break;
+        }
+    }
+
+    return err;
+}
+    
+static	IBNibRef	nibRef;
+
+static void makeNibWindow (IBNibRef nibRef) {
+    OSStatus	err;
+	WindowRef	prefWin;
+
+    err = CreateWindowFromNib(nibRef, CFSTR("PreferenceWindow"), &prefWin);
+    if (err == noErr) {
+        initPrefWindow(prefWin);
+        SetInitialTabState(prefWin);
+        EventTypeSpec	tabControlEvents[] ={ { kEventClassControl, kEventControlHit } };
+        InstallControlEventHandler( getControlRefByID(kTabMasterSig,kTabMasterID,prefWin),  PrefsTabEventHandlerProc , GetEventTypeCount(tabControlEvents), tabControlEvents, prefWin, NULL );
+        EventTypeSpec	list[]={ { kEventClassCommand, kEventCommandProcess } };
+        EventHandlerRef	ref;
+        EventHandlerUPP winhandler = NewEventHandlerUPP(pfWinproc);
+        InstallWindowEventHandler (prefWin, winhandler, 1, list, (void *)prefWin, &ref);
+        ShowWindow(prefWin);
+        err=RunAppModalLoopForWindow(prefWin);
+        RemoveEventHandler (ref);
+        DisposeEventHandlerUPP (winhandler);
+        HideWindow(prefWin);
+        DisposeWindow(prefWin);
+    }
+}
+
+void ConfigDialogProc( void ) {
+    OSStatus	err;
+
+    err = CreateNibReference(CFSTR("main"), &nibRef);
+    if (err ==noErr ) {
+        makeNibWindow (nibRef);
+        DisposeNibReference ( nibRef);
+    }
+}
+
+static void setupJoyConfig (OSType type, WindowRef win) {
+    OSStatus	err;
+	WindowRef	joyWin;
+    char elementName[256] = "----";
+
+    err = CreateWindowFromNib(nibRef, CFSTR("InputWindow"), &joyWin);
+    if (err == noErr) {
+        EventTypeSpec	list[]={ { kEventClassCommand, kEventCommandProcess } };
+        EventHandlerRef	ref;
+        InstallWindowEventHandler (joyWin, NewEventHandlerUPP(joyWinproc), 1, list, (void *)joyWin, &ref);
+        ShowSheetWindow(joyWin, win);
+
+//        if (setJoypad(type, elementName)) {
+//            setTitle(type, elementName);
+//        }
+
+        HideSheetWindow(joyWin);
+        DisposeWindow(joyWin);
+    }
+}
+
+static void setTitle(OSType type, char* elementName, WindowRef win) {
+    Str255 str;
+    mkstr255(str, elementName);
+    SetControlTitle(getControlRefByID(type, 0, win), str);
+}
+
+static UInt16 lastPaneSelected = 1;	// static, to keep track of it long term (in a more complex application
+                                        // you might store this in a data structure in the window refCon)                                            
+
+static void SetInitialTabState(WindowRef theWindow)
+{
+    int tabList[] = {kDummyValue, kTabMasterID,kTabMasterID+1,kTabMasterID+2};
+    short qq=0;
+    for(qq=0;qq<kMaxNumTabs+1;qq++)
+    SetControlVisibility( getControlRefByID(  kTabPaneSig,  tabList[qq], theWindow), false, true );  
+    SetControlValue(getControlRefByID(kTabMasterSig,kTabMasterID,theWindow),lastPaneSelected );
+    SetControlVisibility( getControlRefByID(  kTabPaneSig,  tabList[lastPaneSelected], theWindow), true, true );
+}
+
+static pascal OSStatus PrefsTabEventHandlerProc( EventHandlerCallRef inCallRef, EventRef inEvent, void* inUserData )
+{
+    WindowRef theWindow = (WindowRef)inUserData;  // get the windowRef, passed around as userData    
+    short controlValue = 1;
+    controlValue = GetControlValue( getControlRefByID(kTabMasterSig,kTabMasterID,theWindow) );
+    if ( controlValue != lastPaneSelected )
+    {
+        int tabList[] = {kDummyValue, kTabMasterID,kTabMasterID+1,kTabMasterID+2,kTabMasterID+3};
+        SetControlVisibility( getControlRefByID(  kTabPaneSig,  tabList[lastPaneSelected], theWindow), false, true );
+        SetControlVisibility( getControlRefByID(  kTabPaneSig,  tabList[controlValue], theWindow), true, true );    
+        Draw1Control( getControlRefByID(kTabMasterSig,kTabMasterID,theWindow) );		
+        lastPaneSelected= controlValue;    
+    }
+    return( eventNotHandledErr );
+}

@@ -1,7 +1,7 @@
 #include	"compiler.h"
 #include	"strres.h"
 #include	"resource.h"
-#include	"np2.h"
+#include	"xmil.h"
 #include	"dosio.h"
 #include	"sysmng.h"
 #include	"dialog.h"
@@ -9,21 +9,7 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"scrnsave.h"
-#include	"font.h"
 
-
-void dialog_font(void) {
-
-	char	path[MAX_PATH];
-
-	if (dlgs_selectfile(path, sizeof(path))) {
-		if (font_load(path, FALSE)) {
-			gdcs.textdisp |= GDCSCRN_ALLDRAW2;
-			milstr_ncpy(np2cfg.fontfile, path, sizeof(np2cfg.fontfile));
-			sysmng_update(SYS_UPDATECFG);
-		}
-	}
-}
 
 void dialog_writebmp(void) {
 
@@ -35,7 +21,7 @@ const char		*ext;
 	if (ss == NULL) {
 		return;
 	}
-	if (dlgs_selectwritefile(path, sizeof(path), "np2.bmp")) {
+	if (dlgs_selectwritefile(path, sizeof(path), "xmil.bmp", FTYPE_BMP, hWndMain)) {
 		ext = file_getext(path);
 		if ((ss->type <= SCRNSAVE_8BIT) &&
 			(!file_cmpname(ext, "gif"))) {

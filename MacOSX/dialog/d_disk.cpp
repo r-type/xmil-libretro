@@ -16,7 +16,7 @@ void dialog_changefdd(BYTE drv) {
 	char	fname[MAX_PATH];
 
 	if (drv < 4) {
-		if (dlgs_selectfile(fname, sizeof(fname), hWndMain, OPEN_FDD)) {
+		if (dlgs_selectfile(fname, sizeof(fname), hWndMain)) {
 			diskdrv_setfddex(drv, fname, file_getftype(fname), 0);
 
 			switch (drv) {
