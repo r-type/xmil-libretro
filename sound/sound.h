@@ -7,11 +7,10 @@ typedef void (SOUNDCALL * SOUNDCB)(void *hdl, SINT32 *pcm, UINT count);
 
 typedef struct {
 	UINT	rate;
-//	UINT32	hzbase;
-//	UINT32	clockbase;
-//	UINT32	minclock;
-//	UINT32	lastclock;
-	UINT	length;
+	UINT32	hzbase;
+	UINT32	clockbase;
+	UINT32	minclock;
+	UINT32	lastclock;
 	UINT	writecount;
 } SOUNDCFG;
 

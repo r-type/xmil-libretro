@@ -2,8 +2,8 @@
 // #include	"wavefile.h"
 #include	"dosio.h"
 #include	"soundmng.h"
-// #include	"cpucore.h"
-// #include	"pccore.h"
+#include	"z80core.h"
+#include	"pccore.h"
 // #include	"iocore.h"
 #include	"sound.h"
 #include	"sndcsec.h"
@@ -179,7 +179,6 @@ BOOL sound_create(UINT rate, UINT ms) {
 	soundmng_reset();
 
 	soundcfg.rate = rate;
-	sound_changeclock();
 
 #if defined(SOUNDRESERVE)
 	reserve = rate * SOUNDRESERVE / 1000;
@@ -225,14 +224,12 @@ void sound_reset(void) {
 	if (sndstream.buffer) {
 		soundmng_reset();
 		streamreset();
-		soundcfg.length = 0;
-//		soundcfg.lastclock = CPU_CLOCK;
+		soundcfg.lastclock = CPU_CLOCK;
 	}
 }
 
 void sound_changeclock(void) {
 
-#if 0
 	UINT32	clock;
 	UINT	hz;
 	UINT	hzmax;
@@ -256,7 +253,6 @@ void sound_changeclock(void) {
 	soundcfg.clockbase = clock;
 	soundcfg.minclock = 2 * clock / hz;
 	soundcfg.lastclock = CPU_CLOCK;
-#endif
 }
 
 void sound_streamregist(void *hdl, SOUNDCB cbfn) {
@@ -274,7 +270,6 @@ void sound_streamregist(void *hdl, SOUNDCB cbfn) {
 
 // ----
 
-#if 0
 void sound_sync(void) {
 
 	UINT32	length;
@@ -282,7 +277,6 @@ void sound_sync(void) {
 	if (sndstream.buffer == NULL) {
 		return;
 	}
-
 	length = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK - soundcfg.lastclock;
 	if (length < soundcfg.minclock) {
 		return;
@@ -300,43 +294,6 @@ void sound_sync(void) {
 #endif
 	streamprepare(length);
 	soundcfg.lastclock += length * soundcfg.clockbase / soundcfg.hzbase;
-	beep_eventreset();
-	SNDCSEC_LEAVE;
-
-	soundcfg.writecount += length;
-	if (soundcfg.writecount >= 100) {
-		soundcfg.writecount = 0;
-		soundmng_sync();
-	}
-}
-#endif
-
-void sound_makesample(UINT length) {
-
-	soundcfg.length += length;
-}
-
-void sound_sync(void) {
-
-	UINT	length;
-
-	length = soundcfg.length;
-	if (length == 0) {
-		return;
-	}
-	if (sndstream.buffer == NULL) {
-		return;
-	}
-	SNDCSEC_ENTER;
-#if defined(SUPPORT_WAVEREC)
-	if (sndstream.rec) {
-		streamfilewrite(length);
-	}
-	else
-#endif
-	streamprepare(length);
-//	soundcfg.lastclock += length * soundcfg.clockbase / soundcfg.hzbase;
-	soundcfg.length = 0;
 	SNDCSEC_LEAVE;
 
 	soundcfg.writecount += length;
@@ -370,8 +327,7 @@ const SINT32 *ret;
 #endif
 		{
 			streamprepare(sndstream.remain - sndstream.reserve);
-			soundcfg.length = 0;
-//			soundcfg.lastclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+			soundcfg.lastclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
 		}
 	}
 	else {

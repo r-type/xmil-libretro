@@ -3,6 +3,8 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"nevent.h"
+#include	"ievent.h"
 #include	"keystat.h"
 #include	"calendar.h"
 
@@ -14,6 +16,60 @@ static const UINT8 DAT_TBL[] = { 3, 0, 0, 2, 0, 1, 0, 1, 1, 0, 3, 0, 3};
 
 //**********************************************************************
 
+void neitem_scpu(UINT id) {
+
+	nevent_repeat(id);
+	if (keystat.req_int) {
+		TRACEOUT(("keystat.req_int"));
+		keystat.req_int = 0;
+		ievent_set(IEVENT_SUBCPU);
+	}
+}
+
+BRESULT ieitem_scpu(UINT id) {
+
+	UINT	key;
+
+	TRACEOUT(("ieitem_scpu"));
+	if ((subcpu.cmdcnt) || (subcpu.datacnt)) {
+		ievent_set(IEVENT_SUBCPU);
+		return(FALSE);
+	}
+	if (!subcpu.Ex[4][0]) {				// 割り込み不要だったら捨てる
+		return(FALSE);
+	}
+	if (keystat.shift & 0x40) {					// キーが押された場合
+		key = keystat_getflag();
+		subcpu.Ex[0x06][0] = (UINT8)(key >> 0);
+		subcpu.Ex[0x06][1] = (UINT8)(key >> 8);
+		if (!subcpu.Ex[0x06][1]) {		// 無効なキーだったら捨てる
+			return(FALSE);
+		}
+		subcpu.INT_SW = 1;
+	}
+	else {
+		if (!subcpu.INT_SW) {			// 何も押されてなかったら割り込まない
+			return(FALSE);
+		}
+		subcpu.INT_SW = 0;
+		key = keystat_getflag();
+		subcpu.Ex[0x06][0] = (UINT8)(key >> 0);
+		subcpu.Ex[0x06][1] = (UINT8)(key >> 8);
+	}
+	subcpu.mode = 0xe6;
+	subcpu.cmdcnt = 0;
+	subcpu.datacnt = 2;
+	subcpu.dataptr = offsetof(SUBCPU, Ex[0xe6 - 0xe0][0]);
+	subcpu.OBF = 0;
+	subcpu.IBF = 1;
+
+	Z80_INT(subcpu.Ex[4][0]);
+	(void)id;
+	return(TRUE);
+}
+
+
+#if 0
 // キーボード割り込み
 short x1_sub_int(void) {								// 990922
 
@@ -55,8 +111,10 @@ short x1_sub_int(void) {								// 990922
 	Z80_INT2(subcpu.Ex[4][0]);
 	return(0);
 }
+#endif
 
-//**********************************************************************
+
+// ----
 
 void IOOUTCALL subcpu_o(UINT port, REG8 value) {
 
@@ -227,5 +285,7 @@ void subcpu_reset(void) {
 
 	ZeroMemory(&subcpu, sizeof(subcpu));
 	subcpu.OBF = 1;
+	nevent_set(NEVENT_SUBCPU, pccore.realclock / 400,
+												neitem_scpu, NEVENT_ABSOLUTE);
 }
 

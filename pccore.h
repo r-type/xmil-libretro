@@ -22,6 +22,10 @@ typedef struct {
 } XMILCFG;
 
 typedef struct {
+	UINT32	baseclock;
+	UINT	multiple;
+	UINT32	realclock;
+
 	UINT	HSYNC_CLK;
 	UINT8	ROM_TYPE;
 	UINT8	DIP_SW;
@@ -29,6 +33,9 @@ typedef struct {
 } PCCORE;
 
 typedef struct {
+	UINT	tl;
+	UINT	vl;
+	UINT8	vsync;
 	UINT8	drawframe;
 	UINT8	soundrenewal;
 } CORESTAT;
@@ -50,7 +57,6 @@ extern	PCCORE		pccore;
 extern	CORESTAT	corestat;
 extern	BYTE		*RAM0r;
 extern	BYTE		*RAM0w;
-extern	DWORD		h_cntbase;
 
 extern	BYTE	mMAIN[0x10000];
 extern	BYTE	mBIOS[0x8000];
@@ -58,11 +64,11 @@ extern	BYTE	mBIOS[0x8000];
 extern	BYTE	mBANK[16][0x8000];
 #endif
 
-#define	h_cnt	Z80_ICOUNT
-extern	UINT	v_cnt;
 
-// BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW);
-// void x1r_exec(void);
+void nvitem_raster(UINT id);
+UINT pccore_getraster(UINT *h);
+void nvitem_vdisp(UINT id);
+void nvitem_vsync(UINT id);
 
 void pccore_initialize(void);
 void pccore_reset(void);

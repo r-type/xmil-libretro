@@ -16,7 +16,9 @@ typedef struct {
 extern "C" {
 #endif
 
-short x1_sub_int(void);
+void neitem_scpu(UINT id);
+BRESULT ieitem_scpu(UINT id);
+
 void IOOUTCALL subcpu_o(UINT port, REG8 dat);		// x1_sub_w
 REG8 IOINPCALL subcpu_i(UINT port);					// x1_sub_r
 

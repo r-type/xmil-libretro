@@ -49,12 +49,13 @@ static UINT knj_offset(void) {
 static UINT nowsyncoffset(void) {
 
 	UINT	ret;
+	UINT	h;
+	UINT	v;
 
-	ret = (((v_cnt - crtc.s.CRT_YL) / crtc.s.fnty) + crtc.s.TXT_YL)
-											* crtc.s.TXT_XL + crtc.s.TXT_TOP;
-	if (pccore.HSYNC_CLK) {
-		ret += (h_cnt * crtc.s.TXT_XL) / pccore.HSYNC_CLK;
-	}
+	v = pccore_getraster(&h);
+
+	ret = ((v / crtc.s.fnty) * crtc.s.TXT_XL) + crtc.s.TXT_TOP;
+	ret += (h * crtc.s.TXT_XL) / 250;
 
 	if (ret >= 0x0800) {
 		ret = 0x07ff;		// オーバーフロー

@@ -15,6 +15,9 @@ section .text
 	extern	@iocore_out@8
 	extern	@iocore_inp@4
 	extern	_ZSPtable
+	extern	memfetch
+	extern	_cycles_main
+	extern	opcode_main
 
 
 				align	16
@@ -35,7 +38,18 @@ _retn:			and		byte [edi + R_Z80IFF], ~((1 << IFF_NMI) | (1 << IFF_IRQ))
 				MRET
 
 				align	16
-_reti:			and		byte [edi + R_Z80IFF], ~(1 << IFF_IRQ)
+_reti:			mov		dl, [edi + R_Z80IFF]
+				test	dl, ((1 << IFF_IFLAG) | (1 << IFF_NMI))
+				jne		short .mn
+				cmp		dword [edi + z80core_t.reqirq], byte 0
+				je		short .mn
+				mov		eax, [edi + z80core_t.remainclock]
+				cmp		eax, byte 0
+				jle		short .mn
+				sub		[edi + z80core_t.remainclock], eax
+				sub		[edi + z80core_t.baseclock], eax
+.mn:			and		dl, ~(1 << IFF_IRQ)
+				mov		[edi + R_Z80IFF], dl
 				MRET
 
 				align	16

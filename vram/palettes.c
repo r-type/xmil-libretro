@@ -269,7 +269,7 @@ void pal_update(void) {
 			if (crtc.s.rgbp[CRTC_PLY] & bit) {
 				for (j=i+8; j<64; j+=8) {
 					x1n_pal32[j].d = x1n_pal32[i].d;
-					x1n_pal32[j+64].d = x1n_pal32[i + 64].d;
+					x1n_pal32[j+64].d = x1n_pal32[i+64].d;
 				}
 			}
 			else {

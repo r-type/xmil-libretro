@@ -80,13 +80,17 @@ typedef struct {
 	UINT8	im;
 	UINT8	r1;
 	UINT8	r2;
-	UINT16	iff;				// 4byte align
-	UINT16	padding1;
-	UINT32	icount;
+	UINT8	iff;				// 4byte align
+	UINT8	padding[3];
+	UINT	reqirq;
+
+	SINT32	remainclock;
+	SINT32	baseclock;
+	UINT32	clock;
 } Z80STAT;
 
 typedef struct {
-	UINT	dummy;
+		UINT	dummy;
 } Z80EXT;
 
 typedef struct {
@@ -112,42 +116,47 @@ void __fastcall z80x_interrupt(REG8 irq);
 void __fastcall z80x_interrupt2(REG8 irq);
 void z80x_nonmaskedinterrupt(void);
 void z80x_execute(void);
+void z80x_step(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 
-#define	Z80_A		z80core.s.r.b.a
-#define	Z80_F		z80core.s.r.b.f
-#define	Z80_B		z80core.s.r.b.b
-#define	Z80_C		z80core.s.r.b.c
-#define	Z80_D		z80core.s.r.b.d
-#define	Z80_E		z80core.s.r.b.e
-#define	Z80_H		z80core.s.r.b.h
-#define	Z80_L		z80core.s.r.b.l
+#define	Z80_A			z80core.s.r.b.a
+#define	Z80_F			z80core.s.r.b.f
+#define	Z80_B			z80core.s.r.b.b
+#define	Z80_C			z80core.s.r.b.c
+#define	Z80_D			z80core.s.r.b.d
+#define	Z80_E			z80core.s.r.b.e
+#define	Z80_H			z80core.s.r.b.h
+#define	Z80_L			z80core.s.r.b.l
 
-#define	Z80_AF		z80core.s.r.w.af
-#define	Z80_BC		z80core.s.r.w.bc
-#define	Z80_DE		z80core.s.r.w.de
-#define	Z80_HL		z80core.s.r.w.hl
-#define	Z80_IX		z80core.s.r.w.ix
-#define	Z80_IY		z80core.s.r.w.iy
+#define	Z80_AF			z80core.s.r.w.af
+#define	Z80_BC			z80core.s.r.w.bc
+#define	Z80_DE			z80core.s.r.w.de
+#define	Z80_HL			z80core.s.r.w.hl
+#define	Z80_IX			z80core.s.r.w.ix
+#define	Z80_IY			z80core.s.r.w.iy
 
-#define	Z80_PC		z80core.s.pc
-#define	Z80_SP		z80core.s.sp
-#define	Z80_AF2		z80core.s.af2
-#define	Z80_BC2		z80core.s.bc2
-#define	Z80_DE2		z80core.s.de2
-#define	Z80_HL2		z80core.s.hl2
+#define	Z80_PC			z80core.s.pc
+#define	Z80_SP			z80core.s.sp
+#define	Z80_AF2			z80core.s.af2
+#define	Z80_BC2			z80core.s.bc2
+#define	Z80_DE2			z80core.s.de2
+#define	Z80_HL2			z80core.s.hl2
 
-#define	Z80_I		z80core.s.i
-#define Z80_IM		z80core.s.im
-#define Z80_R		z80core.s.r1
-#define Z80_R2		z80core.s.r2
-#define	Z80_IFF		z80core.s.iff
-#define	Z80_ICOUNT	z80core.s.icount
+#define	Z80_I			z80core.s.i
+#define Z80_IM			z80core.s.im
+#define Z80_R			z80core.s.r1
+#define Z80_R2			z80core.s.r2
+#define	Z80_IFF			z80core.s.iff
 
+#define	CPU_REQIRQ		z80core.s.reqirq
+
+#define	CPU_REMCLOCK	z80core.s.remainclock
+#define	CPU_BASECLOCK	z80core.s.baseclock
+#define	CPU_CLOCK		z80core.s.clock
 
 #define	Z80_INITIALIZE			z80x_initialize
 #define	Z80_DEINITIALIZE()		
@@ -157,4 +166,5 @@ void z80x_execute(void);
 #define	Z80_INT2(a)				z80x_interrupt2(a)
 #define	Z80_NMI					z80x_nonmaskedinterrupt
 #define	Z80_EXECUTE				z80x_execute
+#define	Z80_STEP				z80x_step
 
