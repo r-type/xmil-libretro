@@ -2,6 +2,7 @@
 #include	"soundmng.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"fdd_mtr.h"
 
 
 enum {
@@ -10,64 +11,52 @@ enum {
 	SEKSEC_MS		= 20
 };
 
-typedef struct {
-//	int		busy;
-	UINT8	head[4];
-//	UINT	nextevent;
-//	UINT8	curevent;
-} _FDDMTR, *FDDMTR;
-
-		BYTE		curevent = 0;
-		DWORD		nextevent = 0;
-		BYTE		FDC_HEAD[4] = {0, 0, 0, 0};
-		DWORD		FDC_TIME[4] = {0, 0, 0, 0};
-		short		curdrv = 0;
+	_FDDMTR		fddmtr;
 
 
-void fddmtr_event(void) {
+static void fddmtr_event(void) {
 
-	switch(curevent) {
+	switch(fddmtr.curevent) {
 		case 100:
 			soundmng_pcmstop(SOUND_PCMSEEK);
-			nextevent += MOVEMOTOR1_MS;
-			curevent = 1;
+			fddmtr.nextevent += MOVEMOTOR1_MS;
+			fddmtr.curevent = 1;
 			break;
-		case 80:
-			curevent = 0;
-			break;
+
 		default:
-			curevent = 0;
+			fddmtr.curevent = 0;
 			break;
 	}
 }
 
 
+// ----
 
 void fddmtr_init(void) {
 
-	fddmtr_event();
-	memset(FDC_HEAD, 24, sizeof(FDC_HEAD));
-	ZeroMemory(FDC_TIME, sizeof(FDC_TIME));
+	soundmng_pcmstop(SOUND_PCMSEEK);
+	ZeroMemory(&fddmtr, sizeof(fddmtr));
+	FillMemory(fddmtr.head, sizeof(fddmtr.head), 24);
 }
 
 void fddmtr_callback(DWORD time) {
 
-	if ((curevent) && (time >= nextevent)) {
+	if ((fddmtr.curevent) && (time >= fddmtr.nextevent)) {
 		fddmtr_event();
 	}
 }
 
 void fddmtr_drvset(void) {
 
-	curdrv = fdc.drv;
-	if ((!FDC_TIME[curdrv]) && (!fdc.motor)) {
-		FDC_TIME[curdrv] = GetTickCount() + 5000;
+	fddmtr.curdrv = fdc.drv;
+	if ((!fddmtr.eventtime[fddmtr.curdrv]) && (!fdc.motor)) {
+		fddmtr.eventtime[fddmtr.curdrv] = GETTICK() + 5000;
 	}
-	else if ((FDC_TIME[curdrv]) && (fdc.motor)) {
-		if (FDC_TIME[curdrv] < GetTickCount()) {
-			FDC_HEAD[curdrv] = 24;
+	else if ((fddmtr.eventtime[fddmtr.curdrv]) && (fdc.motor)) {
+		if (fddmtr.eventtime[fddmtr.curdrv] < GETTICK()) {
+			fddmtr.head[fddmtr.curdrv] = 24;
 		}
-		FDC_TIME[curdrv] = 0;
+		fddmtr.eventtime[fddmtr.curdrv] = 0;
 	}
 }
 
@@ -75,8 +64,8 @@ void fddmtr_motormove(void) {
 
 	int		regmove;
 
-	regmove = FDC_HEAD[curdrv] - fdc.c;
-	FDC_HEAD[curdrv] = fdc.c;
+	regmove = fddmtr.head[fddmtr.curdrv] - fdc.c;
+	fddmtr.head[fddmtr.curdrv] = fdc.c;
 	if ((!xmilcfg.MOTOR) || (xmilcfg.NOWAIT)) {
 		return;
 	}
@@ -84,19 +73,19 @@ void fddmtr_motormove(void) {
 		regmove *= (-1);
 	}
 	if (regmove == 1) {
-		if (curevent < 80) {
+		if (fddmtr.curevent < 80) {
 			fddmtr_event();
 			soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
-			curevent = 80;
-			nextevent = GetTickCount() + MOVEMOTOR1_MS;
+			fddmtr.curevent = 80;
+			fddmtr.nextevent = GETTICK() + MOVEMOTOR1_MS;
 		}
 	}
 	else if (regmove) {
-		if (curevent < 100) {
+		if (fddmtr.curevent < 100) {
 			fddmtr_event();
 			soundmng_pcmplay(SOUND_PCMSEEK, TRUE);
-			curevent = 100;
-			nextevent = GetTickCount() + regmove * MOVE1TCK_MS;
+			fddmtr.curevent = 100;
+			fddmtr.nextevent = GETTICK() + regmove * MOVE1TCK_MS;
 		}
 	}
 }
@@ -106,10 +95,10 @@ void fddmtr_waitsec(BYTE value) {
 	if ((!xmilcfg.MOTOR) || (xmilcfg.NOWAIT)) {
 		return;
 	}
-	if ((fdc.r != value) && (curevent < 1)) {
+	if ((fdc.r != value) && (fddmtr.curevent < 1)) {
 		fddmtr_event();
-		curevent = 1;
-		nextevent = GetTickCount() + SEKSEC_MS;
+		fddmtr.curevent = 1;
+		fddmtr.nextevent = GETTICK() + SEKSEC_MS;
 	}
 }
 
