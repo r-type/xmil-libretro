@@ -867,6 +867,61 @@ SOURCE=.\DCLOCK.CPP
 # End Source File
 # Begin Source File
 
+SOURCE=.\DCLOCKD.X86
+
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=.\DCLOCKD.X86
+InputName=DCLOCKD
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
+InputPath=.\DCLOCKD.X86
+InputName=DCLOCKD
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xtrc
+InputPath=.\DCLOCKD.X86
+InputName=DCLOCKD
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xdbg
+InputPath=.\DCLOCKD.X86
+InputName=DCLOCKD
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\DDRAWBMP.CPP
 # End Source File
 # Begin Source File

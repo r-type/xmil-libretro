@@ -247,9 +247,9 @@ static void paletteinit(void) {
 		ddraw.pal[i].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
 	for (i=0; i<4; i++) {
-		ddraw.pal[i+START_PAL+TOTAL_PALS].peBlue = dclock_pal[i].p.b;
-		ddraw.pal[i+START_PAL+TOTAL_PALS].peRed = dclock_pal[i].p.r;
-		ddraw.pal[i+START_PAL+TOTAL_PALS].peGreen = dclock_pal[i].p.g;
+		ddraw.pal[i+START_PAL+TOTAL_PALS].peBlue = dclockpal.pal32[i].p.b;
+		ddraw.pal[i+START_PAL+TOTAL_PALS].peRed = dclockpal.pal32[i].p.r;
+		ddraw.pal[i+START_PAL+TOTAL_PALS].peGreen = dclockpal.pal32[i].p.g;
 		ddraw.pal[i+START_PAL+TOTAL_PALS].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
 	reflesh_palette();
