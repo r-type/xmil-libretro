@@ -126,7 +126,6 @@ BEGIN
         MENUITEM "&FM Board",                   IDM_FMBOARD
         MENUITEM "&Joystick",                   IDM_JOYSTICK
         MENUITEM "&MOUSE",                      IDM_MOUSE
-        MENUITEM "&8MHz",                       IDM_8MHZ
         MENUITEM SEPARATOR
         MENUITEM "SeekSound",                   IDM_SEEKSND
     END

@@ -1,9 +1,9 @@
 
 typedef struct {
-	UINT8	PORT_A;
-	UINT8	PORT_B;
-	UINT8	PORT_C;
-	UINT8	MODE;
+	UINT8	porta;
+	UINT8	portb;
+	UINT8	portc;
+	UINT8	mode;
 } PPI;
 
 

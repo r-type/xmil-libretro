@@ -6,69 +6,58 @@
 
 // ---- 8255 PPI～
 
-void IOOUTCALL ppi_o(UINT port, REG8 value) {
+static REG8 getportb(void) {
 
-	UINT8	bak_c;
-	UINT8	bit;
+	REG8	ret;
+	UINT	v;
+
+	ret = cmt_test(); // | cmt_read();		// THUNDER BALL
+
+	v = pccore_getraster(NULL);
+	if (v < crtc.s.CRT_YL) {
+		ret |= 0x80;						// 1:DISP
+	}
+	if (subcpu.IBF) {
+		subcpu.IBF = 0;
+		ret |= 0x40;						// 1:SUB-CPU BUSY
+	}
+	if (subcpu.OBF) {
+		ret |= 0x20;						// 1:SUB-CPU Data empty
+	}
+	if (memio.ram) {
+		ret |= 0x10;						// 1:RAM
+	}
+#if 1
+	if (!(v < crtc.e.vs)) {
+		ret |= 0x04;						// V-SYNC
+	}
+#else								// ラプラステスト…VYSNCが長すぎるらしい
+	if (v_cnt == crtc.e.vs) {
+		ret |= 0x04;
+	}
+#endif
+	return(ret);
+}
+
+static void setportc(REG8 dat) {
+
+	REG8	oldc;
 	UINT8	xl;
 
+	oldc = ppi.portc;
 	if (crtc.s.TXT_XL == 40) {
-		ppi.PORT_C |= 0x40;
+		oldc |= 0x40;
 	}
 	else {
-		ppi.PORT_C &= ~0x40;
+		oldc &= ~0x40;
 	}
-	bak_c = ppi.PORT_C;
+	ppi.portc = dat;
 
-	switch(port & 0x0f) {
-		case 0:
-			if (!(ppi.MODE & 0x10)) {
-				ppi.PORT_A = value;
-			}
-			return;
-
-		case 1:
-			if (!(ppi.MODE & 0x02)) {
-				ppi.PORT_B = value;
-			}
-			return;
-
-		case 2:
-			if (!(ppi.MODE & 0x01)) {
-				ppi.PORT_C &= 0xf0;
-				ppi.PORT_C |= (value & 0x0f);
-			}
-			if (!(ppi.MODE & 0x08)) {
-				ppi.PORT_C &= 0x0f;
-				ppi.PORT_C |= (value & 0xf0);
-			}
-			break;
-
-		case 3:
-			if (value & 0x80) {
-				ppi.MODE = value;
-				return;
-			}
-			else {
-				bit = (UINT8)(1 << ((value >> 1) & 7));
-				if (value & 0x01) {
-					ppi.PORT_C |= bit;
-				}
-				else {
-					ppi.PORT_C &= ~bit;
-				}
-			}
-			break;
-
-		default:
-			return;
-	}
-
-//	cmt_write(ppi.PORT_C & 1);
-	if ((bak_c & 0x20) && (!(ppi.PORT_C & 0x20))) {
+//	cmt_write((REG8)(dat & 1));
+	if ((oldc & 0x20) && (!(dat & 0x20))) {
 		iocore.s.mode = 1;
 	}
-	xl = ((ppi.PORT_C & 0x40)?40:80);
+	xl = ((dat & 0x40)?40:80);
 	if (crtc.s.TXT_XL != xl) {
 		crtc.s.TXT_XL = (UINT8)xl;
 //		crtc.s.GRP_XL = xl << 3;
@@ -77,53 +66,72 @@ void IOOUTCALL ppi_o(UINT port, REG8 value) {
 	}
 }
 
-REG8 IOINPCALL ppi_i(UINT port) {
 
-	UINT	v;
+// ----
 
-	ppi.PORT_B = cmt_test(); // | cmt_read();	// THUNDER BALL
+void IOOUTCALL ppi_o(UINT port, REG8 value) {
 
-	v = pccore_getraster(NULL);
-	if (v < crtc.s.CRT_YL) {
-		ppi.PORT_B |= 0x80;					// 1:DISP
-	}
-	if (subcpu.IBF) {
-		subcpu.IBF = 0;
-		ppi.PORT_B |= 0x40;					// 1:SUB-CPU BUSY
-	}
-	if (subcpu.OBF) {
-		ppi.PORT_B |= 0x20;					// 1:SUB-CPU Data empty
-	}
-	if (memio.ram) {
-		ppi.PORT_B |= 0x10;					// 1:RAM
-	}
-#if 1
-	if (!(v < crtc.e.vs)) {
-		ppi.PORT_B |= 0x04;					// V-SYNC
-	}
-#else								// ラプラステスト…VYSNCが長すぎるらしい
-	if (v_cnt == crtc.e.vs) {
-		ppi.PORT_B |= 0x04;
-	}
-#endif
-	if (crtc.s.TXT_XL == 40) {
-		ppi.PORT_C |= 0x40;
-	}
-	else {
-		ppi.PORT_C &= ~0x40;
-	}
+	REG8	bit;
+
 	switch(port & 0x0f) {
 		case 0:
-			return(ppi.PORT_A);
+			ppi.porta = value;
+			return;
 
 		case 1:
-			return(ppi.PORT_B);
+			ppi.portb = value;
+			return;
 
 		case 2:
-			return(ppi.PORT_C);
+			setportc(value);
+			break;
 
 		case 3:
-			return(ppi.MODE);
+			if (value & 0x80) {
+				ppi.mode = value;
+				return;
+			}
+			else {
+				bit = 1 << ((value >> 1) & 7);
+				if (value & 0x01) {
+					setportc((REG8)(ppi.portc | bit));
+				}
+				else {
+					setportc((REG8)(ppi.portc & (~bit)));
+				}
+			}
+			break;
+	}
+}
+
+REG8 IOINPCALL ppi_i(UINT port) {
+
+	switch(port & 0x0f) {
+		case 0:
+		//	if (!(ppi.mode & 0x10)) {
+		//		return(ppi.porta);
+		//	}
+			return(ppi.porta);
+
+		case 1:
+			if (!(ppi.mode & 0x02)) {
+				return(ppi.portb);
+			}
+			return(getportb());
+
+		case 2:
+#if 1
+			if (crtc.s.TXT_XL == 40) {
+				ppi.portc |= 0x40;
+			}
+			else {
+				ppi.portc &= ~0x40;
+			}
+#endif
+			return(ppi.portc);
+
+		case 3:
+			return(ppi.mode);
 	}
 	return(0xff);
 }
@@ -133,16 +141,16 @@ REG8 IOINPCALL ppi_i(UINT port) {
 
 void ppi_initialize(void) {
 
-	ppi.PORT_A = 0x00;
-	ppi.PORT_B = 0xff;
-	ppi.PORT_C = 0xff;
-	ppi.MODE = 0;
+	ppi.porta = 0x00;
+	ppi.portb = 0xff;
+	ppi.portc = 0xff;
+	ppi.mode = 0x9b;
 }
 
 void ppi_reset(void) {
 
-	ppi.MODE = 0;
-	ppi.PORT_A = 0;
-	ppi.PORT_C |= 0x40;
+	ppi.porta = 0x00;
+	ppi.portc |= 0x40;
+	ppi.mode = 0x82;
 }
 

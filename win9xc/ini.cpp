@@ -191,7 +191,6 @@ static const INITBL iniitem[] = {
 	{"bmap_Dir", INITYPE_STR,		bmpfilefolder,			MAX_PATH},
 
 	{"IPL_TYPE", INIMAX_UINT8,		&xmilcfg.ROM_TYPE,		3},
-	{"cpu_8MHz", INITYPE_BOOL,		&xmilcfg.CPU8MHz,		0},
 	{"Resolute", INITYPE_HEX8,		&xmilcfg.DIP_SW,		0},
 
 	{"DispSync", INITYPE_BOOL,		&xmilcfg.DISPSYNC,		0},
