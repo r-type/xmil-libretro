@@ -18,6 +18,7 @@ extern "C" {
 #define	ievent_reset()
 void ievent_progress(void);
 void ievent_setbit(UINT bit);
+void ievent_eoi(void);
 
 #define ievent_set(id)			ievent_setbit(1 << (id))
 

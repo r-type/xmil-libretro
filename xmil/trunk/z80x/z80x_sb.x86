@@ -18,6 +18,7 @@ section .text
 	extern	memfetch
 	extern	_cycles_main
 	extern	opcode_main
+	extern	_ievent_eoi
 
 
 				align	16
@@ -38,20 +39,8 @@ _retn:			and		byte [edi + R_Z80IFF], ~(1 << IFF_NMI)
 				MRET
 
 				align	16
-_reti:			mov		eax, [edi + R_Z80IRQ]
-				lea		edx, [eax - 1]
-				and		eax, edx
-				test	byte [edi + R_Z80IFF], ((1 << IFF_IFLAG) | (1 << IFF_NMI))
-				mov		[edi + R_Z80IRQ], eax
-				jne		short .mn
-				cmp		dword [edi + R_Z80REQIRQ], byte 0
-				je		short .mn
-				mov		eax, [edi + z80core_t.remainclock]
-				cmp		eax, byte 0
-				jle		short .mn
-				sub		[edi + z80core_t.remainclock], eax
-				sub		[edi + z80core_t.baseclock], eax
-.mn:			MRET
+_reti:			call	_ievent_eoi
+				MRET
 
 				align	16
 adc_hl_bc:		ADCR16	R_Z80BC

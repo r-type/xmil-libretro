@@ -321,7 +321,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 	if ((port & (~7)) != 0x0ff8) {
 		return;
 	}
-//	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
+	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
 	switch(port & 7) {
 		case 0:									// ƒRƒ}ƒ“ƒh
 			fdc.s.cmd = value;
