@@ -24,7 +24,7 @@ typedef struct {
 	UINT8	reserved[3];		// Reserved
 	UINT8	rpm_flg;			// rpm			0:1.2  1:1.44
 	UINT8	size[2];			// Sector Size
-} __attribute__ ((packed)) _D88SEC, *D88SEC, D88_SECTOR;
+} __attribute__ ((packed)) _D88SEC, *D88SEC;
 #else
 #pragma pack(push, 1)
 // D88ƒwƒbƒ_ (size: 2b0h bytes)

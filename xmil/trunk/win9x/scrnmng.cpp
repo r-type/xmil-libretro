@@ -473,7 +473,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 	scrnmng.bpp = (UINT8)bitcolor;
 	scrnsurf.bpp = bitcolor;
 	ddraw.scrnmode = mode;
-	ddraw.width = SCREEN_WIDTH;
+	ddraw.width = SURFACE_WIDTH;
 	ddraw.height = height;
 	ddraw.cliping = 0;
 	renewalclientsize(FALSE);
@@ -642,8 +642,8 @@ void clearblanklines(DWORD posx, DWORD posy) {
 
 	fillrect.left = posx;
 	fillrect.top = posy + ddraw.rect.bottom;
-	fillrect.right = posx + SCREEN_WIDTH;
-	fillrect.bottom = posy + SCREEN_HEIGHT;
+	fillrect.right = posx + SURFACE_WIDTH;
+	fillrect.bottom = posy + SURFACE_HEIGHT;
 
 	ZeroMemory(&ddbf, sizeof(ddbf));
 	ddbf.dwSize = sizeof(ddbf);

@@ -3,7 +3,6 @@
 #include	"iocore.h"
 #include	"x1_io.h"
 #include	"x1_crtc.h"
-#include	"x1_vram.h"
 #include	"draw.h"
 
 
