@@ -2,7 +2,9 @@
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 
+#ifndef		PALMOS
 #include	<math.h>
+#endif
 #include	"sound.h"
 #include	"sndctrl.h"
 
