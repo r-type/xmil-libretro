@@ -555,11 +555,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 
 	return(msg.wParam);
 
+#if defined(SUPPORT_RESUME)
 np2main_err4:
 	pccore_deinitialize();
 	x1f_close();
 	soundmng_deinitialize();
 	GXCloseInput();
+#endif
 
 np2main_err3:
 	scrnmng_destroy();

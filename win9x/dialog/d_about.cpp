@@ -4,8 +4,8 @@
 #include	"dialog.h"
 
 
-// static const OEMCHAR str_xmiltitle[] = OEMTEXT("X millennium  ");
-static const OEMCHAR str_xmiltitle[] = OEMTEXT("‚Ë‚±‚ÆƒBƒ•‚Ì”÷–­‚ÈŠÖŒW  ");
+static const OEMCHAR str_xmiltitle[] = OEMTEXT("X millennium  ");
+// static const OEMCHAR str_xmiltitle[] = OEMTEXT("‚Ë‚±‚ÆƒBƒ•‚Ì”÷–­‚ÈŠÖŒW  ");
 
 static void about_init(HWND hWnd) {
 

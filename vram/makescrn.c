@@ -181,7 +181,7 @@ static void changemodes(void) {
 	if (dispmode & DISPMODE_WIDTH80) {
 		makescrn.drawmode |= 1;
 	}
-	sysmng_scrnwidth((dispmode & DISPMODE_WIDTH80) == 0);
+	sysmng_scrnwidth((REG8)((dispmode & DISPMODE_WIDTH80) == 0));
 
 	if (!(dispmode & DISPMODE_BANK1)) {
 		makescrn.disp1 = gram + GRAM_BANK0;
@@ -391,7 +391,7 @@ void scrnupdate(void) {
 	}
 
 	if (flag) {
-		makescrn.nextdraw = scrndraw_draw(flag & SCRNUPD_ALLFLASH);
+		makescrn.nextdraw = scrndraw_draw((REG8)(flag & SCRNUPD_ALLFLASH));
 		drawtime++;
 	}
 }

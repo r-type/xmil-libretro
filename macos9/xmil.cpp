@@ -640,8 +640,10 @@ int main(int argc, char *argv[]) {
 //	keystat_initialize();
 
 	SetRect(&wRect, xmiloscfg.posx, xmiloscfg.posy, 100, 100);
-	hWndMain = NewWindow(0, &wRect, "\pNekoe System", FALSE,
+	hWndMain = NewWindow(0, &wRect, "\pX millennium", FALSE,
 								noGrowDocProc, (WindowPtr)-1, TRUE, 0);
+//	hWndMain = NewWindow(0, &wRect, "\pNekoe System", FALSE,
+//								noGrowDocProc, (WindowPtr)-1, TRUE, 0);
 	if (!hWndMain) {
 		TRACETERM();
 		macossub_term();

@@ -84,7 +84,7 @@ static REG8 wrtrkstart(FDC *f) {
 	return(0);
 }
 
-static void wrtrkdata(FDC *f, UINT8 data) {
+static void wrtrkdata(FDC *f, REG8 data) {
 
 	TAOSEC	*t;
 	REG8	n;

@@ -83,7 +83,8 @@ void sysmng_updatecaption(BYTE flag) {
 			milstr_ncat(strclock, work, sizeof(strclock));
 		}
 	}
-	milstr_ncpy(work, "Nekoe System", sizeof(work));
+	milstr_ncpy(work, "X millennium", sizeof(work));
+//	milstr_ncpy(work, "Nekoe System", sizeof(work));
 	milstr_ncat(work, strtitle, sizeof(work));
 	milstr_ncat(work, strclock, sizeof(work));
 
