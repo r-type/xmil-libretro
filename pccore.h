@@ -1,8 +1,8 @@
 
 typedef struct {
 	UINT8	ROM_TYPE;
-	UINT8	__CPU8MHz;
 	UINT8	DIP_SW;
+	UINT8	fddequip;
 
 	UINT8	DISPSYNC;
 	UINT8	RASTER;
