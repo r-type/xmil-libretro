@@ -1,7 +1,6 @@
 #include	"compiler.h"
 #include	"dosio.h"
 #include	"pccore.h"
-#include	"iocore.h"
 #include	"fddfile.h"
 #include	"fdd_2d.h"
 #include	"fdd_mtr.h"
@@ -100,7 +99,6 @@ static REG8 fdd2d_crc(FDDFILE fdd, REG8 media, UINT track, UINT num,
 	ptr[3] = fdd->inf.xdf.n;
 	ptr[4] = 0;										// CRC(Lo)
 	ptr[5] = 0;										// CRC(Hi)
-//	fdc.s.rreg = fdc.s.c;							// ƒƒ‹ƒwƒ“ƒ”ƒF[ƒ‹
 	return(0x00);
 }
 
@@ -110,16 +108,16 @@ static UINT32 fdd2d_sec(FDDFILE fdd, REG8 media, UINT track, REG8 sc) {
 
 	UINT32	ret;
 
-	if ((media != 0) || (track >= 80)) {
+	if ((media != fdd->inf.xdf.media) || (track >= fdd->inf.xdf.tracks)) {
 		return(0);
 	}
-	if ((sc == 0) || (sc > 16)) {
-		ret = 16;
+	if ((sc == 0) || (sc > fdd->inf.xdf.sectors)) {
+		ret = fdd->inf.xdf.sectors;
 	}
 	else {
 		ret = sc;
 	}
-	return((16 << 16) + ret);
+	return((16 << fdd->inf.xdf.sectors) + ret);
 }
 #endif
 
