@@ -153,6 +153,7 @@
 		};
 		20286C2CFDCF999611CA2CEA = {
 			children = (
+				9643CBEE06CF3222001307C4,
 				965B8C2806C949D1003373D6,
 				968DFC2A06C940DE00AE02AB,
 				0867D6AAFE840B52C02AAC07,
@@ -170,6 +171,7 @@
 				4A9504CAFFE6A41611CA0CBA,
 				4A9504C8FFE6A3BC11CA0CBA,
 				0249A66BFF388E3F11CA2CEA,
+				9643CBF906CF32A5001307C4,
 			);
 			isa = PBXGroup;
 			name = "External Frameworks and Libraries";
@@ -254,9 +256,10 @@
 			buildSettings = {
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "";
+				GCC_PREFIX_HEADER = xmil_xcode.h;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = "\"/Users/tora/Documents/Project Builder/CVS/xmil/MacOSX\"";
 				PRODUCT_NAME = "X millennium";
 				WRAPPER_EXTENSION = app;
 			};
@@ -275,6 +278,8 @@
 				960F8E3406C880A800937580,
 				960F9C0A06C8E17F00937580,
 				968DFC2706C940DA00AE02AB,
+				9643CBF006CF3222001307C4,
+				9643CC6E06CF488B001307C4,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -351,7 +356,6 @@
 				960F8D5B06C817B600937580,
 				960F8D5D06C817B600937580,
 				960F8E0506C87D3700937580,
-				960F8E8306C891C200937580,
 				960F8E8506C891C200937580,
 				960F8E8606C891C200937580,
 				960F8E8706C891C300937580,
@@ -375,6 +379,7 @@
 				96848A3206CA584300B6C950,
 				96848A3406CA586300B6C950,
 				96FD6BBC06CDF8EA00CD159F,
+				9643CC6906CF4865001307C4,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -386,6 +391,7 @@
 				8D0C4E930486CD37000505A6,
 				960F8E2E06C87FA400937580,
 				960F8E2F06C87FA600937580,
+				9643CBFA06CF32A5001307C4,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2475,12 +2481,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		960F8E8306C891C200937580 = {
-			fileRef = 960F8E5A06C891C200937580;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		960F8E8506C891C200937580 = {
 			fileRef = 960F8E5C06C891C200937580;
 			isa = PBXBuildFile;
@@ -2600,6 +2600,7 @@
 				960F9C1B06C8E2D300937580,
 				960F8E5906C891C200937580,
 				960F8E6206C891C200937580,
+				9643CC6806CF4865001307C4,
 				960F8E6406C891C200937580,
 				960F8E6606C891C200937580,
 				960F8E6806C891C200937580,
@@ -2696,6 +2697,7 @@
 		};
 		960F9B4E06C893BE00937580 = {
 			children = (
+				9643CBF706CF328E001307C4,
 				960F8E5F06C891C200937580,
 				960F8E6106C891C200937580,
 			);
@@ -2711,6 +2713,7 @@
 				960F8E5806C891C200937580,
 				960F9B4E06C893BE00937580,
 				960F8E6306C891C200937580,
+				9643CC6D06CF488B001307C4,
 				960F8E6506C891C200937580,
 				960F8E6706C891C200937580,
 				960F8E6906C891C200937580,
@@ -2726,6 +2729,7 @@
 				960F8E7C06C891C200937580,
 				960F8E7E06C891C200937580,
 				960F8E8006C891C200937580,
+				96E1F70406CF2E8C0061A4DD,
 			);
 			isa = PBXGroup;
 			name = MacOSX;
@@ -2829,6 +2833,80 @@
 			settings = {
 			};
 		};
+		9643CBEE06CF3222001307C4 = {
+			children = (
+				9643CBEF06CF3222001307C4,
+			);
+			isa = PBXVariantGroup;
+			name = Localizable.strings;
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9643CBEF06CF3222001307C4 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
+			name = English;
+			path = English.lproj/Localizable.strings;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9643CBF006CF3222001307C4 = {
+			fileRef = 9643CBEE06CF3222001307C4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		9643CBF706CF328E001307C4 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = CarbonAboutBox.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9643CBF906CF32A5001307C4 = {
+			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
+			path = libaboutbox.a;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9643CBFA06CF32A5001307C4 = {
+			fileRef = 9643CBF906CF32A5001307C4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		9643CC6806CF4865001307C4 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = fdefine.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9643CC6906CF4865001307C4 = {
+			fileRef = 9643CC6806CF4865001307C4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		9643CC6D06CF488B001307C4 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = fdefine.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9643CC6E06CF488B001307C4 = {
+			fileRef = 9643CC6D06CF488B001307C4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		965B8C2806C949D1003373D6 = {
 			fileEncoding = "-2147483647";
 			isa = PBXFileReference;
@@ -2919,6 +2997,14 @@
 			);
 			isa = PBXGroup;
 			name = Icons;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96E1F70406CF2E8C0061A4DD = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = xmil_xcode.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};

@@ -8,6 +8,7 @@
 #include	"fddfile.h"
 #include	"diskdrv.h"
 #include	"newdisk.h"
+#include	"xmil.h"
 
 
 void dialog_changefdd(BYTE drv) {
@@ -15,7 +16,7 @@ void dialog_changefdd(BYTE drv) {
 	char	fname[MAX_PATH];
 
 	if (drv < 4) {
-		if (dlgs_selectfile(fname, sizeof(fname))) {
+		if (dlgs_selectfile(fname, sizeof(fname), hWndMain, OPEN_FDD)) {
 			diskdrv_setfdd(drv, fname, 0);
 
 			switch (drv) {
@@ -49,83 +50,79 @@ typedef struct {
 	char	label[16+1];
 } NEWDISK;
 
-static int NewdiskDlgProc(NEWDISK *newdisk) {
+static const EventTypeSpec	hicommandEvents[]={ { kEventClassCommand, kEventCommandProcess },};
 
-	DialogPtr		hDlg;
-	int				media;
-	int				done;
-	short			item;
-	Str255			disklabel;
-	ControlHandle	btn[2];
-
-	hDlg = GetNewDialog(IDD_NEWFDDDISK, NULL, (WindowPtr)-1);
-	if (!hDlg) {
-		return(IDCANCEL);
-	}
-
-	SelectDialogItemText(hDlg, IDC_DISKLABEL, 0x0000, 0x7fff);
-	btn[0] = (ControlHandle)GetDlgItem(hDlg, IDC_MAKE2DD);
-	btn[1] = (ControlHandle)GetDlgItem(hDlg, IDC_MAKE2HD);
-	SetControlValue(btn[0], 0);
-	SetControlValue(btn[1], 1);
-	media = 1;
-	SetDialogDefaultItem(hDlg, IDOK);
-	SetDialogCancelItem(hDlg, IDCANCEL);
-
-	done = 0;
-	while(!done) {
-		ModalDialog(NULL, &item);
-		switch(item) {
-			case IDOK:
+static pascal OSStatus cfWinproc(EventHandlerCallRef myHandler, EventRef event, void* userData) {
+    OSStatus	err = eventNotHandledErr;
+    HICommand	cmd;
+	NEWDISK		disk;
+	char		disklabel[256];
+	char		path[MAX_PATH];
+	int			media;
+	WindowRef	win;
+	
+	win = (WindowRef)userData;
+    if (GetEventClass(event)==kEventClassCommand && GetEventKind(event)==kEventCommandProcess ) {
+        GetEventParameter(event, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &cmd);
+        switch (cmd.commandID)
+        {
+            case kHICommandOK:
+                getFieldText(getControlRefByID('name', 0, win), disklabel);
+                media = GetControl32BitValue(getControlRefByID('mode', 0, win));
 				if (media == 0) {
-					newdisk->fdtype = (DISKTYPE_2DD << 4);
+					disk.fdtype = (DISKTYPE_2DD << 4);
 				}
 				else {
-					newdisk->fdtype = (DISKTYPE_2HD << 4);
+					disk.fdtype = (DISKTYPE_2HD << 4);
 				}
-				GetDialogItemText(GetDlgItem(hDlg, IDC_DISKLABEL), disklabel);
-				mkcstr(newdisk->label, sizeof(newdisk->label), disklabel);
-				done = IDOK;
-				break;
+				strncpy(disk.label, disklabel, sizeof(disk.label));
+				if (dlgs_selectwritefile(path, sizeof(path), str_newdisk, '.D88', win)) {
+					newdisk_fdd(path, disk.fdtype, disk.label);
+				}
+                QuitAppModalLoopForWindow(win);
+                err=noErr;
+                break;
+                
+            case kHICommandCancel:
+                QuitAppModalLoopForWindow(win);
+                err=noErr;
+                break;
+                
+            default:
+                break;
+        }
+    }
 
-			case IDCANCEL:
-				done = IDCANCEL;
-				break;
-
-			case IDC_DISKLABEL:
-				break;
-
-			case IDC_MAKE2DD:
-				SetControlValue(btn[0], 1);
-				SetControlValue(btn[1], 0);
-				media = 0;
-				break;
-
-			case IDC_MAKE2HD:
-				SetControlValue(btn[0], 0);
-				SetControlValue(btn[1], 1);
-				media = 1;
-				break;
-		}
-	}
-	DisposeDialog(hDlg);
-	return(done);
+	(void)myHandler;
+	(void)userData;
+    return err;
 }
 
-void dialog_newdisk(void) {
-
-	char	path[MAX_PATH];
-const char	*ext;
-	NEWDISK	disk;
-
-	if (!dlgs_selectwritefile(path, sizeof(path), str_newdisk)) {
-		return;
-	}
-	ext = file_getext(path);
-	if ((!file_cmpname(ext, str_d88)) || (!file_cmpname(ext, str_88d))) {
-		if (NewdiskDlgProc(&disk) == IDOK) {
-			newdisk_fdd(path, disk.fdtype, disk.label);
-		}
-	}
+static void makeNibWindow (IBNibRef nibRef) {
+    OSStatus		err;
+    EventHandlerRef	ref;
+	WindowRef		diskWin = NULL;
+    
+    err = CreateWindowFromNib(nibRef, CFSTR("NewDiskWindow"), &diskWin);
+    if (err == noErr) {
+        InstallWindowEventHandler (diskWin, NewEventHandlerUPP(cfWinproc), GetEventTypeCount(hicommandEvents), hicommandEvents, (void *)diskWin, &ref);
+		ShowWindow(diskWin);
+        SetKeyboardFocus(diskWin, getControlRefByID('name', 0, diskWin), kControlFocusPrevPart);
+        RunAppModalLoopForWindow(diskWin);
+		HideWindow(diskWin);
+		DisposeWindow(diskWin);
+    }
+    return;
 }
 
+void dialog_newdisk( void ) {
+    OSStatus	err;
+    IBNibRef	nibRef;
+
+    err = CreateNibReference(CFSTR("main"), &nibRef);
+    if (err ==noErr ) {
+        makeNibWindow (nibRef);
+        DisposeNibReference ( nibRef);
+    }
+    return;
+}

@@ -27,7 +27,7 @@
 #if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
 #include	"statsave.h"
 #endif
-
+#include "CarbonAboutBox.h"
 
 // #define	USE_RESUME
 
@@ -137,6 +137,8 @@ static void InitToolBox(void) {
 
 	AEInstallEventHandler(kCoreEventClass, kAEQuitApplication,
 						AEProc(handleQuitApp), 0L, false);
+						
+	InitCarbonAboutBox();
 }
 
 static void MenuBarInit(void) {
@@ -191,10 +193,11 @@ static void HandleMenuChoice(long wParam) {
 
 	update = 0;
 	switch(wParam) {
+#if 0
 		case IDM_ABOUT:
 			AboutDialogProc();
 			break;
-
+#endif
 		case IDM_IPLRESET:
 			pccore_reset();
 			break;
