@@ -20,8 +20,7 @@ typedef struct {
 } _FNTMNG, *FNTMNG;
 
 
-// static const OEMCHAR deffontface[] = OEMTEXT("ÇlÇr ÉSÉVÉbÉN");
-static const OEMCHAR deffontface[] = OEMTEXT("ÇcÇe ç◊ä€ÉSÉVÉbÉNëÃ");
+static const OEMCHAR deffontface[] = OEMTEXT("ÇlÇr ÉSÉVÉbÉN");
 static const OEMCHAR deffontface2[] = OEMTEXT("ÇlÇr ÇoÉSÉVÉbÉN");
 
 
@@ -36,7 +35,7 @@ void *fontmng_create(int size, UINT type, const OEMCHAR *fontface) {
 	int			fontwidth;
 	int			fontheight;
 	int			weight;
-	DWORD		pitch;
+	UINT		pitch;
 
 	if (size < 0) {
 		size *= -1;
@@ -211,7 +210,6 @@ BRESULT fontmng_getdrawsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 
 	width = 0;
 	posx = 0;
-	buf[2] = '\0';
 	while(1) {
 		leng = milstr_charsize(string);
 		if (!leng) {
@@ -223,7 +221,7 @@ BRESULT fontmng_getdrawsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 		getlength1((FNTMNG)hdl, &fdat, buf, leng);
 		width = posx + max(fdat.width, fdat.pitch);
 		posx += fdat.pitch;
-	} while(1);
+	}
 
 	if (pt) {
 		pt->x = width;
