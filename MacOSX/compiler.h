@@ -64,8 +64,10 @@ typedef unsigned int	DWORD;
 
 #define	SUPPORT_SJIS
 
+#define	MEMOPTIMIZE			1
 #define	SUPPORT_32BPP
-#define	MEMOPTIMIZE		1
+#define	SUPPORT_RESUME
+#define	SUPPORT_STATSAVE	10
 
-#define	SOUNDRESERVE	80
+#define	SOUNDRESERVE		80
 

@@ -10,6 +10,13 @@ typedef struct {
 	UINT8	F11KEY;
 	UINT8	F12KEY;
 
+#if defined(SUPPORT_RESUME)
+	UINT8	resume;
+#endif
+#if defined(SUPPORT_STATSAVE)
+	UINT8	statsave;
+#endif
+
 	UINT8	Z80SAVE;
 } XMILOSCFG;
 
