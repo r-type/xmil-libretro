@@ -18,10 +18,12 @@ typedef struct {
 	UINT8	existblink;							// blinkflag
 
 
-//	UINT8	*disp1;
-//	UINT8	dispflag;
-//	UINT8	blinktest;
+	UINT8	*disp1;
+	UINT8	*disp2;
+	UINT8	dispflag;
+	UINT8	blinktest;
 //	UINT8	blinktime;
+	UINT8	padding[2];
 
 	UINT	vramtop;
 	UINT	fontycnt;

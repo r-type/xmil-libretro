@@ -28,7 +28,7 @@ const OEMCHAR	*p;
 	OEMCHAR		path[MAX_PATH];
 	int			readonly;
 
-	p = fdd_diskname(drv);
+	p = fddfile_diskname(drv);
 	if ((p == NULL) || (p[0] == '\0')) {
 		p = fddfolder;
 	}

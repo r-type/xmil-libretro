@@ -1,12 +1,51 @@
 
+enum {
+	FDCDIR_NONE			= 0x00,
+	FDCDIR_IN			= 0x01,
+	FDCDIR_OUT			= 0x02
+};
+
+enum {
+	FDC_BUFFERS		= 0x3000
+};
+
 typedef struct {
+	UINT8	cmd;
+	UINT8	type;
+	UINT8	data;
+	SINT8	step;
+	UINT8	drv;
+	UINT8	motor;
+	UINT8	creg;
+	UINT8	rreg;
+
+	UINT8	c;
+	UINT8	h;
+	UINT8	r;
+	UINT8	n;
+
+	UINT8	ctbl[4];
+
 	UINT8	media;
-	UINT8	padding[3];
+	UINT8	stat;
 
-	UINT	bufpos;
+	UINT8	bufmedia;
+	UINT8	bufunit;
+	UINT	buftrack;
+	UINT8	bufsc;
+	UINT8	bufdir;
+	UINT8	bufwrite;
+	UINT8	bufmark;
 	UINT	bufsize;
+	UINT	bufpos;
 
-	UINT8	buffer[8];
+	UINT8	hole;
+	UINT8	padding[3];
+	UINT	crcnum;
+	UINT32	busyclock;
+	UINT32	busystart;
+
+	UINT8	buffer[FDC_BUFFERS];
 } FDCSTAT;
 
 typedef struct {
@@ -14,30 +53,7 @@ typedef struct {
 } FDCEXT;
 
 typedef struct {
-	UINT8	drv;
-	UINT8	cmd;
-	short	skip;
-	short	off;
-	UINT8	type;
-	UINT8	treg;
-	UINT8	sct_bak;
-	UINT8	data;
-	SINT8	step;
-	UINT8	motor;
-
-	UINT8	c;
-	UINT8	h;
-	UINT8	r;
-	UINT8	n;
-
-	UINT32	busyclock;
-	UINT32	busystart;
-	BYTE	rreg;
 	FDCSTAT	s;
-
-//	BYTE	media;
-//	short	crc_off;
-//	UINT8	crc_dat[8];
 } FDC;
 
 
@@ -45,7 +61,7 @@ typedef struct {
 extern "C" {
 #endif
 
-extern	UINT8	fdcdummyread;
+REG8 fdcisbusy(void);
 
 void IOOUTCALL fdc_o(UINT port, REG8 value);		// x1_fdc_w
 REG8 IOINPCALL fdc_i(UINT port);					// x1_fdc_r

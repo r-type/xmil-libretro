@@ -44,13 +44,13 @@ dma_lp:			cmp		dma.ENDB_FLG, 0
 				jne		dmalpend
 dma_lpst:
 				push	ecx
+				push	edx
 				movzx	ecx, word ptr [ebx]
 				test	dl, 8
 				jne		dma_inport
-				push	edx
 				call	memrd8_ecx_al
-				pop		edx
-dmasrcend:		pop		ecx
+dmasrcend:		pop		edx
+				pop		ecx
 
 				test	dma.DMA_CMND, 1
 				je		dmadstend
@@ -138,24 +138,10 @@ dma_intrpt:		jmp		z80x_interrupt
 dmaintrptend:	ret
 
 
-dma_inport:		push	edx
-				push	ebx
-				cmp		cx, 0ffbh
-				jne		Z80inport
-				mov		fdcdummyread, 0
-Z80inport:		call	iocore_inp
-				pop		ebx
-				pop		edx
+dma_inport:		call	iocore_inp
 				jmp		dmasrcend
 
-dma_outport:	push	ebx
-				cmp		cx, 0ffbh
-				jne		Z80outport
-				cmp		iocore.s.mode, 0
-				jne		Z80outport
-				mov		fdcdummyread, 0
-Z80outport:		call	iocore_out
-				pop		ebx
+dma_outport:	call	iocore_out
 				jmp		dmadstend
 	}
 }
