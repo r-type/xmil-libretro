@@ -10,7 +10,6 @@
 #include	"scrnmng.h"
 #include	"soundmng.h"
 #include	"sysmng.h"
-#include	"ddrawbmp.h"
 #include	"winloc.h"
 #include	"dclock.h"
 #include	"winkbd.h"
@@ -270,8 +269,8 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			diskdrv_setfdd(3, NULL, 0);
 			break;
 
-		case IDM_TURBOZ:
-			menu_setiplrom(3);
+		case IDM_X1ROM:
+			menu_setiplrom(1);
 			update = SYS_UPDATECFG;
 			break;
 
@@ -280,10 +279,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			update = SYS_UPDATECFG;
 			break;
 
-		case IDM_X1ROM:
-			menu_setiplrom(1);
+#if defined(SUPPORT_TURBOZ)
+		case IDM_TURBOZ:
+			menu_setiplrom(3);
 			update = SYS_UPDATECFG;
 			break;
+#endif
 
 		case IDM_BOOT2D:
 			menu_setbootmedia(0);
@@ -396,7 +397,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_BMPSAVE:
 			winuienter();
-			bmpsave();
+			dialog_writebmp(hWnd);
 			winuileave();
 			break;
 

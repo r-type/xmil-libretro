@@ -148,6 +148,12 @@ void menu_initialize(void) {
 												IDM_WAVEREC, IDS_WAVEREC);
 #endif
 
+#if defined(SUPPORT_TURBOZ)
+	hSubMenu = GetSubMenu(hMenu, 3);
+	insertresmenu(hSubMenu, 2, MF_BYPOSITION | MF_STRING,
+												IDM_TURBOZ, IDS_TURBOZ);
+#endif
+
 //	for (i=4; i--;) {
 //		if (np2cfg.fddequip & (1 << i)) {
 //			insdiskmenu(hMenu, 1, fddmenu + i);

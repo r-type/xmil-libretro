@@ -31,9 +31,9 @@
 #define IDM_FDD2EJECT                   40010
 #define IDM_FDD3OPEN                    40011
 #define IDM_FDD3EJECT                   40012
-#define IDM_TURBOZ                      40013
+#define IDM_X1ROM                       40013
 #define IDM_TURBO                       40014
-#define IDM_X1ROM                       40015
+#define IDM_TURBOZ                      40015
 #define IDM_BOOT2D                      40016
 #define IDM_BOOT2HD                     40017
 #define IDM_HIGHRES                     40018

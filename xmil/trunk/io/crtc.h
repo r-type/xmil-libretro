@@ -85,14 +85,15 @@ typedef struct {
 	UINT8	SCRN_BITS;
 	UINT8	width40;
 	UINT8	regnum;
-	UINT8	padding;
+	UINT8	BLACKPAL;
 	UINT8	rgbp[4];
 	UINT8	reg[CRTCREG_MAX];
-	UINT8	BLACKPAL;
+#if defined(SUPPORT_TURBOZ)
 	UINT8	EXTPALMODE;
 	UINT8	EXTGRPHPAL;
 	UINT8	ZPRY;
 	UINT8	lastpal;
+#endif
 } CRTCSTAT;
 
 typedef struct {
@@ -106,8 +107,10 @@ typedef struct {
 	UINT	updatemask;			// updatemsk
 	UINT8	updatebit;			// curupdt
 	UINT8	dispmode;
+#if defined(SUPPORT_TURBOZ)
 	UINT8	pal_bank;
 	UINT8	pal_disp;
+#endif
 
 	UINT	pos;
 
@@ -116,16 +119,20 @@ typedef struct {
 	SINT32	vpulseclock;
 } CRTCEXT;
 
+#if defined(SUPPORT_TURBOZ)
 typedef struct {
 	UINT8	text[8];
 	UINT16	grph[2][64];
 	UINT16	grph4096[4096];
 } CRTCPAL;
+#endif
 
 typedef struct {
 	CRTCSTAT	s;
 	CRTCEXT		e;
+#if defined(SUPPORT_TURBOZ)
 	CRTCPAL		p;
+#endif
 } CRTC;
 
 
@@ -133,8 +140,6 @@ typedef struct {
 
 void crtc_setwidth(REG8 width40);
 void crtc_update(void);
-// void crtc_bankupdate(void);							// vrambank_patch
-// void crtc_regupdate(void);
 
 void IOOUTCALL crtc_o(UINT port, REG8 value);			// x1_crtc_w
 
@@ -142,27 +147,32 @@ void IOOUTCALL scrn_o(UINT port, REG8 value);			// x1_scrn_w
 REG8 IOINPCALL scrn_i(UINT port);						// x1_scrn_r
 
 void IOOUTCALL ply_o(UINT port, REG8 value);			// x1_ply_w
-REG8 IOINPCALL ply_i(UINT port);						// x1_ply_r
-
 void IOOUTCALL palette_o(UINT port, REG8 value);		// x1_palet_w
-REG8 IOINPCALL palette_i(UINT port);					// x1_palet_r
-
-void IOOUTCALL extpal_o(UINT port, REG8 value);			// x1_extpal_w
-REG8 IOINPCALL extpal_i(UINT port);						// x1_extpal_r
-
-void IOOUTCALL extgrphpal_o(UINT port, REG8 value);		// x1_extgrphpal_w
-REG8 IOINPCALL extgrphpal_i(UINT port);					// x1_extgrphpal_r
-
-void IOOUTCALL exttextpal_o(UINT port, REG8 value);		// x1_exttextpal_w
-REG8 IOINPCALL exttextpal_i(UINT port);					// x1_exttextpal_r
-
-void IOOUTCALL exttextdisp_o(UINT port, REG8 value);	// x1_exttextdisp_w
-REG8 IOINPCALL exttextdisp_i(UINT port);				// x1_exttextdisp_r
 
 void IOOUTCALL blackctrl_o(UINT port, REG8 value);		// x1_blackctrl_w
 REG8 IOINPCALL blackctrl_i(UINT port);					// x1_blackctrl_r
 
+
+#if defined(SUPPORT_TURBOZ)
+REG8 IOINPCALL ply_i(UINT port);						// x1_ply_r
+REG8 IOINPCALL palette_i(UINT port);					// x1_palet_r
+
+void IOOUTCALL extpal_o(UINT port, REG8 value);			// x1_extpal_w
+REG8 IOINPCALL extpal_i(UINT port);						// x1_extpal_r
+void IOOUTCALL extgrphpal_o(UINT port, REG8 value);		// x1_extgrphpal_w
+REG8 IOINPCALL extgrphpal_i(UINT port);					// x1_extgrphpal_r
+void IOOUTCALL exttextpal_o(UINT port, REG8 value);		// x1_exttextpal_w
+REG8 IOINPCALL exttextpal_i(UINT port);					// x1_exttextpal_r
+void IOOUTCALL exttextdisp_o(UINT port, REG8 value);	// x1_exttextdisp_w
+REG8 IOINPCALL exttextdisp_i(UINT port);				// x1_exttextdisp_r
+#endif
+
+
+#if defined(SUPPORT_TURBOZ)
 void crtc_initialize(void);
+#else
+#define	crtc_initialize()
+#endif
 void crtc_reset(void);
 void crtc_forcesetwidth(REG8 width);
 

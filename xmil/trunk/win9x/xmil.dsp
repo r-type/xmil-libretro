@@ -97,7 +97,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "TRACE" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "TRACE" /D "SUPPORT_TURBOZ" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
@@ -152,6 +152,10 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=..\COMMON\_MEMORY.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\COMMON\BMPDATA.C
 # End Source File
 # Begin Source File
 
@@ -676,6 +680,10 @@ SOURCE=..\VRAM\SCRNDRAW.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\VRAM\SCRNSAVE.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\VRAM\SDRAW.C
 # End Source File
 # Begin Source File
@@ -830,6 +838,10 @@ SOURCE=.\DIALOG\D_ABOUT.CPP
 # End Source File
 # Begin Source File
 
+SOURCE=.\DIALOG\D_BMP.CPP
+# End Source File
+# Begin Source File
+
 SOURCE=.\DIALOG\D_CFG.CPP
 # End Source File
 # Begin Source File
@@ -907,10 +919,6 @@ InputName=DCLOCKD
 
 !ENDIF 
 
-# End Source File
-# Begin Source File
-
-SOURCE=.\DDRAWBMP.CPP
 # End Source File
 # Begin Source File
 

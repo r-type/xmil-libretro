@@ -139,8 +139,8 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			diskdrv_setfdd(1, NULL, 0);
 			break;
 
-		case IDM_TURBOZ:
-			menu_setiplrom(3);
+		case IDM_X1ROM:
+			menu_setiplrom(1);
 			update = SYS_UPDATECFG;
 			break;
 
@@ -149,10 +149,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			update = SYS_UPDATECFG;
 			break;
 
-		case IDM_X1ROM:
-			menu_setiplrom(1);
+#if defined(SUPPORT_TURBOZ)
+		case IDM_TURBOZ:
+			menu_setiplrom(3);
 			update = SYS_UPDATECFG;
 			break;
+#endif
 
 		case IDM_BOOT2D:
 			menu_setbootmedia(0);

@@ -241,7 +241,7 @@ static void paletteinit(void) {
 	hdc = GetDC(hWndMain);
 	GetSystemPaletteEntries(hdc, 0, 256, ddraw.pal);
 	ReleaseDC(hWndMain, hdc);
-	for (i=0; i<XMILPAL_TOTAL; i++) {
+	for (i=0; i<XMILPAL_USE; i++) {
 		ddraw.pal[i + START_PAL].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
 	for (i=0; i<4; i++) {
@@ -258,15 +258,15 @@ static void paletteinit(void) {
 
 static void paletteset(void) {
 
-	int		i;
+	UINT	i;
 
-	if ((ddraw.palette != NULL) && (xm_palettes)) {
-		for (i=0; i<xm_palettes; i++) {
-			ddraw.pal[i+START_PAL].peRed = x1n_pal32[i].p.r;
-			ddraw.pal[i+START_PAL].peBlue = x1n_pal32[i].p.b;
-			ddraw.pal[i+START_PAL].peGreen = x1n_pal32[i].p.g;
+	if ((ddraw.palette != NULL) && (xmil_palettes)) {
+		for (i=0; i<xmil_palettes; i++) {
+			ddraw.pal[i+START_PAL].peRed = xmil_pal32[i].p.r;
+			ddraw.pal[i+START_PAL].peBlue = xmil_pal32[i].p.b;
+			ddraw.pal[i+START_PAL].peGreen = xmil_pal32[i].p.g;
 		}
-		ddraw.palette->SetEntries(0, START_PAL, xm_palettes,
+		ddraw.palette->SetEntries(0, START_PAL, xmil_palettes,
 													&ddraw.pal[START_PAL]);
 	}
 }
