@@ -19,7 +19,7 @@ const UINT8		*pat;
 
 	atr = tram[TRAM_ATR + pos];
 	if (atr & blinktest) {
-		atr ^= X1ATR_REVERSE;
+		atr ^= TRAMATR_REVERSE;
 	}
 	if (udtmp & 0x10) {
 		pos = LOW11(pos - 1);
@@ -66,7 +66,7 @@ const UINT8		*pat;
 
 	atr = tram[TRAM_ATR + pos];
 	if (atr & blinktest) {
-		atr ^= X1ATR_REVERSE;
+		atr ^= TRAMATR_REVERSE;
 	}
 	if (udtmp & 0x10) {
 		pos = LOW11(pos - 1);

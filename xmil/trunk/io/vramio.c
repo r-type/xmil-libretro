@@ -16,10 +16,10 @@ void IOOUTCALL tram_o(UINT port, REG8 value) {
 		if (tram[TRAM_ATR + addr] == value) {
 			return;
 		}
-		if ((tram[TRAM_ATR + addr] ^ value) & (X1ATR_Yx2 | X1ATR_Xx2)) {
+		if ((tram[TRAM_ATR + addr] ^ value) & (TRAMATR_Yx2 | TRAMATR_Xx2)) {
 			makescrn.remakeattr = 1;
 		}
-		if (value & X1ATR_BLINK) {
+		if (value & TRAMATR_BLINK) {
 			makescrn.existblink = 1;
 		}
 		tram[TRAM_ATR + addr] = value;
@@ -37,7 +37,7 @@ void IOOUTCALL tram_o(UINT port, REG8 value) {
 		tram[TRAM_ANK + addr] = value;
 	}
 	makescrn.scrnflash = 1;
-	if (tram[TRAM_ATR + addr] & X1ATR_Xx2) {
+	if (tram[TRAM_ATR + addr] & TRAMATR_Xx2) {
 		updatetmp[LOW11(addr + 1)] |= UPDATE_TVRAM;
 	}
 	updatetmp[addr] |= UPDATE_TVRAM;
@@ -83,26 +83,26 @@ void IOOUTCALL gram2_o(UINT port, REG8 value) {
 	UINT8	*p;
 
 	p = crtc.e.gram + (((port << 5) + (port >> 11)) & 0xffe7);
-	switch(port & 0xc000) {
-		case 0x0000:
-			p[PLANE_B] = value;
-			p[PLANE_R] = value;
-			p[PLANE_G] = value;
+	switch((port >> 14) & 3) {
+		case 0:
+			p[GRAM_B] = value;
+			p[GRAM_R] = value;
+			p[GRAM_G] = value;
 			break;
 
-		case 0x4000:
-			p[PLANE_R] = value;
-			p[PLANE_G] = value;
+		case 1:
+			p[GRAM_R] = value;
+			p[GRAM_G] = value;
 			break;
 
-		case 0x8000:
-			p[PLANE_B] = value;
-			p[PLANE_G] = value;
+		case 2:
+			p[GRAM_B] = value;
+			p[GRAM_G] = value;
 			break;
 
-		case 0xc000:
-			p[PLANE_B] = value;
-			p[PLANE_R] = value;
+		case 3:
+			p[GRAM_B] = value;
+			p[GRAM_R] = value;
 			break;
 	}
 	updatetmp[port & crtc.e.updatemask] |= crtc.e.updatebit;
