@@ -22,7 +22,8 @@ typedef struct {
 	UINT8	dispflag;
 	UINT8	blinktest;
 //	UINT8	blinktime;
-	UINT8	padding[2];
+	UINT8	padding;
+	UINT8	nextdraw;
 
 	UINT	vramtop;
 	UINT	fontycnt;

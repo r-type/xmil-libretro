@@ -63,7 +63,6 @@ void IOOUTCALL sndboard_psgdat(UINT port, REG8 dat) {
 	REG8	reg;
 
 	reg = sndboard.psgreg;
-	TRACEOUT(("psg %.2x %.2x", reg, dat));
 	if (reg < 0x0e) {
 		sndboard.psgdat[reg] = dat;
 		x1f_psg(reg, dat);

@@ -41,8 +41,8 @@ typedef struct {
 	PSGTONE		tone[3];
 	PSGNOISE	noise;
 	PSGREG		reg;
-	UINT16		envcnt;
-	UINT16		envmax;
+	UINT32		envcnt;
+	UINT32		envmax;
 	UINT8		mixer;
 	UINT8		envmode;
 	UINT8		envvol;
