@@ -173,7 +173,7 @@ BRESULT ieitem_ctc(UINT id) {
 	if (intr) {
 		for (i=0, bit=1; i<4; i++, bit<<=1) {
 			if (intr & bit) {
-#if 0			// アークスのタイミング→あとで修正
+#if 1			// アークスのタイミング→あとで修正
 				if (0)
 #elif 1
 				if ((ch->countmax[i] - ch->count[i]) >= 256)
@@ -191,7 +191,7 @@ BRESULT ieitem_ctc(UINT id) {
 				else if (!r) {
 					r = TRUE;
 					intr ^= bit;
-//					TRACEOUT(("ctc int %d", i));
+//					TRACEOUT(("ctc int %d %d", ch->num, i));
 					Z80_INTERRUPT((REG8)(ch->vector + (i << 1)));
 				}
 			}
@@ -283,7 +283,7 @@ void IOOUTCALL ctc_o(UINT port, REG8 value) {
 
 	CTCCH	*ch;
 
-//	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
+	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
 	ch = getctcch(port);
 	if (ch != NULL) {
 		ctcch_o(ch, port, value);

@@ -17,7 +17,7 @@ void neitem_fdcbusy(UINT id) {
 
 	fdc.s.busy = FALSE;
 	if (fdc.s.bufdir) {
-		TRACEOUT(("dma ready!"));
+//		TRACEOUT(("dma ready!"));
 		dmac_sendready(TRUE);
 	}
 	(void)id;
@@ -445,7 +445,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 
 	REG8	ret;
 
-	TRACEOUT(("fdc inp %.4x", port));
+//	TRACEOUT(("fdc inp %.4x", port));
 
 	if ((port & (~7)) != 0x0ff8) {
 		return(0xff);
@@ -469,7 +469,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 			if (!(ret & 0x02)) {
 				dmac_sendready(FALSE);
 			}
-			TRACEOUT(("ret->%.2x", ret));
+//			TRACEOUT(("ret->%.2x", ret));
 			return(ret);
 
 		case 1:									// ƒgƒ‰ƒbƒN

@@ -172,6 +172,10 @@ void crtc_regupdate(void) {
 
 	fontyclock = fonty * RASTER_CLOCK;
 	crtc.e.dispclock = fontyclock * crtc.e.yl;
+	// YsIII‚ª yl==0‚Å dispM†Œ©‚éc‚È‚ñ‚ÅH
+	if (!crtc.e.dispclock) {
+		crtc.e.dispclock = fontyclock;
+	}
 	crtc.e.vsyncstart = fontyclock * ((crtc.s.reg[CRTCREG_VSYNC] & 0x7f) + 1);
 	crtc.e.vpulseclock = (crtc.s.reg[CRTCREG_PULSE] >> 4) * RASTER_CLOCK;
 	crtc.e.vl = fonty * ((crtc.s.reg[CRTCREG_VSIZE] & 0x7f) + 1)

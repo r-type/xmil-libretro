@@ -216,7 +216,6 @@ void pccore_exec(BRESULT draw) {
 		}
 #else
 		while(CPU_REMCLOCK > 0) {
-			//	TRACEOUT(("%.4x", Z80_PC));
 #if defined(TRACE) && IPTRACE
 			treip[trpos & (IPTRACE - 1)] = Z80_PC;
 			trpos++;

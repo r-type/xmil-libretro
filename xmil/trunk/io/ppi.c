@@ -143,7 +143,7 @@ void ppi_initialize(void) {
 	ppi.porta = 0x00;
 	ppi.portb = 0xff;
 	ppi.portc = 0xff;
-	ppi.mode = 0x9b;
+	ppi.mode = 0x82;
 }
 
 void ppi_reset(void) {
