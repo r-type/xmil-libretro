@@ -4,10 +4,6 @@
 #include	"sndctrl.h"
 
 
-// extern	int		s_cnt;
-// extern	DWORD	basedclk;
-
-
 #define	OPM_ARRATE		 399128L
 #define	OPM_DRRATE		5514396L
 
@@ -381,11 +377,7 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 	OPMCH		*ch;
 	OPMSLOT		*slot;
 
-//	if (romeo_exist) {
-//		juliet2_YM2151W(reg, value, (basedclk * s_cnt / 1600));
-//		return;
-//	}
-
+	sound_sync();
 	c = reg & 7;
 	ch = opmch + c;
 	slot = ch->slot + fmslot[(reg >> 3) & 3];

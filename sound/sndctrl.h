@@ -7,7 +7,6 @@ extern "C" {
 #endif
 
 extern	UINT		pcmbufsize[];
-extern	UINT		framesoundcnt;
 extern	OPMCH		opmch[OPMCH_MAX];
 extern	_OPMGEN		opmgen;
 extern	_PSGGEN		psggen;

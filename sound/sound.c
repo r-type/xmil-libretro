@@ -225,8 +225,8 @@ void sound_reset(void) {
 	if (sndstream.buffer) {
 		soundmng_reset();
 		streamreset();
+		soundcfg.length = 0;
 //		soundcfg.lastclock = CPU_CLOCK;
-//		beep_eventreset();
 	}
 }
 
@@ -313,6 +313,17 @@ void sound_sync(void) {
 
 void sound_makesample(UINT length) {
 
+	soundcfg.length += length;
+}
+
+void sound_sync(void) {
+
+	UINT	length;
+
+	length = soundcfg.length;
+	if (length == 0) {
+		return;
+	}
 	if (sndstream.buffer == NULL) {
 		return;
 	}
@@ -325,6 +336,7 @@ void sound_makesample(UINT length) {
 #endif
 	streamprepare(length);
 //	soundcfg.lastclock += length * soundcfg.clockbase / soundcfg.hzbase;
+	soundcfg.length = 0;
 	SNDCSEC_LEAVE;
 
 	soundcfg.writecount += length;
@@ -358,8 +370,8 @@ const SINT32 *ret;
 #endif
 		{
 			streamprepare(sndstream.remain - sndstream.reserve);
+			soundcfg.length = 0;
 //			soundcfg.lastclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
-//			beep_eventreset();
 		}
 	}
 	else {
