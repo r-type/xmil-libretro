@@ -8,13 +8,13 @@
 
 void IOOUTCALL sndboard_opmreg(UINT port, REG8 value) {
 
-	TRACEOUT(("%.4x, %.2x", port, value));
+//	TRACEOUT(("%.4x, %.2x", port, value));
 	sndboard.opmreg = (UINT8)value;
 }
 
 void IOOUTCALL sndboard_opmdat(UINT port, REG8 value) {
 
-	TRACEOUT(("%.4x, %.2x", port, value));
+//	TRACEOUT(("%.4x, %.2x", port, value));
 	opmgen_setreg(sndboard.opmreg, value);
 }
 
@@ -29,11 +29,13 @@ REG8 IOINPCALL sndboard_opmsta(UINT port) {
 
 void IOOUTCALL sndboard_psgreg(UINT port, REG8 value) {
 
+//	TRACEOUT(("OUT %.4x, %.2x", port, value));
 	sndboard.psgreg = value;
 }
 
 void IOOUTCALL sndboard_psgdat(UINT port, REG8 value) {
 
+//	TRACEOUT(("OUT %.4x, %.2x", port, value));
 	if (sndboard.psgreg < 0x0e) {
 		psggen_setreg(&psggen, sndboard.psgreg, value);
 	}

@@ -73,20 +73,20 @@ static	BYTE		TAO_BUF[0x3000];
 
 //----------------------------------------------------------------------
 
-DWORD nexttrackp(D88_HEADER *head, DWORD fptr, DWORD last) {
+static UINT32 nexttrackp(D88_HEADER *head, UINT32 fptr, UINT32 last) {
 
-	int		t;
-	DWORD	ret;
-	DWORD	*trkp;
+	UINT	t;
+const DWORD	*trkp;
+	UINT32	cur;
 
-	ret = last;
 	trkp = (DWORD *)head->trackp;
-	for (t=0; t<164; t++, trkp++) {
-		if ((*trkp > fptr) && (*trkp < ret)) {
-			ret = *trkp;
+	for (t=0; t<164; t++) {
+		cur = trkp[t];
+		if ((cur > fptr) && (cur < last)) {
+			last = cur;
 		}
 	}
-	return(ret);
+	return(last);
 }
 
 
@@ -170,15 +170,15 @@ readd88_err:
 
 
 
-int seeksector(short drv, WORD track, WORD sector) {
+static int seeksector(short drv, WORD track, WORD sector) {
 
 static	int		lastflag = FALSE;
 
 	BYTE 		*p;
 	WORD		sec;
 
-	if ((curdrv != drv) || (curtrk != track) || (curtype != FDC.media)) {
-		read_d88track(drv, track, FDC.media);
+	if ((curdrv != drv) || (curtrk != track) || (curtype != fdc.media)) {
+		read_d88track(drv, track, fdc.media);
 	}
 	if (curtrkerr) {
 		cursct = sector;
@@ -225,49 +225,6 @@ void drvflush(short drv) {
 }
 
 
-//**********************************************************************
-
-BRESULT fdd_eject_d88(REG8 drv) {
-
-	FDDFILE	fdd;
-
-	drvflush(drv);
-	fdd = fddfile + drv;
-	ZeroMemory(&d88head[drv], sizeof(D88_HEADER));
-	fdd->fname[0] = '\0';
-	DISKNUM[drv] = 0;
-	return(0);
-}
-
-BRESULT fdd_set_d88(REG8 drv, const OEMCHAR *fname) {
-
-	FDDFILE	fdd;
-	WORD	attr;
-	FILEH	hdr;
-	short	rsize;
-
-	fdd_eject_d88(drv);
-	fdd = fddfile + drv;
-	if ((drv < 0 || drv > 3) ||
-		((attr = file_attr(fname)) & 0x18)) {	// ｴﾗｰ･ﾃﾞｨﾚｸﾄﾘ･ﾗﾍﾞﾙ
-		return(1);
-	}
-	if ((hdr = file_open(fname)) == FILEH_INVALID) {
-		return(1);
-	}
-	rsize = file_read(hdr, &d88head[drv], sizeof(D88_HEADER));
-	file_close(hdr);
-	if (rsize != sizeof(D88_HEADER)) {
-		fdd_eject_d88(drv);
-		return(1);
-	}
-	if (attr & 1) {
-		d88head[drv].protect |= (WORD)0x10;
-	}
-	milstr_ncpy(fdd->fname, fname, NELEMENTS(fdd->fname));
-	DISKNUM[drv] = 1;
-	return(0);
-}
 
 
 //**********************************************************************
@@ -278,11 +235,11 @@ short fdd_crc_d88(void) {
 	BYTE		*p;
 	WORD		sec;
 
-	ZeroMemory(FDC.crc_dat, 6);
-	if ((track = (WORD)(FDC.c << 1) + (WORD)FDC.h) > 163) {
+	ZeroMemory(fdc.crc_dat, 6);
+	if ((track = (WORD)(fdc.c << 1) + (WORD)fdc.h) > 163) {
 		goto crcerror_d88;
 	}
-	seeksector(FDC.drv, track, FDC.r);
+	seeksector(fdc.drv, track, fdc.r);
 	if (curtrkerr) {
 		goto crcerror_d88;
 	}
@@ -294,8 +251,8 @@ short fdd_crc_d88(void) {
 		p += ((D88_SECTOR *)p)->size;
 		p += sizeof(D88_SECTOR);
 	}
-	*(long *)FDC.crc_dat = *(long *)p;
-	FDC.rreg = ((D88_SECTOR *)p)->c;				// ??? ﾒﾙﾍﾝｳﾞｪｰﾙ
+	*(long *)fdc.crc_dat = *(long *)p;
+	fdc.rreg = ((D88_SECTOR *)p)->c;				// ??? ﾒﾙﾍﾝｳﾞｪｰﾙ
 	crcnum++;
 	if (((D88_SECTOR *)p)->stat) {
 		crcerror = TRUE;
@@ -318,25 +275,25 @@ BYTE fdd_stat_d88(void) {
 	int			seekable;
 	WORD		trk;
 
-	if (DISKNUM[FDC.drv] == DRV_EMPTY) {
+	if (DISKNUM[fdc.drv] == DRV_EMPTY) {
 		return(0x80);						// NOT READY
 	}
-	type = FDC.type;
-	cmnd = (BYTE)(FDC.cmnd >> 4);
-	trk = (FDC.c << 1) + (WORD)FDC.h;
-	seekable = seeksector(FDC.drv, trk, FDC.r);
-	if (!FDC.r) {
+	type = fdc.type;
+	cmnd = (BYTE)(fdc.cmnd >> 4);
+	trk = (fdc.c << 1) + (WORD)fdc.h;
+	seekable = seeksector(fdc.drv, trk, fdc.r);
+	if (!fdc.r) {
 		seekable = TRUE;
 	}
 
 	if (type == 0 || type == 1 || type == 4 ||
 		cmnd == 0x0a || cmnd == 0x0b || cmnd == 0x0f) {
-		if (d88head[FDC.drv].protect & 0x10) {	// WRITE PROTECT
+		if (d88head[fdc.drv].protect & 0x10) {	// WRITE PROTECT
 			ans |= 0x40;
 		}
 	}
 	if (type == 2 || cmnd == 0x0f) {
-		if (FDC.r && cursec.del_flg) {
+		if (fdc.r && cursec.del_flg) {
 			ans |= 0x20;					// RECODE TYPE / WRITE FAULT
 		}
 	}
@@ -344,7 +301,7 @@ BYTE fdd_stat_d88(void) {
 		if ((trk > 163) || (!seekable)) {
 			ans |= 0x10;					// SEEK ERROR / RECORD NOT FOUND
 		}
-		if ((!(ans & 0xf0)) && FDC.r && (cursec.stat)) {
+		if ((!(ans & 0xf0)) && fdc.r && (cursec.stat)) {
 			ans |= 0x08;					// CRC ERROR
 		}
 	}
@@ -359,7 +316,7 @@ BYTE fdd_stat_d88(void) {
 	if (type == 1 || type == 4) {
 		if (type == 1) {					// ver0.25
 			ans |= 0x20;					// HEAD ENGAGED (X1 ﾃﾞﾊ ﾂﾈﾆ 1)
-			if (!FDC.c) {					// TRACK00
+			if (!fdc.c) {					// TRACK00
 				ans |= 0x04;
 			}
 		}
@@ -371,13 +328,13 @@ BYTE fdd_stat_d88(void) {
 		if ((type != 4) && (FDDMTR_BUSY)) {
 			ans |= 0x01;
 		}
-		if ((type == 2) && ((WORD)FDC.off < cursec.size)) {
+		if ((type == 2) && ((WORD)fdc.off < cursec.size)) {
 			ans |= 0x03; 					// DATA REQUEST / BUSY
 		}
 		else if ((cmnd == 0x0e) && (readdiag < 0x1a00)) {
 			ans |= 0x03;
 		}
-		else if ((cmnd == 0x0c) && (FDC.crc_off < 6)) {		// ver0.25
+		else if ((cmnd == 0x0c) && (fdc.crc_off < 6)) {		// ver0.25
 			ans |= 0x03;
 		}
 		else if (cmnd == 0x0f) {
@@ -392,21 +349,14 @@ BYTE fdd_stat_d88(void) {
 	return(ans);
 }
 
+
+
 //**********************************************************************
 
 void fdd_read_d88(void) {
 						// POCO:読めなかったらレジスタを変更させない
 	if ((fdd_stat_d88() & 0xf3) == 3) {
-		FDC.data = curdata[FDC.off];
-#if 0 //def TRACE
-{
-	char	buf[256];
-	wsprintf(buf, "%3d %2d %02x -> %04x/%04x",
-						(FDC.c << 1) + FDC.h, FDC.r, FDC.off, R.HL.W,
-							dma.CNT_B.w);
-	TRACE_(buf, FDC.data);
-}
-#endif
+		fdc.data = curdata[fdc.off];
 	}
 }
 
@@ -414,7 +364,7 @@ void fdd_read_d88(void) {
 void fdd_write_d88(void) {
 
 	if ((fdd_stat_d88() & 0xf3) == 3) {
-		curdata[FDC.off] = FDC.data;
+		curdata[fdc.off] = fdc.data;
 		curwrite = 1;
 	}
 }
@@ -425,18 +375,18 @@ BYTE fdd_incoff_d88(void) {
 	BYTE	cmnd;
 	WORD	trk;
 
-	cmnd = (BYTE)(FDC.cmnd >> 4);
-	trk = (FDC.c << 1) + (WORD)FDC.h;
-	seeksector(FDC.drv, trk, FDC.r);
-	if ((WORD)(++FDC.off) < cursec.size) {
+	cmnd = (BYTE)(fdc.cmnd >> 4);
+	trk = (fdc.c << 1) + (WORD)fdc.h;
+	seeksector(fdc.drv, trk, fdc.r);
+	if ((WORD)(++fdc.off) < cursec.size) {
 		return(0);
 	}
-	FDC.off = cursec.size;
+	fdc.off = cursec.size;
 	if (cmnd == 0x09 || cmnd == 0x0b) {
-		FDC.rreg = FDC.r + 1;						// ver0.25
-		if (seeksector(FDC.drv, trk, FDC.rreg)) {
-			FDC.r++;
-			FDC.off = 0;
+		fdc.rreg = fdc.r + 1;						// ver0.25
+		if (seeksector(fdc.drv, trk, fdc.rreg)) {
+			fdc.r++;
+			fdc.off = 0;
 			return(0);
 		}
 	}
@@ -447,17 +397,16 @@ BYTE fdd_incoff_d88(void) {
 
 void init_tao_d88(void) {
 
-	if ((FDC.media == 0) && (d88head[FDC.drv].fd_type != 0x20)) {
+	if ((fdc.media == 0) && (d88head[fdc.drv].fd_type != 0x20)) {
 		tao = WID_2D;
 	}
-	else if ((FDC.media == 1) && (d88head[FDC.drv].fd_type == 0x20)) {
+	else if ((fdc.media == 1) && (d88head[fdc.drv].fd_type == 0x20)) {
 		tao = WID_2HD;
 	}
 	else {
 		tao = WID_ERR;
 	}
 }
-
 
 int fileappend(FILEH hdr, D88_HEADER *head,
 									long ptr, long last, long apsize) {
@@ -519,8 +468,8 @@ void endoftrack(void) {
 	curdataflush();						// write cache flush &
 	curdrv = -1;						// use D88_BUF[] for temp
 
-	head = &d88head[FDC.drv];
-	trk = (FDC.c << 1) + (WORD)FDC.h;
+	head = &d88head[fdc.drv];
+	trk = (fdc.c << 1) + (WORD)fdc.h;
 
 	ptr = 0;
 	for (i=0; i<(int)tao.sector; i++) {
@@ -528,7 +477,7 @@ void endoftrack(void) {
 		ptr += ((D88_SECTOR *)&TAO_BUF[ptr])->size + 16;
 	}
 
-	fdd = fddfile + FDC.drv;
+	fdd = fddfile + fdc.drv;
 	if ((hdr = file_open(fdd->fname)) == FILEH_INVALID) {
 		return;
 	}
@@ -671,5 +620,52 @@ void fdd_wtao_d88(BYTE data) {
 			}
 			break;
 	}
+}
+
+
+// ----
+
+BRESULT fddd88_eject(REG8 drv) {
+
+	FDDFILE	fdd;
+
+	drvflush(drv);
+	fdd = fddfile + drv;
+	ZeroMemory(&d88head[drv], sizeof(D88_HEADER));
+	fdd->fname[0] = '\0';
+	DISKNUM[drv] = 0;
+	return(SUCCESS);
+}
+
+BRESULT fddd88_set(REG8 drv, const OEMCHAR *fname) {
+
+	FDDFILE	fdd;
+	short	attr;
+	FILEH	fh;
+	UINT	rsize;
+
+	fdd = fddfile + drv;
+	attr = file_attr(fname);
+	if (attr & 0x18) {
+		goto fdst_err;
+	}
+	fh = file_open(fname);
+	if (fh == FILEH_INVALID) {
+		goto fdst_err;
+	}
+	rsize = file_read(fh, &d88head[drv], sizeof(D88_HEADER));
+	file_close(fh);
+	if (rsize != sizeof(D88_HEADER)) {
+		goto fdst_err;
+	}
+	if (attr & 1) {
+		d88head[drv].protect |= (WORD)0x10;
+	}
+	milstr_ncpy(fdd->fname, fname, NELEMENTS(fdd->fname));
+	DISKNUM[drv] = 1;
+	return(SUCCESS);
+
+fdst_err:
+	return(FAILURE);
 }
 

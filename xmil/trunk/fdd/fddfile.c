@@ -41,7 +41,7 @@ BRESULT fdd_diskready(REG8 drv) {
 
 static REG8 getfdtype(const OEMCHAR *fname) {
 
-const char	*ext;
+const OEMCHAR	*ext;
 
 	ext = file_getext(fname);
 	if (!milstr_cmp(ext, str_e2d)) {
@@ -64,10 +64,10 @@ BRESULT fdd_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
 			return(FAILURE);
 
 		case DRV_FMT2D:
-			return(fdd_set_2d(drv, fname));
+			return(fdd2d_set(drv, fname));
 
 		default:
-			return(fdd_set_d88(drv, fname));
+			return(fddd88_set(drv, fname));
 	}
 	return(FAILURE);
 }
@@ -85,10 +85,10 @@ BRESULT fdd_eject(REG8 drv) {
 			return(FAILURE);
 
 		case DRV_FMT2D:
-			return(fdd_eject_2d(drv));
+			return(fdd2d_eject(drv));
 
 		default:
-			return(fdd_eject_d88(drv));
+			return(fddd88_eject(drv));
 	}
 	return(FAILURE);
 }
