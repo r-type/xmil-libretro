@@ -10,7 +10,6 @@
 
 
 		MAKESCRN	makescrn;
-		BYTE		updatetmp[0x800+0x101];
 
 		BYTE	scrnallflash;
 		BYTE	blinktest = 0;
@@ -18,7 +17,7 @@
 extern	BYTE	dispmode;
 
 static	BYTE	lastdisp = 0;
-		BYTE	dispflg = UPDATE_VRAM0;
+		BYTE	dispflg;
 		BYTE	*dispp = &GRP_RAM[GRAM_BANK0];
 		BYTE	*dispp2 = &GRP_RAM[GRAM_BANK1];
 static	BYTE	blinktime = 1;
@@ -31,22 +30,86 @@ void init_draw(void) {
 	makesub_initialize();
 	reflesh_palette();
 	lastdisp = 0;
-	dispflg = UPDATE_VRAM0;
+	dispflg = UPDATE_TRAM | UPDATE_VRAM0;
 	dispp = &GRP_RAM[GRAM_BANK0];
 }
 
+static void fillupdatetmp(void) {
 
-void fillupdatetmp(void) {
+	UINT32	*p;
+	UINT	i;
 
-		__asm {
-				mov		ebx, offset updatetmp
-				mov		ecx, 0x200
-filludt_lp:		or		dword ptr [ebx], (UPDATE_TVRAM * 01010101h)
-				add		ebx, 4
-				loop	filludt_lp
-		}
+	p = (UINT32 *)updatetmp;
+	for (i=0; i<0x200; i++) {
+		p[i] |= (UPDATE_TVRAM << 24) | (UPDATE_TVRAM << 16) |
+										(UPDATE_TVRAM << 8) | UPDATE_TVRAM;
+	}
 }
 
+#if 1
+static void flashupdatetmp(void) {
+
+	UINT	posl;
+	UINT	y;
+	UINT	x;
+	UINT	r;
+	UINT	posr;
+	BRESULT	y2;
+	REG16	atr;
+	REG16	udtbase;
+	REG16	udt;
+
+	posl = crtc.s.TXT_TOP;
+	y = crtc.s.TXT_YL;
+	do {
+		for (x=0; x<crtc.s.TXT_XL; x++) {
+			if (!(tram[TRAM_ATR + LOW11(posl + x)] & X1ATR_Yx2)) {
+				break;
+			}
+		}
+		y2 = (x < crtc.s.TXT_XL)?FALSE:TRUE;
+		udtbase = (x < crtc.s.TXT_XL)?0x0000:0x0404;
+		r = (crtc.s.TXT_XL + 1) >> 1;
+		do {
+			posr = LOW11(posl + 1);
+			atr = (tram[TRAM_ATR + posl] << 8) | tram[TRAM_ATR + posr];
+			udt = udtbase;
+			if (!y2) {
+				if (atr & (X1ATR_Yx2 << 8)) {
+					udt |= (UPDATE_TRAM | 1) << 8;		// ¶’×‚êc”{Šp
+				}
+				else {
+					y2 = TRUE;
+				}
+			}
+			if (!y2) {
+				if (atr & (X1ATR_Yx2 << 0)) {
+					udt |= (UPDATE_TRAM | 1) << 0;		// ‰E’×‚êc”{Šp
+				}
+				else {
+					y2 = TRUE;
+				}
+			}
+			if (atr & (X1ATR_Xx2 << 8)) {				// ¶‘¤”{Šp?
+				udt |= 0x0812;
+			}
+			if (atr & (X1ATR_Xx2 << 0)) {				// ‰E‘¤”{Šp?
+				udt |= 0x0008;
+			}
+			if ((updatetmp[posl] ^ (udt >> 8)) & 0x1f) {
+				updatetmp[posl] = (UINT8)((udt >> 8) | UPDATE_TVRAM);
+			}
+			if ((updatetmp[posr] ^ (udt >> 0)) & 0x1f) {
+				updatetmp[posr] = (UINT8)((udt >> 0) | UPDATE_TVRAM);
+			}
+			posl = LOW11(posl + 2);
+		} while(--r);
+		if (crtc.s.TXT_XL & 1) {
+			posl = LOW11(posl - 1);
+		}
+	} while(--y);
+}
+#else
 static LABEL void flashupdatetmp(void) {
 
 		__asm {
@@ -145,34 +208,40 @@ nextlinecheck:	inc		dl
 				ret
 	}
 }
+#endif
 
-void updateblink(void) {
+static BRESULT updateblink(void) {
 
-		__asm {
-				dec		blinktime
-				jns		blinkupflg_ed
-				mov		blinktime, 30-1
-				push	edi
-				movzx	edi, crtc.s.TXT_TOP
-				mov		ax, 010h
-				xor		blinktest, al
-				mov		cx, word ptr (makescrn.vramsize)
-				or		cx, cx
-				je		blinkupflg
+	UINT	pos;
+	REG8	update;
+	UINT	r;
 
-blinkup_lp:		test	tram[TRAM_ATR + edi], al
-				je		short blinknup_ed
-				mov		ah, UPDATE_TVRAM
-				or		updatetmp[edi], ah
-blinknup_ed:	inc		edi
-				dec		cx
-				jne		blinkup_lp
-				or		makescrn.scrnflash, ah
-				shr		ah, 5
-blinkupflg:		pop		edi
-				mov		makescrn.existblink, ah
-blinkupflg_ed:
+	if (blinktime) {
+		blinktime--;
+		return(FALSE);
+	}
+	else {
+		blinktime = 30 - 1;
+		pos = makescrn.vramtop;
+		blinktest ^= 0x10;
+		update = 0;
+		r = makescrn.vramsize;
+		while(r) {
+			r--;
+			if (tram[TRAM_ATR + pos] & 0x10) {
+				updatetmp[pos] |= UPDATE_TRAM;
+				update = UPDATE_TRAM;
+			}
+			pos = LOW11(pos + 1);
 		}
+		if (update) {
+			makescrn.existblink = 1;
+			return(TRUE);
+		}
+		else {
+			return(FALSE);
+		}
+	}
 }
 
 
@@ -186,6 +255,8 @@ static void x1vram_adjust(void) {
 	REG8	y2;
 	UINT	charcy;
 	UINT	surfcy;
+
+	makescrn.vramtop = LOW11(crtc.s.TXT_TOP);
 
 	if (crtc.s.TXT_XL <= 40) {
 		if (dispmode & SCRN_DRAW4096) {
@@ -238,7 +309,7 @@ static void x1vram_adjust(void) {
 	}
 	makescrn.surfcy = surfcy;
 	makescrn.surfstep = (SURFACE_WIDTH * charcy * 2) - (makescrn.surfcx * 8);
-	makescrn.vramsize = min(0x800, charcy * crtc.s.TXT_XL);
+	makescrn.vramsize = min(0x800, surfcy * crtc.s.TXT_XL);
 	scrnmng_setheight(0, charcy * surfcy * 2);
 }
 
@@ -277,12 +348,12 @@ void scrnupdate(void) {
 		if (!(dispmode & SCRN_BANK1)) {
 			dispp = GRP_RAM + GRAM_BANK0;
 			dispp2 = GRP_RAM + GRAM_BANK1;
-			dispflg = UPDATE_VRAM0;
+			dispflg = UPDATE_TRAM | UPDATE_VRAM0;
 		}
 		else {
 			dispp = GRP_RAM + GRAM_BANK1;
 			dispp2 = GRP_RAM + GRAM_BANK0;
-			dispflg = UPDATE_VRAM1;
+			dispflg = UPDATE_TRAM | UPDATE_VRAM1;
 		}
 	}
 	if (scrnallflash) {
@@ -301,7 +372,7 @@ void scrnupdate(void) {
 		ddrawflash = 1;
 	}
 	if (makescrn.existblink) {
-		updateblink();
+		makescrn.scrnflash |= updateblink();
 	}
 
 	if (makescrn.scrnflash) {

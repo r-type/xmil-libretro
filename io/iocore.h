@@ -29,9 +29,9 @@ typedef union {
 typedef struct {
 	UINT8	mode;
 	UINT8	padding[15];
-	IOINP	inpt[4];
-	IOOUT	outt[4];
-	UINT8	iofg[0x20];
+//	IOINP	inpt[4];
+//	IOOUT	outt[4];
+//	UINT8	iofg[0x20];
 	INPHTBL	inph[0x20];
 	OUTHTBL	outh[0x20];
 } IOCORE;

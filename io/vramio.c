@@ -38,7 +38,7 @@ void IOOUTCALL tram_o(UINT port, REG8 value) {
 	}
 	makescrn.scrnflash = 1;
 	if (tram[TRAM_ATR + addr] & X1ATR_Xx2) {
-		updatetmp[addr + 1] |= UPDATE_TVRAM;
+		updatetmp[LOW11(addr + 1)] |= UPDATE_TVRAM;
 	}
 	updatetmp[addr] |= UPDATE_TVRAM;
 }

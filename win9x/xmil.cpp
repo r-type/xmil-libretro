@@ -17,18 +17,17 @@
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
+#include	"juliet.h"
 #include	"extclass.h"
 #include	"dialog.h"
-
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"timing.h"
-#include	"makescrn.h"
-#include	"fdd_ini.h"
-#include	"juliet.h"
-#include	"diskdrv.h"
 #include	"debugsub.h"
+#include	"makescrn.h"
+#include	"diskdrv.h"
+#include	"fdd_ini.h"
 #include	"x1f.h"
 
 

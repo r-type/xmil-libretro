@@ -51,7 +51,6 @@ BRESULT scrnmng_setcolormode(BRESULT fullcolor);
 const SCRNSURF *scrnmng_surflock(void);
 void scrnmng_surfunlock(const SCRNSURF *surf);
 void scrnmng_update(void);						// ddraws_drawall
-void scrnmng_dispclock(void);					// ddraws_dispclock
 
 #define	scrnmng_isfullscreen()	(scrnmng.flag & SCRNFLAG_FULLSCREEN)
 #define	scrnmng_getbpp()		(scrnmng.bpp)
@@ -71,6 +70,7 @@ void scrnmng_initialize(void);						// ddraws_initwindowsize
 BRESULT scrnmng_create(UINT8 scrnmode);				// ddraws_InitDirectDraw
 void scrnmng_destroy(void);							// ddraws_TermDirectDraw
 BRESULT scrnmng_changescreen(REG8 newmode);
+void scrnmng_dispclock(void);						// ddraws_dispclock
 
 void scrnmng_querypalette(void);					// ddraws_palette
 void scrnmng_fullscrnmenu(int y);

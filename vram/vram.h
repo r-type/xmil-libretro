@@ -30,6 +30,14 @@ enum {
 	X1KNJ_ULINE		= 0x20
 };
 
+enum {
+	UPDATE_TRAM		= (1 << 5),
+	UPDATE_VRAM0	= (1 << 6),
+	UPDATE_VRAM1	= (1 << 7),
+	UPDATE_VRAM		= UPDATE_VRAM0 | UPDATE_VRAM1,
+	UPDATE_TVRAM	= UPDATE_VRAM0 | UPDATE_VRAM1 | UPDATE_TRAM
+};
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,6 +45,7 @@ extern "C" {
 
 extern	UINT8	GRP_RAM[0x20000];
 extern	UINT8	tram[0x01800];
+extern	UINT8	updatetmp[0x800+0x101];
 
 #ifdef __cplusplus
 }
