@@ -1,7 +1,75 @@
 #include	"compiler.h"
+#include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"nevent.h"
+#include	"ievent.h"
 
+
+static REG8 iswork(const DMAC *d) {
+
+	REG8	r;
+
+	r = d->cmd;
+	if ((r & 3) == 0) return(FALSE);
+	if (d->enable == 0) return(FALSE);
+	if (d->ENDB_FLG != 0) return(FALSE);			// mod
+	if (r & 2) {
+		if (d->MACH_FLG != 0) return(FALSE);		// mod
+	}
+	if (d->mode != 1) {
+		if ((d->WR[5] ^ d->ready) & 8) return(FALSE);
+	}
+	return(TRUE);
+}
+
+void dmac_sendready(BRESULT ready) {
+
+	REG8	working;
+
+	if (!ready) {
+		dma.working = FALSE;
+		dma.ready = 8;
+	}
+	else {
+		dma.ready = 0;
+		working = iswork(&dma);
+		if (dma.working != working) {
+			dma.working = working;
+			nevent_forceexit();
+		}
+	}
+}
+
+BRESULT ieitem_dmac(UINT id) {
+
+	REG8	vect;
+
+	if (dma.INT_ENBL) {
+		vect = 0;
+		if ((dma.INT_FLG & 1) && (dma.MACH_FLG)) {
+			vect = 2;
+		}
+		else if ((dma.INT_FLG & 2) && (dma.ENDB_FLG)) {
+			vect = 4;
+		}
+		if (vect) {
+			if (dma.INT_FLG & 0x20) {
+				vect += (dma.INT_VCT & 0xf9);
+			}
+			else {
+				vect = dma.INT_VCT;
+			}
+			Z80_INTERRUPT(vect);
+			return(TRUE);
+		}
+	}
+	(void)id;
+	return(FALSE);
+}
+
+
+// ----
 
 static void setdmareaddat(void) {
 
@@ -39,8 +107,9 @@ static void setdmareaddat(void) {
 void IOOUTCALL dmac_o(UINT port, REG8 value) {
 
 	REG8	wr;
+	REG8	working;
 
-	dma.DMA_ENBL = 0;
+	dma.enable = 0;
 
 	if (!dma.WR_CNT) {
 		wr = 6;
@@ -74,7 +143,7 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 		dma.WR[wr] = value;
 		switch(wr) {
 			case 0:
-				dma.DMA_CMND = (UINT8)(value & 3);
+				dma.cmd = (UINT8)(value & 3);
 				if (value & 0x08) {
 					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, ADR_A.b.l);
 				}
@@ -104,11 +173,11 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, MACH_BYT);
 				}
 				dma.INT_ENBL = (UINT8)((value & 0x20)?1:0);
-				dma.DMA_ENBL = (UINT8)((value & 0x40)?1:0);
+				dma.enable = (UINT8)((value & 0x40)?1:0);
 				break;
 
 			case 4:
-				dma.DMA_MODE = (UINT8)((dma.WR[4] >> 5) & 3);
+				dma.mode = (UINT8)((dma.WR[4] >> 5) & 3);
 				if (value & 0x04) {
 					dma.WR_TBL[dma.WR_CNT++] = offsetof(DMAC, ADR_B.b.l);
 				}
@@ -123,15 +192,16 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 			case 6:
 				switch(value) {
 					case 0x83:				// dma disable
-						dma.DMA_ENBL = 0;
+						dma.enable = 0;
 						break;
 
 					case 0x87:				// dma enable
-						dma.DMA_ENBL = 1;
+						dma.enable = 1;
 						break;
 
 					case 0x8b:				// re-init status byte
-						dma.MACH_FLG = dma.ENDB_FLG = 0;
+						dma.MACH_FLG = 0;
+						dma.ENDB_FLG = 0;
 						break;
 
 					case 0xa7:				// イニシエイトリードシーケンス
@@ -147,7 +217,7 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 						break;
 
 					case 0xb3:				// force ready
-						dma.DMA_REDY = (dma.WR[5] & 0x08);
+						dma.ready = (dma.WR[5] & 0x08);
 						break;
 
 					case 0xbb:				// read mask follows
@@ -160,13 +230,10 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 						break;
 
 					case 0xc3:				// reset
-#if 1										// ローグアライアンス	// ver0.25
-						dma.DMA_CMND = 0;
-						dma.DMA_ENBL = 0;
+											// ローグアライアンス	// ver0.25
+						dma.cmd = 0;
+						dma.enable = 0;
 						dma.INT_ENBL = 0;
-#else
-						init_dma();
-#endif
 						break;
 
 					case 0xc7:						// リセットタイミングA
@@ -174,13 +241,13 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 						break;
 
 					case 0xcf:						// ロード
-						dma.DMA_MODE = (UINT8)((dma.WR[4] >> 5) & 3);
+						dma.mode = (UINT8)((dma.WR[4] >> 5) & 3);
 						dma.CNT_A.w = dma.ADR_A.w;
 						dma.CNT_B.w = dma.ADR_B.w;
 						dma.BYT_N.w = 0;
 						dma.ENDB_FLG = 0;
 						dma.MACH_FLG = 0;			// 0619
-						dma.DMA_ENBL = 0;
+						dma.enable = 0;
 						break;
 
 					case 0xd3:						// コンティニュー
@@ -209,7 +276,7 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 						dma.BYT_N.w = 0;			// 0619
 						dma.MACH_FLG = 0;			// 0619
 						dma.ENDB_FLG = 0;
-						dma.DMA_ENBL = 1;
+						dma.enable = 1;
 						break;
 				}
 				break;
@@ -233,6 +300,14 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 		dma.WR_OFF++;
 		dma.WR_CNT--;
 	}
+
+	working = iswork(&dma);
+	if (dma.working != working) {
+		dma.working = working;
+		if (working) {
+			nevent_forceexit();
+		}
+	}
 	(void)port;
 }
 
@@ -241,10 +316,10 @@ REG8 IOINPCALL dmac_i(UINT port) {
 	REG8	ret;
 
 	ret = 0xcc;
-	if (dma.DMA_ENBL) {
+	if (dma.enable) {
 		ret |= 0x01;
 	}
-	if ((dma.DMA_MODE != 1) && ((dma.WR[5] ^ dma.DMA_REDY) & 8)) {
+	if ((dma.mode != 1) && ((dma.WR[5] ^ dma.ready) & 8)) {
 		ret |= 0x02;
 	}
 	if (!dma.MACH_FLG) {
@@ -270,7 +345,7 @@ REG8 IOINPCALL dmac_i(UINT port) {
 void dmac_reset(void) {
 
 	ZeroMemory(&dma, sizeof(dma));
-	dma.DMA_REDY = 8;
+	dma.ready = 8;
 	dma.RR = 0x38;
 }
 

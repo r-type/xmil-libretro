@@ -22,7 +22,7 @@ static BRESULT dummy(UINT id) {
 
 static const IEVENTFN ieventfn[IEVENT_MAX] = {
 				dummy,			// IEVENT_SIO
-				dummy,			// IEVENT_DMA
+				ieitem_dmac,	// IEVENT_DMA
 				ieitem_ctc,		// IEVENT_CTC0
 				ieitem_ctc,		// IEVENT_CTC1
 				ieitem_ctc,		// IEVENT_CTC2
@@ -54,11 +54,14 @@ void ievent_progress(void) {
 
 void ievent_setbit(UINT bit) {
 
-	if (CPU_REQIRQ & bit) {
+	UINT	r;
+
+	r = CPU_REQIRQ;
+	if (r & bit) {
 		return;
 	}
 	CPU_REQIRQ |= bit;
-	if (Z80_ABLEINTERRUPT()) {
+	if ((!r) && (Z80_ABLEINTERRUPT())) {
 		nevent_forceexit();
 	}
 }

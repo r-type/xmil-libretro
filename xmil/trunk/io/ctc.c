@@ -106,7 +106,7 @@ static void ctcnextevent(CTCCH *ch) {
 	if (ch->intr) {
 		return;
 	}
-	event = 0x04000000;
+	event = 0x01000000;
 	for (i=0; i<3; i++) {
 		if ((ch->cmd[i] & 0x82) == 0x80) {
 			clock = ch->count[i];
@@ -127,8 +127,11 @@ static void ctcnextevent(CTCCH *ch) {
 		}
 		event = min(event, clock);
 	}
-	event /= 2;
 	event *= pccore.multiple;
+	event /= 2;
+	if (event == 0) {
+		event = 1;
+	}
 	nevent_set(NEVENT_CTC0 + ch->num, event, neitem_ctc, NEVENT_ABSOLUTE);
 }
 

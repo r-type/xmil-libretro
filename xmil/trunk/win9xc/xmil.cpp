@@ -341,11 +341,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (LOWORD(wParam) != WA_INACTIVE) {
 				scrnmng_update();
 				mousemng_enable(MOUSEPROC_BG);
-				soundmng_enable(SNDPROC_MASTER);
+			//	soundmng_enable(SNDPROC_MASTER);
 			}
 			else {
+			//	soundmng_disable(SNDPROC_MASTER);
 				mousemng_disable(MOUSEPROC_BG);
-				soundmng_disable(SNDPROC_MASTER);
 			}
 			break;
 

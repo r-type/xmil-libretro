@@ -64,7 +64,7 @@ static REG8 CPUCALL _cb_sra(REG8 v) {
 
 	REG8	ret;
 
-	ret = (((char)v) / 2);
+	ret = (((SINT8)v) >> 1);
 	R_Z80F = ZSPtable[ret] | (v & 1);
 	return(ret);
 }

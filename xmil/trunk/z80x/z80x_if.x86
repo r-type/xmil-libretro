@@ -12,13 +12,14 @@ section .text
 	global	_z80x_step
 
 	extern	_z80core
-	extern	_z80dmap
 	extern	memfetch
 	extern	memrd16_ecx_ax
 	extern	memwr16_ecx_dx
 	extern	_cycles_main
 	extern	opcode_main
 
+	extern	_z80dmap
+	extern	_dma
 
 				align	16
 _z80x_ableinterrupt:
@@ -95,7 +96,22 @@ _z80x_nonmaskedinterrupt:
 _z80x_execute	push	ebx
 				push	edi
 				mov		edi, _z80core
+				cmp		byte [_dma], 0
+				jne		short .dmalp
 .lp:			inc		byte [edi + R_Z80R]
+				movzx	ecx, word [edi + R_Z80PC]
+				inc		word [edi + R_Z80PC]
+				call	memfetch
+				movzx	edx, byte [_cycles_main + eax]
+				Z80WORK	edx
+				call	dword [opcode_main + eax*4]
+				mov		eax, [edi + z80core_t.remainclock]
+				cmp		eax, byte 0
+				jg		short .lp
+.ed:			pop		edi
+				pop		ebx
+				ret
+.dmalp:			inc		byte [edi + R_Z80R]
 				movzx	ecx, word [edi + R_Z80PC]
 				inc		word [edi + R_Z80PC]
 				call	memfetch
@@ -105,10 +121,9 @@ _z80x_execute	push	ebx
 				call	_z80dmap
 				mov		eax, [edi + z80core_t.remainclock]
 				cmp		eax, byte 0
-				jg		short .lp
-				pop		edi
-				pop		ebx
-				ret
+				jg		short .dmalp
+				jmp		short .ed
+
 
 				align	16
 _z80x_step:		push	ebx

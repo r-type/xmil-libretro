@@ -9,8 +9,8 @@ section .bss
 
 section .text
 
-	global	@memrd8_ecx_al@4
-	global	@memwr8_ecx_dl@8
+	global	@z80mem_read8@4
+	global	@z80mem_write8@8
 
 	global	lea_ecx_ecx
 	global	memfetch
@@ -40,7 +40,7 @@ memfetch:		cmp		ecx, 8000h
 				ret
 
 				align	16
-@memrd8_ecx_al@4:
+@z80mem_read8@4:
 memrd8_ecx_al:	cmp		ecx, 8000h
 				jc		short .low
 				mov		al, [_mMAIN + ecx]
@@ -59,7 +59,7 @@ memrd8_ecx_dl:	cmp		ecx, 8000h
 				ret
 
 				align	16
-@memwr8_ecx_dl@8:
+@z80mem_write8@8:
 memwr8_ecx_dl:	cmp		ecx, 8000h
 				jc		short .low
 				mov		[_mMAIN + ecx], dl

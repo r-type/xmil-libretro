@@ -14,8 +14,8 @@ void MEMCALL mem_write8(UINT addr, REG8 value);
 void MEMCALL mem_write16(UINT addr, REG16 value);
 SINT MEMCALL mem_read8s(UINT addr);
 
-// REG8 MEMCALL Z80_RDMEM(REG16 addr);
-// void MEMCALL Z80_WRMEM(REG16 addr, REG8 value);
+#define	z80mem_read8(a)		mem_read8(a)
+#define	z80mem_write8(a)	mem_write8(a)
 
 #ifdef __cplusplus
 }
