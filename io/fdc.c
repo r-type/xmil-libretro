@@ -18,7 +18,7 @@ void nvitem_fdcbusy(UINT id) {
 	fdc.s.busy = FALSE;
 	if (fdc.s.bufdir) {
 		TRACEOUT(("dma ready!"));
-		dma.DMA_REDY = 0;
+		dmac_sendready(TRUE);
 	}
 }
 
@@ -208,8 +208,8 @@ static void bufposinc(void) {
 			}
 		}
 		if (!r) {
-			dma.DMA_REDY = 8;
 			fdc.s.bufdir = FDCDIR_NONE;
+			dmac_sendready(FALSE);
 		}
 	}
 }
@@ -301,7 +301,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				case 0x0d:								// フォースインタラプト
 					setbusy(0);							// 必要ない？
 //					fdc.s.skip = 0;						// 000330
-					dma.DMA_REDY = 8;					// ver0.25
+					dmac_sendready(FALSE);
 					break;
 
 				case 0x0e:								// リードトラック
@@ -390,7 +390,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 #endif
 			ret = getstat();
 			if (!(ret & 0x02)) {
-				dma.DMA_REDY = 8;
+				dmac_sendready(FALSE);
 			}
 			return(ret);
 

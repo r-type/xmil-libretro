@@ -11,6 +11,8 @@
 #include	"parts.h"
 #include	"z80core.h"
 #include	"z80c.h"
+#include	"pccore.h"
+#include	"iocore.h"
 #include	"z80c.mcr"
 
 
@@ -179,13 +181,23 @@ void CPUCALL z80c_execute(void) {
 
 	UINT	op;
 
-	do {
-		R_Z80R++;
-		GET_PC_BYTE(op);
-		Z80_COUNT(cycles_main[op]);
-		z80c_mainop[op]();
-		z80dmap();
-	} while(CPU_REMCLOCK > 0);
+	if (!dma.working) {
+		do {
+			R_Z80R++;
+			GET_PC_BYTE(op);
+			Z80_COUNT(cycles_main[op]);
+			z80c_mainop[op]();
+		} while(CPU_REMCLOCK > 0);
+	}
+	else {
+		do {
+			R_Z80R++;
+			GET_PC_BYTE(op);
+			Z80_COUNT(cycles_main[op]);
+			z80c_mainop[op]();
+			z80dmap();
+		} while(CPU_REMCLOCK > 0);
+	}
 }
 
 void CPUCALL z80c_step(void) {

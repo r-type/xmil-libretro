@@ -85,7 +85,7 @@ void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, BRESULT absolute) {
 	UINT		eventid;
 	UINT		i;
 
-//	TRACEOUT(("event %d - %xclocks", id, eventclock));
+	TRACEOUT(("event %d - %xclocks", id, eventclock));
 
 	clock = CPU_BASECLOCK - CPU_REMCLOCK;
 	item = nevent.item + id;

@@ -18,10 +18,12 @@ typedef union {
 #endif
 
 typedef struct {
-	UINT8	DMA_ENBL;
-	UINT8	DMA_REDY;
-	UINT8	DMA_MODE;
-	UINT8	DMA_CMND;
+	UINT8	working;
+
+	UINT8	enable;				// DMA_ENBL
+	UINT8	ready;				// DMA_REDY
+	UINT8	mode;				// DMA_MODE
+	UINT8	cmd;				// DMA_CMND
 
 	UINT8	INT_ENBL;
 	UINT8	INT_FLG;
@@ -60,6 +62,9 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void dmac_sendready(BRESULT ready);
+BRESULT ieitem_dmac(UINT id);
 
 void IOOUTCALL dmac_o(UINT port, REG8 dat);			// x1_dma_w
 REG8 IOINPCALL dmac_i(UINT port);					// x1_dma_r

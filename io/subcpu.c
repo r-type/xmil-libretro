@@ -30,7 +30,7 @@ BRESULT ieitem_scpu(UINT id) {
 	UINT	key;
 
 	if ((subcpu.cmdcnt) || (subcpu.datacnt)) {
-		ievent_set(IEVENT_SUBCPU);
+		keystat.req_int = 1;			// Ä‘—‚µ‚é
 		return(FALSE);
 	}
 	if (!subcpu.Ex[4][0]) {				// Š„‚è‚İ•s—v‚¾‚Á‚½‚çÌ‚Ä‚é
