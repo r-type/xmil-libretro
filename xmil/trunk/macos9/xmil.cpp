@@ -17,6 +17,9 @@
 #include	"iocore.h"
 #include	"timing.h"
 #include	"keystat.h"
+#if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
+#include	"statsave.h"
+#endif
 #include	"debugsub.h"
 #include	"scrndraw.h"
 #include	"makescrn.h"
@@ -28,7 +31,16 @@
 // #define	USE_RESUME
 
 
-		XMILOSCFG	xmiloscfg = {100, 100,  0, 0, 0, 0, 0, 0};
+		XMILOSCFG	xmiloscfg = {	100, 100,
+									0, 0, 0,
+									0, 0,
+#if defined(SUPPORT_RESUME)
+									0,
+#endif
+#if defined(SUPPORT_STATSAVE)
+									1,
+#endif
+									0};
 
 		WindowPtr	hWndMain;
 		BRESULT		xmilrunning;
@@ -44,13 +56,68 @@ static	REG8		scrnmode;
 #endif
 static	char	target[MAX_PATH] = DEFAULTPATH;
 
-#if !defined(SUPPORT_PC9821)
-static const char np2app[] = "np2";
-#else
-static const char np2app[] = "np21";
+
+static const char xmilapp[] = "xmil";
+
+
+// ---- stat save...
+
+#if defined(SUPPORT_RESUME)
+static const char xmilresumeext[] = ".sav";
+#endif
+#if defined(SUPPORT_STATSAVE)
+static const char xmilflagext[] = ".sv%u";
 #endif
 
-static const char np2resume[] = "sav";
+#if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
+static void getstatfilename(char *path, const char *ext, UINT size) {
+
+	file_cpyname(path, file_getcd(xmilapp), size);
+	file_catname(path, ext, size);
+}
+
+static void flagsave(const char *ext) {
+
+	char	path[MAX_PATH];
+
+	getstatfilename(path, ext, NELEMENTS(path));
+	statsave_save(path);
+}
+
+static void flagdelete(const char *ext) {
+
+	char	path[MAX_PATH];
+
+	getstatfilename(path, ext, NELEMENTS(path));
+	file_delete(path);
+}
+
+static int flagload(const char *ext, BRESULT force) {
+
+	int		ret;
+	char	path[MAX_PATH];
+	char	buf[1024];
+	int		r;
+
+	ret = IDOK;
+	getstatfilename(path, ext, NELEMENTS(path));
+	r = statsave_check(path, buf, NELEMENTS(buf));
+	if (r & (~STATFLAG_DISKCHG)) {
+		ResumeErrorDialogProc();
+		ret = IDCANCEL;
+	}
+	else if ((!force) && (r & STATFLAG_DISKCHG)) {
+		ret = ResumeWarningDialogProc(buf);
+	}
+	else {
+		ret = IDOK;
+	}
+	if (ret == IDOK) {
+		statsave_load(path);
+	}
+	return(ret);
+}
+#endif
 
 
 // ---- ‚¨‚Ü‚¶‚È‚¢
@@ -124,8 +191,26 @@ static void MenuBarInit(void) {
 	EnableItem(GetMenuHandle(IDM_DEVICE), LoWord(IDM_MOUSE));
 #endif
 
-	DeleteMenu(IDM_FDD2);
-	DeleteMenu(IDM_FDD3);
+	if (!(xmilcfg.fddequip & (1 << 3))) {
+		DeleteMenu(IDM_FDD3);
+	}
+	if (!(xmilcfg.fddequip & (1 << 2))) {
+		DeleteMenu(IDM_FDD2);
+	}
+	if (!(xmilcfg.fddequip & (1 << 1))) {
+		DeleteMenu(IDM_FDD1);
+	}
+	if (!(xmilcfg.fddequip & (1 << 0))) {
+		DeleteMenu(IDM_FDD0);
+	}
+
+#if defined(SUPPORT_STATSAVE)
+	if (!xmiloscfg.statsave) {
+#endif
+		DeleteMenu(IDM_STATSAVE);
+#if defined(SUPPORT_STATSAVE)
+	}
+#endif
 
 	DrawMenuBar();
 }
@@ -134,6 +219,10 @@ static void HandleMenuChoice(long wParam) {
 
 	UINT	update;
 	Str255	applname;
+#if defined(SUPPORT_STATSAVE)
+	UINT	num;
+	char	ext[16];
+#endif
 
 	update = 0;
 	switch(wParam) {
@@ -229,17 +318,11 @@ static void HandleMenuChoice(long wParam) {
 			break;
 
 		case IDM_WIDTH80:
-			crtc.s.TXT_XL = 80;
-//			crtc.s.GRP_XL = 640;
-			vrambank_patch();
-			scrnallflash = 1;
+			crtc_forcesetwidth(80);
 			break;
 
 		case IDM_WIDTH40:
-			crtc.s.TXT_XL = 40;
-//			crtc.s.GRP_XL = 320;
-			vrambank_patch();
-			scrnallflash = 1;
+			crtc_forcesetwidth(40);
 			break;
 
 		case IDM_DISPSYNC:
@@ -355,6 +438,19 @@ static void HandleMenuChoice(long wParam) {
 				(void)OpenDeskAcc(applname);
 #endif
 			}
+#if defined(SUPPORT_STATSAVE)
+			else if (HiWord(wParam) == IDM_STATSAVE) {
+				num = LoWord(wParam);
+				if ((num >= 1) && (num < (1 + 10))) {
+					OEMSPRINTF(ext, xmilflagext, num - 1);
+					flagsave(ext);
+				}
+				else if ((num >= 12) && (num < (12 + 10))) {
+					OEMSPRINTF(ext, xmilflagext, num - 12);
+					flagload(ext, TRUE);
+				}
+			}
+#endif
 			break;
 	}
 	sysmng_update(update);
@@ -482,57 +578,6 @@ static void eventproc(EventRecord *event) {
 }
 
 
-#if 0
-// ----
-
-static void getstatfilename(char *path, const char *ext, int size) {
-
-	file_cpyname(path, file_getcd(np2app), size);
-	file_catname(path, str_dot, size);
-	file_catname(path, ext, size);
-}
-
-static void flagsave(const char *ext) {
-
-	char	path[MAX_PATH];
-
-	getstatfilename(path, ext, sizeof(path));
-	statsave_save(path);
-}
-
-static void flagdelete(const char *ext) {
-
-	char	path[MAX_PATH];
-
-	getstatfilename(path, ext, sizeof(path));
-	file_delete(path);
-}
-
-static int flagload(const char *ext) {
-
-	int		ret;
-	char	path[MAX_PATH];
-	char	buf[1024];
-	int		r;
-
-	ret = IDOK;
-	getstatfilename(path, ext, sizeof(path));
-	r = statsave_check(path, buf, sizeof(buf));
-	if (r & (~STATFLAG_DISKCHG)) {
-		ResumeErrorDialogProc();
-		ret = IDCANCEL;
-	}
-	else if (r & STATFLAG_DISKCHG) {
-		ret = ResumeWarningDialogProc(buf);
-	}
-	if (ret == IDOK) {
-		statsave_load(path);
-	}
-	return(ret);
-}
-#endif
-
-
 // ----
 
 static	UINT	framecnt = 0;
@@ -644,9 +689,9 @@ int main(int argc, char *argv[]) {
 	pccore_initialize();
 	pccore_reset();
 
-#if 0
-	if (np2oscfg.resume) {
-		flagload(np2resume);
+#if defined(SUPPORT_RESUME)
+	if (xmiloscfg.resume) {
+		flagload(xmilresumeext, FALSE);
 	}
 #endif
 
@@ -731,12 +776,12 @@ int main(int argc, char *argv[]) {
 
 	xmilrunning = FALSE;
 
-#if 0
-	if (np2oscfg.resume) {
-		flagsave(np2resume);
+#if defined(SUPPORT_RESUME)
+	if (xmiloscfg.resume) {
+		flagsave(xmilresumeext);
 	}
 	else {
-		flagdelete(np2resume);
+		flagdelete(xmilresumeext);
 	}
 #endif
 
