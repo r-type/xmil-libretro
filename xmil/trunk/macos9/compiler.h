@@ -44,6 +44,8 @@ typedef unsigned int	DWORD;
 #define	BRESULT				Boolean
 #define	OEMCHAR				char
 #define	OEMTEXT(string)		(string)
+#define	OEMSPRINTF			sprintf
+#define	OEMSTRLEN			strlen
 
 #include	"common.h"
 #include	"macossub.h"
@@ -54,9 +56,9 @@ typedef unsigned int	DWORD;
 
 
 #define	GETTICK()			macos_gettick()
+#define	__ASSERT(s)
 #define	SPRINTF				sprintf
 #define	STRLEN				strlen
-#define	__ASSERT(s)
 
 #define	SUPPORT_SJIS
 

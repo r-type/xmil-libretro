@@ -238,24 +238,27 @@ void makex1font(REG8 loading) {
 	if (work == NULL) {
 		goto mfnt_err2;
 	}
-	ZeroMemory(work, 0x1000);
-	setank(work, fnt, 0x20, 0x7f);
-	setank(work, fnt, 0xa1, 0xe0);
-	CopyMemory(work + 0x000, defrom_txt, 0x200);
-	CopyMemory(work + 0x7f0, defrom_txt + 0x200, 0x210);
-	CopyMemory(work + 0xe00, defrom_txt + 0x410, 0x200);
-	fh = file_create_c(x1ank2tmp);
-	if (fh != FILEH_INVALID) {
-		file_write(fh, work, 0x1000);
-		file_close(fh);
+	if (loading & FONTLOAD_ANK) {
+		ZeroMemory(work, 0x1000);
+		setank(work, fnt, 0x20, 0x7f);
+		setank(work, fnt, 0xa1, 0xe0);
+		CopyMemory(work + 0x000, defrom_txt, 0x200);
+		CopyMemory(work + 0x7f0, defrom_txt + 0x200, 0x210);
+		CopyMemory(work + 0xe00, defrom_txt + 0x410, 0x200);
+		fh = file_create_c(x1ank2tmp);
+		if (fh != FILEH_INVALID) {
+			file_write(fh, work, 0x1000);
+			file_close(fh);
+		}
 	}
-
-	ZeroMemory(work, 306176);
-	setjis(work, fnt);
-	fh = file_create_c(x1knjtmp);
-	if (fh != FILEH_INVALID) {
-		file_write(fh, work, 306176);
-		file_close(fh);
+	if (loading & (FONT_KNJ1 | FONT_KNJ2)) {
+		ZeroMemory(work, 306176);
+		setjis(work, fnt);
+		fh = file_create_c(x1knjtmp);
+		if (fh != FILEH_INVALID) {
+			file_write(fh, work, 306176);
+			file_close(fh);
+		}
 	}
 	_MFREE(work);
 

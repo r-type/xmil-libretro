@@ -84,7 +84,7 @@ static UINT32 nexttrackptr(FDDFILE fdd, UINT32 fptr, UINT32 last) {
 }
 
 
-int curdataflush(void) {
+static int curdataflush(void) {
 
 	FDDFILE	fdd;
 	FILEH	fh;
@@ -113,7 +113,7 @@ int curdataflush(void) {
 }
 
 
-static DWORD read_d88track(REG8 drv, UINT track, BYTE type) {
+static DWORD read_d88track(REG8 drv, UINT track, REG8 media) {
 
 	FDDFILE	fdd;
 	FILEH	hdr;
@@ -121,7 +121,7 @@ static DWORD read_d88track(REG8 drv, UINT track, BYTE type) {
 	curdataflush();
 	curdrv = drv;
 	curtrk = track;
-	curtype = type;
+	curtype = media;
 	cursct = (UINT)-1;
 	curwrite = 0;
 	curtrkerr = 0;
@@ -130,8 +130,7 @@ static DWORD read_d88track(REG8 drv, UINT track, BYTE type) {
 
 	fdd = fddfile + drv;
 	if ((drv < 0) || (drv > 3) || (track > 163) ||
-		((type == 0) && (fdd->inf.d88.head.fd_type == 0x20)) ||
-		((type == 1) && (fdd->inf.d88.head.fd_type != 0x20)) ||
+		(media != (fdd->inf.d88.head.fd_type >> 4)) ||
 		((curfp = fdd->inf.d88.ptr[track]) == 0) ||
 		((cursize = nexttrackptr(fdd, curfp,
 								fdd->inf.d88.fd_size) - curfp) > 0x4000)) {
@@ -173,8 +172,8 @@ const _D88SEC	*p;
 	UINT		sectors;
 	UINT		secsize;
 
-	if ((curdrv != drv) || (curtrk != track) || (curtype != fdc.media)) {
-		read_d88track(drv, track, fdc.media);
+	if ((curdrv != drv) || (curtrk != track) || (curtype != fdc.s.media)) {
+		read_d88track(drv, track, fdc.s.media);
 	}
 	if (curtrkerr) {
 		cursct = r;
@@ -226,7 +225,7 @@ static void drvflush(REG8 drv) {
 
 //**********************************************************************
 
-short fdd_crc_d88(void) {
+BRESULT fddd88_crc(FDDFILE fdd) {
 
 	UINT		track;
 const _D88SEC	*p;
@@ -234,7 +233,6 @@ const _D88SEC	*p;
 	UINT		sectors;
 	UINT		secsize;
 
-	ZeroMemory(fdc.crc_dat, 6);
 	track = (fdc.c << 1) + fdc.h;
 	if (track >= 164) {
 		goto crcerror_d88;
@@ -253,11 +251,14 @@ const _D88SEC	*p;
 		}
 		p = (D88SEC)(((UINT8 *)(p + 1)) + secsize);
 	}
+	fdc.s.buffer[0] = p->c;
+	fdc.s.buffer[1] = p->h;
+	fdc.s.buffer[2] = p->r;
+	fdc.s.buffer[3] = p->n;
+	fdc.s.buffer[4] = 0;
+	fdc.s.buffer[5] = 0;
+	fdc.s.bufsize = 6;
 	fdc.rreg = p->c;								// ƒƒ‹ƒwƒ“ƒ”ƒF[ƒ‹
-	fdc.crc_dat[0] = p->c;
-	fdc.crc_dat[1] = p->h;
-	fdc.crc_dat[2] = p->r;
-	fdc.crc_dat[3] = p->n;
 	crcnum++;
 	if (p->stat) {
 		crcerror = TRUE;
@@ -265,11 +266,12 @@ const _D88SEC	*p;
 	else {
 		crcerror = FALSE;
 	}
-	return(0);
+	return(SUCCESS);
 
 crcerror_d88:
 	crcerror = TRUE;
-	return(1);
+	(void)fdd;
+	return(FAILURE);
 }
 
 
@@ -342,10 +344,10 @@ BYTE fdd_stat_d88(void) {
 				ans |= 0x03; 					// DATA REQUEST / BUSY
 			}
 		}
-		else if ((cmd == 0x0e) && (readdiag < 0x1a00)) {
+		else if ((cmd == 0x0c) && (fdc.s.bufpos < 6)) {
 			ans |= 0x03;
 		}
-		else if ((cmd == 0x0c) && (fdc.crc_off < 6)) {		// ver0.25
+		else if ((cmd == 0x0e) && (readdiag < 0x1a00)) {
 			ans |= 0x03;
 		}
 		else if (cmd == 0x0f) {
@@ -412,10 +414,13 @@ void init_tao_d88(void) {
 	FDDFILE		fdd;
 
 	fdd = fddfile + fdc.drv;
-	if ((fdc.media == 0) && (fdd->inf.d88.head.fd_type != 0x20)) {
+	if (fdc.s.media != (fdd->inf.d88.head.fd_type >> 4)) {
+		tao = WID_ERR;
+	}
+	if (fdc.s.media == DISKTYPE_2D) {
 		tao = WID_2D;
 	}
-	else if ((fdc.media == 1) && (fdd->inf.d88.head.fd_type == 0x20)) {
+	else if (fdc.s.media == DISKTYPE_2HD) {
 		tao = WID_2HD;
 	}
 	else {
@@ -459,7 +464,7 @@ static int fileappend(FILEH hdl, FDDFILE fdd,
 	return(0);
 }
 
-void endoftrack(void) {
+static void endoftrack(void) {
 
 	FDDFILE	fdd;
 	FILEH	hdr;
@@ -695,7 +700,7 @@ BRESULT fddd88_set(FDDFILE fdd, REG8 drv, const OEMCHAR *fname) {
 	}
 	fdd->type = DISKTYPE_D88;
 	fdd->protect = (UINT8)(attr & 1);
-	milstr_ncpy(fdd->fname, fname, NELEMENTS(fdd->fname));
+	(void)drv;
 	return(SUCCESS);
 
 fdst_err:

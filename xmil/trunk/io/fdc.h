@@ -1,12 +1,23 @@
 
 typedef struct {
+	UINT8	media;
+	UINT8	padding[3];
+
+	UINT	bufpos;
+	UINT	bufsize;
+
+	UINT8	buffer[8];
+} FDCSTAT;
+
+typedef struct {
+	UINT	dummy;
+} FDCEXT;
+
+typedef struct {
 	UINT8	drv;
 	UINT8	cmd;
 	short	skip;
 	short	off;
-	short	crc_off;
-	UINT8	crc_dat[8];
-
 	UINT8	type;
 	UINT8	treg;
 	UINT8	sct_bak;
@@ -21,8 +32,12 @@ typedef struct {
 
 	UINT32	busyclock;
 	UINT32	busystart;
-	BYTE	media;
 	BYTE	rreg;
+	FDCSTAT	s;
+
+//	BYTE	media;
+//	short	crc_off;
+//	UINT8	crc_dat[8];
 } FDC;
 
 
