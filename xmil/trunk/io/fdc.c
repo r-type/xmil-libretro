@@ -441,7 +441,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 			break;
 
 		case 1:									// トラック
-			fdc.s.c = value;
+			fdc.s.creg = value;
 			break;
 
 		case 2:									// セクタ

@@ -37,7 +37,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
 		XMILOSCFG	xmiloscfg = {
 							CW_USEDEFAULT, CW_USEDEFAULT,
-							1, 0, 0, 0, 1,
+							1, 0, 0, 0, 0,
 							0, 0, 0,
 #if defined(SUPPORT_RESUME)
 							0,
