@@ -21,7 +21,7 @@ extern "C" {
 
 extern	SOUNDCFG	soundcfg;
 
-BOOL sound_create(UINT rate, UINT ms);
+BRESULT sound_create(UINT rate, UINT ms);
 void sound_destroy(void);
 
 void sound_reset(void);
@@ -35,7 +35,7 @@ const SINT32 *sound_pcmlock(void);
 void sound_pcmunlock(const SINT32 *hdl);
 
 #if defined(SUPPORT_WAVEREC)
-BOOL sound_recstart(const char *filename);
+BRESULT sound_recstart(const OEMCHAR *filename);
 void sound_recstop(void);
 #endif
 

@@ -115,8 +115,8 @@ BEGIN
     END
     POPUP "&Other"
     BEGIN
-        MENUITEM "&BMP Save",                   IDM_BMPSAVE
-        MENUITEM "&OPM LOG",                    IDM_OPMLOG
+        MENUITEM "&BMP Save...",                IDM_BMPSAVE
+        MENUITEM "&OPM LOG...",                 IDM_OPMLOG
         MENUITEM "&Clock Disp",                 IDM_DISPCLOCK
         MENUITEM "&Frame Disp",                 IDM_DISPFRAME
         MENUITEM "Joy Re&verse",                IDM_JOYX

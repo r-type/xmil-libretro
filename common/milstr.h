@@ -1,13 +1,4 @@
 
-typedef struct {
-	char	fname[8];
-	BYTE	terminate;
-	BYTE	extheadsize;
-	BYTE	type;
-	BYTE	reserved;
-	BYTE	size[4];
-} MILF_T;
-
 #ifndef STRCALL
 #define	STRCALL
 #endif

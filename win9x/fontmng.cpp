@@ -11,7 +11,7 @@ typedef struct {
 // ‚ ‚Æ‚ÍŠg’£`
 	HDC			hdcimage;
 	HBITMAP		hBitmap;
-	BYTE		*image;
+	UINT8		*image;
 	HFONT		hfont;
 	RECT		rect;
 	int			bmpwidth;
@@ -73,7 +73,7 @@ void *fontmng_create(int size, UINT type, const OEMCHAR *fontface) {
 	ret->bmpalign = (((ret->bmpwidth + 31) / 8) & ~3);
 
 
-	bi = (BITMAPINFO *)(((BYTE *)(ret + 1)) + fontalign);
+	bi = (BITMAPINFO *)(((UINT8 *)(ret + 1)) + fontalign);
 	bi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bi->bmiHeader.biWidth = ret->bmpwidth;
 	bi->bmiHeader.biHeight = ret->bmpheight;
@@ -132,84 +132,39 @@ void fontmng_destroy(void *hdl) {
 }
 
 
-#if !defined(UNICODE)
+// ----
+
 static void getlength1(FNTMNG fhdl, FNTDAT fdat,
-											const char *string, int length) {
+										const OEMCHAR *string, int length) {
 
 	SIZE	fntsize;
 
-	if ((fhdl->fonttype & FDAT_PROPORTIONAL) &&
-		(GetTextExtentPoint32(fhdl->hdcimage, string, length, &fntsize))) {
+	if (GetTextExtentPoint32(fhdl->hdcimage, string, length, &fntsize)) {
 		fntsize.cx = min(fntsize.cx, fhdl->bmpwidth);
 		fdat->width = fntsize.cx;
 		fdat->pitch = fntsize.cx;
 	}
-	else if (length < 2) {
-		fdat->width = fhdl->fontwidth;
-		fdat->pitch = (fhdl->fontsize + 1) >> 1;
-	}
 	else {
 		fdat->width = fhdl->fontwidth;
-		fdat->pitch = fhdl->fontsize;
+		fdat->pitch = (fhdl->fontsize + 1) >> 1;
 	}
 	fdat->height = fhdl->fontheight;
 }
 
-static void fontmng_getchar(FNTMNG fhdl, FNTDAT fdat, const char *string) {
+static void fontmng_getchar(FNTMNG fhdl, FNTDAT fdat, const OEMCHAR *string) {
 
 	int		leng;
 
 	FillRect(fhdl->hdcimage, &fhdl->rect,
 										(HBRUSH)GetStockObject(BLACK_BRUSH));
-	leng = strlen(string);
+	leng = milstr_charsize(string);
 	TextOut(fhdl->hdcimage, 0, 0, string, leng);
 	getlength1(fhdl, fdat, string, leng);
 }
-#else
-static void getlength1(FNTMNG fhdl, FNTDAT fdat,
-											const char *string, int length) {
 
-	TCHAR	work[4];
-	int		leng;
-	SIZE	fntsize;
+BRESULT fontmng_getsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 
-	if (fhdl->fonttype & FDAT_PROPORTIONAL) {
-		leng = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, string, -1,
-												work, NELEMENTS(work)) - 1;
-		GetTextExtentPoint32(fhdl->hdcimage, work, leng, &fntsize);
-		fntsize.cx = min(fntsize.cx, fhdl->bmpwidth);
-		fdat->width = fntsize.cx;
-		fdat->pitch = fntsize.cx;
-	}
-	else if (length < 2) {
-		fdat->width = fhdl->fontwidth;
-		fdat->pitch = (fhdl->fontsize + 1) >> 1;
-	}
-	else {
-		fdat->width = fhdl->fontwidth;
-		fdat->pitch = fhdl->fontsize;
-	}
-	fdat->height = fhdl->fontheight;
-}
-
-static void fontmng_getchar(FNTMNG fhdl, FNTDAT fdat, const char *string) {
-
-	TCHAR	work[4];
-	int		leng;
-
-	FillRect(fhdl->hdcimage, &fhdl->rect,
-										(HBRUSH)GetStockObject(BLACK_BRUSH));
-	leng = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, string, -1,
-												work, NELEMENTS(work)) - 1;
-	TextOut(fhdl->hdcimage, 0, 0, work, leng);
-	getlength1(fhdl, fdat, string, leng);
-}
-#endif
-
-
-BOOL fontmng_getsize(void *hdl, const char *string, POINT_T *pt) {
-
-	char	buf[4];
+	OEMCHAR	buf[4];
 	_FNTDAT	fdat;
 	int		width;
 	int		leng;
@@ -219,26 +174,17 @@ BOOL fontmng_getsize(void *hdl, const char *string, POINT_T *pt) {
 		goto fmgs_exit;
 	}
 
-	buf[2] = '\0';
-	do {
-		buf[0] = *string++;
-		if ((((buf[0] ^ 0x20) - 0xa1) & 0xff) < 0x3c) {
-			buf[1] = *string++;
-			if (buf[1] == '\0') {
-				break;
-			}
-			leng = 2;
-		}
-		else if (buf[0]) {
-			buf[1] = '\0';
-			leng = 1;
-		}
-		else {
+	while(1) {
+		leng = milstr_charsize(string);
+		if (!leng) {
 			break;
 		}
+		CopyMemory(buf, string, leng * sizeof(OEMCHAR));
+		buf[leng] = '\0';
+		string += leng;
 		getlength1((FNTMNG)hdl, &fdat, buf, leng);
 		width += fdat.pitch;
-	} while(1);
+	}
 
 	if (pt) {
 		pt->x = width;
@@ -250,9 +196,9 @@ fmgs_exit:
 	return(FAILURE);
 }
 
-BOOL fontmng_getdrawsize(void *hdl, const char *string, POINT_T *pt) {
+BRESULT fontmng_getdrawsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 
-	char	buf[4];
+	OEMCHAR	buf[4];
 	_FNTDAT	fdat;
 	int		width;
 	int		posx;
@@ -265,22 +211,14 @@ BOOL fontmng_getdrawsize(void *hdl, const char *string, POINT_T *pt) {
 	width = 0;
 	posx = 0;
 	buf[2] = '\0';
-	do {
-		buf[0] = *string++;
-		if ((((buf[0] ^ 0x20) - 0xa1) & 0xff) < 0x3c) {
-			buf[1] = *string++;
-			if (buf[1] == '\0') {
-				break;
-			}
-			leng = 2;
-		}
-		else if (buf[0]) {
-			buf[1] = '\0';
-			leng = 1;
-		}
-		else {
+	while(1) {
+		leng = milstr_charsize(string);
+		if (!leng) {
 			break;
 		}
+		CopyMemory(buf, string, leng * sizeof(OEMCHAR));
+		buf[leng] = '\0';
+		string += leng;
 		getlength1((FNTMNG)hdl, &fdat, buf, leng);
 		width = posx + max(fdat.width, fdat.pitch);
 		posx += fdat.pitch;
@@ -298,13 +236,13 @@ fmgds_exit:
 
 static void fontmng_setpat(FNTMNG fhdl, FNTDAT fdat) {
 
-	DWORD	remx;
-	DWORD	remy;
-	BYTE	*src;
-	BYTE	*dst;
-	BYTE	*s;
-	BYTE	bit;
-	BYTE	b1 = 0;				// for cygwin
+	UINT	remx;
+	UINT	remy;
+	UINT8	*src;
+	UINT8	*dst;
+	UINT8	*s;
+	UINT8	bit;
+	UINT8	b1 = 0;				// for cygwin
 	int		align;
 
 	align = fhdl->bmpalign;
@@ -313,7 +251,7 @@ static void fontmng_setpat(FNTMNG fhdl, FNTDAT fdat) {
 		goto fmsp_end;
 	}
 
-	dst = (BYTE *)(fdat + 1);
+	dst = (UINT8 *)(fdat + 1);
 	align *= -1;
 
 	remy = fdat->height;
@@ -339,7 +277,7 @@ fmsp_end:
 
 // ----
 
-FNTDAT fontmng_get(void *hdl, const char *string) {
+FNTDAT fontmng_get(void *hdl, const OEMCHAR *string) {
 
 	FNTMNG	fhdl;
 	FNTDAT	fdat;
