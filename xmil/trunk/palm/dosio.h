@@ -79,11 +79,6 @@ FILEH file_create_c(const char *path);
 short file_delete_c(const char *path);
 short file_attr_c(const char *path);
 
-//FLISTH file_list1st(const char *dir, FLINFO *fli);
-//BOOL file_listnext(FLISTH hdl, FLINFO *fli);
-//void file_listclose(FLISTH hdl);
-//BOOL getLongFileName(char *dst, const char *path);
-
 #define	file_cpyname(a, b, c)	milstr_ncpy(a, b, c)
 void file_catname(char *path, const char *sjis, int maxlen);
 #define	file_cmpname(a, b)		milstr_cmp(a, b)

@@ -26,39 +26,6 @@ REG8 mousemng_getstat(SINT16 *x, SINT16 *y, BRESULT clear) {
 
 
 // ----
-/*
-static void SetMouse(const Point *cp) {
-
-	CGPoint	pt;
-
-	pt.x = (float)cp->h;
-	pt.y = (float)cp->v;
-	CGWarpMouseCursorPosition(pt);
-
-}
-
-static void getmaincenter(Point *cp) {
-
-	Rect	rct;
-
-	GetWindowBounds(hWndMain, kWindowContentRgn, &rct);
-	cp->h = (rct.right + rct.left) / 2;
-	cp->v = (rct.bottom + rct.top) / 2;
-}
-*/
-static void mousecapture(BOOL capture) {
-
-//	Point	cp;
-
-	if (capture) {
-//		HideCursor();
-//		getmaincenter(&cp);
-//		SetMouse(&cp);
-	}
-	else {
-//		ShowCursor();
-	}
-}
 
 void mousemng_initialize(void) {
 
@@ -66,19 +33,7 @@ void mousemng_initialize(void) {
 	mousemng.btn = uPD8255A_LEFTBIT | uPD8255A_RIGHTBIT;
 	mousemng.flag = (1 << MOUSEPROC_SYSTEM);
 }
-/*
-void mousemng_callback(HIPoint delta) {
 
-	Point	cp;
-
-	if (!mousemng.flag) {
-		getmaincenter(&cp);
-        mousemng.x += (SINT16)delta.x;
-        mousemng.y += (SINT16)delta.y;
-		SetMouse(&cp);
-	}
-}
-*/
 BRESULT mousemng_buttonevent(UINT event) {
 
 	if (!mousemng.flag) {
@@ -113,27 +68,15 @@ void mousemng_enable(UINT proc) {
 	bit = 1 << proc;
 	if (mousemng.flag & bit) {
 		mousemng.flag &= ~bit;
-		if (!mousemng.flag) {
-			mousecapture(TRUE);
-		}
 	}
 }
 
 void mousemng_disable(UINT proc) {
 
-	if (!mousemng.flag) {
-		mousecapture(FALSE);
-	}
 	mousemng.flag |= (1 << proc);
 }
 
 void mousemng_toggle(UINT proc) {
 
-	if (!mousemng.flag) {
-		mousecapture(FALSE);
-	}
 	mousemng.flag ^= (1 << proc);
-	if (!mousemng.flag) {
-		mousecapture(TRUE);
-	}
 }

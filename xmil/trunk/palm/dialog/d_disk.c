@@ -1,7 +1,6 @@
 #include	"compiler.h"
 #include	"strres.h"
 #include	"resource.h"
-//#include	"dosio.h"
 #include	"dialog.h"
 #include	"dialogs.h"
 #include	"pccore.h"
@@ -9,7 +8,6 @@
 #include	"diskdrv.h"
 #include	"newdisk.h"
 #include	"xmil.h"
-//#include	"fdefine.h"
 #include	"scrndraw.h"
 
 void dialog_changefdd(REG8 drv) {

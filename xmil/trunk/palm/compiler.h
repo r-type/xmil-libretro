@@ -25,7 +25,6 @@ typedef signed int		SINT32;
 typedef unsigned int	UINT32;
 typedef signed long long	SINT64;
 typedef unsigned long long  UINT64;
-//typedef int			BOOL;
 #define	TRUE	true
 #define FALSE	false
 

@@ -31,6 +31,3 @@ void soundmng_sync(void);
 #endif
 
 
-// ---- for mac
-
-

@@ -115,6 +115,5 @@
 #define	IDM_CAPS		4053
 #define	IDM_MAIN		4999
 
-#define	FDDLABEL_LEFT	34
-#define	FDDLABEL_TOP0	132
-#define	FDDLABEL_TOP1	147
+#define	XMILVER_PALMOS	"version 2005/02/26"
+
