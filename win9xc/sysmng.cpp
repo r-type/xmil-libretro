@@ -11,7 +11,6 @@
 
 	UINT	sys_updates;
 
-
 void sysmng_scrnwidth(REG8 mode) {
 
 	menu_setwidth(mode);

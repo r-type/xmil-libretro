@@ -65,7 +65,7 @@ const OEMCHAR	*item;
 				break;
 
 			case INITYPE_HEX8:
-				SPRINTF(work, str_x, *(UINT8 *)p->value),
+				OEMSPRINTF(work, str_x, *(UINT8 *)p->value),
 				GetPrivateProfileString(title, item, work,
 												work, NELEMENTS(work), path);
 				val = (UINT8)milstr_solveHEX(work);
@@ -73,7 +73,7 @@ const OEMCHAR	*item;
 				break;
 
 			case INITYPE_HEX16:
-				SPRINTF(work, str_x, *(UINT16 *)p->value),
+				OEMSPRINTF(work, str_x, *(UINT16 *)p->value),
 				GetPrivateProfileString(title, item, work,
 												work, NELEMENTS(work), path);
 				val = (UINT16)milstr_solveHEX(work);
@@ -81,7 +81,7 @@ const OEMCHAR	*item;
 				break;
 
 			case INITYPE_HEX32:
-				SPRINTF(work, str_x, *(UINT32 *)p->value),
+				OEMSPRINTF(work, str_x, *(UINT32 *)p->value),
 				GetPrivateProfileString(title, item, work,
 												work, NELEMENTS(work), path);
 				val = (UINT32)milstr_solveHEX(work);
@@ -116,39 +116,39 @@ const OEMCHAR	*set;
 					break;
 
 				case INITYPE_SINT8:
-					SPRINTF(work, str_d, *((SINT8 *)p->value));
+					OEMSPRINTF(work, str_d, *((SINT8 *)p->value));
 					break;
 
 				case INITYPE_SINT16:
-					SPRINTF(work, str_d, *((SINT16 *)p->value));
+					OEMSPRINTF(work, str_d, *((SINT16 *)p->value));
 					break;
 
 				case INITYPE_SINT32:
-					SPRINTF(work, str_d, *((SINT32 *)p->value));
+					OEMSPRINTF(work, str_d, *((SINT32 *)p->value));
 					break;
 
 				case INITYPE_UINT8:
-					SPRINTF(work, str_u, *((UINT8 *)p->value));
+					OEMSPRINTF(work, str_u, *((UINT8 *)p->value));
 					break;
 
 				case INITYPE_UINT16:
-					SPRINTF(work, str_u, *((UINT16 *)p->value));
+					OEMSPRINTF(work, str_u, *((UINT16 *)p->value));
 					break;
 
 				case INITYPE_UINT32:
-					SPRINTF(work, str_u, *((UINT32 *)p->value));
+					OEMSPRINTF(work, str_u, *((UINT32 *)p->value));
 					break;
 
 				case INITYPE_HEX8:
-					SPRINTF(work, str_x, *((UINT8 *)p->value));
+					OEMSPRINTF(work, str_x, *((UINT8 *)p->value));
 					break;
 
 				case INITYPE_HEX16:
-					SPRINTF(work, str_x, *((UINT16 *)p->value));
+					OEMSPRINTF(work, str_x, *((UINT16 *)p->value));
 					break;
 
 				case INITYPE_HEX32:
-					SPRINTF(work, str_x, *((UINT32 *)p->value));
+					OEMSPRINTF(work, str_x, *((UINT32 *)p->value));
 					break;
 
 				default:

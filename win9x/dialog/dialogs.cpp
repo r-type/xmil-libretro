@@ -77,9 +77,9 @@ BRESULT dlgs_selectwritenum(HWND hWnd, const FILESEL *item,
 	p = file_getname(path);
 	milstr_ncpy(file, path, size);
 	file_cutname(file);
-	q = file + STRLEN(file);
+	q = file + OEMSTRLEN(file);
 	for (i=0; i<10000; i++) {
-		SPRINTF(q, p, i);
+		OEMSPRINTF(q, p, i);
 		if (file_attr(file) == (short)-1) {
 			break;
 		}
@@ -116,7 +116,7 @@ void dlgs_setlistuint32(HWND hWnd, WORD res, const UINT32 *item, UINT items) {
 
 	wnd = GetDlgItem(hWnd, res);
 	for (i=0; i<items; i++) {
-		SPRINTF(str, str_u, item[i]);
+		OEMSPRINTF(str, str_u, item[i]);
 		SendMessage(wnd, CB_INSERTSTRING, (WPARAM)i, (LPARAM)str);
 	}
 }

@@ -57,6 +57,8 @@ typedef signed __int64		SINT64;
 #define	BRESULT				UINT8
 #define	OEMCHAR				TCHAR
 #define	OEMTEXT(string)		_T(string)
+#define	OEMSPRINTF			wsprintf
+#define	OEMSTRLEN			lstrlen
 
 #include	"common.h"
 #include	"milstr.h"
@@ -66,9 +68,14 @@ typedef signed __int64		SINT64;
 
 
 #define	GETTICK()			GetTickCount()
+#define	__ASSERT(s)
+#if defined(UNICODE)
+#define	SPRINTF				sprintf
+#define	STRLEN				strlen
+#else
 #define	SPRINTF				wsprintf
 #define	STRLEN				lstrlen
-#define	__ASSERT(s)
+#endif
 
 #define	LABEL				__declspec(naked)
 #define RELEASE(x) 			if (x) {(x)->Release(); (x) = NULL;}
@@ -94,6 +101,7 @@ typedef signed __int64		SINT64;
 #define	SUPPORT_24BPP
 #define	SUPPORT_32BPP
 
+#define	SUPPORT_BANKMEM
 #define	SUPPORT_X1F
 
 #define	SOUNDRESERVE	20

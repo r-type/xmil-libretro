@@ -188,10 +188,10 @@ void iocore_reset(void) {
 	ZeroMemory(&iocore, sizeof(iocore));
 	CopyMemory(iocore.e.inpfn, definp, sizeof(definp));
 	CopyMemory(iocore.e.outfn, defout, sizeof(defout));
-#if defined(SUPPORT_EMS)
+#if defined(SUPPORT_BANKMEM)
 	if (pccore.ROM_TYPE >= 2) {
-		iocore.e.inpfn[0x0b] = memio_ems_i;
-		iocore.e.outfn[0x0b] = memio_ems_o;
+		iocore.e.inpfn[0x0b] = memio_bank_i;
+		iocore.e.outfn[0x0b] = memio_bank_o;
 	}
 #endif
 	if (pccore.ROM_TYPE >= 3) {

@@ -54,7 +54,7 @@ extern	DWORD		h_cntbase;
 
 extern	BYTE	mMAIN[0x10000];
 extern	BYTE	mBIOS[0x8000];
-#if defined(SUPPORT_EMS)
+#if defined(SUPPORT_BANKMEM)
 extern	BYTE	mBANK[16][0x8000];
 #endif
 
