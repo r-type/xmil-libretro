@@ -235,7 +235,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					break;
 
 				case IDM_BOOT2HD:
-					xmenu_setbootmedia(DIP_BOOTMEDIA);
+					xmenu_setbootmedia(DIPSW_BOOTMEDIA);
 					updateflag = SYS_UPDATECFG;
 					break;
 
@@ -245,7 +245,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					break;
 
 				case IDM_LOWRES:
-					xmenu_setresolute(DIP_RESOLUTE);
+					xmenu_setresolute(DIPSW_RESOLUTE);
 					updateflag = SYS_UPDATECFG;
 					break;
 

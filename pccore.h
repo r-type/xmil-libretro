@@ -1,8 +1,4 @@
 
-// #include	"z80core.h"
-// #include	"x1_io.h"
-
-
 typedef struct {
 	UINT8	KEY_MODE;
 	UINT8	SOUND_SW;
@@ -42,28 +38,10 @@ typedef struct {
 	UINT8	SOUND_SW;
 } PCCORE;
 
-
-#define	GRAM_SIZE		0x10000
-#define	GRAM_BANK0		0x00000
-#define	GRAM_BANK1		0x10000
-
-#define	GRAM_BANK0L		0x00000
-#define	GRAM_BANK0H		0x08000
-#define	GRAM_BANK1L		0x10000
-#define	GRAM_BANK1H		0x18000
-
-#define GRAM_HALFSTEP	0x08000
-
-#define	TEXT_ANK	0x0000
-#define	TEXT_ATR	0x0800
-#define	TEXT_KNJ	0x1000
-
-#define	PLANE_B		8
-#define	PLANE_R		16
-#define	PLANE_G		24
-
-#define	DIP_RESOLUTE	1
-#define	DIP_BOOTMEDIA	4
+enum {
+	DIPSW_RESOLUTE		= 0x01,
+	DIPSW_BOOTMEDIA		= 0x04
+};
 
 
 #ifdef __cplusplus
@@ -82,8 +60,6 @@ extern	DWORD	h_cntbase;
 extern	BYTE	mMAIN[0x10000];
 extern	BYTE	mBIOS[0x8000];
 extern	BYTE	mBANK[16][0x8000];
-extern	BYTE	GRP_RAM[0x20000];
-extern	BYTE	TXT_RAM[0x01800];
 
 extern	BRESULT	soundrenewal;
 

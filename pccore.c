@@ -38,9 +38,6 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	BYTE		mMAIN[0x10000];
 	BYTE		mBIOS[0x8000];
 	BYTE		mBANK[16][0x8000];
-//	BYTE		KNJ_FNT[0x4bc00];
-	BYTE		GRP_RAM[0x20000];
-	BYTE		TXT_RAM[0x01800];
 	WORD		v_cnt;
 	int			s_cnt;
 

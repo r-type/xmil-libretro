@@ -1,13 +1,13 @@
 #include	"compiler.h"
+#include	"dosio.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"dosio.h"
+#include	"vram.h"
 #include	"debugsub.h"
 
 #include	"x1_io.h"
 #include	"x1_crtc.h"
-// #include	"ddraws.h"
 
 
 //	èÛë‘ìfÇ´èoÇµÅ@Ç∞ÇÎÇËÇÒÇ±
@@ -76,7 +76,7 @@ void debugsub_status(void) {
 	SPRINTF(work, OEMTEXT("x1tram.%.3d"), filenum);
 	fh = file_create_c(work);
 	if (fh != FILEH_INVALID) {
-		file_write(fh, TXT_RAM, 0x1800);
+		file_write(fh, tram, 0x1800);
 		file_close(fh);
 	}
 	filenum++;

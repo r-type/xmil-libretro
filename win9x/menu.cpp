@@ -129,8 +129,8 @@ void xmenu_setbootmedia(UINT8 value) {
 	HMENU	hmenu;
 
 	hmenu = GetMenu(hWndMain);
-	value &= DIP_BOOTMEDIA;
-	xmilcfg.DIP_SW &= (~DIP_BOOTMEDIA);
+	value &= DIPSW_BOOTMEDIA;
+	xmilcfg.DIP_SW &= ~DIPSW_BOOTMEDIA;
 	xmilcfg.DIP_SW |= value;
 	CheckMenuItem(hmenu, IDM_BOOT2D, MFCHECK(!value));
 	CheckMenuItem(hmenu, IDM_BOOT2HD, MFCHECK(value));
@@ -150,8 +150,8 @@ void xmenu_setresolute(UINT8 value) {
 	HMENU	hmenu;
 
 	hmenu = GetMenu(hWndMain);
-	value &= DIP_RESOLUTE;
-	xmilcfg.DIP_SW &= (~DIP_RESOLUTE);
+	value &= DIPSW_RESOLUTE;
+	xmilcfg.DIP_SW &= ~DIPSW_RESOLUTE;
 	xmilcfg.DIP_SW |= value;
 	CheckMenuItem(hmenu, IDM_HIGHRES, MFCHECK(!value));
 	CheckMenuItem(hmenu, IDM_LOWRES, MFCHECK(value));

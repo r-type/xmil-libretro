@@ -3,11 +3,11 @@
 #include	"fontdata.h"
 
 
-const char x1ank1name[]		= "FNT0808.X1";
-const char x1ank2name[]		= "FNT0816.X1";
-const char x1knjname[]		= "FNT1616.X1";
-const char x1ank2tmp[]		= "FNT0816.TMP";
-const char x1knjtmp[]		= "FNT1616.TMP";
+const OEMCHAR x1ank1name[]		= OEMTEXT("FNT0808.X1");
+const OEMCHAR x1ank2name[]		= OEMTEXT("FNT0816.X1");
+const OEMCHAR x1knjname[]		= OEMTEXT("FNT1616.X1");
+const OEMCHAR x1ank2tmp[]		= OEMTEXT("FNT0816.TMP");
+const OEMCHAR x1knjtmp[]		= OEMTEXT("FNT1616.TMP");
 
 
 const UINT8 defrom_ank[0x800] = {
