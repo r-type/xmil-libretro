@@ -155,6 +155,8 @@ void pccore_reset(void) {
 		sndctrl_deinitialize();
 		sndctrl_initialize();
 	}
+	sound_reset();
+
 	reset_x1(xmilcfg.ROM_TYPE, xmilcfg.SOUND_SW, xmilcfg.DIP_SW);
 	soundmng_play();
 }
@@ -229,10 +231,10 @@ void x1r_exec(void) {
 		h_cntbase += pccore.HSYNC_CLK;
 		inttiming ^= 2;
 		if (inttiming != 3) {
-			if (xmilcfg.SOUNDPLY) {
-				sound_makesample(pcmbufsize[s_cnt]);
+			sound_makesample(pcmbufsize[s_cnt]);
+//			if (xmilcfg.SOUNDPLY) {
 //				juliet2_exec();
-			}
+//			}
 			s_cnt++;
 			x1_ctc_int();
 			if (!((++keyintcnt) & 15)) {
@@ -244,7 +246,6 @@ void x1r_exec(void) {
 		}
 		v_cnt++;
 		if (crtc.s.CRT_YL == v_cnt) {
-//			TRACEOUT(("--->sync"));
 			pcg.r.vsync = 1;
 			if (xmilcfg.DISPSYNC == 1) {
 				xmilcfg.DISPSYNC |= 0x80;
@@ -252,10 +253,8 @@ void x1r_exec(void) {
 			}
 		}
 	}
+	sound_sync();
 	calendar_inc();
-	if (!xmilcfg.SOUNDPLY) {
-		sound_makesample(framesoundcnt);
-	}
 	if (!(xmilcfg.DISPSYNC & 0x80)) {
 		scrnupdate();
 	}

@@ -6,7 +6,6 @@
 
 
 	UINT		pcmbufsize[300];
-	UINT		framesoundcnt;
 	OPMCH		opmch[OPMCH_MAX];
 	_OPMGEN		opmgen;
 	_PSGGEN		psggen;
@@ -26,7 +25,6 @@ void sndctrl_initialize(void) {
 	psggen_initialize(rate);
 	psggen_setvol(64);
 
-	framesoundcnt = rate / 60;
 	lastcnt = 0;
 	for (i=0; i<266; i++) {
 		cnt = (rate * (i+1)) / (60 * 266);
@@ -46,7 +44,6 @@ void sndctrl_reset(void) {
 	opmgen_reset();
 	psggen_reset(&psggen);
 
-	sound_reset();
 	sound_streamregist(&opmgen, (SOUNDCB)opmgen_getpcm);
 	sound_streamregist(&psggen, (SOUNDCB)psggen_getpcm);
 }

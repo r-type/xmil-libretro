@@ -91,15 +91,10 @@ void psggen_setreg(PSGGEN psg, REG8 reg, REG8 value) {
 	UINT	freq;
 	UINT	ch;
 
-//	if (romeo_exist) {
-//		juliet2_YMF288A(reg, value, (basedclk * s_cnt / 1600));
-//		return;
-//	}
-
-	reg &= 15;
-//	if (reg < 14) {
-//		sound_sync();
-//	}
+	if (reg >= 14) {
+		return;
+	}
+	sound_sync();
 	((UINT8 *)&psg->reg)[reg] = value;
 	switch(reg) {
 		case 0:
@@ -131,7 +126,6 @@ void psggen_setreg(PSGGEN psg, REG8 reg, REG8 value) {
 //			keydisp_psgmix(psg);
 			psg->mixer = ~value;
 			psg->puchicount = psggencfg.puchidec;
-//			TRACEOUT(("psg %x 7 %d", (long)psg, value));
 			break;
 
 		case 8:
@@ -147,7 +141,6 @@ void psggen_setreg(PSGGEN psg, REG8 reg, REG8 value) {
 			}
 			psg->tone[ch].puchi = psggencfg.puchidec;
 			psg->puchicount = psggencfg.puchidec;
-//			TRACEOUT(("psg %x %x %d", (long)psg, reg, value));
 			break;
 
 		case 11:
