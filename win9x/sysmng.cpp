@@ -6,7 +6,7 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"fddfile.h"
-#include	"draw.h"
+#include	"makescrn.h"
 
 
 	UINT	sys_updates;

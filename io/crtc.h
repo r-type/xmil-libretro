@@ -34,17 +34,28 @@ extern "C" {
 #define	SCRN64_320x100x4096		10
 
 
-#define	SCRN_24KHZ		0x01	// 0:15KHz		1:24KHz
-#define	SCRN_200LINE	0x02	// 0:400line	1:200line
-#define	SCRN_TEXTYx2	0x04	// 0:ノーマル	1:縦に拡大
-#define	SCRN_DISPVRAM	0x08	// 0:表			1:裏
-#define	SCRN_ACCESSVRAM	0x10	// 0:表			1:裏
-#define	SCRN_PCGMODE	0x20	// 0:互換		1:高速
-#define	SCRN_CPUFONT	0x40	// 0:8ラスタ	1:16ラスタ
-#define	SCRN_UNDERLINE	0x80	// 0:なし		1:あり
 
-#define	SCRN_DISPCHANGE	(SCRN_24KHZ | SCRN_200LINE |					\
-									SCRN_TEXTYx2 | SCRN_UNDERLINE)
+//	SCRN_24KHZ		0x01	// 0:15KHz		1:24KHz
+//	SCRN_200LINE	0x02	// 0:400line	1:200line
+//	SCRN_TEXTYx2	0x04	// 0:ノーマル	1:縦に拡大
+//	SCRN_DISPVRAM	0x08	// 0:表			1:裏
+//	SCRN_ACCESSVRAM	0x10	// 0:表			1:裏
+//	SCRN_PCGMODE	0x20	// 0:互換		1:高速
+//	SCRN_CPUFONT	0x40	// 0:8ラスタ	1:16ラスタ
+//	SCRN_UNDERLINE	0x80	// 0:なし		1:あり
+
+enum {
+	SCRN_24KHZ		= 0x01,
+	SCRN_200LINE	= 0x02,
+	SCRN_TEXTYx2	= 0x04,
+	SCRN_DISPVRAM	= 0x08,
+	SCRN_ACCESSVRAM	= 0x10,
+	SCRN_PCGMODE	= 0x20,
+	SCRN_CPUFONT	= 0x40,
+	SCRN_UNDERLINE	= 0x80,
+
+	SCRN_DISPCHANGE	= SCRN_24KHZ|SCRN_200LINE|SCRN_TEXTYx2|SCRN_UNDERLINE
+};
 
 
 typedef struct {

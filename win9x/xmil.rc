@@ -104,17 +104,17 @@ BEGIN
         MENUITEM "&Window",                     IDM_WINDOW
         MENUITEM "&FullScreen",                 IDM_FULLSCREEN
         MENUITEM SEPARATOR
-        MENUITEM "Width &80",                   IDM_WIDTH80
-        MENUITEM "Width &40",                   IDM_WIDTH40
+        MENUITEM "Width 80",                    IDM_WIDTH80
+        MENUITEM "Width 40",                    IDM_WIDTH40
         MENUITEM SEPARATOR
         MENUITEM "DispVsync",                   IDM_DISPSYNC
         MENUITEM "&No Wait",                    IDM_NOWAIT
         MENUITEM SEPARATOR
-        MENUITEM "&Raster",                     IDM_RASTER
-        MENUITEM "&60 FPS",                     IDM_60FPS
-        MENUITEM "&30 FPS",                     IDM_30FPS
-        MENUITEM "&20 FPS",                     IDM_20FPS
-        MENUITEM "&15 FPS",                     IDM_15FPS
+        MENUITEM "&Auto frame",                 IDM_AUTOFPS
+        MENUITEM "F&ull frame",                 IDM_60FPS
+        MENUITEM "1/&2 frame",                  IDM_30FPS
+        MENUITEM "1/&3 frame",                  IDM_20FPS
+        MENUITEM "1/&4 frame",                  IDM_15FPS
     END
     POPUP "&Device"
     BEGIN

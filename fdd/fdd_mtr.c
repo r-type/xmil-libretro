@@ -66,7 +66,7 @@ void fddmtr_motormove(void) {
 
 	regmove = fddmtr.head[fddmtr.curdrv] - fdc.c;
 	fddmtr.head[fddmtr.curdrv] = fdc.c;
-	if ((!xmilcfg.MOTOR) || (xmilcfg.NOWAIT)) {
+	if (!xmilcfg.MOTOR) {
 		return;
 	}
 	if (regmove < 0) {
@@ -92,7 +92,7 @@ void fddmtr_motormove(void) {
 
 void fddmtr_waitsec(BYTE value) {
 
-	if ((!xmilcfg.MOTOR) || (xmilcfg.NOWAIT)) {
+	if (!xmilcfg.MOTOR) {
 		return;
 	}
 	if ((fdc.r != value) && (fddmtr.curevent < 1)) {

@@ -3,8 +3,8 @@
 #include	"sysmng.h"
 #include	"scrndraw.h"
 #include	"sdraw.h"
-#include	"draw.h"
 #include	"palettes.h"
+#include	"makescrn.h"
 
 
 	SCRN	scrn;

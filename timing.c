@@ -1,7 +1,6 @@
 #include	"compiler.h"
 #include	"timing.h"
 #include	"fdd_mtr.h"
-#include	"dclock.h"
 
 
 static const UINT8 tick3[3] = {16, 17, 17};
@@ -37,15 +36,12 @@ UINT timing_getcount(void) {
 	span = ticknow - timing.tick;
 #if 1
 	if (span < tick3[timing.fraction]) {
-		Sleep(1);
 		ticknow = GETTICK();
 		span = ticknow - timing.tick;
 	}
 #endif
 	if (span) {
 		FDDMTR_CALLBACK(ticknow);
-		dclock_callback();
-
 		if (span >= 50) {
 			steps = span / 50;
 			span %= 50;

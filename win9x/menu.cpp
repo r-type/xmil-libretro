@@ -7,8 +7,8 @@
 #include	"pccore.h"
 #include	"ini.h"
 #include	"menu.h"
-#include	"draw.h"
 #include	"palettes.h"
+#include	"makescrn.h"
 #include	"fdd_mtr.h"
 #include	"fdd_ini.h"
 
@@ -167,7 +167,7 @@ void xmenu_setdispmode(UINT8 value) {
 void xmenu_setwaitflg(UINT8 value) {
 
 	value &= 1;
-	xmilcfg.NOWAIT = value;
+	xmiloscfg.NOWAIT = value;
 	CheckMenuItem(GetMenu(hWndMain), IDM_NOWAIT, MFCHECK(value));
 }
 
@@ -176,8 +176,8 @@ void xmenu_setframe(UINT8 value) {
 	HMENU	hmenu;
 
 	hmenu = GetMenu(hWndMain);
-	xmilcfg.DRAW_SKIP = value;
-	CheckMenuItem(hmenu, IDM_RASTER, MFCHECK(!value));
+	xmiloscfg.DRAW_SKIP = value;
+	CheckMenuItem(hmenu, IDM_AUTOFPS, MFCHECK(!value));
 	CheckMenuItem(hmenu, IDM_60FPS, MFCHECK(value == 1));
 	CheckMenuItem(hmenu, IDM_30FPS, MFCHECK(value == 2));
 	CheckMenuItem(hmenu, IDM_20FPS, MFCHECK(value == 3));
@@ -263,7 +263,7 @@ void xmenu_setskipline(UINT8 value) {
 	xmilcfg.SKIP_LINE = value & 1;
 	CheckMenuItem(GetMenu(hWndMain), IDM_SKIPLINE, MFCHECK(xmilcfg.SKIP_LINE));
 	reflesh_palette();
-	palandply = 1;
+	makescrn.palandply = 1;
 }
 
 void xmenu_setbtnmode(UINT8 value) {

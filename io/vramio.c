@@ -2,7 +2,7 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"vram.h"
-#include	"draw.h"
+#include	"makescrn.h"
 
 
 // ---- text
@@ -17,10 +17,10 @@ void IOOUTCALL tram_o(UINT port, REG8 value) {
 			return;
 		}
 		if ((tram[TRAM_ATR + addr] ^ value) & (X1ATR_Yx2 | X1ATR_Xx2)) {
-			doubleatrchange = 1;
+			makescrn.remakeattr = 1;
 		}
 		if (value & X1ATR_BLINK) {
-			blinkflag = 1;
+			makescrn.existblink = 1;
 		}
 		tram[TRAM_ATR + addr] = value;
 	}
@@ -36,7 +36,7 @@ void IOOUTCALL tram_o(UINT port, REG8 value) {
 		}
 		tram[TRAM_ANK + addr] = value;
 	}
-	scrnflash = 1;
+	makescrn.scrnflash = 1;
 	if (tram[TRAM_ATR + addr] & X1ATR_Xx2) {
 		updatetmp[addr + 1] |= UPDATE_TVRAM;
 	}
@@ -70,7 +70,7 @@ void IOOUTCALL gram_o(UINT port, REG8 value) {
 	}
 	*p = value;
 	updatetmp[port & crtc.e.updatemask] |= crtc.e.updatebit;
-	scrnflash = 1;
+	makescrn.scrnflash = 1;
 }
 
 REG8 IOINPCALL gram_i(UINT port) {
@@ -106,7 +106,7 @@ void IOOUTCALL gram2_o(UINT port, REG8 value) {
 			break;
 	}
 	updatetmp[port & crtc.e.updatemask] |= crtc.e.updatebit;
-	scrnflash = 1;
+	makescrn.scrnflash = 1;
 }
 
 

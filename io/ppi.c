@@ -1,7 +1,7 @@
 #include	"compiler.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"draw.h"
+#include	"makescrn.h"
 
 
 // ---- 8255 PPIÅ`

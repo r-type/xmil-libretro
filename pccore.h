@@ -3,8 +3,7 @@ typedef struct {
 	UINT8	KEY_MODE;
 	UINT8	SOUND_SW;
 	UINT8	SKIP_LINE;
-	UINT8	NOWAIT;
-	UINT8	DRAW_SKIP;
+
 	UINT8	ROM_TYPE;
 	UINT8	CPU8MHz;
 	UINT8	DIP_SW;
@@ -35,6 +34,11 @@ typedef struct {
 	UINT8	SOUND_SW;
 } PCCORE;
 
+typedef struct {
+	UINT8	drawframe;
+	UINT8	soundrenewal;
+} CORESTAT;
+
 enum {
 	DIPSW_RESOLUTE		= 0x01,
 	DIPSW_BOOTMEDIA		= 0x04
@@ -47,8 +51,9 @@ extern "C" {
 
 extern const OEMCHAR xmilversion[];
 
-extern	XMILCFG	xmilcfg;
-extern	PCCORE	pccore;
+extern	XMILCFG		xmilcfg;
+extern	PCCORE		pccore;
+extern	CORESTAT	corestat;
 extern	BYTE	*RAM0r;
 extern	BYTE	*RAM0w;
 extern	DWORD	h_cntbase;
@@ -57,18 +62,16 @@ extern	BYTE	mMAIN[0x10000];
 extern	BYTE	mBIOS[0x8000];
 extern	BYTE	mBANK[16][0x8000];
 
-extern	BRESULT	soundrenewal;
-
 #define	h_cnt	Z80_ICOUNT
 extern	WORD	v_cnt;
 
 // BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW);
-
-void x1r_exec(void);
+// void x1r_exec(void);
 
 void pccore_initialize(void);
 void pccore_reset(void);
 void pccore_deinitialize(void);
+void pccore_exec(BRESULT draw);
 
 #ifdef __cplusplus
 }

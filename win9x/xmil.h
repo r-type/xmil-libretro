@@ -10,6 +10,8 @@ typedef struct {
 	UINT8	WINSNAP;
 	UINT8	background;
 	UINT8	DISPCLK;
+	UINT8	NOWAIT;
+	UINT8	DRAW_SKIP;
 
 	UINT8	keyboard;
 	UINT8	JOYSTICK;

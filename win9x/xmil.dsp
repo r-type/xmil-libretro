@@ -45,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\cavelv2" /I "..\cavelv3" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
@@ -71,7 +71,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\cavelv2" /I "..\cavelv3" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "UNICODE" /D "_UNICODE" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "UNICODE" /D "_UNICODE" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
@@ -97,7 +97,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\cavelv2" /I "..\cavelv3" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "TRACE" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "TRACE" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
@@ -123,7 +123,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\cavelv2" /I "..\cavelv3" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x411 /d "_DEBUG"
@@ -622,155 +622,49 @@ SOURCE=.\SNDBOARD.C
 
 SOURCE=..\IO\SUBCPU.C
 # End Source File
+# Begin Source File
+
+SOURCE=..\IO\VRAMIO.C
+# End Source File
 # End Group
 # Begin Group "vram"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAW.C
+SOURCE=..\VRAM\MAKE15.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAW4096.C
+SOURCE=..\VRAM\MAKE24.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAW64.C
+SOURCE=..\VRAM\MAKEATR.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAW64H.C
+SOURCE=..\VRAM\MAKECHR.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAW64L.C
+SOURCE=..\VRAM\MAKEMIX.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAW8.C
+SOURCE=..\VRAM\MAKESCRN.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAW_SUB.C
+SOURCE=..\VRAM\MAKESUB.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAWTXT6.C
+SOURCE=..\VRAM\MAKETXTH.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAWTXT8.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\x86\MAKETXTB.X86
-
-!IF  "$(CFG)" == "xmil - Win32 Release JP"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xreljp
-InputPath=.\x86\MAKETXTB.X86
-InputName=MAKETXTB
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xrelworld
-InputPath=.\x86\MAKETXTB.X86
-InputName=MAKETXTB
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xtrc
-InputPath=.\x86\MAKETXTB.X86
-InputName=MAKETXTB
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xdbg
-InputPath=.\x86\MAKETXTB.X86
-InputName=MAKETXTB
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\x86\MAKETXTD.X86
-
-!IF  "$(CFG)" == "xmil - Win32 Release JP"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xreljp
-InputPath=.\x86\MAKETXTD.X86
-InputName=MAKETXTD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xrelworld
-InputPath=.\x86\MAKETXTD.X86
-InputName=MAKETXTD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xtrc
-InputPath=.\x86\MAKETXTD.X86
-InputName=MAKETXTD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xdbg
-InputPath=.\x86\MAKETXTD.X86
-InputName=MAKETXTD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ENDIF 
-
+SOURCE=..\VRAM\MAKETXTL.C
 # End Source File
 # Begin Source File
 
@@ -787,10 +681,6 @@ SOURCE=..\VRAM\SDRAW.C
 # Begin Source File
 
 SOURCE=..\VRAM\VRAM.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\VRAMIO.C
 # End Source File
 # End Group
 # Begin Group "sound"
