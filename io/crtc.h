@@ -123,7 +123,8 @@ typedef struct {
 
 // ----
 
-void vrambank_patch(void);
+void crtc_bankupdate(void);								// vrambank_patch
+void crtc_regupdate(void);
 
 void IOOUTCALL crtc_o(UINT port, REG8 value);			// x1_crtc_w
 
@@ -153,6 +154,7 @@ REG8 IOINPCALL blackctrl_i(UINT port);					// x1_blackctrl_r
 
 void crtc_initialize(void);
 void crtc_reset(void);
+void crtc_forcesetwidth(REG8 width);
 
 #ifdef __cplusplus
 }

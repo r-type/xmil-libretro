@@ -35,12 +35,12 @@ FILEH __stdcall file_create(const OEMCHAR *path);
 long __stdcall file_seek(FILEH handle, long pointer, int method);
 UINT __stdcall file_read(FILEH handle, void *data, UINT length);
 UINT __stdcall file_write(FILEH handle, const void *data, UINT length);
-short __stdcall file_close(FILEH handle);
+BRESULT __stdcall file_close(FILEH handle);
 UINT __stdcall file_getsize(FILEH handle);
-short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
-short __stdcall file_delete(const OEMCHAR *path);
-short __stdcall file_attr(const OEMCHAR *path);
-short __stdcall file_dircreate(const OEMCHAR *path);
+BRESULT __stdcall file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
+BRESULT __stdcall file_delete(const OEMCHAR *path);
+SINT16 __stdcall file_attr(const OEMCHAR *path);
+BRESULT __stdcall file_dircreate(const OEMCHAR *path);
 
 											// カレントファイル操作
 void __stdcall file_setcd(const OEMCHAR *exename);
@@ -48,8 +48,8 @@ OEMCHAR * __stdcall file_getcd(const OEMCHAR *path);
 FILEH __stdcall file_open_c(const OEMCHAR *path);
 FILEH __stdcall file_open_rb_c(const OEMCHAR *path);
 FILEH __stdcall file_create_c(const OEMCHAR *path);
-short __stdcall file_delete_c(const OEMCHAR *path);
-short __stdcall file_attr_c(const OEMCHAR *path);
+BRESULT __stdcall file_delete_c(const OEMCHAR *path);
+SINT16 __stdcall file_attr_c(const OEMCHAR *path);
 
 #define	file_cpyname(a, b, c)	milstr_ncpy(a, b, c)
 #define	file_catname(a, b, c)	milstr_ncat(a, b, c)

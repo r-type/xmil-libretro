@@ -12,6 +12,10 @@ enum {
 #define	BRESULT		UINT
 #endif
 
+#ifndef INTPTR
+#define	INTPTR		long
+#endif
+
 #ifndef LOADINTELDWORD
 #define	LOADINTELDWORD(a)		(((UINT32)(a)[0]) |				\
 								((UINT32)(a)[1] << 8) |			\

@@ -104,6 +104,32 @@ void sysmenu_setbgsound(UINT8 value) {
 
 // ----
 
+#if defined(SUPPORT_STATSAVE)
+static const OEMCHAR xmenu_stat[] = OEMTEXT("S&tat");
+static const OEMCHAR xmenu_statsave[] = OEMTEXT("Save %u");
+static const OEMCHAR xmenu_statload[] = OEMTEXT("Load %u");
+
+static void addstatsavemenu(HMENU hMenu, UINT pos) {
+
+	HMENU	hSubMenu;
+	UINT	i;
+	OEMCHAR	buf[16];
+
+	hSubMenu = CreatePopupMenu();
+	for (i=0; i<SUPPORT_STATSAVE; i++) {
+		OEMSPRINTF(buf, xmenu_statsave, i);
+		AppendMenu(hSubMenu, MF_STRING, IDM_FLAGSAVE + i, buf);
+	}
+	AppendMenu(hSubMenu, MF_MENUBARBREAK, 0, NULL);
+	for (i=0; i<SUPPORT_STATSAVE; i++) {
+		OEMSPRINTF(buf, xmenu_statload, i);
+		AppendMenu(hSubMenu, MF_STRING, IDM_FLAGLOAD + i, buf);
+	}
+	InsertMenu(hMenu, pos, MF_BYPOSITION | MF_POPUP,
+											(UINT32)hSubMenu, xmenu_stat);
+}
+#endif
+
 void menu_initialize(void) {
 
 	HMENU	hMenu;
@@ -129,7 +155,7 @@ void menu_initialize(void) {
 //	}
 
 #if defined(SUPPORT_STATSAVE)
-	if (np2oscfg.statsave) {
+	if (xmiloscfg.statsave) {
 		addstatsavemenu(hMenu, 1);
 	}
 #endif

@@ -20,7 +20,6 @@ typedef struct {
 extern "C" {
 #endif
 
-// void x1_ctc_int(void);
 void neitem_ctc(UINT id);
 BRESULT ieitem_ctc(UINT id);
 

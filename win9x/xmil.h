@@ -1,8 +1,4 @@
 
-#ifndef __cplusplus
-// #error why called from C ?
-#endif
-
 typedef struct {
 	int		winx;
 	int		winy;
@@ -16,6 +12,13 @@ typedef struct {
 	UINT8	keyboard;
 	UINT8	JOYSTICK;
 	UINT8	Z80SAVE;
+
+#if defined(SUPPORT_RESUME)
+	UINT8	resume;
+#endif
+#if defined(SUPPORT_STATSAVE)
+	UINT8	statsave;
+#endif
 
 	UINT8	clockx;
 	UINT8	clockfnt;
@@ -42,6 +45,9 @@ enum {
 	IDM_SCREENCENTER	= 20000,
 	IDM_SNAPENABLE		= 20001,
 	IDM_BACKGROUND		= 20002,
-	IDM_BGSOUND			= 20003
+	IDM_BGSOUND			= 20003,
+
+	IDM_FLAGSAVE		= 20100,
+	IDM_FLAGLOAD		= 20150
 };
 

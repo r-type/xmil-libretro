@@ -61,7 +61,7 @@ static void setportc(REG8 dat) {
 	if (crtc.s.TXT_XL != xl) {
 		crtc.s.TXT_XL = (UINT8)xl;
 //		crtc.s.GRP_XL = xl << 3;
-		vrambank_patch();
+		crtc_bankupdate();
 		scrnallflash = 1;
 	}
 }

@@ -49,7 +49,7 @@ static const CRTCSTAT crtcdefault = {
 	};
 
 
-void vrambank_patch(void) {
+void crtc_bankupdate(void) {
 
 	UINT	updatemask;
 	UINT8	dispmode;
@@ -173,7 +173,7 @@ void vrambank_patch(void) {
 	crtc.e.pal_disp = pal_disp;
 }
 
-static void crtc_updt(void) {
+void crtc_regupdate(void) {
 
 	UINT	fonty;
 
@@ -208,7 +208,7 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 				else {
 					crtc.s.TXT_XL = 80;
 				}
-				vrambank_patch();
+				crtc_bankupdate();
 				break;
 
 			case 0x04:
@@ -248,7 +248,7 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 		}
 //		crtc.s.GRP_XL = crtc.s.TXT_XL << 3;
 //		crtc.s.GRP_YL = 200;
-		crtc_updt();
+		crtc_regupdate();
 		scrnallflash = 1;								/* 990220 puni */
 	}
 }
@@ -266,9 +266,9 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 //		pal_reset();					// ‚È‚ñ‚ÅH
 		scrnallflash = 1;
 		makescrn.palandply = 1;
-		crtc_updt();
+		crtc_regupdate();
 	}
-	vrambank_patch();
+	crtc_bankupdate();
 	(void)port;
 }
 
@@ -394,7 +394,7 @@ REG8 IOINPCALL palette_i(UINT port) {
 void IOOUTCALL extpal_o(UINT port, REG8 value) {
 
 	crtc.s.EXTPALMODE = value;
-	vrambank_patch();
+	crtc_bankupdate();
 	(void)port;
 }
 
@@ -440,7 +440,7 @@ REG8 IOINPCALL exttextpal_i(UINT port) {
 void IOOUTCALL exttextdisp_o(UINT port, REG8 value) {
 
 	crtc.s.ZPRY = value;
-	vrambank_patch();
+	crtc_bankupdate();
 	(void)port;
 }
 
@@ -498,10 +498,16 @@ void crtc_reset(void) {
 	}
 
 	pal_reset();
-	crtc_updt();
-
-	vrambank_patch();
+	crtc_bankupdate();
+	crtc_regupdate();
 	makescrn.palandply = 1;
+	scrnallflash = 1;
+}
+
+void crtc_forcesetwidth(REG8 width) {
+
+	crtc.s.TXT_XL = (UINT8)width;
+	crtc_bankupdate();
 	scrnallflash = 1;
 }
 
