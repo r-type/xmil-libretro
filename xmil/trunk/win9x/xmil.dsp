@@ -664,11 +664,113 @@ SOURCE=..\CAVELV3\DRAWTXT8.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAWTXTB.C
+SOURCE=.\x86\MAKETXTB.X86
+
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=.\x86\MAKETXTB.X86
+InputName=MAKETXTB
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
+InputPath=.\x86\MAKETXTB.X86
+InputName=MAKETXTB
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xtrc
+InputPath=.\x86\MAKETXTB.X86
+InputName=MAKETXTB
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xdbg
+InputPath=.\x86\MAKETXTB.X86
+InputName=MAKETXTB
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
-SOURCE=..\CAVELV3\DRAWTXTD.C
+SOURCE=.\x86\MAKETXTD.X86
+
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=.\x86\MAKETXTD.X86
+InputName=MAKETXTD
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
+InputPath=.\x86\MAKETXTD.X86
+InputName=MAKETXTD
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xtrc
+InputPath=.\x86\MAKETXTD.X86
+InputName=MAKETXTD
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xdbg
+InputPath=.\x86\MAKETXTD.X86
+InputName=MAKETXTD
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 

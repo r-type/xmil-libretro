@@ -207,7 +207,6 @@ static const INITBL iniitem[] = {
 	{"OPMsound", INITYPE_BOOL,		&xmilcfg.SOUND_SW,		0},
 	{"SampleHz", INITYPE_UINT16,	&xmilcfg.samplingrate,	0},
 	{"Latencys", INITYPE_UINT16,	&xmilcfg.delayms,		0},
-	{"SoundPly", INITYPE_BOOL,		&xmilcfg.SOUNDPLY,		0},
 	{"Seek_Snd", INITYPE_BOOL,		&xmilcfg.MOTOR,			0},
 	{"Seek_Vol", INIMAX_UINT8,		&xmilcfg.MOTORVOL,		100},
 

@@ -11,7 +11,6 @@
 #include	"pccore.h"
 #include	"draw.h"
 #include	"ini.h"
-// #include	"ddraws.h"
 #include	"palettes.h"
 
 
@@ -33,7 +32,6 @@ static void cfgcreate(HWND hWnd) {
 	SetDlgItemText(hWnd, IDC_SNDBUFFER, work);
 	SPRINTF(work, str_u, xmilcfg.MOTORVOL);
 	SetDlgItemText(hWnd, IDC_SEEKVOL, work);
-	SetDlgItemCheck(hWnd, IDC_HIGHPRY, xmilcfg.SOUNDPLY);
 	if (xmilcfg.TEXTMODE) {
 		res = IDC_TXTENHANCED;
 	}
@@ -98,12 +96,6 @@ static void cfgupdate(HWND hWnd) {
 		soundmng_pcmvolume(SOUND_PCMSEEK, bval);
 		soundmng_pcmvolume(SOUND_PCMSEEK1, bval);
 		updateflag |= SYS_UPDATEOSCFG;
-	}
-
-	bval = (UINT8)GetDlgItemCheck(hWnd, IDC_HIGHPRY);
-	if (xmilcfg.SOUNDPLY != bval) {
-		xmilcfg.SOUNDPLY = bval;
-		updateflag |= SYS_UPDATECFG;
 	}
 
 	bval = (UINT8)GetDlgItemCheck(hWnd, IDC_TXTENHANCED);
