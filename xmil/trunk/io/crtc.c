@@ -23,13 +23,91 @@ static const UINT16 defpalgrph[64] = {
 
 static const UINT8 defrgbp[4] = {0xaa, 0xcc, 0xf0, 0x00};
 static const UINT8 defreg[18] = {
-				55, 40, 45, 0x36,
-				31, 10, 25, 28,
-				7, 7, 0, 0,
-				0, 0, 0, 0, 0, 0};
+				0x37, 0x28, 0x2d, 0x34,
+				0x1f, 0x02, 0x19, 0x1c,
+				0x00, 0x07, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00};
+
+typedef struct {
+	UINT32	clock;
+	UINT	minx;
+	UINT	maxx;
+	UINT	miny;
+	UINT	maxy;
+} GDCCLK;
+
+static const GDCCLK gdcclk[] = {
+			{14318180 / 8, 112 - 8, 112 + 8, 200, 300},
+			{21052600 / 8, 108 - 6, 108 + 6, 400, 575}};
+
+enum {
+	CRTCUPD_CLOCK		= 0x01,
+	CRTCUPD_TIMING		= 0x02,
+	CRTCUPD_POS			= 0x04
+};
 
 
-void crtc_bankupdate(void) {
+static void crtc_clkupdate(void) {
+
+	UINT		clksync;
+const GDCCLK	*clk;
+	UINT		h;
+	UINT		fonty;
+	UINT		v;
+
+	clksync = (crtc.s.SCRN_BITS & SCRN_24KHZ);
+	clk = gdcclk + clksync;
+	h = crtc.s.reg[CRTCREG_HSIZE] + 1;
+	if (crtc.s.width40) {
+		h = h * 2;
+	}
+	if (h < clk->minx) {
+		h = clk->minx;
+	}
+	else if (h > clk->maxx) {
+		h = clk->maxx;
+	}
+	crtc.e.rasterclock8 = (4000000 * h) / (clk->clock >> 8);
+
+	fonty = crtc.s.reg[CRTCREG_CHRCY] & 0x1f;
+	fonty >>= clksync;
+	fonty += 1;
+	crtc.e.fonty = fonty;
+
+	v = (crtc.s.reg[CRTCREG_CHRCY] & 0x1f) + 1;
+	v = v * ((crtc.s.reg[CRTCREG_VSIZE] & 0x7f) + 1);
+	v = v + (crtc.s.reg[CRTCREG_VSIZEA] & 0x1f);
+	if (v < clk->miny) {
+		v = clk->miny;
+	}
+	else if (v > clk->maxy) {
+		v = clk->maxy;
+	}
+	crtc.e.frameclock = ((4000000 * h) / clk->clock) * v;
+}
+
+static void crtc_timingupdate(void) {
+
+	UINT32	fontclock;
+	UINT	yl;
+
+	fontclock = (crtc.s.reg[CRTCREG_CHRCY] & 0x1f) + 1;
+	fontclock = (fontclock * crtc.e.rasterclock8) >> 8;
+
+	// YsIIIが yl==0で disp信号見る…なんで？
+	yl = (crtc.s.reg[CRTCREG_VDISP] & 0x7f);
+	crtc.e.yl = yl;
+	crtc.e.dispclock = fontclock * max(yl, 1);
+	crtc.e.vsyncstart = fontclock * ((crtc.s.reg[CRTCREG_VSYNC] & 0x7f) + 1);
+	crtc.e.vpulseclock = ((crtc.s.reg[CRTCREG_PULSE] >> 4)
+												* crtc.e.rasterclock8) >> 8;
+
+	crtc.e.pos = crtc.s.reg[CRTCREG_POSL]
+									+ ((crtc.s.reg[CRTCREG_POSH] & 7) << 8);
+}
+
+static void crtc_bankupdate(void) {
 
 	UINT	updatemask;
 	UINT8	dispmode;
@@ -49,8 +127,7 @@ void crtc_bankupdate(void) {
 
 	if ((!(crtc.s.EXTPALMODE & 0x80)) || (crtc.s.SCRN_BITS & SCRN_UNDERLINE)) {
 		updatemask = 0x7ff;
-		if ((crtc.s.SCRN_BITS & SCRN_24KHZ) &&
-			(crtc.s.reg[CRTCREG_HDISP] == 80)) {
+		if ((crtc.s.SCRN_BITS & SCRN_24KHZ) && (!crtc.s.width40)) {
 			pal_bank = pal_disp = PAL_HIGHRESO;
 		}
 		if (crtc.s.SCRN_BITS & SCRN_TEXTYx2) {
@@ -61,7 +138,7 @@ void crtc_bankupdate(void) {
 		updatemask = 0x3ff;
 		if (!(crtc.s.SCRN_BITS & SCRN_TEXTYx2)) {
 			if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
-				if (crtc.s.reg[CRTCREG_HDISP] == 40) {
+				if (crtc.s.width40) {
 					if (crtc.s.SCRN_BITS & SCRN_200LINE) {	// width 40,25,0,2
 						dispmode |= SCRN64_320x200;
 					}
@@ -75,7 +152,7 @@ void crtc_bankupdate(void) {
 				}
 			}
 			else {
-				if (crtc.s.reg[CRTCREG_HDISP] == 40) {		// width 40,25,0,1
+				if (crtc.s.width40) {						// width 40,25,0,1
 					if (crtc.s.EXTPALMODE & 0x10) {
 						if (crtc.s.ZPRY & 0x10) {
 							dispmode = SCRN64_L320x200x2 |
@@ -106,7 +183,7 @@ void crtc_bankupdate(void) {
 		}
 		else {
 			if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
-				if (crtc.s.reg[CRTCREG_HDISP] == 40) {
+				if (crtc.s.width40) {
 					if (crtc.s.SCRN_BITS & SCRN_200LINE) {	// width 40,12,0,2
 						dispmode |= SCRN64_320x100;
 					}
@@ -119,7 +196,7 @@ void crtc_bankupdate(void) {
 				}
 			}
 			else {
-				if (crtc.s.reg[CRTCREG_HDISP] == 40) {		// width 40,12,0,1
+				if (crtc.s.width40) {						// width 40,12,0,1
 					if (crtc.s.EXTPALMODE & 0x10) {
 						if (crtc.s.ZPRY & 0x10) {
 							dispmode = SCRN64_320x100x2 |
@@ -154,33 +231,6 @@ void crtc_bankupdate(void) {
 	crtc.e.pal_disp = pal_disp;
 }
 
-void crtc_regupdate(void) {
-
-	UINT	fonty;
-	SINT32	fontyclock;
-
-	crtc.e.pos = crtc.s.reg[CRTCREG_POSL]
-									+ ((crtc.s.reg[CRTCREG_POSH] & 7) << 8);
-
-	fonty = crtc.s.reg[CRTCREG_CHRCY] & 0x1f;
-	if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
-		fonty >>= 1;
-	}
-	fonty += 1;
-	crtc.e.fonty = fonty;
-	crtc.e.yl = (crtc.s.reg[CRTCREG_VDISP] & 0x7f);
-
-	fontyclock = fonty * RASTER_CLOCK;
-	crtc.e.dispclock = fontyclock * crtc.e.yl;
-	// YsIIIが yl==0で disp信号見る…なんで？
-	if (!crtc.e.dispclock) {
-		crtc.e.dispclock = fontyclock;
-	}
-	crtc.e.vsyncstart = fontyclock * ((crtc.s.reg[CRTCREG_VSYNC] & 0x7f) + 1);
-	crtc.e.vpulseclock = (crtc.s.reg[CRTCREG_PULSE] >> 4) * RASTER_CLOCK;
-	crtc.e.vl = fonty * ((crtc.s.reg[CRTCREG_VSIZE] & 0x7f) + 1)
-						+ (crtc.s.reg[CRTCREG_VSIZEA] & 0x1f);
-}
 
 
 // ---- CRTC
@@ -195,9 +245,10 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 		if (crtc.s.regnum < CRTCREG_MAX) {
 			if (crtc.s.reg[crtc.s.regnum] != value) {
 				crtc.s.reg[crtc.s.regnum] = value;
+				crtc_clkupdate();
+				crtc_timingupdate();
 				crtc_bankupdate();
 				makescrn.remakeattr = 1;
-				crtc_regupdate();
 				scrnallflash = 1;
 			}
 		}
@@ -217,7 +268,8 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 //		pal_reset();					// なんで？
 		scrnallflash = 1;
 		makescrn.palandply = 1;
-		crtc_regupdate();
+		crtc_clkupdate();
+		crtc_timingupdate();
 	}
 	crtc_bankupdate();
 	(void)port;
@@ -420,6 +472,24 @@ REG8 IOINPCALL blackctrl_i(UINT port) {
 
 // ----
 
+void crtc_update(void) {
+
+	crtc_clkupdate();
+	crtc_timingupdate();
+	crtc_bankupdate();
+	makescrn.palandply = 1;
+	scrnallflash = 1;
+}
+
+void crtc_setwidth(REG8 width40) {
+
+	crtc.s.width40 = width40;
+	crtc_update();
+}
+
+
+// ----
+
 static void resetpal(void) {
 
 	CopyMemory(crtc.p.text, defpaltext, sizeof(defpaltext));
@@ -442,19 +512,19 @@ void crtc_reset(void) {
 	ZeroMemory(&crtc, sizeof(crtc));
 	CopyMemory(crtc.s.rgbp, defrgbp, 4);
 	CopyMemory(crtc.s.reg, defreg, 18);
+	crtc.s.width40 = 1;
 	if (pccore.ROM_TYPE < 3) {
 		resetpal();
 	}
-	if ((pccore.ROM_TYPE >= 2) && (!(pccore.DIP_SW & 1))) {
-		crtc.s.SCRN_BITS = SCRN_200LINE;
-		crtc.s.reg[CRTCREG_CHRCY] = 15;
-	}
+//	IPLが勝手に切り替える筈である
+//	if ((pccore.ROM_TYPE >= 2) && (!(pccore.DIP_SW & 1))) {
+//		crtc.s.SCRN_BITS = SCRN_200LINE;
+//		crtc.s.reg[CRTCREG_CHRCY] = 15;
+//	}
 
 	pal_reset();
-	crtc_bankupdate();
-	crtc_regupdate();
 	makescrn.palandply = 1;
-	scrnallflash = 1;
+	crtc_update();
 }
 
 void crtc_forcesetwidth(REG8 width) {

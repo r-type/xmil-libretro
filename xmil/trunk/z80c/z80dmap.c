@@ -32,12 +32,21 @@ void z80dmap(void) {
 	}
 
 	do {		// dma_lp
+		if (dma.increment) {
+			if (!(flag1 & 0x20)) {
+				*off1 += (flag1 & 0x10)?1:-1;
+			}
+			if (!(flag2 & 0x20)) {
+				*off2 += (flag2 & 0x10)?1:-1;
+			}
+		}
+		dma.increment = 1;
 		addr = *off1;
 		if (flag1 & 8) {
 			dat = iocore_inp(addr);
 		}
 		else {
-			dat = mem_read8(addr);
+			dat = z80mem_read8(addr);
 		}
 		if (dma.cmd & 1) {
 			addr = *off2;
@@ -45,7 +54,8 @@ void z80dmap(void) {
 				iocore_out(addr, dat);
 			}
 			else {
-				mem_write8(addr, dat);
+				TRACEOUT(("dma->%.4x", addr));
+				z80mem_write8(addr, dat);
 			}
 		}
 		if (dma.cmd & 2) {
@@ -54,21 +64,7 @@ void z80dmap(void) {
 				dma.MACH_FLG = 1;
 			}
 		}
-		if (dma.mode != 1) {
-			dma.DMA_STOP = (dma.WR[5] ^ dma.ready) & 8;
-			if (dma.DMA_STOP) {
-				dma.working = FALSE;			// Šù‚ÉƒZƒbƒg‚³‚ê‚Ä‚é”¤‚¾‚ª
-				goto dma_stop;
-			}
-		}
-		if (!(flag1 & 0x20)) {
-			*off1 += (flag1 & 0x10)?1:-1;
-		}
-		if (!(flag2 & 0x20)) {
-			*off2 += (flag2 & 0x10)?1:-1;
-		}
 
-dma_stop:
 		dma.BYT_N.w++;
 		if (dma.BYT_N.w == 0) {
 			dma.working = FALSE;
@@ -81,7 +77,7 @@ dma_stop:
 			goto intr;
 		}
 		if (!dma.working) {
-			goto intr;
+			return;
 		}
 	} while(dma.mode);
 	return;

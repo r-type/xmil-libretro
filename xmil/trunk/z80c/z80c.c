@@ -124,12 +124,6 @@ void CPUCALL z80c_reset(void) {
 	R_Z80R = rand_get();
 }
 
-REG8 CPUCALL z80c_ableinterrupt(void) {
-
-	return((Z80_IFF & ((1 << IFF_IFLAG) | (1 << IFF_IRQ) | (1 << IFF_NMI)))
-																		?0:1);
-}
-
 void CPUCALL z80c_interrupt(REG8 vect) {
 
 	REG16	pc;
@@ -138,7 +132,7 @@ void CPUCALL z80c_interrupt(REG8 vect) {
 		Z80_IFF ^= (1 << IFF_HALT);
 		R_Z80PC++;
 	}
-	Z80_IFF |= (1 << IFF_IRQ) | (1 << IFF_IFLAG);
+	Z80_IFF |= (1 << IFF_IFLAG);
 	switch(R_Z80IM) {
 		case 0:
 			if ((vect != 0xdd) && (vect != 0xed) && (vect != 0xfd)) {

@@ -29,6 +29,10 @@ static void setbusy(SINT32 clock) {
 		fdc.s.busy = TRUE;
 		nevent_set(NEVENT_FDC, clock, neitem_fdcbusy, NEVENT_ABSOLUTE);
 	}
+	else {
+		fdc.s.busy = FALSE;
+		nevent_reset(NEVENT_FDC);
+	}
 }
 
 static void setmotor(REG8 drvcmd) {
@@ -240,6 +244,7 @@ static REG8 crccmd(void) {
 
 	track = (fdc.s.c << 1) + fdc.s.h;
 	fdd = fddfile + fdc.s.drv;
+TRACEOUT(("fdd->crc %d %d %d", fdc.s.drv, track, fdc.s.crcnum));
 	stat = fdd->crc(fdd, fdc.s.media, track, fdc.s.crcnum, fdc.s.buffer);
 	if (stat & FDDSTAT_RECNFND) {
 		fdc.s.crcnum = 0;
@@ -249,6 +254,7 @@ static REG8 crccmd(void) {
 		fdc.s.bufdir = FDCDIR_IN;
 		fdc.s.bufsize = 6;
 		fdc.s.rreg = fdc.s.buffer[0];
+		fdc.s.crcnum++;
 	}
 	else {
 		fdc.s.bufdir = FDCDIR_NONE;
@@ -322,9 +328,6 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 			setbusy(20);
 			switch(cmd) {
 				case 0x00:								// リストア
-				//	if (value & 8) {					// LAYDOCK
-				//		setbusy(0);
-				//	}
 					fdc.s.motor = 0x80;					// モーターOn?
 					fdc.s.c = 0;
 					fdc.s.step = 1;
@@ -387,6 +390,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				case 0x0d:								// フォースインタラプト
 					setbusy(0);							// 必要ない？
 //					fdc.s.skip = 0;						// 000330
+					fdc.s.stat = 0;
 					dmac_sendready(FALSE);
 					break;
 
@@ -469,7 +473,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 			if (!(ret & 0x02)) {
 				dmac_sendready(FALSE);
 			}
-//			TRACEOUT(("ret->%.2x", ret));
+			TRACEOUT(("ret->%.2x", ret));
 			return(ret);
 
 		case 1:									// トラック
@@ -482,7 +486,7 @@ REG8 IOINPCALL fdc_i(UINT port) {
 			if (fdc.s.motor) {
 				if (fdc.s.bufdir == FDCDIR_IN) {
 					fdc.s.data = fdc.s.buffer[fdc.s.bufpos];
-// TRACEOUT(("read %.2x %.2x [%.4x]", fdc.s.data, fdc.s.bufpos, Z80_PC));
+TRACEOUT(("read %.2x - %.2x [%.4x]", fdc.s.bufpos, fdc.s.data, Z80_PC));
 					bufposinc();
 				}
 			}

@@ -21,12 +21,6 @@ section .text
 	extern	_z80dmap
 	extern	_dma
 
-				align	16
-_z80x_ableinterrupt:
-				test	byte [_z80core + R_Z80IFF], ((1 << IFF_IFLAG) | (1 << IFF_IRQ) | (1 << IFF_NMI))
-				setz	al
-				ret
-
 
 				align	16
 @z80x_interrupt@4:
@@ -36,7 +30,7 @@ _z80x_ableinterrupt:
 				je		short .setintr
 				inc		word [edx + R_Z80PC]
 				and		al, ~(1 << IFF_HALT)
-.setintr:		or		al, ((1 << IFF_IRQ) | (1 << IFF_IFLAG))
+.setintr:		or		al, (1 << IFF_IFLAG)
 				cmp		byte [edx + R_Z80IM], 1
 				mov		[edx + R_Z80IFF], al
 				je		short .im1

@@ -38,7 +38,7 @@
 	}
 
 #define	MCR_RETN {														\
-		Z80_IFF &= ~((1 << IFF_NMI) | (1 << IFF_IRQ));					\
+		Z80_IFF &= ~(1 << IFF_NMI);										\
 		MCR_RET															\
 	}
 
@@ -62,15 +62,11 @@
 	}
 
 #define MCR_RETI {														\
-		REG8 iff;														\
-		iff = Z80_IFF;													\
-		if (iff & (1 << IFF_IRQ)) {										\
-			Z80_IFF = (UINT8)(iff & (~(1 << IFF_IRQ)));					\
-			if ((!(iff & ((1 << IFF_IFLAG) | (1 << IFF_NMI)))) &&		\
-				(CPU_REQIRQ != 0)) {									\
-				CPU_BASECLOCK -= CPU_REMCLOCK;							\
-				CPU_REMCLOCK = 0;										\
-			}															\
+		CPU_IRQ = CPU_IRQ & (CPU_IRQ - 1);								\
+		if ((!(Z80_IFF & ((1 << IFF_IFLAG) | (1 << IFF_NMI)))) &&		\
+			(CPU_REQIRQ != 0)) {										\
+			CPU_BASECLOCK -= CPU_REMCLOCK;								\
+			CPU_REMCLOCK = 0;											\
 		}																\
 		MCR_RET															\
 	}

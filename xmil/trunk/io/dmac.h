@@ -19,6 +19,7 @@ typedef union {
 
 typedef struct {
 	UINT8	working;
+	UINT8	increment;
 
 	UINT8	enable;				// DMA_ENBL
 	UINT8	ready;				// DMA_REDY
@@ -37,8 +38,9 @@ typedef struct {
 
 	UINT8	RR_MSK;
 	UINT8	RR;
-	UINT8	DMA_STOP;
+
 	UINT8	dummydat;
+	UINT8	padding[3];
 
 	DMAPAIR	ADR_A;
 	DMAPAIR	ADR_B;

@@ -82,9 +82,11 @@ enum {
 
 
 typedef struct {
-	UINT8	rgbp[4];
 	UINT8	SCRN_BITS;
+	UINT8	width40;
 	UINT8	regnum;
+	UINT8	padding;
+	UINT8	rgbp[4];
 	UINT8	reg[CRTCREG_MAX];
 	UINT8	BLACKPAL;
 	UINT8	EXTPALMODE;
@@ -94,6 +96,11 @@ typedef struct {
 } CRTCSTAT;
 
 typedef struct {
+	SINT32	rasterclock8;
+	UINT	fonty;
+	UINT	yl;
+	SINT32	frameclock;
+
 	UINT8	*gram;				// curvram
 	UINT	updatemask;			// updatemsk
 	UINT8	updatebit;			// curupdt
@@ -102,13 +109,10 @@ typedef struct {
 	UINT8	pal_disp;
 
 	UINT	pos;
-	UINT	fonty;
-	UINT	yl;
 
 	SINT32	dispclock;
 	SINT32	vsyncstart;
 	SINT32	vpulseclock;
-	UINT	vl;
 } CRTCEXT;
 
 typedef struct {
@@ -126,8 +130,10 @@ typedef struct {
 
 // ----
 
-void crtc_bankupdate(void);								// vrambank_patch
-void crtc_regupdate(void);
+void crtc_setwidth(REG8 width40);
+void crtc_update(void);
+// void crtc_bankupdate(void);							// vrambank_patch
+// void crtc_regupdate(void);
 
 void IOOUTCALL crtc_o(UINT port, REG8 value);			// x1_crtc_w
 

@@ -41,28 +41,24 @@ static REG8 getportb(void) {
 
 static void setportc(REG8 dat) {
 
-	REG8	oldc;
-	UINT8	xl;
+	REG8	modify;
 
-	oldc = ppi.portc;
-	if (crtc.s.reg[CRTCREG_HDISP] == 40) {
-		oldc |= 0x40;
-	}
-	else {
-		oldc &= ~0x40;
-	}
-	ppi.portc = dat;
-
+	modify = ppi.portc ^ dat;
 //	cmt_write((REG8)(dat & 1));
-	if ((oldc & 0x20) && (!(dat & 0x20))) {
+	if ((modify & 0x20) && (!(dat & 0x20))) {
 		iocore.s.mode = 1;
 	}
+	if (modify & 0x40) {
+		crtc_setwidth((REG8)(dat & 0x40));
+	}
+#if 0
 	xl = ((dat & 0x40)?40:80);
 	if (crtc.s.reg[CRTCREG_HDISP] != xl) {
 		crtc.s.reg[CRTCREG_HDISP] = (UINT8)xl;
 		crtc_bankupdate();
 		scrnallflash = 1;
 	}
+#endif
 }
 
 
@@ -119,14 +115,7 @@ REG8 IOINPCALL ppi_i(UINT port) {
 			return(getportb());
 
 		case 2:
-#if 1
-			if (crtc.s.reg[CRTCREG_HDISP] == 40) {
-				ppi.portc |= 0x40;
-			}
-			else {
-				ppi.portc &= ~0x40;
-			}
-#endif
+		// mode?
 			return(ppi.portc);
 
 		case 3:

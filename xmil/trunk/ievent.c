@@ -9,9 +9,6 @@
 // ここでデイジーチェイン
 
 
-	IEVENT	ievent;
-
-
 typedef BRESULT (*IEVENTFN)(UINT id);
 
 static BRESULT dummy(UINT id) {
@@ -31,21 +28,24 @@ static const IEVENTFN ieventfn[IEVENT_MAX] = {
 
 // ----
 
-void ievent_reset(void) {
-}
-
 void ievent_progress(void) {
 
 	UINT	i;
 	UINT	bit;
 
-	if ((CPU_REQIRQ == 0) || (!Z80_ABLEINTERRUPT())) {
+	if ((CPU_REQIRQ == 0) || (Z80_DI)) {
 		return;
 	}
 	for (i=0, bit=1; i<IEVENT_MAX; i++, bit<<=1) {
+		if (CPU_IRQ & bit) {
+			break;
+		}
 		if (CPU_REQIRQ & bit) {
 			CPU_REQIRQ ^= bit;
 			if (ieventfn[i](i)) {
+				if (i != IEVENT_SUBCPU) {		// サブCPUは別処理
+					CPU_IRQ |= bit;
+				}
 				return;
 			}
 		}
@@ -56,13 +56,18 @@ void ievent_setbit(UINT bit) {
 
 	UINT	r;
 
-	r = CPU_REQIRQ;
-	if (r & bit) {
+	if (CPU_REQIRQ & bit) {
 		return;
 	}
 	CPU_REQIRQ |= bit;
-	if ((!r) && (Z80_ABLEINTERRUPT())) {
-		nevent_forceexit();
+	if (Z80_DI) {
+		return;
 	}
+	r = CPU_IRQ;
+	r = (r ^ (r - 1)) >> 1;
+	if (!(r & bit)) {
+		return;
+	}
+	nevent_forceexit();
 }
 
