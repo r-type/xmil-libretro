@@ -2,11 +2,9 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"vram.h"
+#include	"makescrn.h"
 #include	"makesub.h"
 #include	"font.h"
-
-
-extern	BYTE	blinktest;
 
 
 void makechr8(UINT8 *dst, UINT pos, UINT count, REG8 udtmp) {
@@ -18,7 +16,7 @@ const UINT8		*pat;
 	MAKETXTFN	fn;
 
 	atr = tram[TRAM_ATR + pos];
-	if (atr & blinktest) {
+	if (atr & makescrn.blinktest) {
 		atr ^= TRAMATR_REVERSE;
 	}
 	if (udtmp & 0x10) {
@@ -65,7 +63,7 @@ const UINT8		*pat;
 	MAKETXTFN	fn;
 
 	atr = tram[TRAM_ATR + pos];
-	if (atr & blinktest) {
+	if (atr & makescrn.blinktest) {
 		atr ^= TRAMATR_REVERSE;
 	}
 	if (udtmp & 0x10) {

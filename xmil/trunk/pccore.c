@@ -132,6 +132,7 @@ static	BYTE	keyintcnt = 0;
 
 void pccore_initialize(void) {
 
+	fddfile_initialize();
 	sndctrl_initialize();
 	makescrn_initialize();
 
@@ -162,10 +163,10 @@ void pccore_deinitialize(void) {
 
 //	keyboard_term();
 
-	fdd_eject(0);
-	fdd_eject(1);
-	fdd_eject(2);
-	fdd_eject(3);
+	fddfile_eject(0);
+	fddfile_eject(1);
+	fddfile_eject(2);
+	fddfile_eject(3);
 }
 
 
@@ -222,6 +223,7 @@ void pccore_exec(BRESULT draw) {
 			Z80_EXECUTE();
 			z80dmap();
 		}
+		fdcisbusy();
 		h_cnt -= pccore.HSYNC_CLK;
 		h_cntbase += pccore.HSYNC_CLK;
 		inttiming ^= 2;

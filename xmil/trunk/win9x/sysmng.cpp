@@ -60,14 +60,14 @@ void sysmng_updatecaption(REG8 flag) {
 
 	if (flag & 1) {
 		title[0] = '\0';
-		if (fdd_diskready(0)) {
+		if (fddfile_diskready(0)) {
 			milstr_ncat(title, OEMTEXT("  FDD0:"), NELEMENTS(title));
-			milstr_ncat(title, file_getname(fdd_diskname(0)),
+			milstr_ncat(title, file_getname(fddfile_diskname(0)),
 															NELEMENTS(title));
 		}
-		if (fdd_diskready(1)) {
+		if (fddfile_diskready(1)) {
 			milstr_ncat(title, OEMTEXT("  FDD1:"), NELEMENTS(title));
-			milstr_ncat(title, file_getname(fdd_diskname(1)),
+			milstr_ncat(title, file_getname(fddfile_diskname(1)),
 															NELEMENTS(title));
 		}
 	}

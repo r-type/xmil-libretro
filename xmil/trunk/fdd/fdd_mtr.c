@@ -48,11 +48,11 @@ void fddmtr_callback(DWORD time) {
 
 void fddmtr_drvset(void) {
 
-	fddmtr.curdrv = fdc.drv;
-	if ((!fddmtr.eventtime[fddmtr.curdrv]) && (!fdc.motor)) {
+	fddmtr.curdrv = fdc.s.drv;
+	if ((!fddmtr.eventtime[fddmtr.curdrv]) && (!fdc.s.motor)) {
 		fddmtr.eventtime[fddmtr.curdrv] = GETTICK() + 5000;
 	}
-	else if ((fddmtr.eventtime[fddmtr.curdrv]) && (fdc.motor)) {
+	else if ((fddmtr.eventtime[fddmtr.curdrv]) && (fdc.s.motor)) {
 		if (fddmtr.eventtime[fddmtr.curdrv] < GETTICK()) {
 			fddmtr.head[fddmtr.curdrv] = 24;
 		}
@@ -64,8 +64,8 @@ void fddmtr_motormove(void) {
 
 	int		regmove;
 
-	regmove = fddmtr.head[fddmtr.curdrv] - fdc.c;
-	fddmtr.head[fddmtr.curdrv] = fdc.c;
+	regmove = fddmtr.head[fddmtr.curdrv] - fdc.s.c;
+	fddmtr.head[fddmtr.curdrv] = fdc.s.c;
 	if (!xmilcfg.MOTOR) {
 		return;
 	}
@@ -95,7 +95,7 @@ void fddmtr_waitsec(BYTE value) {
 	if (!xmilcfg.MOTOR) {
 		return;
 	}
-	if ((fdc.r != value) && (fddmtr.curevent < 1)) {
+	if ((fdc.s.r != value) && (fddmtr.curevent < 1)) {
 		fddmtr_event();
 		fddmtr.curevent = 1;
 		fddmtr.nextevent = GETTICK() + SEKSEC_MS;

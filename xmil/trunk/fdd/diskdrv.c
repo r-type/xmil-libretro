@@ -8,9 +8,9 @@
 
 void diskdrv_setfdd(REG8 drv, const OEMCHAR *fname, int readonly) {
 
-	fdd_eject(drv);
+	fddfile_eject(drv);
 	if (fname) {
-		fdd_set(drv, fname, 0, readonly);
+		fddfile_set(drv, fname, 0, readonly);
 	}
 	sysmng_update(SYS_UPDATEFDD);
 }

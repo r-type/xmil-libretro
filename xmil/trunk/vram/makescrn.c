@@ -12,14 +12,8 @@
 		MAKESCRN	makescrn;
 
 		BYTE	scrnallflash;
-		BYTE	blinktest = 0;
-
 static	BYTE	lastdisp = 0;
-		BYTE	dispflg;
-		BYTE	*dispp = &GRP_RAM[GRAM_BANK0];
-		BYTE	*dispp2 = &GRP_RAM[GRAM_BANK1];
 static	BYTE	blinktime = 1;
-
 		DWORD	drawtime = 0;
 
 
@@ -212,7 +206,7 @@ static BRESULT updateblink(void) {
 	else {
 		blinktime = 30 - 1;
 		pos = makescrn.vramtop;
-		blinktest ^= 0x10;
+		makescrn.blinktest ^= 0x10;
 		update = 0;
 		r = makescrn.vramsize;
 		while(r) {
@@ -240,14 +234,14 @@ static void changemodes(void) {
 
 	lastdisp = crtc.e.dispmode;
 	if (!(lastdisp & SCRN_BANK1)) {
-		dispp = GRP_RAM + GRAM_BANK0;
-		dispp2 = GRP_RAM + GRAM_BANK1;
-		dispflg = UPDATE_TRAM | UPDATE_VRAM0;
+		makescrn.disp1 = GRP_RAM + GRAM_BANK0;
+		makescrn.disp2 = GRP_RAM + GRAM_BANK1;
+		makescrn.dispflag = UPDATE_TRAM | UPDATE_VRAM0;
 	}
 	else {
-		dispp = GRP_RAM + GRAM_BANK1;
-		dispp2 = GRP_RAM + GRAM_BANK0;
-		dispflg = UPDATE_TRAM | UPDATE_VRAM1;
+		makescrn.disp1 = GRP_RAM + GRAM_BANK1;
+		makescrn.disp2 = GRP_RAM + GRAM_BANK0;
+		makescrn.dispflag = UPDATE_TRAM | UPDATE_VRAM1;
 	}
 	scrnallflash = 1;
 	makescrn.palandply = 1;

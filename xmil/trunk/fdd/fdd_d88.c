@@ -1,13 +1,367 @@
 #include	"compiler.h"
 #include	"dosio.h"
 #include	"pccore.h"
-#include	"iocore.h"
 #include	"fddfile.h"
 #include	"fdd_d88.h"
 #include	"fdd_mtr.h"
 
 
-// static	D88_HEADER	d88head[4];
+enum {
+	D88BUFSIZE		= 0x4000
+};
+
+typedef struct {
+	FDDFILE	fdd;
+	UINT8	media;
+	UINT8	write;
+	UINT8	padding[2];
+	UINT	track;
+	long	fptr;
+	UINT	size;
+	UINT8	buf[D88BUFSIZE];
+} _D88TRK, *D88TRK;
+
+static	_D88TRK		d88trk;
+
+
+static UINT32 nexttrackptr(FDDFILE fdd, UINT32 fptr, UINT32 last) {
+
+	UINT	t;
+	UINT32	cur;
+
+	for (t=0; t<164; t++) {
+		cur = fdd->inf.d88.ptr[t];
+		if ((cur > fptr) && (cur < last)) {
+			last = cur;
+		}
+	}
+	return(last);
+}
+
+static BRESULT trackflush(D88TRK trk) {
+
+	FDDFILE	fdd;
+	FILEH	fh;
+
+	fdd = trk->fdd;
+	trk->fdd = NULL;
+	if ((fdd == NULL) || (trk->size == 0) || (!trk->write)) {
+		goto dtfd_exit;
+	}
+	fh = file_open(fdd->fname);
+	if (fh == FILEH_INVALID) {
+		goto dtfd_err1;
+	}
+	if ((file_seek(fh, trk->fptr, FSEEK_SET) != trk->fptr) ||
+		(file_write(fh, trk->buf, trk->size) != trk->size)) {
+		goto dtfd_err2;
+	}
+	file_close(fh);
+	trk->write = FALSE;
+
+dtfd_exit:
+	return(SUCCESS);
+
+dtfd_err2:
+	file_close(fh);
+
+dtfd_err1:
+	return(FAILURE);
+}
+
+static D88TRK trackread(D88TRK trk, FDDFILE fdd, REG8 media, UINT track) {
+
+	FILEH	fh;
+	UINT32	fptr;
+	UINT32	size;
+
+	trackflush(trk);
+	if (media != (REG8)((fdd->inf.d88.head.fd_type >> 4))) {
+		goto dtrd_err1;
+	}
+	if (track >= 164) {
+		goto dtrd_err1;
+	}
+	fptr = fdd->inf.d88.ptr[track];
+	if (fptr == 0) {
+		goto dtrd_err1;
+	}
+	size = nexttrackptr(fdd, fptr, fdd->inf.d88.fd_size) - fptr;
+	if (size > D88BUFSIZE) {
+		size = D88BUFSIZE;
+	}
+	fh = file_open_rb(fdd->fname);
+	if (fh == FILEH_INVALID) {
+		goto dtrd_err1;
+	}
+	if ((file_seek(fh, (long)fptr, FSEEK_SET) != (long)fptr) ||
+		(file_read(fh, trk->buf, size) != size)) {
+		goto dtrd_err2;
+	}
+	file_close(fh);
+
+	trk->fdd = fdd;
+	trk->media = media;
+	trk->write = FALSE;
+	trk->track = track;
+	trk->fptr = fptr;
+	trk->size = size;
+	return(trk);
+
+dtrd_err2:
+	file_close(fh);
+
+dtrd_err1:
+	return(NULL);
+}
+
+static void drvflush(FDDFILE fdd) {
+
+	D88TRK	trk;
+
+	trk = &d88trk;
+	if (trk->fdd == fdd) {
+		trackflush(trk);
+	}
+}
+
+static D88TRK trackseek(FDDFILE fdd, REG8 media, UINT track) {
+
+	D88TRK	trk;
+
+	trk = &d88trk;
+	if ((trk->fdd != fdd) || (trk->media != media) || (trk->track != track)) {
+		trk = trackread(trk, fdd, media, track);
+	}
+	return(trk);
+}
+
+static D88SEC sectorseek(const _D88TRK *trk, REG8 r) {
+
+const _D88SEC	*sec;
+	UINT		rem;
+	UINT		secnum;
+	UINT		sectors;
+	UINT		size;
+
+	sec = (D88SEC)trk->buf;
+	rem = trk->size;
+	sectors = LOADINTELWORD(sec->sectors);
+	if (sectors) {
+		secnum = 0;
+		do {
+			size = LOADINTELWORD(sec->size);
+			size += sizeof(_D88SEC);
+			if (rem < size) {
+				break;
+			}
+			if (sec->r == r) {
+				return((D88SEC)sec);
+			}
+			secnum++;
+			sectors = LOADINTELWORD(sec->sectors);
+			if (secnum >= sectors) {
+				break;
+			}
+			sec = (D88SEC)(((UINT8 *)sec) + size);
+		} while(secnum < 40);
+	}
+	return(NULL);
+}
+
+
+// ----
+
+static REG8 fddd88_seek(FDDFILE fdd, REG8 media, UINT track) {
+
+	if (trackseek(fdd, media, track) != NULL) {
+		return(0x00);
+	}
+	else {
+		return(FDDSTAT_SEEKERR);
+	}
+}
+
+static REG8 fddd88_read(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
+												UINT8 *ptr, UINT *size) {
+
+const _D88TRK	*trk;
+const _D88SEC	*sec;
+	UINT		secsize;
+	REG8		ret;
+
+	TRACEOUT(("d88 read %d:%.2x", track, sc));
+	trk = trackseek(fdd, media, track);
+	if (trk == NULL) {
+		goto fd8r_err;
+	}
+	sec = sectorseek(trk, sc);
+	if (sec == NULL) {
+		goto fd8r_err;
+	}
+	ret = 0x00;
+	if (sec->del_flg) {
+		ret |= FDDSTAT_RECTYPE;
+	}
+	if (sec->stat) {
+		ret |= FDDSTAT_CRCERR;
+	}
+	secsize = LOADINTELWORD(sec->size);
+	secsize = min(secsize, *size);
+	if ((ptr) && (secsize)) {
+		CopyMemory(ptr, sec + 1, secsize);
+	}
+	*size = secsize;
+	return(ret);
+
+fd8r_err:
+	return(FDDSTAT_RECNFND);
+}
+
+static REG8 fddd88_write(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
+												const UINT8 *ptr, UINT size) {
+
+	D88TRK	trk;
+	D88SEC	sec;
+	UINT	secsize;
+
+	TRACEOUT(("d88 write %d:%.2x", track, sc));
+	trk = trackseek(fdd, media, track);
+	if (trk == NULL) {
+		goto fd8w_err;
+	}
+	sec = sectorseek(trk, sc);
+	if (sec == NULL) {
+		goto fd8w_err;
+	}
+	secsize = LOADINTELWORD(sec->size);
+	size = min(size, secsize);
+	if (size) {
+		CopyMemory(sec + 1, ptr, size);
+		trk->write = TRUE;
+	}
+	return(0x00);
+
+fd8w_err:
+	return(FDDSTAT_RECNFND | FDDSTAT_WRITEFAULT);
+}
+
+static REG8 fddd88_crc(FDDFILE fdd, REG8 media, UINT track, UINT num,
+												UINT8 *ptr) {
+
+const _D88TRK	*trk;
+const _D88SEC	*sec;
+	UINT		secnum;
+	UINT		rem;
+	UINT		size;
+	UINT		sectors;
+
+	trk = trackseek(fdd, media, track);
+	if (trk == NULL) {
+		return(FDDSTAT_RECNFND);
+	}
+	sec = (D88SEC)trk->buf;
+	sectors = LOADINTELWORD(sec->sectors);
+	if (sectors == 0) {
+		return(FDDSTAT_RECNFND);
+	}
+	secnum = 0;
+	rem = trk->size;
+	while(1) {
+		size = LOADINTELWORD(sec->size);
+		size += sizeof(_D88SEC);
+		if (rem < size) {
+			return(FDDSTAT_RECNFND);
+		}
+		if (num == secnum) {
+			break;
+		}
+		secnum++;
+		sectors = LOADINTELWORD(sec->sectors);
+		if (secnum >= sectors) {
+			return(FDDSTAT_RECNFND);
+		}
+		sec = (D88SEC)(((UINT8 *)sec) + size);
+	}
+	ptr[0] = sec->c;
+	ptr[1] = sec->h;
+	ptr[2] = sec->r;
+	ptr[3] = sec->n;
+	ptr[4] = 0;
+	ptr[5] = 0;
+//	fdc.s.rreg = sec->c;								// メルヘンヴェール
+	if (sec->stat) {
+		return(FDDSTAT_CRCERR);
+	}
+	return(0x00);
+}
+
+
+// ----
+
+BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname) {
+
+	short	attr;
+	FILEH	fh;
+	BOOL	r;
+	UINT8	ptr[D88_TRACKMAX][4];
+	UINT	i;
+
+	attr = file_attr(fname);
+	if (attr & 0x18) {
+		goto fdst_err;
+	}
+	fh = file_open_rb(fname);
+	if (fh == FILEH_INVALID) {
+		goto fdst_err;
+	}
+	r = (file_read(fh, &fdd->inf.d88.head, sizeof(fdd->inf.d88.head))
+											!= sizeof(fdd->inf.d88.head)) ||
+		(file_read(fh, ptr, sizeof(ptr)) != sizeof(ptr));
+	file_close(fh);
+	if (r) {
+		goto fdst_err;
+	}
+	fdd->inf.d88.fd_size = LOADINTELDWORD(fdd->inf.d88.head.fd_size);
+	for (i=0; i<D88_TRACKMAX; i++) {
+		fdd->inf.d88.ptr[i] = LOADINTELDWORD(ptr[i]);
+	}
+	if (fdd->inf.d88.head.protect & 0x10) {
+		attr |= 1;
+	}
+	fdd->type = DISKTYPE_D88;
+	fdd->protect = (UINT8)(attr & 1);
+	fdd->seek = fddd88_seek;
+	fdd->read = fddd88_read;
+	fdd->write = fddd88_write;
+	fdd->crc = fddd88_crc;
+	return(SUCCESS);
+
+fdst_err:
+	return(FAILURE);
+}
+
+void fddd88_eject(FDDFILE fdd) {
+
+	drvflush(fdd);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// ---------------------------------------------------------------------------
+
+#if 0
+// ----
+
 static	_D88SEC		cursec;
 static	REG8		curdrv = (REG8)-1;
 static	UINT		curtrk = (UINT)-1;
@@ -19,8 +373,8 @@ static	BYTE		curwrite = 0;
 static	BYTE		curtrkerr = 0;
 static	BYTE		hole = 0;
 static	BYTE		*curdata;
-static	UINT		crcnum = 0;
-static	BYTE		crcerror = FALSE;
+// static	UINT		crcnum = 0;
+// static	BYTE		crcerror = FALSE;
 
 extern	WORD		readdiag;
 
@@ -69,20 +423,6 @@ static	BYTE		TAO_BUF[0x3000];
 
 //----------------------------------------------------------------------
 
-static UINT32 nexttrackptr(FDDFILE fdd, UINT32 fptr, UINT32 last) {
-
-	UINT	t;
-	UINT32	cur;
-
-	for (t=0; t<164; t++) {
-		cur = fdd->inf.d88.ptr[t];
-		if ((cur > fptr) && (cur < last)) {
-			last = cur;
-		}
-	}
-	return(last);
-}
-
 
 static int curdataflush(void) {
 
@@ -125,7 +465,7 @@ static DWORD read_d88track(REG8 drv, UINT track, REG8 media) {
 	cursct = (UINT)-1;
 	curwrite = 0;
 	curtrkerr = 0;
-	crcnum = 0;
+//	crcnum = 0;
 	crcerror = 0;
 
 	fdd = fddfile + drv;
@@ -210,69 +550,14 @@ seekerror:;
 	return(FALSE);
 }
 
-static void drvflush(REG8 drv) {
 
-	if (curdrv == drv) {
-		curdataflush();
-		curdrv = (REG8)-1;
-		curtrk = (UINT)-1;
-		cursct = (UINT)-1;
-	}
-}
+// ----
 
 
 
 
 //**********************************************************************
 
-BRESULT fddd88_crc(FDDFILE fdd) {
-
-	UINT		track;
-const _D88SEC	*p;
-	UINT		sec;
-	UINT		sectors;
-	UINT		secsize;
-
-	track = (fdc.c << 1) + fdc.h;
-	if (track >= 164) {
-		goto crcerror_d88;
-	}
-	seeksector(fdc.drv, track, fdc.r);
-	if (curtrkerr) {
-		goto crcerror_d88;
-	}
-	p = (D88SEC)D88_BUF;
-	for (sec=0; sec<crcnum;) {
-		sectors = LOADINTELWORD(p->sectors);
-		secsize = LOADINTELWORD(p->size);
-		sec++;
-		if (sec >= sectors) {
-			goto crcerror_d88;
-		}
-		p = (D88SEC)(((UINT8 *)(p + 1)) + secsize);
-	}
-	fdc.s.buffer[0] = p->c;
-	fdc.s.buffer[1] = p->h;
-	fdc.s.buffer[2] = p->r;
-	fdc.s.buffer[3] = p->n;
-	fdc.s.buffer[4] = 0;
-	fdc.s.buffer[5] = 0;
-	fdc.s.bufsize = 6;
-	fdc.rreg = p->c;								// メルヘンヴェール
-	crcnum++;
-	if (p->stat) {
-		crcerror = TRUE;
-	}
-	else {
-		crcerror = FALSE;
-	}
-	return(SUCCESS);
-
-crcerror_d88:
-	crcerror = TRUE;
-	(void)fdd;
-	return(FAILURE);
-}
 
 
 BYTE fdd_stat_d88(void) {
@@ -284,15 +569,15 @@ BYTE fdd_stat_d88(void) {
 	BYTE		ans = 0;
 	int			seekable;
 
-	fdd = fddfile + fdc.drv;
+	fdd = fddfile + fdc.s.drv;
 	if (fdd->type != DISKTYPE_D88) {
 		return(0x80);						// NOT READY
 	}
-	type = fdc.type;
-	cmd = (REG8)(fdc.cmd >> 4);
-	trk = (fdc.c << 1) + fdc.h;
-	seekable = seeksector(fdc.drv, trk, fdc.r);
-	if (!fdc.r) {
+	cmd = (REG8)(fdc.s.cmd >> 4);
+	type = fdc.s.type;
+	trk = (fdc.s.c << 1) + fdc.s.h;
+	seekable = seeksector(fdc.s.drv, trk, fdc.s.r);
+	if (!fdc.s.r) {
 		seekable = TRUE;
 	}
 
@@ -303,7 +588,7 @@ BYTE fdd_stat_d88(void) {
 		}
 	}
 	if (type == 2 || cmd == 0x0f) {
-		if (fdc.r && cursec.del_flg) {
+		if (fdc.s.r && cursec.del_flg) {
 			ans |= 0x20;					// RECODE TYPE / WRITE FAULT
 		}
 	}
@@ -311,7 +596,7 @@ BYTE fdd_stat_d88(void) {
 		if ((trk > 163) || (!seekable)) {
 			ans |= 0x10;					// SEEK ERROR / RECORD NOT FOUND
 		}
-		if ((!(ans & 0xf0)) && fdc.r && (cursec.stat)) {
+		if ((!(ans & 0xf0)) && fdc.s.r && (cursec.stat)) {
 			ans |= 0x08;					// CRC ERROR
 		}
 	}
@@ -326,7 +611,7 @@ BYTE fdd_stat_d88(void) {
 	if (type == 1 || type == 4) {
 		if (type == 1) {					// ver0.25
 			ans |= 0x20;					// HEAD ENGAGED (X1 ﾃﾞﾊ ﾂﾈﾆ 1)
-			if (!fdc.c) {					// TRACK00
+			if (!fdc.s.c) {					// TRACK00
 				ans |= 0x04;
 			}
 		}
@@ -368,14 +653,14 @@ BYTE fdd_stat_d88(void) {
 void fdd_read_d88(void) {
 						// POCO:読めなかったらレジスタを変更させない
 	if ((fdd_stat_d88() & 0xf3) == 3) {
-		fdc.data = curdata[fdc.off];
+		fdc.s.data = curdata[fdc.off];
 	}
 }
 
 void fdd_write_d88(void) {
 
 	if ((fdd_stat_d88() & 0xf3) == 3) {
-		curdata[fdc.off] = fdc.data;
+		curdata[fdc.off] = fdc.s.data;
 		curwrite = 1;
 	}
 }
@@ -386,9 +671,9 @@ BYTE fdd_incoff_d88(void) {
 	UINT	trk;
 	UINT	secsize;
 
-	cmd = (REG8)(fdc.cmd >> 4);
-	trk = (fdc.c << 1) + fdc.h;
-	seeksector(fdc.drv, trk, fdc.r);
+	cmd = (REG8)(fdc.s.cmd >> 4);
+	trk = (fdc.s.c << 1) + fdc.s.h;
+	seeksector(fdc.s.drv, trk, fdc.s.r);
 	fdc.off++;
 	secsize = LOADINTELWORD(cursec.size);
 	if ((UINT)fdc.off < secsize) {
@@ -396,9 +681,9 @@ BYTE fdd_incoff_d88(void) {
 	}
 	fdc.off = secsize;
 	if ((cmd == 0x09) || (cmd == 0x0b)) {
-		fdc.rreg = fdc.r + 1;						// ver0.25
-		if (seeksector(fdc.drv, trk, fdc.rreg)) {
-			fdc.r++;
+		fdc.s.rreg = fdc.s.r + 1;						// ver0.25
+		if (seeksector(fdc.s.drv, trk, fdc.s.rreg)) {
+			fdc.s.r++;
 			fdc.off = 0;
 			return(0);
 		}
@@ -413,7 +698,7 @@ void init_tao_d88(void) {
 
 	FDDFILE		fdd;
 
-	fdd = fddfile + fdc.drv;
+	fdd = fddfile + fdc.s.drv;
 	if (fdc.s.media != (fdd->inf.d88.head.fd_type >> 4)) {
 		tao = WID_ERR;
 	}
@@ -488,8 +773,8 @@ static void endoftrack(void) {
 	curdataflush();						// write cache flush &
 	curdrv = (REG8)-1;					// use D88_BUF[] for temp
 
-	fdd = fddfile + fdc.drv;
-	trk = (fdc.c << 1) + fdc.h;
+	fdd = fddfile + fdc.s.drv;
+	trk = (fdc.s.c << 1) + fdc.s.h;
 
 	p = (D88SEC)TAO_BUF;
 	for (i=0; i<(int)tao.sector; i++) {
@@ -655,55 +940,5 @@ void fdd_wtao_d88(BYTE data) {
 			break;
 	}
 }
-
-
-// ----
-
-BRESULT fddd88_eject(FDDFILE fdd, REG8 drv) {
-
-	drvflush(drv);
-	ZeroMemory(&fdd->inf.d88, sizeof(fdd->inf.d88));
-	fdd->fname[0] = '\0';
-	fdd->type = DISKTYPE_NOTREADY;
-	return(SUCCESS);
-}
-
-BRESULT fddd88_set(FDDFILE fdd, REG8 drv, const OEMCHAR *fname) {
-
-	short	attr;
-	FILEH	fh;
-	BOOL	r;
-	UINT8	ptr[D88_TRACKMAX][4];
-	UINT	i;
-
-	attr = file_attr(fname);
-	if (attr & 0x18) {
-		goto fdst_err;
-	}
-	fh = file_open_rb(fname);
-	if (fh == FILEH_INVALID) {
-		goto fdst_err;
-	}
-	r = (file_read(fh, &fdd->inf.d88.head, sizeof(fdd->inf.d88.head))
-											!= sizeof(fdd->inf.d88.head)) ||
-		(file_read(fh, ptr, sizeof(ptr)) != sizeof(ptr));
-	file_close(fh);
-	if (r) {
-		goto fdst_err;
-	}
-	fdd->inf.d88.fd_size = LOADINTELDWORD(fdd->inf.d88.head.fd_size);
-	for (i=0; i<D88_TRACKMAX; i++) {
-		fdd->inf.d88.ptr[i] = LOADINTELDWORD(ptr[i]);
-	}
-	if (fdd->inf.d88.head.protect & 0x10) {
-		attr |= 1;
-	}
-	fdd->type = DISKTYPE_D88;
-	fdd->protect = (UINT8)(attr & 1);
-	(void)drv;
-	return(SUCCESS);
-
-fdst_err:
-	return(FAILURE);
-}
+#endif
 

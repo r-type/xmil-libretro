@@ -8,10 +8,6 @@
 #include	"font.h"
 
 
-extern	BYTE	dispflg;
-extern	BYTE	*dispp;
-
-
 void width80x25_200h(void) {								// 80x25 200line
 
 	UINT	fontcy;
@@ -37,12 +33,12 @@ const UINT8	*src;
 		x = makescrn.surfcx;
 		do {
 			udtmp = updatetmp[pos];
-			if (udtmp & dispflg) {
-				updatetmp[pos] = (UINT8)(udtmp & (~dispflg));
+			if (udtmp & makescrn.dispflag) {
+				updatetmp[pos] = (UINT8)(udtmp & (~makescrn.dispflag));
 				newline = TRUE;
 				ZeroMemory(work, sizeof(work));
 				makechr16(work, pos, fontcy, udtmp);
-				src = dispp + (pos << 5);
+				src = makescrn.disp1 + (pos << 5);
 				makemix_mix(dst, SURFACE_WIDTH * 2, work, src, fontcy);
 				makemix_mix(dst + SURFACE_WIDTH, SURFACE_WIDTH * 2,
 									work + MAKETEXT_STEP, src, fontcy);
@@ -162,12 +158,12 @@ const UINT8	*src;
 		x = makescrn.surfcx;
 		do {
 			udtmp = updatetmp[pos];
-			if (udtmp & dispflg) {
-				updatetmp[pos] = (UINT8)(udtmp & (~dispflg));
+			if (udtmp & makescrn.dispflag) {
+				updatetmp[pos] = (UINT8)(udtmp & (~makescrn.dispflag));
 				newline = TRUE;
 				ZeroMemory(work, sizeof(work));
 				makechr16(work, pos, fontcy, udtmp);
-				src = dispp + (LOW10(pos) << 5);
+				src = makescrn.disp1 + (LOW10(pos) << 5);
 				makemix_mix(dst, SURFACE_WIDTH * 4, work, src, fontcy);
 				makemix_mix(dst + SURFACE_WIDTH * 2, SURFACE_WIDTH * 4,
 						work + MAKETEXT_STEP, src + GRAM_HALFSTEP, fontcy);

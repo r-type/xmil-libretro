@@ -12,27 +12,48 @@
 	_FDDFILE	fddfile[MAX_FDDFILE];
 
 
-void fddfile_initialize(void) {
+static REG8 dummyseek(FDDFILE fdd, REG8 media, UINT track) {
+
+	(void)fdd;
+	(void)media;
+	(void)track;
+	return(FDDSTAT_SEEKERR);
 }
 
-const OEMCHAR *fdd_diskname(REG8 drv) {
+static REG8 dummyread(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
+												UINT8 *ptr, UINT *size) {
 
-	if (drv >= MAX_FDDFILE) {
-		return(str_null);
-	}
-	return(fddfile[drv].fname);
+	(void)fdd;
+	(void)media;
+	(void)track;
+	(void)sc;
+	(void)ptr;
+	(void)size;
+	return(FDDSTAT_RECNFND);
 }
 
-BRESULT fdd_diskready(REG8 drv) {
+static REG8 dummywrite(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
+												const UINT8 *ptr, UINT size) {
 
-	if ((drv >= MAX_FDDFILE) || (fddfile[drv].fname[0] == '\0')) {
-		return(FALSE);
-	}
-	return(TRUE);
+	(void)fdd;
+	(void)media;
+	(void)track;
+	(void)sc;
+	(void)ptr;
+	(void)size;
+	return(FDDSTAT_RECNFND | FDDSTAT_WRITEFAULT);
 }
 
+static REG8 dummycrc(FDDFILE fdd, REG8 media, UINT track, UINT num,
+												UINT8 *ptr) {
 
-// ----
+	(void)fdd;
+	(void)media;
+	(void)track;
+	(void)num;
+	(void)ptr;
+	return(FDDSTAT_RECNFND);
+}
 
 static REG8 getfdtype(const OEMCHAR *fname) {
 
@@ -48,7 +69,52 @@ const OEMCHAR	*ext;
 	return(FTYPE_NONE);
 }
 
-BRESULT fdd_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
+static void setempty(FDDFILE fdd) {
+
+	ZeroMemory(fdd, sizeof(_FDDFILE));
+	fdd->seek = dummyseek;
+	fdd->read = dummyread;
+	fdd->write = dummywrite;
+	fdd->crc = dummycrc;
+}
+
+
+// ----
+
+void fddfile_initialize(void) {
+
+	UINT	i;
+
+	for (i=0; i<MAX_FDDFILE; i++) {
+		setempty(fddfile + i);
+	}
+}
+
+const OEMCHAR *fddfile_diskname(REG8 drv) {
+
+	if (drv >= MAX_FDDFILE) {
+		return(str_null);
+	}
+	return(fddfile[drv].fname);
+}
+
+BRESULT fddfile_diskready(REG8 drv) {
+
+	if ((drv >= MAX_FDDFILE) || (fddfile[drv].type == DISKTYPE_NOTREADY)) {
+		return(FALSE);
+	}
+	return(TRUE);
+}
+
+BRESULT fddfile_diskprotect(REG8 drv) {
+
+	if ((drv >= MAX_FDDFILE) || (!fddfile[drv].protect)) {
+		return(FALSE);
+	}
+	return(TRUE);
+}
+
+BRESULT fddfile_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
 
 	FDDFILE	fdd;
 	BRESULT	r;
@@ -56,18 +122,18 @@ BRESULT fdd_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
 	if (drv >= MAX_FDDFILE) {
 		return(FAILURE);
 	}
-	fdd_eject(drv);
+	fddfile_eject(drv);
 	fdd = fddfile + drv;
 	if (ftype == FTYPE_NONE) {
 		ftype = getfdtype(fname);
 	}
 	switch(ftype) {
 		case FTYPE_BETA:
-			r = fdd2d_set(fdd, drv, fname);
+			r = fdd2d_set(fdd, fname);
 			break;
 
 		case FTYPE_D88:
-			r = fddd88_set(fdd, drv, fname);
+			r = fddd88_set(fdd, fname);
 			break;
 
 		default:
@@ -83,21 +149,21 @@ BRESULT fdd_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
 	return(r);
 }
 
-BRESULT fdd_eject(REG8 drv) {
+void fddfile_eject(REG8 drv) {
 
 	FDDFILE	fdd;
 
 	if (drv >= MAX_FDDFILE) {
-		return(FAILURE);
+		return;
 	}
 	fdd = fddfile + drv;
 	switch(fdd->type) {
 		case DISKTYPE_BETA:
-			return(fdd2d_eject(fdd, drv));
+			fdd2d_eject(fdd);
 
 		case DISKTYPE_D88:
-			return(fddd88_eject(fdd, drv));
+			fddd88_eject(fdd);
 	}
-	return(FAILURE);
+	setempty(fdd);
 }
 
