@@ -40,11 +40,7 @@ void ARM_StrPrintF(Char* s, const Char* formatStr, UInt32 data);
 void ARM_StrPrintF_2(Char* s, const Char* formatStr, UInt16 data1, UInt16 data2);
 void ARM_WinDrawBitmap(BitmapPtr bitmapP, Coord x, Coord y);
 void ARM_TimSecondsToDateTime(UInt32 seconds, DateTimeType* dateTimeP);
-//UInt8* ARM_BmpGetBits(BitmapType* bmpPtr);
-//void ARM_BmpGetDimensions(BitmapType *bmpPtr, Int16 *width, Int16 *height, UInt16 *rowBytes);
 #define ARM_BmpDelete(a)				ARM_TYPE_pointerinvoid(a,sysTrapBmpDelete)
-//BitmapType* ARM_BmpCreate(Coord width, Coord height, UInt8 depth, ColorTableType* colortableP, UInt16* err);
-//BitmapTypeV3* ARM_BmpCreateBitmapV3(const BitmapType* bitmapP, UInt16 density, const void* bitsP,  ColorTableType* colortableP);
 void m68k_scrnmng_create(void* ptr);
 void ARM_WinDrawChars(char* src, Int16 length, Coord x, Coord y);
 void ARM_WinEraseChars(char* src, Int16 length, Coord x, Coord y);

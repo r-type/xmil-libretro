@@ -101,7 +101,7 @@ BOOL palmkbd_keyup(int keycode) {
 
 void palmkbd_callback(void) {
 	if (palmkbd.input) {
-		if ((GETTICK() - palmkbd.tick) > 100) {
+		if ((GETTICK() - palmkbd.tick) > 99) {
 			if (palmkbd.modifier) {
 				keystat_keyup(0x70);
 				palmkbd.modifier = FALSE;

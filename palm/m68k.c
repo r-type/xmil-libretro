@@ -1,27 +1,3 @@
-/**********
- * Copyright (c) 2004 Greg Parker.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY GREG PARKER ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- **********/
-
 #include <PalmOS.h>
 #include <PalmCompatibility.h>
 #include <PalmOSGlue.h>
@@ -41,7 +17,7 @@
 ((((unsigned long) n) >> 8) & 0x0000FF00) | \
 ((((unsigned long) n) >> 24) & 0x000000FF) )
 
-static  UInt16 volRefNum;
+static  UInt16 volRefNum = vfsInvalidVolRef;
 enum {
 	SEEK_SET	= 0,
 	SEEK_CUR	= 1,
@@ -81,6 +57,17 @@ void unload(PealModule *m)
     PealUnload(m);
 }
 
+static void disp_error(const char* msg, const char* data) {
+
+	char str[256];
+	MemSet(str, 255, 0);
+	StrCat(str, msg);
+	StrCat(str, data);
+
+	FrmCustomAlert(IDD_ALERT, str, NULL, NULL);
+}
+
+	
 static BOOL checkHR(void) {
 
 // HighDensity機能の有無をチェック
@@ -195,6 +182,8 @@ FileRef file_open_68k(void* path) {
 	if (!error) {
 		return(ref);
 	}
+	
+	disp_error("cannot open this file: ", path);
 	return(FILEH_INVALID);
 }
 
@@ -214,6 +203,7 @@ FileRef file_create_68k(void *path) {
 			}
 		}
 	}
+	disp_error("cannot create this file: ", path);
 	return(FILEH_INVALID);
 }
 
@@ -328,6 +318,7 @@ short file_dircreate_68k(const void *path) {
 		return(0);
 	}
 
+	disp_error("cannot create this dir: ", path);
 	return(-1);
 }
 
@@ -622,6 +613,7 @@ UInt32 PilotMain(UInt16 cmd, void *cmdPBP, UInt16 launchFlags)
 {
     PealModule *m;
 	UInt32 volIterator = vfsIteratorStart;
+	UInt16	vRef = vfsInvalidVolRef;
     FormType *frmP;
 	Err err;
 	int	ret;
@@ -634,6 +626,7 @@ UInt32 PilotMain(UInt16 cmd, void *cmdPBP, UInt16 launchFlags)
 		FrmCustomAlert(IDD_ALERT, "cannot run under this device.", NULL, NULL);
 		return 0;
 	}
+	
 	FrmGotoForm(IDD_MAIN);
 	frmP = FrmInitForm(IDD_MAIN);
 	FrmSetActiveForm(frmP);
@@ -643,8 +636,11 @@ UInt32 PilotMain(UInt16 cmd, void *cmdPBP, UInt16 launchFlags)
 	while (volIterator != vfsIteratorStop) {
 		err = VFSVolumeEnumerate(&volRefNum, &volIterator);
 		if (err == errNone) {
-			break;
+			vRef = volRefNum;
 		}
+	}
+	if ((volRefNum != vRef) && (vRef != vfsInvalidVolRef)) {
+		volRefNum = vRef;
 	}
 	
 	m = load();

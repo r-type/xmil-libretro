@@ -41,7 +41,7 @@ void ResumeWarningDialogProc(char *name) {
 
 void AboutDialogProc(void) {
 
-    FormType *frmP;
+    FormType		*frmP;
 
 	ARM_MenuEraseStatus(NULL);		// Clear the menu status from the display.
 	frmP = ARM_FrmInitForm(IDD_ABOUT);

@@ -144,18 +144,7 @@ Err ARM_SndStreamSetVolume(UInt32 stream, Int32 volume) {
 	
 	return((Err)PalmAPI(sysTrapSndStreamSetVolume, params));
 }
-/*
-UInt32 ARM_SysTicksPerSecond(void){
-	typedef struct _tagLocals {
-		UInt8 noArgs;
-	} Locals;
-	
-	Locals params;
-	params.noArgs = 0;
-	
-	return ((UInt32)((gCall68KFuncP)(gEmulStateP, PceNativeTrapNo(sysTrapSysTicksPerSecond), &params, sizeof(params) | kPceNativeWantA0)));
-}
-*/
+
 void ARM_MemSet(void* destP, Int32 numBytes, UInt8 value) {
 	Int32 i;
 	char *p=(char *)destP;
@@ -310,25 +299,7 @@ char* ARM_LstGetSelectionText(ListType* list, SINT16 num) {
 	
 	return ((char*)(gCall68KFuncP)(gEmulStateP, PceNativeTrapNo(sysTrapLstGetSelectionText), &params, sizeof(params) | kPceNativeWantA0));
 }
-/*
-MemHandle ARM_FldGetTextHandle(FieldType* fld) {
-	ArgOne params;
-	params.ptr = ByteSwap32(fld);
-	return ((MemHandle)(gCall68KFuncP)(gEmulStateP, PceNativeTrapNo(sysTrapFldGetTextHandle), &params, sizeof(params) | kPceNativeWantA0));
-}
 
-char* ARM_FldGetTextPtr(FieldType* fld) {
-	ArgOne params;
-	params.ptr = ByteSwap32(fld);
-	return ((char*)(gCall68KFuncP)(gEmulStateP, PceNativeTrapNo(sysTrapFldGetTextPtr), &params, sizeof(params) | kPceNativeWantA0));
-}
-
-char* ARM_MemHandleLock(MemHandle ptr) {
-	ArgOne params;
-	params.ptr = ByteSwap32(ptr);
-	return ((char*)(gCall68KFuncP)(gEmulStateP, PceNativeTrapNo(sysTrapMemHandleLock), &params, sizeof(params) | kPceNativeWantA0));
-}
-*/
 void ARM_TimSecondsToDateTime(UInt32 seconds, DateTimeType* dateTimeP) {
 	typedef struct tagLocals{
 		UInt32	data;
@@ -345,62 +316,7 @@ void ARM_TimSecondsToDateTime(UInt32 seconds, DateTimeType* dateTimeP) {
 UINT32 palmos_gettick(void) {
 	return( ARM_TimGetTicks() * (1000 / systicks));
 }
-/*
-UInt8* ARM_BmpGetBits(BitmapType *bmpPtr)
-{
-	UInt32 arg;
-	arg = ByteSwap32(bmpPtr);
-	return (UInt8*)(gCall68KFuncP)(gEmulStateP, PceNativeTrapNo(sysTrapBmpGetBits), &arg, 4 | kPceNativeWantA0);
-}
 
-void ARM_BmpGetDimensions(BitmapType *bmpPtr, Int16 *width, Int16 *height, UInt16 *rowBytes)
-{
-	UInt32 args[4];
-	
-	args[0] = ByteSwap32(bmpPtr);
-	args[1] = ByteSwap32(width);
-	args[2] = ByteSwap32(height);
-	args[3] = ByteSwap32(rowBytes);
-
-	(gCall68KFuncP)(gEmulStateP, PceNativeTrapNo(sysTrapBmpGetDimensions), &args, 16);
-	
-	*width = ByteSwap16(*width);
-	*height = ByteSwap16(*height);
-	*rowBytes = ByteSwap16(*rowBytes);	
-}
-*/
-
-/*
-BitmapType* ARM_BmpCreate(Coord width, Coord height, UInt8 depth, ColorTableType* colortableP, UInt16* err) {
-	typedef struct tagLocals{
-		Coord   w;
-		Coord   h;
-		UInt8   d;
-		UInt32  c;
-		UInt32  e;
-	} Locals;
-	
-	Locals params;
-	
-	params.w = ByteSwap32(width);
-	params.h = ByteSwap32(height);
-	params.d = ByteSwap32(depth);
-	params.c = ByteSwap32(colortableP);
-	params.e = ByteSwap32(err);
-
-	return( (BitmapType*)(gCall68KFuncP)(gEmulStateP, PceNativeTrapNo(sysTrapBmpCreate), &params, sizeof(params) | kPceNativeWantA0) );
-}
-
-BitmapTypeV3* ARM_BmpCreateBitmapV3(const BitmapType* bitmapP, UInt16 density, const void* bitsP,  ColorTableType* colortableP) {
-	UInt32 args[4];
-	
-	args[0] = ByteSwap32(bitmapP);
-	args[1] = ByteSwap32(density);
-	args[2] = ByteSwap32(bitsP);
-	args[3] = ByteSwap32(colortableP);
-	return((BitmapTypeV3*)(gCall68KFuncP)(gEmulStateP, (unsigned long)Callback_m68k, &args, 16 | kPceNativeWantA0));
-}
-*/
 void ARM_EvtGetEvent(EventType *event, Int32 timeout) {
 	typedef struct tagLocals{
 		UInt32 event;

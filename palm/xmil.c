@@ -23,7 +23,7 @@
 
 #include	"keystat.h"
 #include	"fddfile.h"
-#include	"palm5way.h"
+#include	"PalmNavigator.h"
 #include	"joymng.h"
 #include	"statsave.h"
 
@@ -278,57 +278,41 @@ void HandleMenuChoice(UINT wParam) {
 
 static int ApplicationHandleEvent(EventPtr eventP) {
 
-    int handled = 0;
-	UINT32*   idp = (UINT32*)eventP;
+    int		handled = 0;
+	UINT32*	idp = (UINT32*)eventP;
 	UINT16  topdata = ByteSwap16(*(idp+2) & 0xffff);
 	UINT	keycode;
+	UINT32	keystate, rockerstate, updownstate, navstate;
 
+	keystate = ARM_KeyCurrentState();
+	rockerstate = (keystate & 0x001f0000) >> 16;
+	updownstate = (keystate & (keyBitPageUp | keyBitPageDown)) >> 1;
+	navstate = (keystate & keyBitNavLRS) >> 22;
+	joymng_5way(rockerstate | updownstate | navstate);
+	joymng_hardkey(keystate);
+
+	
 	switch (ByteSwap16(eventP->eType)) {
 		case keyDownEvent:
 			if (inmenu) break;
-			if ((topdata == vchrNavChange) || (topdata == vchrPageUp) || (topdata == vchrPageDown)) {
-				UINT16 chrcode = ByteSwap32(*(idp+2)) & 0xffff;
-				if (joymng_5way(chrcode) == FALSE) {
+			switch (topdata) {
+				case vchrNavChange:
+				case vchrPageUp:
+				case vchrPageDown:
+				case vchrRockerLeft:
+				case vchrRockerRight:
+				case vchrHard1:
+				case vchrHard2:
+				case vchrHard3:
+				case vchrHard4:
+					handled = 1;
 					break;
-				}
-				handled = 1;
-			}	
-			else if ((topdata == vchrHard1) || (topdata == vchrHard2) || (topdata == vchrHard3) || (topdata == vchrHard4)) {
-				switch (topdata) {
-					case vchrHard1:
-						keycode = xmiloscfg.HARDKEY1;
-						break;
-					case vchrHard2:
-						keycode = xmiloscfg.HARDKEY2;
-						break;
-					case vchrHard3:
-						keycode = xmiloscfg.HARDKEY3;
-						break;
-					case vchrHard4:
-						keycode = xmiloscfg.HARDKEY4;
-						break;
-					default:
-						keycode = -1;
-						break;
-				}
-				if (keycode == 0) {
-					joymng_btnsync(JOY_BTN1_BIT);
-				}
-				else if (keycode == 1) {
-					joymng_btnsync(JOY_BTN2_BIT);
-				}
-				else if (keycode < 12) {
-					palmkbd_keydown(hardkey[keycode] , TRUE);
-				}
-				else {
-					break;
-				}
-				handled = 1;
-			}
-			else if (!(topdata & 0xff00)) {
-				keycode =  topdata & 0x7f;
-				palmkbd_keydown(keycode, TRUE);
-				handled = 1;
+				default:
+					if (!(topdata & 0xff00)) {
+						keycode =  topdata & 0x7f;
+						palmkbd_keydown(keycode, TRUE);
+						handled = 1;
+					}
 			}
 			break;
 		case keyUpEvent:

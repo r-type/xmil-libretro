@@ -62,7 +62,7 @@ RGB16 scrnmng_makepal16(RGB32 pal32);
 #endif
 
 
-// ---- for mac
+// ---- for palm
 
 void scrnmng_initialize(void);
 BRESULT scrnmng_create(REG8 scrnmode);

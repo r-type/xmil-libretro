@@ -30,6 +30,5 @@ enum {
 };
 
 
-//extern	WindowPtr	hWndMain;
 extern	BRESULT		xmilrunning;
 extern	XMILOSCFG	xmiloscfg;

@@ -29,8 +29,8 @@ REG8 joymng_getstat(void);
 
 
 void joymng_sync(REG8 key);
-void joymng_btnsync(REG8 key);
 void joymng_initialize(void);
-void joymng_callback(void);
+#define joymng_callback();
 BRESULT joymng_5way(UINT code);
+void joymng_hardkey(UINT32 state);
 

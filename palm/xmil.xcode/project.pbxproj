@@ -2172,19 +2172,11 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		96BAC79D07B7CEB1000E62C9 = {
-			fileEncoding = "-2147483647";
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = palm5way.h;
-			path = support_files/palm5way.h;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		96BAC7A007B7CEB7000E62C9 = {
 			children = (
 				96BAC81407B7D569000E62C9,
-				96BAC79D07B7CEB1000E62C9,
+				96C2BAC207D0277200BE353C,
+				96C2BABB07D0274800BE353C,
 				96BAC79807B7CEA6000E62C9,
 				96BAC86207B7D99D000E62C9,
 			);
@@ -2361,6 +2353,24 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = xmil_fdlibm.h;
 			path = support_files/xmil_fdlibm.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96C2BABB07D0274800BE353C = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = PalmNavigator.h;
+			path = support_files/PalmNavigator.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96C2BAC207D0277200BE353C = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = PalmChars.h;
+			path = support_files/PalmChars.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};

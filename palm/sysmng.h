@@ -30,10 +30,12 @@ void sysmng_scrnwidth(REG8 mode);
 #define	sysmng_update(a)												\
 			sys_updates |= (a);											\
 			if ((a) & SYS_UPDATEFDD) sysmng_updatecaption(1)
-
+/*
 #define	sysmng_cpureset()												\
 			sys_updates &= (SYS_UPDATECFG | SYS_UPDATEOSCFG);			\
 			sysmng_workclockreset()
+*/
+void sysmng_cpureset(void);
 
 #define	sysmng_fddaccess(a)
 #define	sysmng_hddaccess(a)

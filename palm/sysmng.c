@@ -8,6 +8,8 @@
 #include	"makescrn.h"
 #include	"resource.h"
 
+#include	"joymng.h"
+#include	"palmkbd.h"
 
 	UINT	sys_updates;
 
@@ -77,6 +79,7 @@ void sysmng_updatecaption(BYTE flag) {
 
 	const char nodisk[] = "No Disk Image";
 	FormType*	frm = ARM_FrmGetActiveForm();
+	UINT16 textlen;
 	
 	if (flag & 1) {
 		strtitle0[0] = '\0';
@@ -115,7 +118,9 @@ void sysmng_updatecaption(BYTE flag) {
 		else {
 			milstr_ncpy(strframe, "-.-FPS", sizeof(strframe));
 		}
-		changelabel(frm, IDC_DISPFRAME, strframe);
+		if (ARM_StrLen(strframe) < 33) {
+			changelabel(frm, IDC_DISPFRAME, strframe);
+		}
 		
 		strclock[0] = '\0';
 		if (xmiloscfg.DISPCLK & 1) {
@@ -125,7 +130,17 @@ void sysmng_updatecaption(BYTE flag) {
 		else {
 			milstr_ncpy(strclock, "-.---MHz", sizeof(strclock));
 		}
-		changelabel(frm, IDC_DISPCLOCK, strclock);
+		textlen = ARM_StrLen(strclock);
+		if (textlen < 45) {
+			changelabel(frm, IDC_DISPCLOCK, strclock);
+		}
 	}
 }
 
+void sysmng_cpureset(void) {
+
+	sys_updates &= (SYS_UPDATECFG | SYS_UPDATEOSCFG);
+	sysmng_workclockreset();
+	joymng_initialize();
+	palmkbd_initialize();
+}
