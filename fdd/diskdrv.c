@@ -6,17 +6,8 @@
 #include	"fddfile.h"
 
 
-void diskdrv_setfdd(REG8 drv, const OEMCHAR *fname, int readonly) {
-
-	fddfile_eject(drv);
-	if (fname) {
-		fddfile_set(drv, fname, 0, readonly);
-	}
-	sysmng_update(SYS_UPDATEFDD);
-}
-
 void diskdrv_setfddex(REG8 drv, const OEMCHAR *fname,
-												UINT ftype, int readonly) {
+												UINT32 ftype, int readonly) {
 
 	fddfile_eject(drv);
 	if (fname) {

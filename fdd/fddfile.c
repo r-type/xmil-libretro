@@ -55,7 +55,7 @@ static REG8 dummycrc(FDDFILE fdd, REG8 media, UINT track, UINT num,
 	return(FDDSTAT_RECNFND);
 }
 
-static REG8 getfdtype(const OEMCHAR *fname) {
+static UINT32 getfdtype(const OEMCHAR *fname) {
 
 const OEMCHAR	*ext;
 
@@ -114,7 +114,7 @@ BRESULT fddfile_diskprotect(REG8 drv) {
 	return(TRUE);
 }
 
-BRESULT fddfile_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
+BRESULT fddfile_set(REG8 drv, const OEMCHAR *fname, UINT32 ftype, int ro) {
 
 	FDDFILE	fdd;
 	BRESULT	r;
@@ -141,6 +141,7 @@ BRESULT fddfile_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
 			break;
 	}
 	if (r == SUCCESS) {
+		fdd->ftype = ftype;
 		milstr_ncpy(fdd->fname, fname, NELEMENTS(fdd->fname));
 		if (ro) {
 			fdd->protect = TRUE;

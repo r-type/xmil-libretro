@@ -62,6 +62,7 @@ struct _fddfile {
 	UINT8		type;
 	UINT8		protect;
 	UINT8		padding[2];
+	UINT32		ftype;
 	FDDSEEK		seek;
 	FDDREAD		read;
 	FDDWRITE	write;
@@ -72,7 +73,7 @@ struct _fddfile {
 	union {
 		_D88INFO	d88;
 	} inf;
-	OEMCHAR	fname[MAX_PATH];
+	OEMCHAR		fname[MAX_PATH];
 };
 
 

@@ -129,25 +129,26 @@ typedef union {
 #endif
 
 
+#define	FTYPEID(a, b, c, d)	(((a) << 24) + ((b) << 16) + ((c) << 8) + (d))
+
 enum {
-	FTYPE_NONE = 0,		// Ž©“®”»•Ê or PC
-	FTYPE_SMIL,
-	FTYPE_TEXT,
-	FTYPE_BMP,
-	FTYPE_PICT,
-	FTYPE_PNG,
-	FTYPE_WAV,
-	FTYPE_OGG,
-	FTYPE_D88,
-	FTYPE_FDI,
-	FTYPE_BETA,
-	FTYPE_THD,
-	FTYPE_NHD,
-	FTYPE_HDI,
-	FTYPE_HDD,
-	FTYPE_S98,
-	FTYPE_MIMPI,
-	FTYPE_USER
+	FTYPE_NONE		= 0,
+	FTYPE_SMIL		= FTYPEID('S','M','I','L'),
+	FTYPE_TEXT		= FTYPEID('T','E','X','T'),
+	FTYPE_BMP		= FTYPEID('B','M','P',' '),
+	FTYPE_GIF		= FTYPEID('G','I','F',' '),
+	FTYPE_WAVE		= FTYPEID('W','A','V','E'),
+	FTYPE_OGG		= FTYPEID('O','G','G',' '),
+	FTYPE_MP3		= FTYPEID('M','P','3',' '),
+	FTYPE_D88		= FTYPEID('.','D','8','8'),
+	FTYPE_FDI		= FTYPEID('.','F','D','I'),
+	FTYPE_BETA		= FTYPEID('B','E','T','A'),
+	FTYPE_THD		= FTYPEID('.','T','H','D'),
+	FTYPE_NHD		= FTYPEID('.','N','H','D'),
+	FTYPE_HDI		= FTYPEID('.','H','D','I'),
+	FTYPE_HDD		= FTYPEID('.','H','D','D'),
+	FTYPE_S98		= FTYPEID('.','S','9','8'),
+	FTYPE_MIMPI		= FTYPEID('M','I','M','P')
 };
 
 

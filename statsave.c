@@ -467,8 +467,9 @@ static int flagload_evt(STFLAGH sfh, const SFENTRY *tbl) {
 // ---- disk
 
 typedef struct {
-	OEMCHAR	path[MAX_PATH];
-	int		readonly;
+	OEMCHAR	fname[MAX_PATH];
+	UINT32	ftype;
+	UINT	readonly;
 	DOSDATE	date;
 	DOSTIME	time;
 } STATDISK;
@@ -477,16 +478,17 @@ static const OEMCHAR str_fddx[] = OEMTEXT("FDD%u");
 static const OEMCHAR str_updated[] = OEMTEXT("%s: updated");
 static const OEMCHAR str_notfound[] = OEMTEXT("%s: not found");
 
-static int disksave(STFLAGH sfh, const OEMCHAR *path, int readonly) {
+static int disksave(STFLAGH sfh, const _FDDFILE *fdd) {
 
 	STATDISK	st;
 	FILEH		fh;
 
 	ZeroMemory(&st, sizeof(st));
-	if ((path) && (path[0])) {
-		file_cpyname(st.path, path, sizeof(st.path));
-		st.readonly = readonly;
-		fh = file_open_rb(path);
+	if (fdd->type != DISKTYPE_NOTREADY) {
+		file_cpyname(st.fname, fdd->fname, NELEMENTS(st.fname));
+		st.ftype = fdd->ftype;
+		st.readonly = fdd->protect;
+		fh = file_open_rb(st.fname);
 		if (fh != FILEH_INVALID) {
 			file_getdatetime(fh, &st.date, &st.time);
 			file_close(fh);
@@ -501,8 +503,8 @@ static int flagsave_disk(STFLAGH sfh, const SFENTRY *tbl) {
 	REG8	i;
 
 	ret = STATFLAG_SUCCESS;
-	for (i=0; i<4; i++) {
-		ret |= disksave(sfh, fddfile_diskname(i), fddfile_diskprotect(i));
+	for (i=0; i<MAX_FDDFILE; i++) {
+		ret |= disksave(sfh, fddfile + i);
 	}
 	(void)tbl;
 	return(ret);
@@ -518,8 +520,8 @@ static int diskcheck(STFLAGH sfh, const OEMCHAR *name) {
 	DOSTIME		time;
 
 	ret = statflag_read(sfh, &st, sizeof(st));
-	if (st.path[0]) {
-		fh = file_open_rb(st.path);
+	if (st.fname[0]) {
+		fh = file_open_rb(st.fname);
 		if (fh != FILEH_INVALID) {
 			file_getdatetime(fh, &date, &time);
 			file_close(fh);
@@ -546,7 +548,7 @@ static int flagcheck_disk(STFLAGH sfh, const SFENTRY *tbl) {
 	OEMCHAR	buf[8];
 
 	ret = 0;
-	for (i=0; i<4; i++) {
+	for (i=0; i<MAX_FDDFILE; i++) {
 		OEMSPRINTF(buf, str_fddx, i+1);
 		ret |= diskcheck(sfh, buf);
 	}
@@ -561,10 +563,10 @@ static int flagload_disk(STFLAGH sfh, const SFENTRY *tbl) {
 	STATDISK	st;
 
 	ret = STATFLAG_SUCCESS;
-	for (i=0; i<4; i++) {
+	for (i=0; i<MAX_FDDFILE; i++) {
 		ret |= statflag_read(sfh, &st, sizeof(st));
-		if (st.path[0]) {
-			fddfile_set(i, st.path, FTYPE_NONE, st.readonly);
+		if (st.fname[0]) {
+			fddfile_set(i, st.fname, st.ftype, st.readonly);
 		}
 	}
 	(void)tbl;
