@@ -17,7 +17,8 @@ CFG=xmil - Win32 Debug
 !MESSAGE 
 !MESSAGE 選択可能なﾋﾞﾙﾄﾞ ﾓｰﾄﾞ:
 !MESSAGE 
-!MESSAGE "xmil - Win32 Release" ("Win32 (x86) Application" 用)
+!MESSAGE "xmil - Win32 Release JP" ("Win32 (x86) Application" 用)
+!MESSAGE "xmil - Win32 Release World" ("Win32 (x86) Application" 用)
 !MESSAGE "xmil - Win32 Trace" ("Win32 (x86) Application" 用)
 !MESSAGE "xmil - Win32 Debug" ("Win32 (x86) Application" 用)
 !MESSAGE 
@@ -30,17 +31,17 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "Release"
-# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Output_Dir "ReleaseJP"
+# PROP BASE Intermediate_Dir "ReleaseJP"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "..\bin"
-# PROP Intermediate_Dir "..\obj\vc\win9xrel"
+# PROP Intermediate_Dir "..\obj\vc\win9xreljp"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
@@ -55,6 +56,32 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib winmm.lib ddraw.lib dxguid.lib dsound.lib /nologo /subsystem:windows /map /machine:I386
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "ReleaseWorld"
+# PROP BASE Intermediate_Dir "ReleaseWorld"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "..\bin"
+# PROP Intermediate_Dir "..\obj\vc\win9xrelworld"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\dialog" /I "..\\" /I "..\common" /I "..\z80x" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\cavelv2" /I "..\cavelv3" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "UNICODE" /D "_UNICODE" /YX /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x411 /d "NDEBUG"
+# ADD RSC /l 0x411 /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib winmm.lib ddraw.lib dxguid.lib dsound.lib /nologo /subsystem:windows /map /machine:I386 /out:"..\bin/xmilw.exe"
 
 !ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
 
@@ -112,7 +139,8 @@ LINK32=link.exe
 
 # Begin Target
 
-# Name "xmil - Win32 Release"
+# Name "xmil - Win32 Release JP"
+# Name "xmil - Win32 Release World"
 # Name "xmil - Win32 Trace"
 # Name "xmil - Win32 Debug"
 # Begin Group "Source Files"
@@ -153,10 +181,22 @@ SOURCE=..\Z80X\Z80X.C
 
 SOURCE=..\Z80X\Z80X_CB.X86
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
-IntDir=.\..\obj\vc\win9xrel
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=..\Z80X\Z80X_CB.X86
+InputName=Z80X_CB
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
 InputPath=..\Z80X\Z80X_CB.X86
 InputName=Z80X_CB
 
@@ -196,10 +236,22 @@ InputName=Z80X_CB
 
 SOURCE=..\Z80X\Z80X_IF.X86
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
-IntDir=.\..\obj\vc\win9xrel
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=..\Z80X\Z80X_IF.X86
+InputName=Z80X_IF
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
 InputPath=..\Z80X\Z80X_IF.X86
 InputName=Z80X_IF
 
@@ -239,10 +291,22 @@ InputName=Z80X_IF
 
 SOURCE=..\Z80X\Z80X_IX.X86
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
-IntDir=.\..\obj\vc\win9xrel
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=..\Z80X\Z80X_IX.X86
+InputName=Z80X_IX
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
 InputPath=..\Z80X\Z80X_IX.X86
 InputName=Z80X_IX
 
@@ -282,10 +346,22 @@ InputName=Z80X_IX
 
 SOURCE=..\Z80X\Z80X_IY.X86
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
-IntDir=.\..\obj\vc\win9xrel
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=..\Z80X\Z80X_IY.X86
+InputName=Z80X_IY
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
 InputPath=..\Z80X\Z80X_IY.X86
 InputName=Z80X_IY
 
@@ -325,10 +401,22 @@ InputName=Z80X_IY
 
 SOURCE=..\Z80X\Z80X_MN.X86
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
-IntDir=.\..\obj\vc\win9xrel
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=..\Z80X\Z80X_MN.X86
+InputName=Z80X_MN
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
 InputPath=..\Z80X\Z80X_MN.X86
 InputName=Z80X_MN
 
@@ -368,10 +456,22 @@ InputName=Z80X_MN
 
 SOURCE=..\Z80X\Z80X_SB.X86
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
-IntDir=.\..\obj\vc\win9xrel
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=..\Z80X\Z80X_SB.X86
+InputName=Z80X_SB
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
 InputPath=..\Z80X\Z80X_SB.X86
 InputName=Z80X_SB
 
@@ -411,10 +511,22 @@ InputName=Z80X_SB
 
 SOURCE=..\Z80X\Z80XMEM.X86
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
-IntDir=.\..\obj\vc\win9xrel
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=..\Z80X\Z80XMEM.X86
+InputName=Z80XMEM
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
 InputPath=..\Z80X\Z80XMEM.X86
 InputName=Z80XMEM
 
@@ -594,10 +706,22 @@ SOURCE=..\SOUND\OPMGENC.C
 
 SOURCE=.\x86\OPMGENG.X86
 
-!IF  "$(CFG)" == "xmil - Win32 Release"
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
-IntDir=.\..\obj\vc\win9xrel
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=.\x86\OPMGENG.X86
+InputName=OPMGENG
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ｱｾﾝﾌﾞﾙ中... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
 InputPath=.\x86\OPMGENG.X86
 InputName=OPMGENG
 

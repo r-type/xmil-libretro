@@ -4,15 +4,25 @@
 #include	"iocore.h"
 
 
+enum {
+	MOVE1TCK_MS		= 30,
+	MOVEMOTOR1_MS	= 30,
+	SEKSEC_MS		= 20
+};
+
+typedef struct {
+//	int		busy;
+	UINT8	head[4];
+//	UINT	nextevent;
+//	UINT8	curevent;
+} _FDDMTR, *FDDMTR;
+
 		BYTE		curevent = 0;
 		DWORD		nextevent = 0;
 		BYTE		FDC_HEAD[4] = {0, 0, 0, 0};
 		DWORD		FDC_TIME[4] = {0, 0, 0, 0};
 		short		curdrv = 0;
 
-#define		MOVE1TCK_MS		30 
-#define		MOVEMOTOR1_MS	30
-#define		SEKSEC_MS		20
 
 void fddmtr_event(void) {
 

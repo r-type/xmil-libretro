@@ -24,7 +24,7 @@ void dialog_x1f(HWND hWnd) {
 	check = FALSE;
 	file_cpyname(path, bmpfilefolder, NELEMENTS(path));
 	file_cutname(path);
-	file_catname(path, x1fui_file, sizeof(path));
+	file_catname(path, x1fui_file, NELEMENTS(path));
 	if ((dlgs_selectwritenum(hWnd, &x1fui, path, NELEMENTS(path))) &&
 		(x1f_open(path) == SUCCESS)) {
 		file_cpyname(bmpfilefolder, path, NELEMENTS(bmpfilefolder));

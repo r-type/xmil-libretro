@@ -60,7 +60,7 @@ void STRCALL mileuc_ncat(char *dst, const char *src, int maxlen);
 void STRCALL milutf8_ncat(char *dst, const char *src, int maxlen);
 
 // •¶š‚ğŒŸõ
-char * STRCALL milank_chr(const OEMCHAR *str, int c);
+OEMCHAR * STRCALL milank_chr(const OEMCHAR *str, int c);
 char * STRCALL milsjis_chr(const char *str, int c);
 char * STRCALL mileuc_chr(const char *str, int c);
 char * STRCALL milutf8_chr(const char *str, int c);
@@ -71,7 +71,7 @@ char * STRCALL milutf8_chr(const char *str, int c);
 int STRCALL milstr_extendcmp(const OEMCHAR *str, const OEMCHAR *cmp);
 
 // Ÿ‚ÌŒê‚ğæ“¾
-char * STRCALL milstr_nextword(const OEMCHAR *str);
+OEMCHAR * STRCALL milstr_nextword(const OEMCHAR *str);
 
 // •¶š—ñ‚©‚çARG‚Ìæ“¾
 int STRCALL milstr_getarg(OEMCHAR *str, OEMCHAR *arg[], int maxarg);

@@ -25,7 +25,7 @@ static const FILESEL newdiskui = {newdisk_title, str_d88, newdisk_filter, 1};
 void dialog_changefdd(HWND hWnd, REG8 drv) {
 
 const OEMCHAR	*p;
-	char		path[MAX_PATH];
+	OEMCHAR		path[MAX_PATH];
 	int			readonly;
 
 	p = fdd_diskname(drv);
@@ -33,7 +33,7 @@ const OEMCHAR	*p;
 		p = fddfolder;
 	}
 	file_cpyname(path, p, sizeof(path));
-	if (dlgs_selectfile(hWnd, &fddui, path, sizeof(path), &readonly)) {
+	if (dlgs_selectfile(hWnd, &fddui, path, NELEMENTS(path), &readonly)) {
 		file_cpyname(fddfolder, path, NELEMENTS(fddfolder));
 		sysmng_update(SYS_UPDATEOSCFG);
 		diskdrv_setfdd(drv, path, readonly);
@@ -105,7 +105,7 @@ void dialog_newdisk(HWND hWnd) {
 
 	OEMCHAR		path[MAX_PATH];
 	HINSTANCE	hinst;
-const char		*ext;
+const OEMCHAR	*ext;
 
 	file_cpyname(path, fddfolder, NELEMENTS(path));
 	file_cutname(path);

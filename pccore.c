@@ -58,16 +58,16 @@ void ipl_load(void) {
 	FILEH	hdl;
 
 	ZeroMemory(mBIOS, sizeof(mBIOS));
-	memcpy(mBIOS, DEFROM, sizeof(DEFROM));
+	CopyMemory(mBIOS, DEFROM, sizeof(DEFROM));
 
 	if (pccore.ROM_TYPE >= 2) {
-		if ((hdl = file_open_c("IPLROM.X1T")) != FILEH_INVALID) {
+		if ((hdl = file_open_c(OEMTEXT("IPLROM.X1T"))) != FILEH_INVALID) {
 			file_read(hdl, mBIOS, 0x8000);
 			file_close(hdl);
 		}
 	}
 	else if (pccore.ROM_TYPE == 1) {
-		if ((hdl = file_open_c("IPLROM.X1")) != FILEH_INVALID) {
+		if ((hdl = file_open_c(OEMTEXT("IPLROM.X1"))) != FILEH_INVALID) {
 			file_read(hdl, mBIOS, 0x8000);
 			file_close(hdl);
 		}

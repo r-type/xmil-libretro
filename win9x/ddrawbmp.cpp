@@ -19,17 +19,17 @@ typedef struct {
 
 #define	PALADDED		32
 
-static	char	bmpext[] = "bmp";
-static	char	bmptitle[] = "Bitmapの保存";
-static	char	*bmpextstr[] = {
-						"2色ビットマップ\0*.bmp\0",
-						"16色ビットマップ\0*.bmp\0",
-						"256色ビットマップ\0*.bmp\0",
-						"フルカラービットマップ\0*.bmp\0"};
+static const OEMCHAR bmpext[] = OEMTEXT("bmp");
+static const OEMCHAR bmptitle[] = OEMTEXT("Bitmapの保存");
+static const OEMCHAR *bmpextstr[] = {
+						OEMTEXT("2色ビットマップ\0*.bmp\0"),
+						OEMTEXT("16色ビットマップ\0*.bmp\0"),
+						OEMTEXT("256色ビットマップ\0*.bmp\0"),
+						OEMTEXT("フルカラービットマップ\0*.bmp\0")};
 
-static	char	pathname[MAX_PATH];
+static	OEMCHAR	pathname[MAX_PATH];
 
-static LPSTR savefileselect(LPSTR filter, LPSTR defname) {
+static OEMCHAR *savefileselect(const OEMCHAR *filter, const OEMCHAR *defname) {
 
 	FILESEL		bmpui;
 
@@ -97,7 +97,7 @@ BYTE bmps_appal(int *pals, RGB32 *pal, DWORD col) {
 	return((BYTE)ret);
 }
 
-void bmpsavefile(LPSTR filename, BMP_CTRL *bmc) {
+void bmpsavefile(const OEMCHAR *filename, BMP_CTRL *bmc) {
 
 	FILEH	dst;
 	DWORD	linesize;
@@ -189,8 +189,8 @@ void bmpsave(void) {
 	BYTE		c;
 	int			pals = 0;
 	long		x, y;
-	char		*f;
-	LPSTR		r;
+const OEMCHAR	*f;
+	OEMCHAR		*r;
 
 	if ((hbmc = GlobalAlloc(GPTR, (DWORD)sizeof(BMP_CTRL) + 1 +
 					((DWORD)SCREEN_WIDTH * SCREEN_HEIGHT * 3L))) == NULL) {
@@ -295,7 +295,7 @@ void bmpsave(void) {
 	else if (pals > 2) {
 		f = bmpextstr[1];
 	}
-	if ((r = savefileselect(f, "X1R_%04d.BMP")) != NULL) {
+	if ((r = savefileselect(f, OEMTEXT("X1R_%04d.BMP"))) != NULL) {
 		bmpsavefile(r, bmc);
 	}
 	GlobalUnlock(hbmc);
@@ -305,13 +305,13 @@ void bmpsave(void) {
 
 void bmpsavehalf(void) {
 
-	HANDLE			hbmc;
-	BMP_CTRL		*bmc;
-	BYTE			*p, *q;
-	int				pals = 0;
-	long			x, y;
-	char			*f;
-	LPSTR			r;
+	HANDLE		hbmc;
+	BMP_CTRL	*bmc;
+	BYTE		*p, *q;
+	int			pals = 0;
+	long		x, y;
+const OEMCHAR	*f;
+	OEMCHAR		*r;
 
 	if ((hbmc = GlobalAlloc(GPTR, (DWORD)sizeof(BMP_CTRL) + 1 +
 					((DWORD)SCREEN_WIDTH * SCREEN_HEIGHT * 3L))) == NULL) {
@@ -400,7 +400,7 @@ void bmpsavehalf(void) {
 	else if (pals > 2) {
 		f = bmpextstr[1];
 	}
-	if ((r = savefileselect(f, "X1RH%04d.BMP")) != NULL) {
+	if ((r = savefileselect(f, OEMTEXT("X1RH%04d.BMP"))) != NULL) {
 		bmpsavefile(r, bmc);
 	}
 	GlobalUnlock(hbmc);

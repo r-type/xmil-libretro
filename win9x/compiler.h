@@ -1,14 +1,18 @@
-#define	NP2_LITTLEENDIAN
 
 #define	_WIN32_IE	0x0200
 
 #include	<windows.h>
+#include	<tchar.h>
 #include	<stdio.h>
 #include	<stddef.h>
 #include	<setjmp.h>
 
 #define	BYTESEX_LITTLE
+#if !defined(UNICODE)
 #define	OSLANG_SJIS
+#else
+#define	OSLANG_UCS2
+#endif
 #define	OSLINEBREAK_CRLF
 
 #ifndef __GNUC__
@@ -50,6 +54,10 @@ typedef signed __int64		SINT64;
 
 #define	STRCALL		__stdcall
 
+#define	BRESULT				UINT8
+#define	OEMCHAR				TCHAR
+#define	OEMTEXT(string)		_T(string)
+
 #include	"common.h"
 #include	"milstr.h"
 #include	"_memory.h"
@@ -75,7 +83,11 @@ typedef signed __int64		SINT64;
 #define	VRAMCALL	__fastcall
 #define	SCRNCALL	__fastcall
 
+#if !defined(UNICODE)
 #define	SUPPORT_SJIS
+#else
+#define	SUPPORT_ANK
+#endif
 
 #define	SUPPORT_8BPP
 #define	SUPPORT_16BPP

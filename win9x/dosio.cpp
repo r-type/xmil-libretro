@@ -186,8 +186,8 @@ void __stdcall file_cutname(OEMCHAR *path) {
 
 OEMCHAR * __stdcall file_getext(const OEMCHAR *path) {
 
-const char	*p;
-const char	*q;
+const OEMCHAR	*p;
+const OEMCHAR	*q;
 
 	p = file_getname(path);
 	q = NULL;
@@ -225,7 +225,7 @@ void __stdcall file_cutseparator(OEMCHAR *path) {
 
 	int		pos;
 
-	pos = strlen(path) - 1;
+	pos = STRLEN(path) - 1;
 	if ((pos > 0) &&							// 2文字以上でー
 		(path[pos] == '\\') &&					// ケツが \ でー
 		(!milstr_kanji2nd(path, pos)) &&		// 漢字の2バイト目ぢゃなくてー
@@ -239,7 +239,7 @@ void __stdcall file_setseparator(OEMCHAR *path, int maxlen) {
 
 	int		pos;
 
-	pos = strlen(path) - 1;
+	pos = STRLEN(path) - 1;
 	if ((pos < 0) ||
 		((pos == 1) && (path[1] == ':')) ||
 		((path[pos] == '\\') && (!milstr_kanji2nd(path, pos))) ||

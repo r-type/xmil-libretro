@@ -41,7 +41,7 @@ short __stdcall file_attr_c(const OEMCHAR *path);
 #define	file_catname(a, b, c)	milstr_ncat(a, b, c)
 #define	file_cmpname(a, b)		milstr_cmp(a, b)
 OEMCHAR * __stdcall file_getname(const OEMCHAR *path);
-void __stdcall file_cutname(char *path);
+void __stdcall file_cutname(OEMCHAR *path);
 OEMCHAR * __stdcall file_getext(const OEMCHAR *path);
 void __stdcall file_cutext(OEMCHAR *path);
 void __stdcall file_cutseparator(OEMCHAR *path);

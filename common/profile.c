@@ -88,7 +88,7 @@ BOOL profile_enum(const char *filename, void *arg,
 		key = profana(buf, &data);
 		if (key) {
 			if (data == NULL) {
-				milstr_ncpy(para, key, sizeof(para));
+				milstr_ncpy(para, key, NELEMENTS(para));
 			}
 			else {
 				r = proc(arg, para, key, data);
@@ -340,7 +340,7 @@ PFILEH profile_open(const char *filename, UINT flag) {
 	ret->buffers = size;
 	ret->size = filesize;
 	ret->flag = flag;
-	file_cpyname(ret->path, filename, sizeof(ret->path));
+	file_cpyname(ret->path, filename, NELEMENTS(ret->path));
 	return(ret);
 
 pfore_err3:
