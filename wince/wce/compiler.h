@@ -1,23 +1,26 @@
 #include	<windows.h>
-#include	<tchar.h>
 #include	<stdio.h>
 #include	<stddef.h>
 
+
 #define	BYTESEX_LITTLE
-#if !defined(UNICODE)
-#define	OSLANG_SJIS
-#else
 #define	OSLANG_UCS2
-#endif
 #define	OSLINEBREAK_CRLF
 
 typedef signed int			SINT;
 typedef signed char			SINT8;
-typedef unsigned char		UINT8;
 typedef	signed short		SINT16;
-typedef	unsigned short		UINT16;
 typedef	signed int			SINT32;
-typedef	unsigned int		UINT32;
+
+#ifndef	ZeroMemory
+#define	ZeroMemory(a, b)		memset((a),  0 , (b))
+#endif
+#ifndef	CopyMemory
+#define	CopyMemory(a, b, c)		memcpy((a), (b), (c))
+#endif
+#ifndef	FillMemory
+#define	FillMemory(a, b, c)		memset((a), (c), (b))
+#endif
 
 
 #if !defined(SIZE_VGATEST)
@@ -29,7 +32,7 @@ typedef	unsigned int		UINT32;
 #endif
 
 
-// for RISC test
+// for ARM optimize
 #define	REG8		UINT
 #define REG16		UINT
 #define	LOW12(a)	(((UINT32)((a) << 20)) >> 20)
@@ -58,21 +61,17 @@ typedef	unsigned int		UINT32;
 
 #define	GETTICK()			GetTickCount()
 #define	__ASSERT(s)
-#if !defined(UNICODE)
-#define	SPRINTF				wsprintf
-#define	STRLEN				lstrlen
-#else
 #define	SPRINTF				sprintf
 #define	STRLEN				strlen
+
+#if defined(WIN32_PLATFORM_PSPC)
+#define	MENU_TASKMINIMIZE
+// #define SUPPORT_SOFTKBD			1
 #endif
 
 #define SOUND_CRITICAL
 
-#if !defined(UNICODE)
-#define	SUPPORT_SJIS
-#else
 #define	SUPPORT_ANK
-#endif
 
 #define	SUPPORT_16BPP
 #define	MEMOPTIMIZE			2

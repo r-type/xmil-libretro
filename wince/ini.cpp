@@ -27,8 +27,8 @@ static const PFTBL iniitem[] = {
 	{"s_NOWAIT", PFTYPE_BOOL,		&xmiloscfg.NOWAIT,		0},
 	{"SkpFrame", PFTYPE_UINT8,		&xmiloscfg.DRAW_SKIP,	0},
 #if defined(WIN32_PLATFORM_PSPC)
-	{"pbindcur", PFTYPE_UINT8,		&np2oscfg.bindcur,		0},
-	{"pbindbtn", PFTYPE_UINT8,		&np2oscfg.bindbtn,		0},
+	{"pbindcur", PFTYPE_UINT8,		&xmiloscfg.bindcur,		0},
+	{"pbindbtn", PFTYPE_UINT8,		&xmiloscfg.bindbtn,		0},
 #endif
 
 

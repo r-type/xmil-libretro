@@ -253,7 +253,7 @@ static void setbind(UINT8 *tbl, const KEYSET *bind, const KEYADRS *adrs) {
 	for (i=0; i<4; i++) {
 		key = (*adrs->ptr[i]) & 0xff;
 		if (tbl[key] != NC) {
-			keystat_forcerelease(tbl[key]);
+			keystat_keyup(tbl[key]);
 		}
 		tbl[key] = bind->key[i];
 	}
