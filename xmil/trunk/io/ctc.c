@@ -74,7 +74,6 @@ static REG8 ctcwork(CTCCH *ch) {
 		if (count <= 0) {
 			count = ch->countmax[3] - ((0 - count) % ch->countmax[3]);
 			intr |= (ch->cmd[3] & 0x80) >> (7 - 3);
-TRACEOUT(("ctc3 !"));
 		}
 		ch->count[3] = count;
 	}
@@ -156,7 +155,9 @@ BRESULT ieitem_ctc(UINT id) {
 	intr |= ch->intr;
 	r = FALSE;
 	if (intr) {
-		for (i=0, bit=1; i<4; i++, bit<<=1) {
+//		for (i=0, bit=1; i<4; i++, bit<<=1)
+		for (i=4, bit=8; i--; bit>>=1)
+		{
 			if (intr & bit) {
 				if (!(ch->cmd[i] & 0x80)) {
 					intr ^= bit;
@@ -164,6 +165,8 @@ BRESULT ieitem_ctc(UINT id) {
 #if 0			// アークスのタイミング→あとで修正
 				else if (0)
 #elif 1
+				if ((ch->countmax[i] - ch->count[i]) >= ch->range[i])
+#elif 0
 				else if (((ch->cmd[i] & 0x10) == 0) &&
 						((ch->countmax[i] - ch->count[i]) >= (256 >> 1)))
 #else
@@ -175,7 +178,7 @@ BRESULT ieitem_ctc(UINT id) {
 				else if (!r) {
 					r = TRUE;
 					intr ^= bit;
-					TRACEOUT(("ctc int %d %d", ch->num, i));
+//					TRACEOUT(("ctc int %d %d", ch->num, i));
 					Z80_INTERRUPT((REG8)(ch->vector + (i << 1)));
 				}
 			}
@@ -213,10 +216,11 @@ static void ctcch_o(CTCCH *ch, UINT port, REG8 value) {
 				scale = 4 - 1;
 			}
 		}
-		count <<= scale;
 		ch->scale[port] = scale;
-		ch->countmax[port] = count;
-		ch->count[port] = count;
+		ch->countmax[port] = count << scale;
+		ch->count[port] = count << scale;
+//		ch->range[port] = ((count + 3) >> 2) << scale;
+		ch->range[port] = 4 << scale;
 		ch->cmd[port] &= ~6;
 		ctcnextevent(ch);
 	}
