@@ -97,6 +97,7 @@ typedef struct {
 
 typedef struct {
 	SINT32	rasterclock8;
+	SINT32	rasterdisp8;
 	UINT	fonty;
 	UINT	yl;
 	SINT32	frameclock;

@@ -92,6 +92,9 @@ static void crtc_timingupdate(void) {
 	UINT32	fontclock;
 	UINT	yl;
 
+	// ‚Æ‚è‚ ‚¦‚¸c‚Ë
+	crtc.e.rasterdisp8 = (crtc.e.rasterclock8 * 40) / 56;
+
 	fontclock = (crtc.s.reg[CRTCREG_CHRCY] & 0x1f) + 1;
 	fontclock = (fontclock * crtc.e.rasterclock8) >> 8;
 

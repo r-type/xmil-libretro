@@ -1,4 +1,6 @@
 
+// #define	SUPPORT_MOTORRISEUP
+
 enum {
 	FDCDIR_NONE			= 0x00,
 	FDCDIR_IN			= 0x01,
@@ -54,8 +56,10 @@ typedef struct {
 
 	SINT32	loopclock;
 
+#if defined(SUPPORT_MOTORRISEUP)
 	UINT8	motorevent[4];
 	SINT32	motorclock[4];
+#endif
 
 	UINT8	buffer[FDC_BUFFERS];
 } FDCSTAT;
@@ -74,7 +78,11 @@ extern "C" {
 #endif
 
 void neitem_fdcbusy(UINT id);
+#if defined(SUPPORT_MOTORRISEUP)
 void fdc_callback(void);
+#else
+#define	fdc_callback()
+#endif
 
 void IOOUTCALL fdc_o(UINT port, REG8 value);		// x1_fdc_w
 REG8 IOINPCALL fdc_i(UINT port);					// x1_fdc_r

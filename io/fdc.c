@@ -35,6 +35,7 @@ static void setbusy(SINT32 clock) {
 	}
 }
 
+#if defined(SUPPORT_MOTORRISEUP)
 static void setmotor(REG8 drvcmd) {
 
 	UINT	drv;
@@ -79,6 +80,25 @@ void fdc_callback(void) {
 		}
 	}
 }
+
+static SINT32 motorwait(REG8 drv) {
+
+	SINT32	curclock;
+	SINT32	nextclock;
+
+	if (fdc.s.motorevent[drv] == FDCMOTOR_STARTING) {
+		curclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+		curclock -= fdc.s.motorclock[drv];
+		if (curclock < (SINT32)pccore.realclock) {
+			nextclock = pccore.realclock - curclock;
+//			TRACEOUT(("motor starting busy %d", nextclock));
+			return(nextclock);
+		}
+	}
+	return(0);
+}
+#endif
+
 
 static REG8 getstat(void) {
 
@@ -149,8 +169,8 @@ static REG8 type2cmd(REG8 sc) {
 	FDDFILE	fdd;
 	UINT	size;
 	REG8	stat;
-#if defined(SUPPORT_DISKEXT)
 	SINT32	clock;
+#if defined(SUPPORT_DISKEXT)
 	SINT32	curclock;
 	SINT32	nextclock;
 	UINT32	secinfo;
@@ -190,18 +210,11 @@ static REG8 type2cmd(REG8 sc) {
 	fdc.s.bufsize = size;
 	fdc.s.curtime = 0;
 
-#if defined(SUPPORT_DISKEXT)
-	// ウェイト値を計算
 	clock = 0;
-	if (fdc.s.motorevent[fdc.s.drv] == FDCMOTOR_STARTING) {
-		curclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
-		curclock -= fdc.s.motorclock[fdc.s.drv];
-		if (curclock < (SINT32)pccore.realclock) {
-			nextclock = pccore.realclock - curclock;
-//			TRACEOUT(("motor starting busy %d", nextclock));
-			clock += nextclock;
-		}
-	}
+#if defined(SUPPORT_MOTORRISEUP)
+	clock += motorwait(fdc.s.drv);
+#endif
+#if defined(SUPPORT_DISKEXT)
 	secinfo = fdd->sec(fdd, fdc.s.media, track, sc);
 	if (secinfo) {
 		nextclock = LOW16(secinfo);
@@ -216,10 +229,8 @@ static REG8 type2cmd(REG8 sc) {
 //									LOW16(secinfo), LOW16(secinfo >> 16)));
 		clock += nextclock;
 	}
-	setbusy(max(clock, 500));
-#else
-	setbusy(500);
 #endif
+	setbusy(max(clock, 500));
 	return(stat);
 }
 
@@ -440,7 +451,9 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				fdc.s.r = 0;						// SACOM TELENET
 				fdc.s.rreg = 0;
 			}
+#if defined(SUPPORT_MOTORRISEUP)
 			setmotor(value);
+#endif
 			break;
 	}
 }

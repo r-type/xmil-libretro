@@ -7,6 +7,25 @@
 #include	"font.h"
 
 
+static void waithsync(void) {
+
+	SINT32	clock;
+	SINT32	h;
+
+//	ïKÇ∏ hsyncÇë“Ç¬ÅH
+//	if (corestat.vsync) {
+//		return;
+//	}
+	clock = nevent_getwork(NEVENT_FRAMES) << 8;
+	h = clock % crtc.e.rasterclock8;
+	h = crtc.e.rasterdisp8 - h;
+	if (h < 0) {
+		h += crtc.e.rasterclock8;
+	}
+	CPU_REMCLOCK -= (h >> 8);
+}
+
+
 static UINT pcg_offset(void) {
 
 	if (tram[TRAM_ATR + 0x07ff] & 0x20) {
@@ -76,6 +95,7 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 	UINT	line;
 
 	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
+		waithsync();
 		off = pcg_offset();
 		chr = tram[TRAM_ANK + off];
 		if (tram[TRAM_KNJ + off] & 0x90) {
@@ -103,8 +123,10 @@ REG8 IOINPCALL pcg_i(UINT port) {
 	UINT	knj;
 	UINT	addr;
 
+	TRACEOUT(("pcg->%.4x", port));
 	upper = port & 0x0300;
 	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
+		waithsync();
 		line = port & 0x0f;
 		if (!upper) {
 			off = knj_offset();
