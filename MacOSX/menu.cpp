@@ -10,6 +10,27 @@
 #define	_GetMenu(a)					GetMenuHandle((a))
 #define	_CheckMenuItem(a, b, c)		CheckMenuItem((a), LoWord(b), (c))
 
+static void setEmuMenuStatus(bool isX1) {
+	MenuHandle	hmenu = GetMenuHandle(IDM_DIPSW);
+
+	if (isX1) {
+		_CheckMenuItem(hmenu, IDM_HIGHRES, 0);
+		_CheckMenuItem(hmenu, IDM_LOWRES, 1);
+		_CheckMenuItem(hmenu, IDM_BOOT2HD, 0);
+		_CheckMenuItem(hmenu, IDM_BOOT2D, 1);
+		DisableMenuItem(hmenu, IDM_HIGHRES);
+		DisableMenuItem(hmenu, IDM_LOWRES);
+		DisableMenuItem(hmenu, IDM_BOOT2HD);
+		DisableMenuItem(hmenu, IDM_BOOT2D);
+	}
+	else {
+		EnableMenuItem(hmenu, IDM_HIGHRES);
+		EnableMenuItem(hmenu, IDM_LOWRES);
+		EnableMenuItem(hmenu, IDM_BOOT2HD);
+		EnableMenuItem(hmenu, IDM_BOOT2D);
+	}
+}
+
 
 void menu_setiplrom(UINT8 value) {
 
@@ -20,6 +41,7 @@ void menu_setiplrom(UINT8 value) {
 	_CheckMenuItem(hmenu, IDM_TURBOZ, MFCHECK(value == 3));
 	_CheckMenuItem(hmenu, IDM_TURBO, MFCHECK(value == 2));
 	_CheckMenuItem(hmenu, IDM_X1ROM, MFCHECK(value == 1));
+    setEmuMenuStatus((value == 1));
 }
 
 void menu_setbootmedia(UINT8 value) {
