@@ -17,11 +17,11 @@ enum {
 extern "C" {
 #endif
 
-extern const char x1ank1name[];
-extern const char x1ank2name[];
-extern const char x1knjname[];
-extern const char x1ank2tmp[];
-extern const char x1knjtmp[];
+extern const OEMCHAR x1ank1name[];
+extern const OEMCHAR x1ank2name[];
+extern const OEMCHAR x1knjname[];
+extern const OEMCHAR x1ank2tmp[];
+extern const OEMCHAR x1knjtmp[];
 
 extern const UINT8 defrom_ank[0x800];
 extern const UINT8 defrom_txt[];

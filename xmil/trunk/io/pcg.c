@@ -5,6 +5,7 @@
 #include	"x1_io.h"
 #include	"x1_crtc.h"
 #include	"x1_vram.h"
+#include	"vram.h"
 #include	"font.h"
 
 
@@ -16,16 +17,16 @@ static void pcgsync(void) {
 
 static UINT pcg_offset(void) {
 
-	if (TXT_RAM[TEXT_ATR + 0x07ff] & 0x20) {
+	if (tram[TRAM_ATR + 0x07ff] & 0x20) {
 		return(0x7ff);
 	}
-	if (TXT_RAM[TEXT_ATR + 0x03ff] & 0x20) {
+	if (tram[TRAM_ATR + 0x03ff] & 0x20) {
 		return(0x3ff);
 	}
-	if (TXT_RAM[TEXT_ATR + 0x05ff] & 0x20) {
+	if (tram[TRAM_ATR + 0x05ff] & 0x20) {
 		return(0x5ff);
 	}
-	if (TXT_RAM[TEXT_ATR + 0x01ff] & 0x20) {
+	if (tram[TRAM_ATR + 0x01ff] & 0x20) {
 		return(0x1ff);
 	}
 	return(0x7ff);
@@ -33,16 +34,16 @@ static UINT pcg_offset(void) {
 
 static UINT knj_offset(void) {
 
-	if (!(TXT_RAM[TEXT_ATR + 0x07ff] & 0x20)) {
+	if (!(tram[TRAM_ATR + 0x07ff] & 0x20)) {
 		return(0x7ff);
 	}
-	if (!(TXT_RAM[TEXT_ATR + 0x03ff] & 0x20)) {
+	if (!(tram[TRAM_ATR + 0x03ff] & 0x20)) {
 		return(0x3ff);
 	}
-	if (!(TXT_RAM[TEXT_ATR + 0x05ff] & 0x20)) {
+	if (!(tram[TRAM_ATR + 0x05ff] & 0x20)) {
 		return(0x5ff);
 	}
-	if (!(TXT_RAM[TEXT_ATR + 0x01ff] & 0x20)) {
+	if (!(tram[TRAM_ATR + 0x01ff] & 0x20)) {
 		return(0x1ff);
 	}
 	return(0x7ff);
@@ -73,8 +74,8 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 
 	if (crtc.SCRN_BITS & SCRN_PCGMODE) {
 		off = pcg_offset();
-		chr = TXT_RAM[TEXT_ANK + off];
-		if (TXT_RAM[TEXT_KNJ + off] & 0x90) {
+		chr = tram[TRAM_ANK + off];
+		if (tram[TRAM_KNJ + off] & 0x90) {
 			chr &= 0xfe;
 			l = port & 15;
 		}
@@ -97,7 +98,7 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 	}
 	else {
 		off = nowsyncoffset();						// 990622 puni
-		chr = TXT_RAM[TEXT_ANK + off];
+		chr = tram[TRAM_ANK + off];
 		if (pcg.r.vsync) {
 			pcgsync();
 		}
@@ -122,7 +123,7 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 
 REG8 IOINPCALL pcg_i(UINT port) {
 
-	WORD	off;
+	UINT	off;
 	int		l;
 	BYTE	chr,knj,val;
 
@@ -131,8 +132,8 @@ REG8 IOINPCALL pcg_i(UINT port) {
 		l = port & 0x0f;
 		if ((port & 0xff00) == 0x1400) {
 			off = knj_offset();
-			chr = TXT_RAM[off + TEXT_ANK];
-			knj = TXT_RAM[off + TEXT_KNJ];
+			chr = tram[TRAM_ANK + off];
+			knj = tram[TRAM_KNJ + off];
 			if (knj & 0x80) {
 				DWORD p;
 				p = ((((DWORD)knj << 8) | chr) & 0x1fff) << 4;
@@ -152,8 +153,8 @@ REG8 IOINPCALL pcg_i(UINT port) {
 		}
 		else {
 			off = pcg_offset();
-			chr = TXT_RAM[TEXT_ANK + off];
-			if (TXT_RAM[TEXT_KNJ + off] & 0x90) {
+			chr = tram[TRAM_ANK + off];
+			if (tram[TRAM_KNJ + off] & 0x90) {
 				chr &= 0xfe;
 			}
 			else {
@@ -176,7 +177,7 @@ REG8 IOINPCALL pcg_i(UINT port) {
 	}
 	else {
 		off = nowsyncoffset();					// 990622 puni
-		chr = TXT_RAM[TEXT_ANK + off];
+		chr = tram[TRAM_ANK + off];
 		if (pcg.r.vsync) {
 			pcgsync();
 		}

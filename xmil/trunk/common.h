@@ -49,6 +49,9 @@ enum {
 #define	REG16		UINT16
 #endif
 
+#ifndef LOW11
+#define	LOW11(a)				((a) & 0x07ff)
+#endif
 #ifndef LOW12
 #define	LOW12(a)				((a) & 0x0fff)
 #endif
@@ -146,7 +149,7 @@ enum {
 #endif
 
 
-// ---- ?
+#if 0
 
 typedef struct {
 	DWORD	x;
@@ -160,4 +163,6 @@ typedef struct {
 	DWORD	x;
 	DWORD	y;
 } XYSIZE;
+
+#endif
 
