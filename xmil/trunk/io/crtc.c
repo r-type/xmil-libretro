@@ -3,11 +3,21 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"nevent.h"
 #include	"vram.h"
 #include	"palettes.h"
 #include	"makescrn.h"
 
 
+static const UINT8 defrgbp[4] = {0xaa, 0xcc, 0xf0, 0x00};
+static const UINT8 defreg[18] = {
+				0x37, 0x28, 0x2d, 0x34,
+				0x1f, 0x02, 0x19, 0x1c,
+				0x00, 0x07, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00};
+
+#if defined(SUPPORT_TURBOZ)
 static const UINT8 defpaltext[8] = {
 				0x00, 0x03, 0x0c, 0x0f, 0x30, 0x33, 0x3c, 0x3f};
 
@@ -20,14 +30,8 @@ static const UINT16 defpalgrph[64] = {
 				0x505, 0x50f, 0x5a5, 0x5af, 0xf05, 0xf0f, 0xfa5, 0xfaf,
 				0x550, 0x55a, 0x5f0, 0x5fa, 0xf50, 0xf5a, 0xff0, 0xffa,
 				0x555, 0x55f, 0x5f5, 0x5ff, 0xf55, 0xf5f, 0xff5, 0xfff};
+#endif
 
-static const UINT8 defrgbp[4] = {0xaa, 0xcc, 0xf0, 0x00};
-static const UINT8 defreg[18] = {
-				0x37, 0x28, 0x2d, 0x34,
-				0x1f, 0x02, 0x19, 0x1c,
-				0x00, 0x07, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00};
 
 typedef struct {
 	UINT32	clock;
@@ -301,6 +305,15 @@ void IOOUTCALL ply_o(UINT port, REG8 value) {
 	if (crtc.s.rgbp[CRTC_PLY] != value) {
 		crtc.s.rgbp[CRTC_PLY] = value;
 		makescrn.palandply = 1;
+#if defined(SUPPORT_PALEVENT)
+		if ((!corestat.vsync) && (palevent.events < SUPPORT_PALEVENT)) {
+			PAL1EVENT *e = palevent.event + palevent.events;
+			palevent.events++;
+			e->rgbp = CRTC_PLY;
+			e->value = value;
+			e->clock = nevent_getwork(NEVENT_FRAMES);
+		}
+#endif
 	}
 	(void)port;
 }
@@ -324,6 +337,15 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 		if (crtc.s.rgbp[num] != value) {
 			crtc.s.rgbp[num] = value;
 			makescrn.palandply = 1;
+#if defined(SUPPORT_PALEVENT)
+			if ((!corestat.vsync) && (palevent.events < SUPPORT_PALEVENT)) {
+				PAL1EVENT *e = palevent.event + palevent.events;
+				palevent.events++;
+				e->rgbp = (UINT8)num;
+				e->value = value;
+				e->clock = nevent_getwork(NEVENT_FRAMES);
+			}
+#endif
 		}
 #if defined(SUPPORT_TURBOZ)
 	}
@@ -368,22 +390,32 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 
 void IOOUTCALL blackctrl_o(UINT port, REG8 value) {
 
-	crtc.s.BLACKPAL = value;
-	makescrn.palandply = 1;
+	if (crtc.s.rgbp[CRTC_BLACK] != value) {
+		crtc.s.rgbp[CRTC_BLACK] = value;
+		makescrn.palandply = 1;
+#if defined(SUPPORT_PALEVENT)
+		if ((!corestat.vsync) && (palevent.events < SUPPORT_PALEVENT)) {
+			PAL1EVENT *e = palevent.event + palevent.events;
+			palevent.events++;
+			e->rgbp = CRTC_BLACK;
+			e->value = value;
+			e->clock = nevent_getwork(NEVENT_FRAMES);
+		}
+#endif
+	}
 	(void)port;
 }
 
 REG8 IOINPCALL blackctrl_i(UINT port) {
 
 	(void)port;
-	return(crtc.s.BLACKPAL);
+	return(crtc.s.rgbp[CRTC_BLACK]);
 }
 
 
 // ---- turboZ
 
 #if defined(SUPPORT_TURBOZ)
-
 REG8 IOINPCALL ply_i(UINT port) {
 
 	(void)port;

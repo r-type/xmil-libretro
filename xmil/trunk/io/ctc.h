@@ -1,4 +1,12 @@
 
+#if 0
+enum {
+	CTC_OPM			= 0,
+	CTC_TURBO1		= 1,
+	CTC_TURBO2		= 2
+};
+#endif
+
 typedef struct {
 	UINT32	baseclock;
 	UINT8	vector;

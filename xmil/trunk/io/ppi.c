@@ -44,6 +44,7 @@ static void setportc(REG8 dat) {
 	REG8	modify;
 
 	modify = ppi.portc ^ dat;
+	ppi.portc = dat;
 //	cmt_write((REG8)(dat & 1));
 	if ((modify & 0x20) && (!(dat & 0x20))) {
 		iocore.s.mode = 1;

@@ -7,7 +7,9 @@ enum {
 	CRTC_PALB		= 0,
 	CRTC_PALR		= 1,
 	CRTC_PALG		= 2,
-	CRTC_PLY		= 3
+	CRTC_PLY		= 3,
+	CRTC_BLACK		= 4,
+	CRTC_RGBPMAX	= 5
 };
 
 #define	PAL_NORMAL		0x00
@@ -85,8 +87,8 @@ typedef struct {
 	UINT8	SCRN_BITS;
 	UINT8	width40;
 	UINT8	regnum;
-	UINT8	BLACKPAL;
-	UINT8	rgbp[4];
+	UINT8	padding;
+	UINT8	rgbp[6];
 	UINT8	reg[CRTCREG_MAX];
 #if defined(SUPPORT_TURBOZ)
 	UINT8	EXTPALMODE;

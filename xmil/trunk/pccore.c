@@ -192,7 +192,8 @@ void neitem_vsync(UINT id) {
 
 // ----
 
-#define	SINGLESTEPONLY
+// #define	SINGLESTEPONLY
+
 
 void pccore_exec(BRESULT draw) {
 
@@ -200,6 +201,7 @@ void pccore_exec(BRESULT draw) {
 	SINT32	dispclock;
 
 	corestat.drawframe = draw;
+	pal_eventclear();
 	soundmng_sync();
 
 	timing_setrate(crtc.e.frameclock);
