@@ -1,6 +1,6 @@
 
 %macro	Z80WORK		1
-			add		word [edi + z80core_t.icount], %1
+			add		dword [edi + z80core_t.icount], %1
 %endmacro
 
 

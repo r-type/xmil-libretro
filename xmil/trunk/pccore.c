@@ -31,9 +31,11 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	CORESTAT	corestat;
 	BYTE		mMAIN[0x10000];
 	BYTE		mBIOS[0x8000];
-	BYTE		mBANK[16][0x8000];
-	WORD		v_cnt;
-	int			s_cnt;
+#if defined(SUPPORT_EMS)
+	UINT8		mBANK[16][0x8000];
+#endif
+	UINT		v_cnt;
+	UINT		s_cnt;
 
 	BYTE		*RAM0r;
 	BYTE		*RAM0w;

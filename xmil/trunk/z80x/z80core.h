@@ -82,8 +82,7 @@ typedef struct {
 	UINT8	r2;
 	UINT16	iff;				// 4byte align
 	UINT16	padding1;
-	UINT16	icount;
-	UINT16	padding2;
+	UINT32	icount;
 } Z80STAT;
 
 typedef struct {
