@@ -40,54 +40,62 @@ const OEMCHAR	*ext;
 
 	ext = file_getext(fname);
 	if (!milstr_cmp(ext, str_e2d)) {
-		return(DISKTYPE_BETA);
+		return(FTYPE_BETA);
 	}
 	if ((!milstr_cmp(ext, str_d88)) || (!milstr_cmp(ext, str_88d))) {
-		return(DISKTYPE_D88);
+		return(FTYPE_D88);
 	}
-	return(DISKTYPE_NOTREADY);
+	return(FTYPE_NONE);
 }
 
 BRESULT fdd_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
 
-	FDDFILE		fdd;
+	FDDFILE	fdd;
+	BRESULT	r;
 
 	if (drv >= MAX_FDDFILE) {
 		return(FAILURE);
 	}
 	fdd_eject(drv);
 	fdd = fddfile + drv;
-	switch(getfdtype(fname)) {
-		case DISKTYPE_NOTREADY:
-			return(FAILURE);
-
-		case DISKTYPE_BETA:
-			return(fdd2d_set(fdd, drv, fname));
-
-		case DISKTYPE_D88:
-		default:
-			return(fddd88_set(fdd, drv, fname));
+	if (ftype == FTYPE_NONE) {
+		ftype = getfdtype(fname);
 	}
-	return(FAILURE);
+	switch(ftype) {
+		case FTYPE_BETA:
+			r = fdd2d_set(fdd, drv, fname);
+			break;
+
+		case FTYPE_D88:
+			r = fddd88_set(fdd, drv, fname);
+			break;
+
+		default:
+			r = FAILURE;
+			break;
+	}
+	if (r == SUCCESS) {
+		milstr_ncpy(fdd->fname, fname, NELEMENTS(fdd->fname));
+		if (ro) {
+			fdd->protect = TRUE;
+		}
+	}
+	return(r);
 }
 
 BRESULT fdd_eject(REG8 drv) {
 
-	FDDFILE		fdd;
+	FDDFILE	fdd;
 
 	if (drv >= MAX_FDDFILE) {
 		return(FAILURE);
 	}
 	fdd = fddfile + drv;
 	switch(fdd->type) {
-		case DISKTYPE_NOTREADY:
-			return(FAILURE);
-
 		case DISKTYPE_BETA:
 			return(fdd2d_eject(fdd, drv));
 
 		case DISKTYPE_D88:
-		default:
 			return(fddd88_eject(fdd, drv));
 	}
 	return(FAILURE);

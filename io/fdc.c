@@ -168,7 +168,8 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				break;
 
 			case 0xc:								// リードアドレス
-				fdc.crc_off = 0;
+				fdc.s.bufpos = 0;
+				fdc.s.bufsize = 0;
 				fdcdummyread = 2;
 				if (fdc.motor) {									// ver0.25
 					if (dma.DMA_ENBL) {
@@ -178,16 +179,13 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				{
 					FDDFILE fdd = fddfile + fdc.drv;
 					switch(fdd->type) {
-						case DISKTYPE_NOTREADY:
-							break;
-
 						case DISKTYPE_BETA:
-							fdd_crc_2d();
+							fdd2d_crc(fdd);
 							break;
 
 						case DISKTYPE_D88:
 						default:
-							fdd_crc_d88();
+							fddd88_crc(fdd);
 							break;
 					}
 				}
@@ -384,13 +382,13 @@ static	short	last_off;
 					inc_off();
 				}
 				else if (cmd == 0x0c) {			// ﾘｰﾄﾞ･ｱﾄﾞﾚｽ
-					if (fdc.crc_off < 6) {		// ver0.25
-						fdc.data = fdc.crc_dat[fdc.crc_off];
-						if (fdcdummyread) {		// ver0.25
+					if (fdc.s.bufpos < 6) {
+						fdc.data = fdc.s.buffer[fdc.s.bufpos];
+						if (fdcdummyread) {
 							fdcdummyread--;
 						}
 						else {
-							fdc.crc_off++;
+							fdc.s.bufpos++;
 						}
 					}
 				}
@@ -406,11 +404,11 @@ static	short	last_off;
 //			break;
 
 		case 0xe:								// 1.6M
-			fdc.media = 1;
+			fdc.s.media = DISKTYPE_2HD;
 			return(0xff);
 
 		case 0xf:								// 500K/1M
-			fdc.media = 0;
+			fdc.s.media = DISKTYPE_2D;
 			return(0xff);
 	}
 	return(0);

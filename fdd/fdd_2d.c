@@ -13,7 +13,7 @@ static	BYTE		sec_data[4][256];
 static	BYTE		hole = 0;
 
 
-BYTE changesector2d(void) {
+static BYTE changesector2d(void) {
 
 	FDDFILE	fdd;
 	FILEH	fh;
@@ -21,7 +21,7 @@ BYTE changesector2d(void) {
 	long	seekp;
 	short	drv = fdc.drv;
 
-	if (fdc.media) {
+	if (fdc.s.media != DISKTYPE_2D) {
 		return(1);
 	}
 	fdd = fddfile + drv;
@@ -62,16 +62,18 @@ BYTE changesector2d(void) {
 
 //**********************************************************************
 
-short fdd_crc_2d(void) {
+BRESULT fdd2d_crc(FDDFILE fdd) {
 
-	fdc.crc_dat[0] = fdc.c;
-	fdc.crc_dat[1] = fdc.h;
-	fdc.crc_dat[2] = fdc.r;
-	fdc.crc_dat[3] = 1;
-	fdc.crc_dat[4] = 0;			// CRC(Lo)
-	fdc.crc_dat[5] = 0;			// CRC(Hi)
-	fdc.rreg = fdc.c;			// ??? ÒÙÍÝ³Þª°Ù
-	return(0);
+	fdc.s.buffer[0] = fdc.c;
+	fdc.s.buffer[1] = fdc.h;
+	fdc.s.buffer[2] = fdc.r;
+	fdc.s.buffer[3] = 1;
+	fdc.s.buffer[4] = 0;			// CRC(Lo)
+	fdc.s.buffer[5] = 0;			// CRC(Hi)
+	fdc.s.bufsize = 6;
+	fdc.rreg = fdc.c;								// ƒƒ‹ƒwƒ“ƒ”ƒF[ƒ‹
+	(void)fdd;
+	return(SUCCESS);
 }
 
 
@@ -98,7 +100,8 @@ BYTE fdd_stat_2d(void) {
 		}
 	}
 	if ((type == 1 || type == 2) &&
-		((fdc.c >= 40) || (fdc.h > 1) || (fdc.r > 16) || (fdc.media))) {
+		((fdc.c >= 40) || (fdc.h > 1) || (fdc.r > 16) ||
+		(fdc.s.media != DISKTYPE_2D))) {
 		ans |= 0x10;					// SEEK ERROR / RECORD NOT FOUND
 	}
 
@@ -180,7 +183,6 @@ BRESULT fdd2d_set(FDDFILE fdd, REG8 drv, const OEMCHAR *fname) {
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	file_cpyname(fdd->fname, fname, NELEMENTS(fdd->fname));
 	fdd->type = DISKTYPE_BETA;
 	fdd->protect = (UINT8)(attr & 1);
 	sec_now[drv] = -1;
