@@ -267,11 +267,6 @@ static void HandleMenuChoice(long wParam) {
 			update = SYS_UPDATECFG;
 			break;
 
-		case IDM_8MHZ:
-			menu_setcpuspeed(xmilcfg.CPU8MHz ^ 1);
-			update = SYS_UPDATECFG;
-			break;
-
 		case IDM_SEEKSND:
 			menu_setmotorflg(xmilcfg.MOTOR ^ 1);
 			update = SYS_UPDATECFG;
@@ -535,7 +530,6 @@ int main(int argc, char *argv[]) {
 	menu_setkey(0);
 	menu_setsound(xmilcfg.SOUND_SW);
 	menu_setmouse(xmilcfg.MOUSE_SW);
-	menu_setcpuspeed(xmilcfg.CPU8MHz);
 	menu_setmotorflg(xmilcfg.MOTOR);
 	menu_setdispclk(xmiloscfg.DISPCLK);
 	menu_setbtnmode(xmilcfg.BTN_MODE);

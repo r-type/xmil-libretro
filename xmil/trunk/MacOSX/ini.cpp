@@ -331,7 +331,6 @@ static const INITBL iniitem[] = {
 	{"SkpFrame", INITYPE_UINT8,		&xmiloscfg.DRAW_SKIP,	0},
 
 	{"IPL_TYPE", INIMAX_UINT8,		&xmilcfg.ROM_TYPE,		3},
-	{"cpu_8MHz", INITYPE_BOOL,		&xmilcfg.CPU8MHz,		0},
 	{"Resolute", INITYPE_HEX8,		&xmilcfg.DIP_SW,		0},
 
 	{"DispSync", INITYPE_BOOL,		&xmilcfg.DISPSYNC,		0},

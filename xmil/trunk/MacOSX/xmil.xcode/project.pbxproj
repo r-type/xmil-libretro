@@ -133,9 +133,11 @@
 				960F8C0506C817B600937580,
 				960F8C0806C817B600937580,
 				960F8C1806C817B600937580,
+				96848A3106CA584300B6C950,
 				960F8C2006C817B600937580,
 				960F8C3F06C817B600937580,
 				960F8EAD06C891C700937580,
+				96848A3306CA586300B6C950,
 				960F8C6F06C817B600937580,
 				960F8C7106C817B600937580,
 				960F8C8006C817B600937580,
@@ -369,6 +371,8 @@
 				960F8EA606C891C300937580,
 				960F8EA806C891C300937580,
 				960F9C1D06C8E2D300937580,
+				96848A3206CA584300B6C950,
+				96848A3406CA586300B6C950,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2623,10 +2627,12 @@
 				960F8C0706C817B600937580,
 				960F9B5A06C893ED00937580,
 				960F9B5706C893E400937580,
+				96848A3706CA589500B6C950,
 				960F9B5406C893DC00937580,
 				960F8C4006C817B600937580,
 				960F8C4106C817B600937580,
 				960F9B5106C893CA00937580,
+				96848A3506CA588000B6C950,
 				960F8C7006C817B600937580,
 				960F9B4B06C893B400937580,
 				960F8C8106C817B600937580,
@@ -2840,6 +2846,54 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		96848A3106CA584300B6C950 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			name = ievent.c;
+			path = ../ievent.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96848A3206CA584300B6C950 = {
+			fileRef = 96848A3106CA584300B6C950;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		96848A3306CA586300B6C950 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			name = nevent.c;
+			path = ../nevent.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96848A3406CA586300B6C950 = {
+			fileRef = 96848A3306CA586300B6C950;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		96848A3506CA588000B6C950 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = nevent.h;
+			path = ../nevent.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		96848A3706CA589500B6C950 = {
+			fileEncoding = "-2147483647";
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ievent.h;
+			path = ../ievent.h;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		968DFC2606C940DA00AE02AB = {
 			isa = PBXFileReference;

@@ -4,7 +4,7 @@
   <object name="rootObject" class="NSCustomObject" id="1">
     <string name="customClass">NSApplication</string>
   </object>
-  <array count="100" name="allObjects">
+  <array count="99" name="allObjects">
     <object class="IBCarbonMenu" id="29">
       <string name="title">main</string>
       <array count="13" name="items">
@@ -155,6 +155,7 @@
           </object>
         </object>
         <object class="IBCarbonMenuItem" id="277">
+          <boolean name="hidden">TRUE</boolean>
           <boolean name="updateSingleItem">TRUE</boolean>
           <string name="title">FDD2</string>
           <object name="submenu" class="IBCarbonMenu" id="279">
@@ -176,6 +177,7 @@
                 <ostype name="command">clos</ostype>
               </object>
             </array>
+            <boolean name="hidden">TRUE</boolean>
           </object>
         </object>
         <object class="IBCarbonMenuItem" id="282">
@@ -202,6 +204,7 @@
                 <ostype name="command">clos</ostype>
               </object>
             </array>
+            <boolean name="hidden">TRUE</boolean>
           </object>
         </object>
         <object class="IBCarbonMenuItem" id="229">
@@ -321,7 +324,7 @@
           <object name="submenu" class="IBCarbonMenu" id="255">
             <string name="title">Device</string>
             <int name="menuID">139</int>
-            <array count="10" name="items">
+            <array count="9" name="items">
               <object class="IBCarbonMenuItem" id="257">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">Keyboard</string>
@@ -349,10 +352,6 @@
               <object class="IBCarbonMenuItem" id="263">
                 <boolean name="updateSingleItem">TRUE</boolean>
                 <string name="title">Mouse</string>
-              </object>
-              <object class="IBCarbonMenuItem" id="264">
-                <boolean name="updateSingleItem">TRUE</boolean>
-                <string name="title">8MHz</string>
               </object>
               <object class="IBCarbonMenuItem" id="265">
                 <boolean name="separator">TRUE</boolean>
@@ -540,7 +539,6 @@
     <reference idRef="261"/>
     <reference idRef="262"/>
     <reference idRef="263"/>
-    <reference idRef="264"/>
     <reference idRef="265"/>
     <reference idRef="266"/>
     <reference idRef="267"/>
@@ -563,7 +561,7 @@
     <reference idRef="284"/>
     <reference idRef="285"/>
   </array>
-  <array count="100" name="allParents">
+  <array count="99" name="allParents">
     <reference idRef="1"/>
     <reference idRef="29"/>
     <reference idRef="131"/>
@@ -635,7 +633,6 @@
     <reference idRef="241"/>
     <reference idRef="256"/>
     <reference idRef="29"/>
-    <reference idRef="255"/>
     <reference idRef="255"/>
     <reference idRef="255"/>
     <reference idRef="255"/>
