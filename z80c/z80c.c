@@ -161,39 +161,6 @@ void CPUCALL z80c_interrupt(REG8 vect) {
 	}
 }
 
-void CPUCALL z80c_interrupt2(REG8 vect) {
-
-	REG16	pc;
-
-	if (Z80_IFF & (1 << IFF_HALT)) {
-		Z80_IFF ^= (1 << IFF_HALT);
-		R_Z80PC++;
-	}
-	Z80_IFF |= (1 << IFF_IFLAG);
-	switch(R_Z80IM) {
-		case 0:
-			if ((vect != 0xdd) && (vect != 0xed) && (vect != 0xfd)) {
-				Z80_COUNT(cycles_main[vect]);
-				z80c_mainop[vect]();
-			}
-			break;
-
-		case 1:
-			Z80_COUNT(11);
-			R_Z80SP -= 2;
-			mem_write16(R_Z80SP, R_Z80PC);
-			R_Z80PC = 0x38;
-			break;
-
-		case 2:
-			pc = mem_read16((R_Z80I << 8) + vect);
-			R_Z80SP -= 2;
-			mem_write16(R_Z80SP, R_Z80PC);
-			R_Z80PC = pc;
-			break;
-	}
-}
-
 void CPUCALL z80c_nonmaskedinterrupt(void) {
 
 	if (!(Z80_IFF & (1 << IFF_NMI))) {

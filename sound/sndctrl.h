@@ -6,7 +6,6 @@
 extern "C" {
 #endif
 
-extern	UINT		pcmbufsize[];
 extern	OPMCH		opmch[OPMCH_MAX];
 extern	_OPMGEN		opmgen;
 extern	_PSGGEN		psggen;

@@ -30,15 +30,18 @@ _z80x_ableinterrupt:
 				align	16
 @z80x_interrupt@4:
 				mov		edx, _z80core
-				btr		dword [edx + R_Z80IFF], IFF_HALT
-				jnc		short .haltclr
+				mov		al, [edx + R_Z80IFF]
+				test	al, (1 << IFF_HALT)
+				je		short .setintr
 				inc		word [edx + R_Z80PC]
-.haltclr:		or		byte [edx + R_Z80IFF], ((1 << IFF_IRQ) | (1 << IFF_IFLAG))
+				and		al, ~(1 << IFF_HALT)
+.setintr:		or		al, ((1 << IFF_IRQ) | (1 << IFF_IFLAG))
 				cmp		byte [edx + R_Z80IM], 1
-				je		short int_im1
-				jc		short int_im0
+				mov		[edx + R_Z80IFF], al
+				je		short .im1
+				jc		short .im0
 
-int_im2:		mov		ch, [edx + R_Z80I]
+.im2:			mov		ch, [edx + R_Z80I]
 				movzx	ecx, cx
 				call	memrd16_ecx_ax
 				sub		word [edx + R_Z80SP], byte 2
@@ -47,7 +50,7 @@ int_im2:		mov		ch, [edx + R_Z80I]
 				mov		dx, ax
 				jmp		memwr16_ecx_dx
 
-int_im1:		Z80WORK	byte 11
+.im1:			Z80WORK	byte 11
 				mov		ax, [edx + R_Z80PC]
 				mov		word [edx + R_Z80PC], 0x38
 				sub		word [edx + R_Z80SP], byte 2
@@ -55,19 +58,7 @@ int_im1:		Z80WORK	byte 11
 				mov		dx, ax
 				jmp		memwr16_ecx_dx
 
-
-				align	16
-@z80x_interrupt2@4:
-				mov		edx, _z80core
-				btr		dword [edx + R_Z80IFF], IFF_HALT
-				jnc		short .haltclr
-				inc		word [edx + R_Z80PC]
-.haltclr:		or		byte [edx + R_Z80IFF], (1 << IFF_IFLAG)
-				cmp		byte [edx + R_Z80IM], 1
-				je		short int_im1
-				jnc		short int_im2
-
-int_im0:		cmp		cl, 0ddh
+.im0:			cmp		cl, 0ddh
 				je		short .ed
 				cmp		cl, 0edh
 				je		short .ed

@@ -26,7 +26,6 @@ typedef struct {
 	UINT	multiple;
 	UINT32	realclock;
 
-	UINT	HSYNC_CLK;
 	UINT8	ROM_TYPE;
 	UINT8	DIP_SW;
 	UINT8	SOUND_SW;
