@@ -339,11 +339,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					updateflag = SYS_UPDATECFG;
 					break;
 
-				case IDM_8MHZ:
-					menu_setcpuspeed(xmilcfg.CPU8MHz ^ 1);
-					updateflag = SYS_UPDATECFG;
-					break;
-
 				case IDM_SEEKSND:
 					menu_setmotorflg(xmilcfg.MOTOR ^ 1);
 					updateflag = SYS_UPDATECFG;
@@ -730,7 +725,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	menu_setsound(xmilcfg.SOUND_SW);
 	menu_setjoystick(xmiloscfg.JOYSTICK);
 	menu_setmouse(xmilcfg.MOUSE_SW);
-	menu_setcpuspeed(xmilcfg.CPU8MHz);
 	menu_setmotorflg(xmilcfg.MOTOR);
 	menu_setdispclk(xmiloscfg.DISPCLK);
 	menu_setbtnmode(xmilcfg.BTN_MODE);

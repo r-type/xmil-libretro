@@ -40,9 +40,7 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	BYTE		*RAM0w;
 
 
-/***********************************************************************
-	IPL-ROM LOAD
-***********************************************************************/
+// ----
 
 static void ipl_load(void) {
 
@@ -66,67 +64,7 @@ static void ipl_load(void) {
 }
 
 
-/***********************************************************************
-	初期化
-***********************************************************************/
-
-static BRESULT reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
-
-	pccore.baseclock = 2000000;
-	pccore.multiple = 2;
-	pccore.realclock = pccore.baseclock * pccore.multiple;
-
-	pccore.ROM_TYPE = ROM_TYPE;
-	pccore.SOUND_SW = SOUND_SW;
-	pccore.DIP_SW = DIP_SW;
-
-	// スクリーンモードの変更...
-	if (pccore.ROM_TYPE >= 3) {
-		if (scrnmng_setcolormode(TRUE) != SUCCESS) {
-			pccore.ROM_TYPE = 2;
-		}
-	}
-	else {
-		scrnmng_setcolormode(FALSE);
-	}
-	sound_changeclock();
-
-	ipl_load();
-
-	Z80_RESET();
-	iocore_reset();
-
-	RAM0r = mBIOS;
-	RAM0w = mMAIN;
-	sysmng_cpureset();
-
-	calendar_initialize();
-
-	cgrom_reset();
-	cmt_reset();
-	crtc_reset();
-	ctc_reset();
-	dmac_reset();
-	fdc_reset();
-	memio_reset();
-	pcg_reset();
-	ppi_reset();
-	sio_reset();
-	sndboard_reset();
-	subcpu_reset();
-	vramio_reset();
-
-	pal_reset();
-	makescrn_reset();
-	timing_reset();
-	return(SUCCESS);
-}
-
-
-
-/***********************************************************************
-	実行／終了
-***********************************************************************/
+// ----
 
 void pccore_initialize(void) {
 
@@ -161,12 +99,59 @@ void pccore_reset(void) {
 	}
 	sound_reset();
 
+
+	pccore.baseclock = 2000000;
+	pccore.multiple = 2;
+	pccore.realclock = pccore.baseclock * pccore.multiple;
+
+	pccore.ROM_TYPE = xmilcfg.ROM_TYPE;
+	pccore.SOUND_SW = xmilcfg.SOUND_SW;
+	pccore.DIP_SW = xmilcfg.DIP_SW;
+
+	// スクリーンモードの変更...
+	if (pccore.ROM_TYPE >= 3) {
+		if (scrnmng_setcolormode(TRUE) != SUCCESS) {
+			pccore.ROM_TYPE = 2;
+		}
+	}
+	else {
+		scrnmng_setcolormode(FALSE);
+	}
+
+	sound_changeclock();
+	sysmng_cpureset();
+
+	Z80_RESET();
 	nevent_allreset();
 	ievent_reset();
-	reset_x1(xmilcfg.ROM_TYPE, xmilcfg.SOUND_SW, xmilcfg.DIP_SW);
+	iocore_reset();
+
+	ipl_load();
+
+	RAM0r = mBIOS;
+	RAM0w = mMAIN;
+
+	cgrom_reset();
+	cmt_reset();
+	crtc_reset();
+	ctc_reset();
+	dmac_reset();
+	fdc_reset();
+	memio_reset();
+	pcg_reset();
+	ppi_reset();
+	sio_reset();
+	sndboard_reset();
+	subcpu_reset();
+	vramio_reset();
+
+	calendar_initialize();
+	pal_reset();
+	makescrn_reset();
+	timing_reset();
+
 	soundmng_play();
 }
-
 
 
 // ----
@@ -248,13 +233,14 @@ void nvitem_vdisp(UINT id) {
 	if (xmilcfg.DISPSYNC & 1) {
 		scrnupdate();
 	}
-	nevent_set(NEVENT_FRAMES, (corestat.tl - corestat.vl) * 250,
+	nevent_set(id, (corestat.tl - corestat.vl) * 250,
 											nvitem_vsync, NEVENT_RELATIVE);
 }
 
 void nvitem_vsync(UINT id) {
 
 	corestat.vsync = 2;
+	(void)id;
 }
 
 

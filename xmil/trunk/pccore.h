@@ -1,7 +1,7 @@
 
 typedef struct {
 	UINT8	ROM_TYPE;
-	UINT8	CPU8MHz;
+	UINT8	__CPU8MHz;
 	UINT8	DIP_SW;
 
 	UINT8	DISPSYNC;
@@ -40,6 +40,10 @@ typedef struct {
 } CORESTAT;
 
 enum {
+	RASTER_CLOCK		= 250
+};
+
+enum {
 	DIPSW_RESOLUTE		= 0x01,
 	DIPSW_BOOTMEDIA		= 0x04
 };
@@ -64,7 +68,6 @@ extern	BYTE	mBANK[16][0x8000];
 #endif
 
 
-void nvitem_raster(UINT id);
 UINT pccore_getraster(UINT *h);
 void nvitem_vdisp(UINT id);
 void nvitem_vsync(UINT id);

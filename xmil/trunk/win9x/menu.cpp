@@ -264,13 +264,6 @@ void menu_setmouse(UINT8 value) {
 	CheckMenuItem(GetMenu(hWndMain), IDM_MOUSE, MFCHECK(value));
 }
 
-void menu_setcpuspeed(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.CPU8MHz = value;
-	CheckMenuItem(GetMenu(hWndMain), IDM_8MHZ, MFCHECK(value));
-}
-
 void menu_setmotorflg(UINT8 value) {
 
 	value &= 1;

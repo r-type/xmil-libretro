@@ -20,6 +20,7 @@ void nvitem_fdcbusy(UINT id) {
 		TRACEOUT(("dma ready!"));
 		dmac_sendready(TRUE);
 	}
+	(void)id;
 }
 
 static void setbusy(UINT clock) {
@@ -235,8 +236,9 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 				fdc.s.stat = type2flash();
 			}
 			fdc.s.bufdir = FDCDIR_NONE;
-			// マリオは コマンド発行後にbusyを見張る
-			// 逆にソーサリアンとかは busyだとエラーになる…
+			// リストアコマンドにおいて
+			// 　マリオは コマンド発行後にbusyを見張る
+			// 　逆にソーサリアンとかは busyだとエラーになる…
 			// 条件は何？
 			setbusy(20);
 			switch(cmd) {
