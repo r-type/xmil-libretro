@@ -297,7 +297,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 			case 0x09:
 			case 0x0a:								// ライトデータ
 			case 0x0b:
-				setbusy(400);
+				setbusy(500);
 				fdc.s.stat = type2cmd(fdc.s.r);
 				break;
 
@@ -450,7 +450,7 @@ static	short	last_off;
 			if (fdc.s.motor) {
 				if (fdc.s.bufdir == FDCDIR_IN) {
 					fdc.s.data = fdc.s.buffer[fdc.s.bufpos];
-//					TRACEOUT(("sector read %.2x [%.2x]", fdc.s.data, fdc.s.bufpos));
+					TRACEOUT(("sector read %.2x (%.2x) [%.4x]", fdc.s.data, fdc.s.bufpos, Z80_PC));
 					bufposinc();
 				}
 			}

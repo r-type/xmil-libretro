@@ -307,6 +307,7 @@ static void changecrtc(void) {
 	if (surfcy > crtc.s.TXT_YL) {
 		surfcy = crtc.s.TXT_YL;
 	}
+	surfcy = max(1, surfcy);
 	makescrn.surfcy = surfcy;
 	makescrn.surfstep = (SURFACE_WIDTH * charcy * 2) - (makescrn.surfcx * 8);
 	makescrn.vramsize = min(0x800, surfcy * crtc.s.TXT_XL);
