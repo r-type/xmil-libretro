@@ -498,7 +498,7 @@ void endoftrack(void) {
 	}
 	lastpointer = file_seek(hdr, 0, 2);
 	fpointer = fdd->inf.d88.ptr[trk];
-	if (fpointer = 0) {
+	if (fpointer == 0) {
 		for (i=trk; i>=0; i--) {					// 新規トラック
 			fpointer = fdd->inf.d88.ptr[i];
 			if (fpointer) {
