@@ -230,14 +230,14 @@ static void HandleMenuChoice(long wParam) {
 
 		case IDM_WIDTH80:
 			crtc.s.TXT_XL = 80;
-			crtc.s.GRP_XL = 640;
+//			crtc.s.GRP_XL = 640;
 			vrambank_patch();
 			scrnallflash = 1;
 			break;
 
 		case IDM_WIDTH40:
 			crtc.s.TXT_XL = 40;
-			crtc.s.GRP_XL = 320;
+//			crtc.s.GRP_XL = 320;
 			vrambank_patch();
 			scrnallflash = 1;
 			break;
