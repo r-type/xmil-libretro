@@ -4,12 +4,12 @@ enum {
 	FAILURE		= 1
 };
 
-#ifndef BRESULT
-#define	BRESULT		UINT8
-#endif
-
 #ifndef PI
 #define PI 3.14159265357989
+#endif
+
+#ifndef BRESULT
+#define	BRESULT		UINT
 #endif
 
 #ifndef LOADINTELDWORD
@@ -146,23 +146,5 @@ enum {
 #endif
 #if !defined(FASTCALL)
 #define	FASTCALL
-#endif
-
-
-#if 0
-
-typedef struct {
-	DWORD	x;
-	DWORD	y;
-	DWORD	w;
-	DWORD	h;
-} NP2RECT;
-
-
-typedef struct {
-	DWORD	x;
-	DWORD	y;
-} XYSIZE;
-
 #endif
 

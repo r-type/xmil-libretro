@@ -22,13 +22,13 @@ const OEMCHAR	*filter;
 			(((a) + (b)) / 2)
 
 #define	SETLISTSTR(a, b, c)			\
-			dlgs_setliststr((a), (b), (c), sizeof((c))/sizeof(char *))
+			dlgs_setliststr((a), (b), (c), NELEMENTS((c)))
 
 #define	SETnLISTSTR(a, b, c, d)		\
 			dlgs_setliststr((a), (b), (c), (d))
 
 #define	SETLISTUINT32(a, b, c)		\
-			dlgs_setlistuint32((a), (b), (c), sizeof((c))/sizeof(UINT32))
+			dlgs_setlistuint32((a), (b), (c), NELEMENTS((c)))
 
 
 BRESULT dlgs_selectfile(HWND hWnd, const FILESEL *item,

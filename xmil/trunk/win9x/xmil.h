@@ -32,6 +32,7 @@ extern	HWND		hWndMain;
 extern	HINSTANCE	hInst;
 extern	HINSTANCE	hPreI;
 extern	OEMCHAR		szProgName[];
+extern	OEMCHAR		modulefile[MAX_PATH];
 extern	OEMCHAR		fddfolder[MAX_PATH];
 extern	OEMCHAR		bmpfilefolder[MAX_PATH];
 

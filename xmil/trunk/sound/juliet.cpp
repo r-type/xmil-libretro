@@ -1,4 +1,4 @@
-#include	<windows.h>
+#include	"compiler.h"
 #include	"romeo.h"
 #include	"juliet.h"
 
@@ -52,37 +52,45 @@ typedef struct {
 
 
 typedef struct {
-	char	*symbol;
+const char	*symbol;
 	int		addr;
 } DLLPROCESS;
 
+static const char fnstr_finddev[] = FN_PCIFINDDEV;
+static const char fnstr_read32[] = FN_PCICFGREAD32;
+static const char fnstr_out8[] = FN_PCIMEMWR8;
+static const char fnstr_out16[] = FN_PCIMEMWR16;
+static const char fnstr_out32[] = FN_PCIMEMWR32;
+static const char fnstr_inp8[] = FN_PCIMEMRD8;
+static const char fnstr_inp16[] = FN_PCIMEMRD16;
+static const char fnstr_inp32[] = FN_PCIMEMRD32;
 
 static const DLLPROCESS	dllproc[] = {
-				{FN_PCIFINDDEV,		ROMEO_TPTR(finddev)},
-				{FN_PCICFGREAD32,	ROMEO_TPTR(read32)},
-				{FN_PCIMEMWR8,		ROMEO_TPTR(out8)},
-				{FN_PCIMEMWR16,		ROMEO_TPTR(out16)},
-				{FN_PCIMEMWR32,		ROMEO_TPTR(out32)},
-				{FN_PCIMEMRD8,		ROMEO_TPTR(in8)},
-				{FN_PCIMEMRD16,		ROMEO_TPTR(in16)},
-				{FN_PCIMEMRD32,		ROMEO_TPTR(in32)}};
+				{fnstr_finddev,		ROMEO_TPTR(finddev)},
+				{fnstr_read32,		ROMEO_TPTR(read32)},
+				{fnstr_out8,		ROMEO_TPTR(out8)},
+				{fnstr_out16,		ROMEO_TPTR(out16)},
+				{fnstr_out32,		ROMEO_TPTR(out32)},
+				{fnstr_inp8,		ROMEO_TPTR(in8)},
+				{fnstr_inp16,		ROMEO_TPTR(in16)},
+				{fnstr_inp32,		ROMEO_TPTR(in32)}};
 
 
-static	_ROMEO		romeo = {NULL};
+static	_ROMEO	romeo = {NULL};
+static	SINT8	YM2151vol = -12;
 
-static const BYTE FMoutop[] = {0x08, 0x08, 0x08, 0x08, 0x0c, 0x0e, 0x0e, 0x0f};
-static	char	YM2151vol = -12;
+static const UINT8 FMoutop[] = {0x08,0x08,0x08,0x08,0x0c,0x0e,0x0e,0x0f};
 
 
 BOOL juliet_load(void) {
 
-		int			i;
-const	DLLPROCESS	*dp;
-		BOOL		r = SUCCESS;
+	int				i;
+const DLLPROCESS	*dp;
+	BOOL			r = SUCCESS;
 
 	juliet_unload();
 
-	romeo.mod = LoadLibrary(PCIDEBUG_DLL);
+	romeo.mod = LoadLibrary(OEMTEXT(PCIDEBUG_DLL));
 	if (romeo.mod == NULL) {
 		return(FAILURE);
 	}

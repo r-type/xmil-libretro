@@ -57,19 +57,6 @@ typedef struct {
 } DMAC;
 
 
-#if 0
-#define DMAOFST(item)	(BYTE)(&(((DMA_TABLE *)NULL)->item))
-
-#if (defined(NP2_LITTLEENDIAN) || defined(NP2_TESTBIGENDIAN))
-#define DMAOFST_L(item)	(BYTE)(&(((DMA_TABLE *)NULL)->item.b[0]))
-#define DMAOFST_H(item)	(BYTE)(&(((DMA_TABLE *)NULL)->item.b[1]))
-#else
-#define DMAOFST_L(item)	(BYTE)(&(((DMA_TABLE *)NULL)->item.b[1]))
-#define DMAOFST_H(item)	(BYTE)(&(((DMA_TABLE *)NULL)->item.b[0]))
-#endif
-#endif
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif

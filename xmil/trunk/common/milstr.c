@@ -569,7 +569,7 @@ char * STRCALL milutf8_chr(const char *str, int c) {
 
 // ---- other
 
-int STRCALL milstr_extendcmp(const char *str, const char *cmp) {
+int STRCALL milstr_extendcmp(const OEMCHAR *str, const OEMCHAR *cmp) {
 
 	int		c;
 	int		s;
@@ -653,7 +653,7 @@ long STRCALL milstr_solveHEX(const OEMCHAR *str) {
 
 	long	ret;
 	int		i;
-	char	c;
+	OEMCHAR	c;
 
 	ret = 0;
 	for (i=0; i<8; i++) {

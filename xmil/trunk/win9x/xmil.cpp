@@ -45,6 +45,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 		HWND		hWndMain;
 		HINSTANCE	hInst;
 		HINSTANCE	hPreI;
+		OEMCHAR		modulefile[MAX_PATH];
 		OEMCHAR		fddfolder[MAX_PATH];
 		OEMCHAR		bmpfilefolder[MAX_PATH];
 
@@ -98,7 +99,7 @@ static void dispbmp(HINSTANCE hinst, HDC hdc,
 	HDC			hmdc;
 
 	hbmp = LoadBitmap(hinst, res);
-	GetObject(hbmp, sizeof(BITMAP), &bmp);
+	GetObject(hbmp, sizeof(bmp), &bmp);
 	hmdc = CreateCompatibleDC(hdc);
 	SelectObject(hmdc, hbmp);
 	BitBlt(hdc, x, y, bmp.bmWidth, bmp.bmHeight, hmdc, 0, 0, SRCCOPY);
@@ -434,15 +435,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				PatBlt(hdc, 0, 0, width, height, PATCOPY);
 				SelectObject(hdc, hbrush);
 
-				dispbmp(hinst, hdc, "XMILBMP",
+				dispbmp(hinst, hdc, OEMTEXT("XMILBMP"),
 							(width - 201) / 2, (height - 31) / 2);
-				dispbmp(hinst, hdc, "ZILOG",
+				dispbmp(hinst, hdc, OEMTEXT("ZILOG"),
 							width - (101 + 8 + 41 + 8 + 68 + 1), height - 38);
 
-				dispbmp(hinst, hdc, "TURBOZ",
+				dispbmp(hinst, hdc, OEMTEXT("TURBOZ"),
 							width - (101 + 8 + 68 + 1), height - 18);
 
-				dispbmp(hinst, hdc, "OPMSOUND",
+				dispbmp(hinst, hdc, OEMTEXT("OPMSOUND"),
 							width - (68 + 1), height - (25 + 1));
 			}
 			else {
@@ -643,7 +644,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 		return(FALSE);
 	}
 
-	file_setcd(__argv[0]);
+	GetModuleFileName(NULL, modulefile, sizeof(modulefile));
+	file_setcd(modulefile);
 	initload();
 
 	hInst = hInstance;
@@ -714,7 +716,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	if (scrnmng_create(scrnmode) != SUCCESS) {
 		scrnmode ^= SCRNMODE_FULLSCREEN;
 		if (scrnmng_create(scrnmode) != SUCCESS) {
-			MessageBox(hWnd, "Couldn't create DirectDraw Object",
+			MessageBox(hWnd, OEMTEXT("Couldn't create DirectDraw Object"),
 													szProgName, MB_OK);
 			return(FALSE);
 		}
@@ -726,8 +728,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 
 	juliet2_reset();
 	if (soundmng_initialize() == SUCCESS) {
-		soundmng_pcmload(SOUND_PCMSEEK, "fddseek.wav", 0);
-		soundmng_pcmload(SOUND_PCMSEEK1, "fddseek1.wav", 0);
+		soundmng_pcmload(SOUND_PCMSEEK, OEMTEXT("fddseek.wav"), 0);
+		soundmng_pcmload(SOUND_PCMSEEK1, OEMTEXT("fddseek1.wav"), 0);
 		soundmng_pcmvolume(SOUND_PCMSEEK, xmilcfg.MOTORVOL);
 		soundmng_pcmvolume(SOUND_PCMSEEK1, xmilcfg.MOTORVOL);
 	}
@@ -735,6 +737,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	pccore_initialize();
 	pccore_reset();
 
+#if !defined(UNICODE)
 	if (__argc > 1) {
 		for (int i=1; i<__argc; i++) {
 			if (is_d8ufile(__argv[i])) {
@@ -744,6 +747,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 			}
 		}
 	}
+#endif
 
 	scrndraw_redraw();
 
