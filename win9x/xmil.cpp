@@ -117,7 +117,7 @@ static void dispbmp(HINSTANCE hinst, HDC hdc,
 
 // ----
 
-#if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
+#if defined(SUPPORT_RESUME)
 static const OEMCHAR xmilresumeext[] = OEMTEXT(".sav");
 #endif
 #if defined(SUPPORT_STATSAVE)
@@ -126,7 +126,6 @@ static const OEMCHAR str_statload[] = OEMTEXT("Status Load");
 #endif
 
 #if defined(SUPPORT_RESUME) || defined(SUPPORT_STATSAVE)
-
 static const OEMCHAR str_loaderr[] = OEMTEXT("Couldn't restart");
 static const OEMCHAR str_conflict[] = OEMTEXT("Conflict!\n\n%s\nContinue?");
 
@@ -160,7 +159,7 @@ static void flagdelete(const OEMCHAR *ext) {
 	file_delete(path);
 }
 
-static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force) {
+static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BRESULT force) {
 
 	int		ret;
 	int		id;
@@ -199,7 +198,9 @@ static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force) {
 static void xmilcmd(HWND hWnd, UINT cmd) {
 
 	UINT	update;
+#if defined(SUPPORT_STATSAVE)
 	OEMCHAR ext[16];
+#endif
 
 	update = 0;
 	switch(cmd) {
