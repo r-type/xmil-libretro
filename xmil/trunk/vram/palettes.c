@@ -88,7 +88,7 @@ void pal_settext(REG8 num) {
 	REG8	black;
 	RGB32	rgb;
 
-	textpal = crtc_TEXTPAL[num];
+	textpal = crtc.p.text[num];
 	black = 0;
 	rgb.p.e = 0;
 	rgb.p.b = ((textpal >> 0) & 3) * 0x55;
@@ -127,7 +127,7 @@ void pal_setgrph(REG8 bank, REG8 num) {
 	REG8	black;
 	RGB32	rgb;
 
-	grphpal = crtc_GRPHPAL[bank][num];
+	grphpal = crtc.p.grph[bank][num];
 	black = 0;
 	rgb.p.e = 0;
 	rgb.p.b = ((grphpal >> 0) & 0x0f) * 0x11;
@@ -164,7 +164,7 @@ void pal_setgrph4096(UINT num) {
 	REG8	black;
 	RGB32	rgb;
 
-	grphpal = crtc_PAL4096[num];
+	grphpal = crtc.p.grph4096[num];
 	black = 0;
 	rgb.p.e = 0;
 	rgb.p.b = ((grphpal >> 0) & 0x0f) * 0x11;
@@ -281,7 +281,7 @@ void pal_update(void) {
 				for (j=i+8; j<64; j+=8) {
 					bcnt--;
 					if (bcnt) {
-						c = crtc.s.TEXT_PAL[j >> 3];
+						c = j >> 3;
 					}
 					else {
 						c = 0;

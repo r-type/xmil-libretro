@@ -63,7 +63,7 @@ typedef struct {
 	UINT8	PAL_R;
 	UINT8	PAL_G;
 	UINT8	PLY;
-	UINT8	TEXT_PAL[8];
+//	UINT8	TEXT_PAL[8];
 	UINT8	SCRN_BITS;
 	UINT8	CRTC_NUM;
 
@@ -75,8 +75,8 @@ typedef struct {
 	BYTE	TXT_YS;
 	WORD	GRP_XL;
 	WORD	GRP_YL;
-	BYTE	CPU_BANK;
-	BYTE	CRT_BANK;
+//	BYTE	CPU_BANK;
+//	BYTE	CRT_BANK;
 
 	WORD	CRT_YL;
 	WORD	CRT_VS;
@@ -102,17 +102,19 @@ typedef struct {
 } CRTCEXT;
 
 typedef struct {
+	UINT8	text[8];
+	UINT16	grph[2][64];
+	UINT16	grph4096[4096];
+} CRTCPAL;
+
+typedef struct {
 	CRTCSTAT	s;
 	CRTCEXT		e;
+	CRTCPAL		p;
 } CRTC;
 
 
-extern	BYTE	crtc_TEXTPAL[8];
-extern	WORD	crtc_GRPHPAL[2][64];
-extern	WORD	crtc_PAL4096[4096];
-
-
-//**********************************************************************
+// ----
 
 void vrambank_patch(void);
 

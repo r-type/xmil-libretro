@@ -4,7 +4,6 @@ typedef struct {
 	UINT8	PORT_B;
 	UINT8	PORT_C;
 	UINT8	MODE;
-	UINT8	IO_MODE;
 } PPI;
 
 

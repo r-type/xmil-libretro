@@ -137,7 +137,7 @@ static REG8 IOINPCALL port1fxx_i(UINT port) {
 
 // ----
 
-static const INPHTBL definp[0x20] = {
+static const IOINP definp[0x20] = {
 			dummy_inp,			dummy_inp,
 			dummy_inp,			dummy_inp,
 			dummy_inp,			dummy_inp,
@@ -158,7 +158,7 @@ static const INPHTBL definp[0x20] = {
 			dummy_inp,			dummy_inp,
 			dummy_inp,			port1fxx_i};
 
-static const OUTHTBL defout[0x20] = {
+static const IOOUT defout[0x20] = {
 			dummy_out,			dummy_out,
 			dummy_out,			dummy_out,
 			dummy_out,			dummy_out,
@@ -186,32 +186,22 @@ static const OUTHTBL defout[0x20] = {
 void iocore_reset(void) {
 
 	ZeroMemory(&iocore, sizeof(iocore));
-	CopyMemory(iocore.inph, definp, sizeof(definp));
-	CopyMemory(iocore.outh, defout, sizeof(defout));
+	CopyMemory(iocore.e.inpfn, definp, sizeof(definp));
+	CopyMemory(iocore.e.outfn, defout, sizeof(defout));
 	if (pccore.ROM_TYPE >= 2) {
-		iocore.inph[0x0b].fn = memio_ems_i;
-		iocore.outh[0x0b].fn = memio_ems_o;
+		iocore.e.inpfn[0x0b] = memio_ems_i;
+		iocore.e.outfn[0x0b] = memio_ems_o;
 	}
 	if (pccore.ROM_TYPE >= 3) {
-		iocore.inph[0x10].fn = palette_i;
-		iocore.inph[0x11].fn = palette_i;
-		iocore.inph[0x12].fn = palette_i;
-		iocore.inph[0x13].fn = ply_i;
+		iocore.e.inpfn[0x10] = palette_i;
+		iocore.e.inpfn[0x11] = palette_i;
+		iocore.e.inpfn[0x12] = palette_i;
+		iocore.e.inpfn[0x13] = ply_i;
 	}
 	if (pccore.SOUND_SW) {
-		iocore.inph[0x07].fn = opm_i;
-		iocore.outh[0x07].fn = opm_o;
+		iocore.e.inpfn[0x07] = opm_i;
+		iocore.e.outfn[0x07] = opm_o;
 	}
-}
-
-void iocore_regoutmsb(UINT msb, IOOUT fn) {
-
-	iocore.outh[msb].fn = fn;
-}
-
-void iocore_reginpmsb(UINT msb, IOINP fn) {
-
-	iocore.inph[msb].fn = fn;
 }
 
 
@@ -222,7 +212,7 @@ void IOOUTCALL iocore_out(UINT port, REG8 dat) {
 	UINT	msb;
 
 	msb = port >> 8;
-	if (ppi.IO_MODE) {
+	if (iocore.s.mode) {
 		gram2_o(port, dat);
 	}
 	else if (msb >= 0x40) {
@@ -232,7 +222,7 @@ void IOOUTCALL iocore_out(UINT port, REG8 dat) {
 		tram_o(port, dat);
 	}
 	else {
-		(*iocore.outh[msb].fn)(port, dat);
+		(*iocore.e.outfn[msb])(port, dat);
 	}
 }
 
@@ -241,7 +231,7 @@ REG8 IOINPCALL iocore_inp(UINT port) {
 	UINT	msb;
 
 	msb = port >> 8;
-	ppi.IO_MODE = 0;
+	iocore.s.mode = 0;
 	if (msb >= 0x40) {
 		return(gram_i(port));
 	}
@@ -249,7 +239,7 @@ REG8 IOINPCALL iocore_inp(UINT port) {
 		return(tram_i(port));
 	}
 	else {
-		return((*iocore.inph[msb].fn)(port));
+		return((*iocore.e.inpfn[msb])(port));
 	}
 }
 
