@@ -267,7 +267,7 @@ const _D88SEC	*p;
 	}
 	return(0);
 
-crcerror_d88:;
+crcerror_d88:
 	crcerror = TRUE;
 	return(1);
 }

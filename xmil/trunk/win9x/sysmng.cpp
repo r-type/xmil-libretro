@@ -75,7 +75,7 @@ void sysmng_updatecaption(REG8 flag) {
 		clock[0] = '\0';
 		if (xmiloscfg.DISPCLK & 2) {
 			if (workclock.fps) {
-				SPRINTF(clock, OEMTEXT(" - %u.%1uFPS"),
+				OEMSPRINTF(clock, OEMTEXT(" - %u.%1uFPS"),
 									workclock.fps / 10, workclock.fps % 10);
 			}
 			else {
@@ -83,7 +83,7 @@ void sysmng_updatecaption(REG8 flag) {
 			}
 		}
 		if (xmiloscfg.DISPCLK & 1) {
-			SPRINTF(work, OEMTEXT(" %u.%03uMHz"),
+			OEMSPRINTF(work, OEMTEXT(" %u.%03uMHz"),
 								workclock.khz / 1000, workclock.khz % 1000);
 			if (clock[0] == '\0') {
 				milstr_ncpy(clock, OEMTEXT(" -"), NELEMENTS(clock));

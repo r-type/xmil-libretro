@@ -25,11 +25,11 @@ static void cfgcreate(HWND hWnd) {
 
 	dlgs_setlistuint32(hWnd, IDC_SAMPLERATE, ratehz, NELEMENTS(ratehz));
 
-	SPRINTF(work, str_u, xmilcfg.samplingrate);
+	OEMSPRINTF(work, str_u, xmilcfg.samplingrate);
 	SetDlgItemText(hWnd, IDC_SAMPLERATE, work);
-	SPRINTF(work, str_u, xmilcfg.delayms);
+	OEMSPRINTF(work, str_u, xmilcfg.delayms);
 	SetDlgItemText(hWnd, IDC_SNDBUFFER, work);
-	SPRINTF(work, str_u, xmilcfg.MOTORVOL);
+	OEMSPRINTF(work, str_u, xmilcfg.MOTORVOL);
 	SetDlgItemText(hWnd, IDC_SEEKVOL, work);
 
 	SetDlgItemCheck(hWnd, IDC_SKIPLINE, xmilcfg.skipline);
@@ -37,7 +37,7 @@ static void cfgcreate(HWND hWnd) {
 														MAKELONG(0, 256));
 	SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_SETPOS, TRUE,
 														xmilcfg.skiplight);
-	SPRINTF(work, str_d, xmilcfg.skiplight);
+	OEMSPRINTF(work, str_d, xmilcfg.skiplight);
 	SetDlgItemText(hWnd, IDC_LIGHTSTR, work);
 }
 
@@ -47,7 +47,7 @@ static void lightstr(HWND hWnd) {
 	OEMCHAR	work[32];
 
 	val = (UINT)SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_GETPOS, 0, 0);
-	SPRINTF(work, str_d, val);
+	OEMSPRINTF(work, str_d, val);
 	SetDlgItemText(hWnd, IDC_LIGHTSTR, work);
 }
 

@@ -23,7 +23,7 @@ static BOOL getnextstrings(TEXTFILEH fh) {
 	return(SUCCESS);
 }
 
-TEXTFILEH textfile_open(const char *filename, UINT buffersize) {
+TEXTFILEH textfile_open(const OEMCHAR *filename, UINT buffersize) {
 
 	FILEH		fh;
 	TEXTFILEH	ret;

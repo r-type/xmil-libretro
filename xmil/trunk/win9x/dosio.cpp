@@ -225,7 +225,7 @@ void __stdcall file_cutseparator(OEMCHAR *path) {
 
 	int		pos;
 
-	pos = STRLEN(path) - 1;
+	pos = OEMSTRLEN(path) - 1;
 	if ((pos > 0) &&							// 2文字以上でー
 		(path[pos] == '\\') &&					// ケツが \ でー
 		(!milstr_kanji2nd(path, pos)) &&		// 漢字の2バイト目ぢゃなくてー
@@ -239,7 +239,7 @@ void __stdcall file_setseparator(OEMCHAR *path, int maxlen) {
 
 	int		pos;
 
-	pos = STRLEN(path) - 1;
+	pos = OEMSTRLEN(path) - 1;
 	if ((pos < 0) ||
 		((pos == 1) && (path[1] == ':')) ||
 		((path[pos] == '\\') && (!milstr_kanji2nd(path, pos))) ||
