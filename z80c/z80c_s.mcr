@@ -58,7 +58,7 @@
 		}																\
 		R_Z80F |= (((tmp ^ (reg)) & (tmp ^ R_Z80HL)) >> 13) & V_FLAG;	\
 		R_Z80F |= ((R_Z80HL ^ tmp ^ (reg)) >> 8) & H_FLAG;				\
-		(reg) = (UINT16)tmp;											\
+		R_Z80HL = (UINT16)tmp;											\
 	}
 
 #define MCR_RETI {														\
