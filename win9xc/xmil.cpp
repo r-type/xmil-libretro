@@ -11,7 +11,6 @@
 #include	"soundmng.h"
 #include	"sysmng.h"
 #include	"scrndraw.h"
-#include	"ddrawbmp.h"
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
@@ -267,7 +266,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_BMPSAVE:
 			winuienter();
-			bmpsave();
+			dialog_writebmp(hWnd);
 			winuileave();
 			break;
 
