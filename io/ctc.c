@@ -162,7 +162,7 @@ BRESULT ieitem_ctc(UINT id) {
 				if (!(ch->cmd[i] & 0x80)) {
 					intr ^= bit;
 				}
-#if 0			// アークスのタイミング→あとで修正
+#if 1			// アークスのタイミング→あとで修正
 				else if (0)
 #elif 1
 				else if ((ch->countmax[i] - ch->count[i]) >= ch->range[i])
@@ -178,7 +178,8 @@ BRESULT ieitem_ctc(UINT id) {
 				else if (!r) {
 					r = TRUE;
 					intr ^= bit;
-					TRACEOUT(("ctc int %d %d [%.2x]", ch->num, i, ch->cmd[i]));
+					ch->irq = (UINT8)i;
+//					TRACEOUT(("ctc int %d %d [%.2x]", ch->num, i, ch->cmd[i]));
 					Z80_INTERRUPT((REG8)(ch->vector + (i << 1)));
 				}
 			}
@@ -192,6 +193,30 @@ BRESULT ieitem_ctc(UINT id) {
 		ctcnextevent(ch);
 	}
 	return(r);
+}
+
+void ieeoi_ctc(UINT id) {
+
+	CTCCH	*ch;
+	REG8	intr;
+	UINT	curirq;
+
+	ch = ctc.ch + (id - IEVENT_CTC0);
+	intr = ctcwork(ch) | ch->intr;
+	curirq = ch->irq;
+	if (intr & (1 << curirq)) {			// 割り込み中に割り込んだ…
+		// カウンタが０でなければ割り込みを消す
+		if ((ch->countmax[curirq] - ch->count[curirq]) >= ch->range[curirq]) {
+			intr ^= (1 << curirq);
+		}
+	}
+	ch->intr = intr;
+	if (intr) {
+		ievent_set(id);
+	}
+	else {
+		ctcnextevent(ch);
+	}
 }
 
 
@@ -219,8 +244,7 @@ static void ctcch_o(CTCCH *ch, UINT port, REG8 value) {
 		ch->scale[port] = scale;
 		ch->countmax[port] = count << scale;
 		ch->count[port] = count << scale;
-//		ch->range[port] = ((count + 3) >> 2) << scale;
-		ch->range[port] = 4 << scale;
+		ch->range[port] = 1 << scale;
 		ch->cmd[port] &= ~6;
 		ctcnextevent(ch);
 	}

@@ -10,6 +10,7 @@
 #include	"compiler.h"
 #include	"z80core.h"
 #include	"iocore.h"
+#include	"ievent.h"
 #include	"z80c.h"
 #include	"z80c.mcr"
 #include	"z80c_s.mcr"

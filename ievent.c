@@ -71,3 +71,29 @@ void ievent_setbit(UINT bit) {
 	nevent_forceexit();
 }
 
+void ievent_eoi(void) {
+
+	UINT	i;
+	UINT	bit;
+
+//	CPU_IRQ = CPU_IRQ & (CPU_IRQ - 1);
+
+	if (CPU_IRQ == 0) {
+		return;
+	}
+	for (i=0, bit=1; i<IEVENT_MAX; i++, bit<<=1) {
+		if (CPU_IRQ & bit) {
+			CPU_IRQ ^= bit;
+			if ((i >= IEVENT_CTC0) && (i <= IEVENT_CTC2)) {
+				ieeoi_ctc(i);
+			}
+			break;
+		}
+	}
+	if ((!(Z80_IFF & ((1 << IFF_IFLAG) | (1 << IFF_NMI)))) &&
+		(CPU_REQIRQ != 0)) {
+		CPU_BASECLOCK -= CPU_REMCLOCK;
+		CPU_REMCLOCK = 0;
+	}
+}
+
