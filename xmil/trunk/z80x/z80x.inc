@@ -43,6 +43,9 @@
 .baseclock		resd	1
 .clock			resd	1
 
+.memread		resd	1
+.memwrite		resd	1
+
 				endstruc
 
 S_FLAG		equ		0x80

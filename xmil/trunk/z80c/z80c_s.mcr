@@ -2,7 +2,7 @@
 #define	MCR_Z80INF(reg) {												\
 		(reg) = iocore_inp(R_Z80BC);									\
 		R_Z80F &= C_FLAG;												\
-		R_Z80F |= ZSPtable[(reg)];										\
+		R_Z80F |= z80szp_flag[(reg)];									\
 	}
 
 #define	MCR_Z80OUT(reg) {												\
@@ -97,7 +97,7 @@
 		mem_write8(R_Z80HL, (REG8)((tmp >> 4) | (R_Z80A << 4)));		\
 		R_Z80A = (R_Z80A & 0xf0) | (tmp & 0x0f);						\
 		R_Z80F &= C_FLAG;												\
-		R_Z80F |= ZSPtable[R_Z80A];										\
+		R_Z80F |= z80szp_flag[R_Z80A];									\
 	}
 
 #define MCR_RLD {														\
@@ -106,7 +106,7 @@
 		mem_write8(R_Z80HL, (REG8)((tmp << 4) + (R_Z80A & 0x0f)));		\
 		R_Z80A = (R_Z80A & 0xf0) | (tmp >> 4);							\
 		R_Z80F &= C_FLAG;												\
-		R_Z80F |= ZSPtable[R_Z80A];										\
+		R_Z80F |= z80szp_flag[R_Z80A];									\
 	}
 
 
@@ -114,7 +114,7 @@
 		REG8 tmp;														\
 		tmp = iocore_inp(R_Z80BC);										\
 		R_Z80F &= C_FLAG;												\
-		R_Z80F |= ZSPtable[tmp];										\
+		R_Z80F |= z80szp_flag[tmp];										\
 	}
 
 

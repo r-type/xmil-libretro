@@ -40,7 +40,7 @@ void debugsub_status(void) {
 	OEMSPRINTF(path, OEMTEXT("z80ram.%.3d"), filenum);
 	fh = file_create_c(path);
 	if (fh != FILEH_INVALID) {
-		file_write(fh, mMAIN, 0x10000);
+		file_write(fh, mainmem, 0x10000);
 		file_close(fh);
 	}
 	OEMSPRINTF(path, OEMTEXT("x1vram1.%.3d"), filenum);

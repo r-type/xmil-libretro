@@ -7,10 +7,10 @@
 //----------------------------------------------------------------------------
 
 
-extern UINT8 ZSPtable[256];
-extern UINT8 z80inc_flag[256];
-extern UINT8 z80dec_flag[256];
+extern UINT8 z80inc_flag2[256];
+extern UINT8 z80dec_flag2[256];
 extern UINT8 z80szc_flag[512];
+extern UINT8 z80szp_flag[256];
 
 extern const UINT8 cycles_main[256];
 extern const UINT8 cycles_xx[256];

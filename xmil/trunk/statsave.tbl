@@ -28,10 +28,10 @@ static const SFENTRY xmiltbl[] = {
 	{"PCCORE",		0,	STATFLAG_BIN,	&pccore,		sizeof(pccore)},
 
 	{"Z80CORE",		0,	STATFLAG_BIN,	&z80core.s,		sizeof(z80core.s)},
-	{"MAIN",		0,	STATFLAG_BIN,	mMAIN,			sizeof(mMAIN)},
-	{"BIOS",		0,	STATFLAG_BIN,	mBIOS,			sizeof(mBIOS)},
+	{"MAIN",		0,	STATFLAG_BIN,	mainmem,		sizeof(mainmem)},
+	{"BIOS",		0,	STATFLAG_BIN,	biosmem,		sizeof(biosmem)},
 #if defined(SUPPORT_BANKMEM)
-	{"BANK",		0,	STATFLAG_BIN,	mBANK,			sizeof(mBANK)},
+	{"BANK",		0,	STATFLAG_BIN,	bankmem,		sizeof(bankmem)},
 #endif
 	{"GRAM",		0,	STATFLAG_BIN,	gram,			sizeof(gram)},
 	{"TRAM",		0,	STATFLAG_BIN,	tram,			sizeof(tram)},

@@ -56,14 +56,6 @@ extern const OEMCHAR xmilversion[];
 extern	XMILCFG		xmilcfg;
 extern	PCCORE		pccore;
 extern	CORESTAT	corestat;
-extern	UINT8		*RAM0r;
-extern	UINT8		*RAM0w;
-
-extern	UINT8	mMAIN[0x10000];
-extern	UINT8	mBIOS[0x8000];
-#if defined(SUPPORT_BANKMEM)
-extern	UINT8	mBANK[16][0x8000];
-#endif
 
 void neitem_disp(UINT id);
 void neitem_vsync(UINT id);

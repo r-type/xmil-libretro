@@ -4,6 +4,7 @@
 #include	"iocore.h"
 #include	"nevent.h"
 #include	"vram.h"
+#include	"makescrn.h"
 #include	"font.h"
 
 
@@ -111,7 +112,10 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 		chr = tram[TRAM_ANK + off];
 	}
 	chr += (port & 0x0300) - 0x100;
-	pcg.d[(chr << 3) + line] = value;
+	if (pcg.d[(chr << 3) + line] != value) {
+		pcg.d[(chr << 3) + line] = value;
+		scrnallflash = TRUE;
+	}
 }
 
 REG8 IOINPCALL pcg_i(UINT port) {

@@ -31,13 +31,6 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 
 	PCCORE		pccore;
 	CORESTAT	corestat;
-	UINT8		mMAIN[0x10000];
-	UINT8		mBIOS[0x8000];
-#if defined(SUPPORT_BANKMEM)
-	UINT8		mBANK[16][0x8000];
-#endif
-	UINT8		*RAM0r;
-	UINT8		*RAM0w;
 
 
 // ----
@@ -46,18 +39,18 @@ static void ipl_load(void) {
 
 	FILEH	hdl;
 
-	ZeroMemory(mBIOS, sizeof(mBIOS));
-	CopyMemory(mBIOS, DEFROM, sizeof(DEFROM));
+	ZeroMemory(biosmem, 0x8000);
+	CopyMemory(biosmem, DEFROM, sizeof(DEFROM));
 
 	if (pccore.ROM_TYPE >= 2) {
 		if ((hdl = file_open_c(OEMTEXT("IPLROM.X1T"))) != FILEH_INVALID) {
-			file_read(hdl, mBIOS, 0x8000);
+			file_read(hdl, biosmem, 0x8000);
 			file_close(hdl);
 		}
 	}
 	else if (pccore.ROM_TYPE == 1) {
 		if ((hdl = file_open_c(OEMTEXT("IPLROM.X1"))) != FILEH_INVALID) {
-			file_read(hdl, mBIOS, 0x8000);
+			file_read(hdl, biosmem, 0x8000);
 			file_close(hdl);
 		}
 	}
@@ -68,6 +61,7 @@ static void ipl_load(void) {
 
 void pccore_initialize(void) {
 
+	Z80_INITIALIZE();
 	fddfile_initialize();
 	sndctrl_initialize();
 	makescrn_initialize();
@@ -128,9 +122,6 @@ void pccore_reset(void) {
 	iocore_reset();
 
 	ipl_load();
-
-	RAM0r = mBIOS;
-	RAM0w = mMAIN;
 
 	pal_reset();
 	makescrn_reset();
