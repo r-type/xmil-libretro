@@ -297,7 +297,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 			case 0x09:
 			case 0x0a:								// ライトデータ
 			case 0x0b:
-				setbusy(200);
+				setbusy(400);
 				fdc.s.stat = type2cmd(fdc.s.r);
 				break;
 

@@ -175,16 +175,20 @@ static void set_algorithm(OPMCH *ch, REG8 value) {
 		ch->feedback = 0;
 	}
 
-	switch(value & 0xc0) {
-		case 0x40:
+	switch((value >> 6) & 3) {
+		case 0:
+			outd = &opmgen.feedback4;
+			break;
+
+		case 1:
 			outd = &opmgen.outdl;
 			break;
 
-		case 0x80:
+		case 2:
 			outd = &opmgen.outdr;
 			break;
 
-		default:
+		case 3:
 			outd = &opmgen.outdc;
 			break;
 	}
@@ -366,7 +370,7 @@ void opmgen_reset(void) {
 		ch++;
 	}
 	for (i=0x20; i<0x100; i++) {
-		opmgen_setreg((REG8)i, 0xff);
+		opmgen_setreg((REG8)i, 0);
 	}
 }
 
