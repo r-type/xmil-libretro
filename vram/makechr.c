@@ -43,11 +43,11 @@ const UINT8		*pat;
 	}
 	else {										// PCG
 		if (!(knj & 0x90)) {					// PCGの出力
-			pat = pcg.d.b[ank];
+			pat = pcg.d + (ank << 3);
 			fn = maketxt8fn[udtmp & 15];
 		}
 		else {									// 16ドットPCGの出力
-			pat = pcg.d.b[ank & (~1)];
+			pat = pcg.d + ((ank & (~1)) << 3);
 			fn = makeknj8fn[udtmp & 15];
 		}
 		makeatr_pcg8(dst, count, pat, atr, fn);
@@ -90,11 +90,11 @@ const UINT8		*pat;
 	}
 	else {										// PCG
 		if (!(knj & 0x90)) {					// PCGの出力
-			pat = pcg.d.b[ank];
+			pat = pcg.d + (ank << 3);
 			fn = makepcg16fn[udtmp & 15];
 		}
 		else {									// 16ドットPCGの出力
-			pat = pcg.d.b[ank & (~1)];
+			pat = pcg.d + ((ank & (~1)) << 3);
 			fn = maketxt16fn[udtmp & 15];
 		}
 		makeatr_pcg16(dst, count, pat, atr, fn);

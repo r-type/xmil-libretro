@@ -177,7 +177,6 @@ void iptrace_out(void) {
 void neitem_disp(UINT id) {
 
 	corestat.vsync = 1;
-	pcg.r.vsync = 1;
 	if (xmilcfg.DISPSYNC & 1) {
 		scrnupdate();
 	}

@@ -16,9 +16,6 @@ static SINT32 minclock(const CTCCH *ch) {
 	for (i=0; i<3; i++) {
 		if ((ch->cmd[i] & 0x82) == 0x80) {
 			clock = ch->count[i];
-			if (ch->cmd[i] & 0x40) {
-				clock = clock * 2;
-			}
 			event = min(event, clock);
 		}
 	}
@@ -27,13 +24,9 @@ static SINT32 minclock(const CTCCH *ch) {
 		if (ch->cmd[3] & 0x40) {
 			clock = (clock - 1) * ch->countmax[0];
 			clock += ch->count[0];
-			if (ch->cmd[0] & 0x40) {
-				clock = clock * 2;
-			}
 		}
 		event = min(event, clock);
 	}
-	event = event / 2;
 	if (event == 0) {
 		event = 1;
 	}
@@ -59,10 +52,7 @@ static REG8 ctcwork(CTCCH *ch) {
 
 	// 0
 	if (!(ch->cmd[0] & 0x02)) {
-		pulse = stepclock;					// 2MHz
-		if (!(ch->cmd[0] & 0x40)) {
-			pulse = pulse * 2;				// 4MHz
-		}
+		pulse = stepclock;
 		count = ch->count[0];
 		count -= pulse;
 		if (count <= 0) {
@@ -77,7 +67,7 @@ static REG8 ctcwork(CTCCH *ch) {
 	// 3
 	if (!(ch->cmd[3] & 0x02)) {
 		if (!(ch->cmd[3] & 0x40)) {
-			pulse3 = stepclock * 2;				// 4MHz
+			pulse3 = stepclock;
 		}
 		count = ch->count[3];
 		count -= pulse3;
@@ -90,10 +80,7 @@ static REG8 ctcwork(CTCCH *ch) {
 
 	// 1
 	if (!(ch->cmd[1] & 0x02)) {
-		pulse = stepclock;					// 2MHz
-		if (!(ch->cmd[1] & 0x40)) {
-			pulse = pulse * 2;				// 4MHz
-		}
+		pulse = stepclock;
 		count = ch->count[1];
 		count -= pulse;
 		if (count <= 0) {
@@ -105,10 +92,7 @@ static REG8 ctcwork(CTCCH *ch) {
 
 	// 2
 	if (!(ch->cmd[2] & 0x02)) {
-		pulse = stepclock;					// 2MHz
-		if (!(ch->cmd[2] & 0x40)) {
-			pulse = pulse * 2;				// 4MHz
-		}
+		pulse = stepclock;
 		count = ch->count[2];
 		count -= pulse;
 		if (count <= 0) {
@@ -180,9 +164,7 @@ BRESULT ieitem_ctc(UINT id) {
 				else if (0)
 #elif 1
 				else if (((ch->cmd[i] & 0x10) == 0) &&
-						((ch->countmax[i] - ch->count[i]) >= 256))
-#elif 0
-				else if (((ch->count[i] * 17) >> 4) < ch->countmax[i])
+						((ch->countmax[i] - ch->count[i]) >= (256 >> 1)))
 #else
 				else if (ch->count[i] != ch->countmax[i])
 #endif
@@ -220,17 +202,14 @@ static void ctcch_o(CTCCH *ch, UINT port, REG8 value) {
 	if (ch->cmd[port] & 0x04) {
 		ctcstep(ch);
 		ch->basecnt[port] = value;
-		count = 256;
-		if (value) {
-			count = (SINT32)value;
-		}
+		count = ((value - 1) & 0xff) + 1;
 		scale = 0;
 		if (!(ch->cmd[port] & 0x40)) {
 			if (ch->cmd[port] & 0x20) {
-				scale = 8;
+				scale = 8 - 1;
 			}
 			else {
-				scale = 4;
+				scale = 4 - 1;
 			}
 		}
 		count <<= scale;
@@ -316,10 +295,10 @@ void ctc_reset(void) {
 	for (i=0; i<3; i++) {
 		ctc.ch[i].num = (UINT8)i;
 		for (j=0; j<4; j++) {
-			ctc.ch[i].cmd[j] = 0x03;
-			ctc.ch[i].scale[j] = 8;
-			ctc.ch[i].count[j] = 256 << 8;
-			ctc.ch[i].countmax[j] = 256 << 8;
+			ctc.ch[i].cmd[j] = 0x23;
+			ctc.ch[i].scale[j] = 7;
+			ctc.ch[i].count[j] = 256 << 7;
+			ctc.ch[i].countmax[j] = 256 << 7;
 		}
 	}
 }

@@ -7,12 +7,6 @@
 #include	"font.h"
 
 
-static void pcgsync(void) {
-
-	*(UINT32 *)&pcg.r.vsync = 0;
-	*(UINT32 *)&pcg.r.roff0 = 0;
-}
-
 static UINT pcg_offset(void) {
 
 	if (tram[TRAM_ATR + 0x07ff] & 0x20) {
@@ -47,13 +41,12 @@ static UINT knj_offset(void) {
 	return(0x7ff);
 }
 
-static UINT nowsyncoffset(void) {
+static UINT nowsyncoffset(UINT *line) {
 
 	SINT32	clock;
 	UINT	h;
 	UINT	v;
 	UINT	ret;
-	UINT	line;
 
 	clock = nevent_getwork(NEVENT_FRAMES);
 	if (corestat.vsync) {
@@ -62,7 +55,7 @@ static UINT nowsyncoffset(void) {
 	v = clock / RASTER_CLOCK;
 	h = clock - (v * RASTER_CLOCK);
 	ret = v / crtc.e.fonty;
-	line = v - (ret * crtc.e.fonty);
+	*line = (v - (ret * crtc.e.fonty)) & 7;
 	ret = (ret * crtc.s.reg[CRTCREG_HDISP]) + crtc.e.pos;
 	ret += (h * crtc.s.reg[CRTCREG_HDISP]) / RASTER_CLOCK;
 	if (ret >= 0x0800) {
@@ -76,140 +69,79 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 
 	UINT	chr;
 	UINT	off;
-	UINT	l;
+	UINT	line;
 
 	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
 		off = pcg_offset();
 		chr = tram[TRAM_ANK + off];
 		if (tram[TRAM_KNJ + off] & 0x90) {
-			chr &= 0xfe;
-			l = port & 15;
+			chr = chr & (~1);
+			line = port & 15;
 		}
 		else {
-			l = (port >> 1) & 7;
-		}
-		switch(port >> 8) {
-			case 0x15:
-				pcg.d.b[chr][l] = value;
-				break;
-
-			case 0x16:
-				pcg.d.r[chr][l] = value;
-				break;
-
-			case 0x17:
-				pcg.d.g[chr][l] = value;
-				break;
+			line = (port >> 1) & 7;
 		}
 	}
 	else {
-		off = nowsyncoffset();						// 990622 puni
+		off = nowsyncoffset(&line);
 		chr = tram[TRAM_ANK + off];
-		if (pcg.r.vsync) {
-			pcgsync();
-		}
-		switch(port & 0xff00) {
-			case 0x1500:
-				pcg.d.b[chr][pcg.r.woff1] = value;
-				pcg.r.woff1 = (pcg.r.woff1 + 1) & 7;
-				break;
-
-			case 0x1600:
-				pcg.d.r[chr][pcg.r.woff2] = value;
-				pcg.r.woff2 = (pcg.r.woff2 + 1) & 7;
-				break;
-
-			case 0x1700:
-				pcg.d.g[chr][pcg.r.woff4] = value;
-				pcg.r.woff4 = (pcg.r.woff4 + 1) & 7;
-				break;
-		}
 	}
+	chr += (port & 0x0300) - 0x100;
+	pcg.d[(chr << 3) + line] = value;
 }
 
 REG8 IOINPCALL pcg_i(UINT port) {
 
+	BRESULT	ank;
+	UINT	line;
 	UINT	off;
-	int		l;
-	UINT8	chr,knj,val;
+	UINT	chr;
+	UINT	knj;
+	UINT	addr;
 
-	val = 0xff;
+	ank = ((port & 0xff00) == 0x1400);
 	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
-		l = port & 0x0f;
-		if ((port & 0xff00) == 0x1400) {
+		line = port & 0x0f;
+		if (ank) {
 			off = knj_offset();
 			chr = tram[TRAM_ANK + off];
 			knj = tram[TRAM_KNJ + off];
 			if (knj & 0x80) {
-				UINT p;
-				p = (((knj << 8) | chr) & 0x1fff) << 4;
+				addr = ((((knj & 0x1f) << 8) + chr) << 4) + line;
 				if (knj & 0x40) {
-					val = font_knjx1t[p + l + FONTX1T_LR];
+					addr += FONTX1T_LR;
 				}
-				else {
-					val = font_knjx1t[p + l];
-				}
+				return(font_knjx1t[addr]);
 			}
 			else if (crtc.s.SCRN_BITS & SCRN_CPUFONT) {
-				val = font_txt[(chr << 4) + l];
+				return(font_txt[(chr << 4) + line]);
 			}
 			else {
-				val = font_ank[(chr << 3) + (l >> 1)];
+				line >>= 1;
 			}
 		}
 		else {
 			off = pcg_offset();
 			chr = tram[TRAM_ANK + off];
 			if (tram[TRAM_KNJ + off] & 0x90) {
-				chr &= 0xfe;
+				chr = chr & (~1);
 			}
 			else {
-				l >>= 1;
-			}
-			switch(port & 0xff00) {
-				case 0x1500:
-					val = pcg.d.b[chr][l];
-					break;
-
-				case 0x1600:
-					val = pcg.d.r[chr][l];
-					break;
-
-				case 0x1700:
-					val = pcg.d.g[chr][l];
-					break;
+				line >>= 1;
 			}
 		}
 	}
 	else {
-		off = nowsyncoffset();					// 990622 puni
+		off = nowsyncoffset(&line);
 		chr = tram[TRAM_ANK + off];
-		if (pcg.r.vsync) {
-			pcgsync();
-		}
-		switch(port >> 8) {
-			case 0x14:
-				val = font_ank[(chr << 3) + pcg.r.roff0];
-				pcg.r.roff0 = (pcg.r.roff0 + 1) & 7;
-				break;
-
-			case 0x15:
-				val = pcg.d.b[chr][pcg.r.roff1];
-				pcg.r.roff1 = (pcg.r.roff1 + 1) & 7;
-				break;
-
-			case 0x16:
-				val = pcg.d.r[chr][pcg.r.roff2];
-				pcg.r.roff2 = (pcg.r.roff2 + 1) & 7;
-				break;
-
-			case 0x17:
-				val = pcg.d.g[chr][pcg.r.roff4];
-				pcg.r.roff4 = (pcg.r.roff4 + 1) & 7;
-				break;
-		}
 	}
-	return(val);
+	if (ank) {
+		return(font_ank[(chr << 3) + line]);
+	}
+	else {
+		chr += (port & 0x0300) - 0x100;
+		return(pcg.d[(chr << 3) + line]);
+	}
 }
 
 
@@ -221,7 +153,5 @@ void pcg_initialize(void) {
 }
 
 void pcg_reset(void) {
-
-	pcgsync();
 }
 

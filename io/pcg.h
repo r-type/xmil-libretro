@@ -1,24 +1,12 @@
 
-typedef struct {
-	UINT8	vsync;
-	UINT8	woff1;
-	UINT8	woff2;
-	UINT8	woff4;
-	UINT8	roff0;
-	UINT8	roff1;
-	UINT8	roff2;
-	UINT8	roff4;
-} PCGREG;
+enum {
+	PCGDAT_B		= 0x0000,
+	PCGDAT_R		= 0x0800,
+	PCGDAT_G		= 0x1000
+};
 
 typedef struct {
-	UINT8	b[256][8];
-	UINT8	r[256][8];
-	UINT8	g[256][8];
-} PCGDAT;
-
-typedef struct {
-	PCGDAT	d;
-	PCGREG	r;
+	UINT8	d[0x1800];
 } PCG;
 
 

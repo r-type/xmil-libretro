@@ -101,9 +101,9 @@ static void winuileave(void) {
 static void dispbmp(HINSTANCE hinst, HDC hdc,
 										const OEMCHAR *res, int x, int y) {
 
-	HBITMAP		hbmp;
-	BITMAP		bmp;
-	HDC			hmdc;
+	HBITMAP	hbmp;
+	BITMAP	bmp;
+	HDC		hmdc;
 
 	hbmp = LoadBitmap(hinst, res);
 	GetObject(hbmp, sizeof(bmp), &bmp);
@@ -119,6 +119,7 @@ static void dispbmp(HINSTANCE hinst, HDC hdc,
 
 #if defined(SUPPORT_RESUME)
 static const OEMCHAR xmilresumeext[] = OEMTEXT(".sav");
+static const OEMCHAR str_resume[] = OEMTEXT("Resume");
 #endif
 #if defined(SUPPORT_STATSAVE)
 static const OEMCHAR xmilflagext[] = OEMTEXT(".sv%u");
@@ -247,6 +248,26 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_FDD1EJECT:
 			diskdrv_setfdd(1, NULL, 0);
+			break;
+
+		case IDM_FDD2OPEN:
+			winuienter();
+			dialog_changefdd(hWnd, 2);
+			winuileave();
+			break;
+
+		case IDM_FDD2EJECT:
+			diskdrv_setfdd(2, NULL, 0);
+			break;
+
+		case IDM_FDD3OPEN:
+			winuienter();
+			dialog_changefdd(hWnd, 3);
+			winuileave();
+			break;
+
+		case IDM_FDD3EJECT:
+			diskdrv_setfdd(3, NULL, 0);
 			break;
 
 		case IDM_TURBOZ:
