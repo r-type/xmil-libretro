@@ -105,7 +105,7 @@ void bmpsavefile(const OEMCHAR *filename, BMP_CTRL *bmc) {
 	long	y;
 	BYTE	*p;
 	BYTE	bit;
-	BYTE	work[SCREEN_WIDTH];
+	BYTE	work[SURFACE_WIDTH];
 
 	if (bmc->bmi.biClrImportant <= 2) {
 		bmc->bmi.biBitCount = 1;
@@ -193,7 +193,7 @@ const OEMCHAR	*f;
 	OEMCHAR		*r;
 
 	if ((hbmc = GlobalAlloc(GPTR, (DWORD)sizeof(BMP_CTRL) + 1 +
-					((DWORD)SCREEN_WIDTH * SCREEN_HEIGHT * 3L))) == NULL) {
+					((DWORD)SURFACE_WIDTH * SURFACE_HEIGHT * 3L))) == NULL) {
 		return;
 	}
 	if ((bmc = (BMP_CTRL *)GlobalLock(hbmc)) == NULL) {
@@ -203,15 +203,15 @@ const OEMCHAR	*f;
 	ZeroMemory(bmc, sizeof(BMP_CTRL));
 	ZeroMemory(remap, 256);
 	ZeroMemory(remapflg, 256);
-	bmc->bmi.biWidth = SCREEN_WIDTH;
-	bmc->bmi.biHeight = SCREEN_HEIGHT;
+	bmc->bmi.biWidth = SURFACE_WIDTH;
+	bmc->bmi.biHeight = SURFACE_HEIGHT;
 	p = screenmap;
 	q = (BYTE *)bmc + sizeof(BMP_CTRL);
-	for (y=0; y<SCREEN_HEIGHT; y++) {
+	for (y=0; y<SURFACE_HEIGHT; y++) {
 		switch(scrn.widthmode) {
 			case SCRNWIDTHMODE_WIDTH80:
 			default:
-				for (x=0; x<SCREEN_WIDTH; x++) {
+				for (x=0; x<SURFACE_WIDTH; x++) {
 					c = *p++;
 					if (!remapflg[c]) {
 						remapflg[c] = 1;
@@ -223,7 +223,7 @@ const OEMCHAR	*f;
 				break;
 
 			case SCRNWIDTHMODE_WIDTH40:
-				for (x=0; x<SCREEN_WIDTH/2; x++) {
+				for (x=0; x<SURFACE_WIDTH/2; x++) {
 					c = *p++;
 					if (!remapflg[c]) {
 						remapflg[c] = 1;
@@ -233,18 +233,18 @@ const OEMCHAR	*f;
 					*q++ = remap[c];
 					*q++ = remap[c];
 				}
-				p += SCREEN_WIDTH/2;
+				p += SURFACE_WIDTH/2;
 				break;
 
 			case SCRNWIDTHMODE_4096:
-				for (x=0; x<SCREEN_WIDTH/2; x++) {
+				for (x=0; x<SURFACE_WIDTH/2; x++) {
 					c = bmps_appal(&pals, bmc->pal, 
 										x1z_pal32[(p[320] << 8) | p[0]].d);
 					p++;
 					*q++ = c;
 					*q++ = c;
 				}
-				p += SCREEN_WIDTH/2;
+				p += SURFACE_WIDTH/2;
 				break;
 		}
 		if (pals > 256) {
@@ -257,34 +257,34 @@ const OEMCHAR	*f;
 		f = bmpextstr[3];
 		p = screenmap;
 		q = (BYTE *)bmc + sizeof(BMP_CTRL);
-		for (y=0; y<SCREEN_HEIGHT; y++) {
+		for (y=0; y<SURFACE_HEIGHT; y++) {
 			switch(scrn.widthmode) {
 				case 0:
 				default:
-					for (x=0; x<SCREEN_WIDTH; x++) {
+					for (x=0; x<SURFACE_WIDTH; x++) {
 						*(DWORD *)q = x1n_pal32[*p++].d;
 						q += 3;
 					}
 					break;
 
 				case 1:
-					for (x=0; x<SCREEN_WIDTH/2; x++) {
+					for (x=0; x<SURFACE_WIDTH/2; x++) {
 						*(DWORD *)q = x1n_pal32[*p].d;
 						*(DWORD *)(q+3) = x1n_pal32[*p].d;
 						p++;
 						q += 6;
 					}
-					p += SCREEN_WIDTH/2;
+					p += SURFACE_WIDTH/2;
 					break;
 
 				case 2:
-					for (x=0; x<SCREEN_WIDTH/2; x++) {
+					for (x=0; x<SURFACE_WIDTH/2; x++) {
 						*(DWORD *)q = x1z_pal32[(p[320] << 8) | p[0]].d;
 						*(DWORD *)(q+3) = x1z_pal32[(p[320] << 8) | p[0]].d;
 						p++;
 						q += 6;
 					}
-					p += SCREEN_WIDTH/2;
+					p += SURFACE_WIDTH/2;
 					break;
 			}
 		}
@@ -314,7 +314,7 @@ const OEMCHAR	*f;
 	OEMCHAR		*r;
 
 	if ((hbmc = GlobalAlloc(GPTR, (DWORD)sizeof(BMP_CTRL) + 1 +
-					((DWORD)SCREEN_WIDTH * SCREEN_HEIGHT * 3L))) == NULL) {
+					((DWORD)SURFACE_WIDTH * SURFACE_HEIGHT * 3L))) == NULL) {
 		return;
 	}
 	if ((bmc = (BMP_CTRL *)GlobalLock(hbmc)) == NULL) {
@@ -322,35 +322,35 @@ const OEMCHAR	*f;
 		return;
 	}
 	ZeroMemory(bmc, sizeof(BMP_CTRL));
-	bmc->bmi.biWidth = SCREEN_WIDTH/2;
-	bmc->bmi.biHeight = SCREEN_HEIGHT/2;
+	bmc->bmi.biWidth = SURFACE_WIDTH/2;
+	bmc->bmi.biHeight = SURFACE_HEIGHT/2;
 	p = screenmap;
 	q = (BYTE *)bmc + sizeof(BMP_CTRL);
-	for (y=0; y<SCREEN_HEIGHT/2; y++) {
+	for (y=0; y<SURFACE_HEIGHT/2; y++) {
 		switch(scrn.widthmode) {
 			case SCRNWIDTHMODE_WIDTH80:
 			default:
-				for (x=0; x<SCREEN_WIDTH/2; x++) {
+				for (x=0; x<SURFACE_WIDTH/2; x++) {
 					*q++ = bmps_appal(&pals, bmc->pal, palettesmix(p).d);
 					p += 2;
 				}
-				p += SCREEN_WIDTH;
+				p += SURFACE_WIDTH;
 				break;
 
 			case SCRNWIDTHMODE_WIDTH40:
-				for (x=0; x<SCREEN_WIDTH/2; x++) {
+				for (x=0; x<SURFACE_WIDTH/2; x++) {
 					*q++ = bmps_appal(&pals, bmc->pal, x1n_pal32[*p++].d);
 				}
-				p += SCREEN_WIDTH + (SCREEN_WIDTH/2);
+				p += SURFACE_WIDTH + (SURFACE_WIDTH/2);
 				break;
 
 			case SCRNWIDTHMODE_4096:
-				for (x=0; x<SCREEN_WIDTH/2; x++) {
+				for (x=0; x<SURFACE_WIDTH/2; x++) {
 					*q++ = bmps_appal(&pals, bmc->pal, 
 										x1z_pal32[(p[320] << 8) | p[0]].d);
 					p++;
 				}
-				p += SCREEN_WIDTH + (SCREEN_WIDTH/2);
+				p += SURFACE_WIDTH + (SURFACE_WIDTH/2);
 				break;
 		}
 		if (pals > 256) {
@@ -363,33 +363,33 @@ const OEMCHAR	*f;
 		f = bmpextstr[3];
 		p = screenmap;
 		q = (BYTE *)bmc + sizeof(BMP_CTRL);
-		for (y=0; y<SCREEN_HEIGHT/2; y++) {
+		for (y=0; y<SURFACE_HEIGHT/2; y++) {
 			switch(scrn.widthmode) {
 				case SCRNWIDTHMODE_WIDTH80:
 				default:
-					for (x=0; x<SCREEN_WIDTH/2; x++) {
+					for (x=0; x<SURFACE_WIDTH/2; x++) {
 						*(DWORD *)q = palettesmix(p).d;
 						p += 2;
 						q += 3;
 					}
-					p += SCREEN_WIDTH;
+					p += SURFACE_WIDTH;
 					break;
 
 				case SCRNWIDTHMODE_WIDTH40:
-					for (x=0; x<SCREEN_WIDTH/2; x++) {
+					for (x=0; x<SURFACE_WIDTH/2; x++) {
 						*(DWORD *)q = x1n_pal32[*p++].d;
 						q += 3;
 					}
-					p += SCREEN_WIDTH + (SCREEN_WIDTH/2);
+					p += SURFACE_WIDTH + (SURFACE_WIDTH/2);
 					break;
 
 				case SCRNWIDTHMODE_4096:
-					for (x=0; x<SCREEN_WIDTH/2; x++) {
+					for (x=0; x<SURFACE_WIDTH/2; x++) {
 						*(DWORD *)q = x1z_pal32[(p[320] << 8) | p[0]].d;
 						p++;
 						q += 3;
 					}
-					p += SCREEN_WIDTH + (SCREEN_WIDTH/2);
+					p += SURFACE_WIDTH + (SURFACE_WIDTH/2);
 					break;
 			}
 		}

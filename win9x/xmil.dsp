@@ -622,10 +622,6 @@ SOURCE=..\CAVELV2\X1_CRTC.C
 
 SOURCE=..\CAVELV2\X1_IO.C
 # End Source File
-# Begin Source File
-
-SOURCE=..\CAVELV2\X1_VRAM.C
-# End Source File
 # End Group
 # Begin Group "vram"
 
@@ -689,6 +685,10 @@ SOURCE=..\VRAM\SDRAW.C
 # Begin Source File
 
 SOURCE=..\VRAM\VRAM.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\VRAMIO.C
 # End Source File
 # End Group
 # Begin Group "sound"

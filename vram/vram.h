@@ -13,11 +13,21 @@ enum {
 
 	PLANE_B		= 8,
 	PLANE_R		= 16,
-	PLANE_G		= 24,
+	PLANE_G		= 24
+};
 
-	TRAM_ANK	= 0x0000,
-	TRAM_ATR	= 0x0800,
-	TRAM_KNJ	= 0x1000
+enum {
+	TRAM_ANK		= 0x0000,
+	TRAM_ATR		= 0x0800,
+	TRAM_KNJ		= 0x1000,
+
+	X1ATR_COLOR		= 0x07,
+	X1ATR_REVERSE	= 0x08,
+	X1ATR_BLINK		= 0x10,
+	X1ATR_PCG		= 0x20,
+	X1ATR_Yx2		= 0x40,
+	X1ATR_Xx2		= 0x80,
+	X1KNJ_ULINE		= 0x20
 };
 
 

@@ -8,8 +8,8 @@
 
 
 	SCRN	scrn;
-	UINT8	renewalline[SCREEN_HEIGHT+4];
-	UINT8	screenmap[SCREEN_WIDTH * SCREEN_HEIGHT];
+	UINT8	renewalline[SURFACE_HEIGHT+4];
+	UINT8	screenmap[SURFACE_SIZE];
 
 
 static void updateallline(UINT32 update) {

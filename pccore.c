@@ -9,7 +9,6 @@
 #include	"iocore.h"
 #include	"x1_io.h"
 #include	"x1_crtc.h"
-#include	"x1_vram.h"
 #include	"draw.h"
 #include	"sound.h"
 #include	"sndctrl.h"
@@ -123,7 +122,6 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 	subcpu_reset();
 	ppi_reset();
 	init_crtc();
-	init_vram();
 
 	cgrom_reset();
 	cmt_reset();
@@ -133,6 +131,7 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 	pcg_reset();
 	sio_reset();
 	sndboard_reset();
+	vramio_reset();
 
 	timing_reset();
 	return(SUCCESS);

@@ -47,6 +47,7 @@ typedef struct {
 #include	"sio.h"
 #include	"sndboard.h"
 #include	"subcpu.h"
+#include	"vramio.h"
 
 
 #ifdef __cplusplus

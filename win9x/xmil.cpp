@@ -675,7 +675,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 						WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION |
 						WS_MINIMIZEBOX,
 						xmiloscfg.winx, xmiloscfg.winy,
-						SCREEN_WIDTH, SCREEN_HEIGHT,
+						SURFACE_WIDTH, SURFACE_HEIGHT,
 						NULL, NULL, hInstance, NULL);
 	hWndMain = hWnd;
 	scrnmng_initialize();
