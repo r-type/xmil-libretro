@@ -3,10 +3,6 @@
 extern "C" {
 #endif
 
-extern	BYTE	*curvram;
-extern	BYTE	curupdt;
-extern	DWORD	updatemsk;
-
 void IOOUTCALL tram_o(UINT port, REG8 value);		// x1_txt_w
 REG8 IOINPCALL tram_i(UINT port);					// x1_txt_r
 

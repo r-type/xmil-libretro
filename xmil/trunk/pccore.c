@@ -7,8 +7,6 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"x1_io.h"
-#include	"x1_crtc.h"
 #include	"draw.h"
 #include	"sound.h"
 #include	"sndctrl.h"
@@ -119,18 +117,17 @@ BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW) {
 
 	calendar_initialize();
 
-	subcpu_reset();
-	ppi_reset();
-	init_crtc();
-
 	cgrom_reset();
 	cmt_reset();
+	crtc_reset();
 	ctc_reset();
 	dmac_reset();
 	fdc_reset();
 	pcg_reset();
+	ppi_reset();
 	sio_reset();
 	sndboard_reset();
+	subcpu_reset();
 	vramio_reset();
 
 	timing_reset();
@@ -269,7 +266,7 @@ extern	BYTE	disp_flashscreen;
 			}
 		}
 		v_cnt++;
-		if (crtc.CRT_YL == v_cnt) {
+		if (crtc.s.CRT_YL == v_cnt) {
 //			TRACEOUT(("--->sync"));
 			pcg.r.vsync = 1;
 			if (xmilcfg.DISPSYNC == 1) {

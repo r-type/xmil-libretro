@@ -22,8 +22,7 @@
 
 #include	"z80core.h"
 #include	"pccore.h"
-#include	"x1_io.h"
-#include	"x1_crtc.h"
+#include	"iocore.h"
 #include	"timing.h"
 #include	"draw.h"
 #include	"fdd_ini.h"
@@ -259,15 +258,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					break;
 
 				case IDM_WIDTH80:
-					crtc.TXT_XL = 80;
-					crtc.GRP_XL = 640;
+					crtc.s.TXT_XL = 80;
+					crtc.s.GRP_XL = 640;
 					vrambank_patch();
 					scrnallflash = 1;
 					break;
 
 				case IDM_WIDTH40:
-					crtc.TXT_XL = 40;
-					crtc.GRP_XL = 320;
+					crtc.s.TXT_XL = 40;
+					crtc.s.GRP_XL = 320;
 					vrambank_patch();
 					scrnallflash = 1;
 					break;

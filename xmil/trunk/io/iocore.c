@@ -4,6 +4,7 @@
 
 	CGROM		cgrom;		//	x1k;
 	CMT			cmt;
+	CRTC		crtc;
 	CTC			ctc;
 	DMAC		dma;
 	FDC			fdc;

@@ -1,15 +1,8 @@
 #include	"compiler.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"x1_io.h"
-#include	"x1_crtc.h"
 #include	"vram.h"
 #include	"draw.h"
-
-
-		BYTE	*curvram;
-		BYTE	curupdt;
-		DWORD	updatemsk = 0x7ff;
 
 
 // ---- text
@@ -69,27 +62,27 @@ REG8 IOINPCALL tram_i(UINT port) {
 
 void IOOUTCALL gram_o(UINT port, REG8 value) {
 
-	UINT	addr;
+	UINT8	*p;
 
-	addr = (LOW11(port) << 5) + (port >> 11);
-	if (curvram[addr] == value) {
+	p = crtc.e.gram + (LOW11(port) << 5) + (port >> 11);
+	if (*p == value) {
 		return;
 	}
-	curvram[addr] = value;
-	updatetmp[port & updatemsk] |= curupdt;
+	*p = value;
+	updatetmp[port & crtc.e.updatemask] |= crtc.e.updatebit;
 	scrnflash = 1;
 }
 
 REG8 IOINPCALL gram_i(UINT port) {
 
-	return(curvram[(LOW11(port) << 5) + (port >> 11)]);
+	return(crtc.e.gram[(LOW11(port) << 5) + (port >> 11)]);
 }
 
 void IOOUTCALL gram2_o(UINT port, REG8 value) {
 
 	UINT8	*p;
 
-	p = curvram + (((port << 5) | (port >> 11)) & 0xffe7);
+	p = crtc.e.gram + (((port << 5) + (port >> 11)) & 0xffe7);
 	switch(port & 0xc000) {
 		case 0x0000:
 			p[PLANE_B] = value;
@@ -112,8 +105,7 @@ void IOOUTCALL gram2_o(UINT port, REG8 value) {
 			p[PLANE_R] = value;
 			break;
 	}
-
-	updatetmp[port & updatemsk] |= curupdt;
+	updatetmp[port & crtc.e.updatemask] |= crtc.e.updatebit;
 	scrnflash = 1;
 }
 
@@ -127,7 +119,5 @@ void vramio_reset(void) {
 	memset(tram + TRAM_ATR, 0x07, 0x800);
 	memset(tram + TRAM_ANK, 0x20, 0x800);
 	ZeroMemory(updatetmp, sizeof(updatetmp));
-	curvram = &GRP_RAM[GRAM_BANK0];
-	curupdt = UPDATE_VRAM0;
 }
 
