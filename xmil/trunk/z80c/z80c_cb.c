@@ -13,9 +13,9 @@
 #include	"z80c.mcr"
 
 
-static BYTE CPUCALL _cb_rlc(BYTE v) {
+static REG8 CPUCALL _cb_rlc(REG8 v) {
 
-	BYTE	ret;
+	REG8	ret;
 
 	R_Z80F = v >> 7;
 	ret = (v << 1) | R_Z80F;
@@ -23,9 +23,9 @@ static BYTE CPUCALL _cb_rlc(BYTE v) {
 	return(ret);
 }
 
-static BYTE CPUCALL _cb_rrc(BYTE v) {
+static REG8 CPUCALL _cb_rrc(REG8 v) {
 
-	BYTE	ret;
+	REG8	ret;
 
 	R_Z80F = v & 1;
 	ret = (v >> 1) | (R_Z80F << 7);
@@ -33,54 +33,54 @@ static BYTE CPUCALL _cb_rrc(BYTE v) {
 	return(ret);
 }
 
-static BYTE CPUCALL _cb_rl(BYTE v) {
+static REG8 CPUCALL _cb_rl(REG8 v) {
 
-	BYTE	ret;
+	REG8	ret;
 
 	ret = (v << 1) | (R_Z80F & 1);
 	R_Z80F = ZSPtable[ret] | (v >> 7);
 	return(ret);
 }
 
-static BYTE CPUCALL _cb_rr(BYTE v) {
+static REG8 CPUCALL _cb_rr(REG8 v) {
 
-	BYTE	ret;
+	REG8	ret;
 
 	ret = (v >> 1) | (R_Z80F << 7);
 	R_Z80F = ZSPtable[ret] | (v & 1);
 	return(ret);
 }
 
-static BYTE CPUCALL _cb_sla(BYTE v) {
+static REG8 CPUCALL _cb_sla(REG8 v) {
 
-	BYTE	ret;
+	REG8	ret;
 
 	ret = (v << 1);
 	R_Z80F = ZSPtable[ret] | (v >> 7);
 	return(ret);
 }
 
-static BYTE CPUCALL _cb_sra(BYTE v) {
+static REG8 CPUCALL _cb_sra(REG8 v) {
 
-	BYTE	ret;
+	REG8	ret;
 
 	ret = (((char)v) / 2);
 	R_Z80F = ZSPtable[ret] | (v & 1);
 	return(ret);
 }
 
-static BYTE CPUCALL _cb_sll(BYTE v) {
+static REG8 CPUCALL _cb_sll(REG8 v) {
 
-	BYTE	ret;
+	REG8	ret;
 
 	ret = (v << 1) | 1;
 	R_Z80F = ZSPtable[ret] | (v >> 7);
 	return(ret);
 }
 
-static BYTE CPUCALL _cb_srl(BYTE v) {
+static REG8 CPUCALL _cb_srl(REG8 v) {
 
-	BYTE	ret;
+	REG8	ret;
 
 	ret = v >> 1;
 	R_Z80F = ZSPtable[ret] | (v & 1);
@@ -88,21 +88,21 @@ static BYTE CPUCALL _cb_srl(BYTE v) {
 }
 
 
-static BYTE (CPUCALL * rolsft_proc[8])(BYTE value) = {
+static REG8 (CPUCALL * rolsft_proc[8])(REG8 value) = {
 		_cb_rlc,	_cb_rrc,	_cb_rl,		_cb_rr,
 		_cb_sla,	_cb_sra,	_cb_sll,	_cb_srl};
 
-static BYTE *cb_reg[8] = {
+static UINT8 *cb_reg[8] = {
 		&R_Z80B,	&R_Z80C,	&R_Z80D,	&R_Z80E,
 		&R_Z80H,	&R_Z80L,	NULL,		&R_Z80A};
 
 
 void z80c_cb(void) {
 
-	BYTE	op;
-	BYTE	*reg;
-	BYTE	xhl;
-	int		bit;
+	UINT	op;
+	UINT8	*reg;
+	REG8	xhl;
+	UINT	bit;
 
 	R_Z80R++;
 	GET_PC_BYTE(op);
@@ -141,7 +141,7 @@ void z80c_cb(void) {
 		}
 	}
 	else {
-		xhl = Z80_RDMEM(R_Z80HL);
+		xhl = mem_read8(R_Z80HL);
 		switch(op & 0xc0) {
 			case 0x00:
 				Z80_COUNT(15);
@@ -174,20 +174,20 @@ void z80c_cb(void) {
 				xhl |= 1 << bit;
 				break;
 		}
-		Z80_WRMEM(R_Z80HL, xhl);
+		mem_write8(R_Z80HL, xhl);
 	}
 }
 
 void z80c_ixcb(void) {
 
-	BYTE	op;
-	WORD	adrs;
-	BYTE	xi;
-	int		bit;
+	UINT	op;
+	UINT	adrs;
+	REG8	xi;
+	UINT	bit;
 
 	R_Z80R++;
-	adrs = __CBW(Z80_RDMEM(R_Z80PC++)) + R_Z80IX;
-	xi = Z80_RDMEM(adrs);
+	adrs = LOW16(mem_read8s(R_Z80PC++) + R_Z80IX);
+	xi = mem_read8(adrs);
 	GET_PC_BYTE(op);
 	bit = (op >> 3) & 7;
 	switch(op & 0xc0) {
@@ -222,19 +222,19 @@ void z80c_ixcb(void) {
 			xi |= 1 << bit;
 			break;
 	}
-	Z80_WRMEM(adrs, xi);
+	mem_write8(adrs, xi);
 }
 
 void z80c_iycb(void) {
 
-	BYTE	op;
-	WORD	adrs;
-	BYTE	xi;
-	int		bit;
+	UINT	op;
+	UINT	adrs;
+	REG8	xi;
+	UINT	bit;
 
 	R_Z80R++;
-	adrs = __CBW(Z80_RDMEM(R_Z80PC++)) + R_Z80IY;
-	xi = Z80_RDMEM(adrs);
+	adrs = LOW16(mem_read8s(R_Z80PC++) + R_Z80IY);
+	xi = mem_read8(adrs);
 	GET_PC_BYTE(op);
 	bit = (op >> 3) & 7;
 	switch(op & 0xc0) {
@@ -269,6 +269,6 @@ void z80c_iycb(void) {
 			xi |= 1 << bit;
 			break;
 	}
-	Z80_WRMEM(adrs, xi);
+	mem_write8(adrs, xi);
 }
 

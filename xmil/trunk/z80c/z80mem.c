@@ -3,7 +3,7 @@
 #include	"pccore.h"
 
 
-REG8 MEMCALL Z80_RDMEM(REG16 addr) {
+REG8 MEMCALL mem_read8(UINT addr) {
 
 	if (addr & 0x8000) {
 		return(mMAIN[addr]);
@@ -13,7 +13,17 @@ REG8 MEMCALL Z80_RDMEM(REG16 addr) {
 	}
 }
 
-void MEMCALL Z80_WRMEM(REG16 addr, REG8 value) {
+SINT MEMCALL mem_read8s(UINT addr) {
+
+	if (addr & 0x8000) {
+		return((SINT)(SINT8)mMAIN[addr]);
+	}
+	else {
+		return((SINT)(SINT8)RAM0r[addr]);
+	}
+}
+
+void MEMCALL mem_write8(UINT addr, REG8 value) {
 
 	if (addr & 0x8000) {
 		mMAIN[addr] = (UINT8)value;
@@ -23,7 +33,7 @@ void MEMCALL Z80_WRMEM(REG16 addr, REG8 value) {
 	}
 }
 
-REG16 MEMCALL Z80_RDMEM_W(REG16 addr) {
+REG16 MEMCALL mem_read16(UINT addr) {
 
 	if ((addr & 0x7fff) != 0x7fff) {
 		if (addr & 0x8000) {
@@ -34,11 +44,11 @@ REG16 MEMCALL Z80_RDMEM_W(REG16 addr) {
 		}
 	}
 	else {
-		return(Z80_RDMEM(addr) + (Z80_RDMEM(LOW16(addr + 1)) << 8));
+		return(mem_read8(addr) + (mem_read8(LOW16(addr + 1)) << 8));
 	}
 }
 
-void MEMCALL Z80_WRMEM_W(REG16 addr, REG16 value) {
+void MEMCALL mem_write16(UINT addr, REG16 value) {
 
 	if ((addr & 0x7fff) != 0x7fff) {
 		if (addr & 0x8000) {
@@ -49,8 +59,8 @@ void MEMCALL Z80_WRMEM_W(REG16 addr, REG16 value) {
 		}
 	}
 	else {
-		Z80_WRMEM(addr, (REG8)value);
-		Z80_WRMEM(LOW16(addr + 1), (REG8)(value >> 8));
+		mem_write8(addr, (REG8)value);
+		mem_write8(LOW16(addr + 1), (REG8)(value >> 8));
 	}
 }
 

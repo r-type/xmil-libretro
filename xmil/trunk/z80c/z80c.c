@@ -148,14 +148,14 @@ void CPUCALL z80c_interrupt(REG8 vect) {
 		case 1:
 			Z80_COUNT(11);
 			R_Z80SP -= 2;
-			Z80_WRMEM_W(R_Z80SP, R_Z80PC);
+			mem_write16(R_Z80SP, R_Z80PC);
 			R_Z80PC = 0x38;
 			break;
 
 		case 2:
-			pc = Z80_RDMEM_W((R_Z80I << 8) + vect);
+			pc = mem_read16((R_Z80I << 8) + vect);
 			R_Z80SP -= 2;
-			Z80_WRMEM_W(R_Z80SP, R_Z80PC);
+			mem_write16(R_Z80SP, R_Z80PC);
 			R_Z80PC = pc;
 			break;
 	}
@@ -181,14 +181,14 @@ void CPUCALL z80c_interrupt2(REG8 vect) {
 		case 1:
 			Z80_COUNT(11);
 			R_Z80SP -= 2;
-			Z80_WRMEM_W(R_Z80SP, R_Z80PC);
+			mem_write16(R_Z80SP, R_Z80PC);
 			R_Z80PC = 0x38;
 			break;
 
 		case 2:
-			pc = Z80_RDMEM_W((R_Z80I << 8) + vect);
+			pc = mem_read16((R_Z80I << 8) + vect);
 			R_Z80SP -= 2;
-			Z80_WRMEM_W(R_Z80SP, R_Z80PC);
+			mem_write16(R_Z80SP, R_Z80PC);
 			R_Z80PC = pc;
 			break;
 	}
@@ -203,7 +203,7 @@ void CPUCALL z80c_nonmaskedinterrupt(void) {
 			R_Z80PC++;
 		}
 		R_Z80SP -= 2;
-		Z80_WRMEM_W(R_Z80SP, R_Z80PC);
+		mem_write16(R_Z80SP, R_Z80PC);
 		R_Z80PC = 0x66;
 	}
 }
