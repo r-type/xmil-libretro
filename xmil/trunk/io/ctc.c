@@ -155,8 +155,8 @@ BRESULT ieitem_ctc(UINT id) {
 	intr |= ch->intr;
 	r = FALSE;
 	if (intr) {
-//		for (i=0, bit=1; i<4; i++, bit<<=1)
-		for (i=4, bit=8; i--; bit>>=1)
+		for (i=0, bit=1; i<4; i++, bit<<=1)
+//		for (i=4, bit=8; i--; bit>>=1)
 		{
 			if (intr & bit) {
 				if (!(ch->cmd[i] & 0x80)) {
@@ -165,7 +165,7 @@ BRESULT ieitem_ctc(UINT id) {
 #if 0			// アークスのタイミング→あとで修正
 				else if (0)
 #elif 1
-				if ((ch->countmax[i] - ch->count[i]) >= ch->range[i])
+				else if ((ch->countmax[i] - ch->count[i]) >= ch->range[i])
 #elif 0
 				else if (((ch->cmd[i] & 0x10) == 0) &&
 						((ch->countmax[i] - ch->count[i]) >= (256 >> 1)))
@@ -178,7 +178,7 @@ BRESULT ieitem_ctc(UINT id) {
 				else if (!r) {
 					r = TRUE;
 					intr ^= bit;
-//					TRACEOUT(("ctc int %d %d", ch->num, i));
+					TRACEOUT(("ctc int %d %d [%.2x]", ch->num, i, ch->cmd[i]));
 					Z80_INTERRUPT((REG8)(ch->vector + (i << 1)));
 				}
 			}
