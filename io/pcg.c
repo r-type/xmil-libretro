@@ -54,7 +54,7 @@ static UINT nowsyncoffset(void) {
 
 	v = pccore_getraster(&h);
 
-	ret = ((v / crtc.s.fnty) * crtc.s.TXT_XL) + crtc.s.TXT_TOP;
+	ret = ((v / crtc.e.fonty) * crtc.s.TXT_XL) + crtc.s.TXT_TOP;
 	ret += (h * crtc.s.TXT_XL) / 250;
 
 	if (ret >= 0x0800) {

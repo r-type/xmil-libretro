@@ -14,7 +14,7 @@
 		BYTE	scrnallflash;
 static	BYTE	lastdisp = 0;
 static	BYTE	blinktime = 1;
-		DWORD	drawtime = 0;
+		UINT	drawtime = 0;
 
 
 static void fillupdatetmp(void) {
@@ -42,6 +42,9 @@ static void flashupdatetmp(void) {
 	REG16	udtbase;
 	REG16	udt;
 
+	if (!makescrn.vramsize) {
+		return;
+	}
 	posl = crtc.s.TXT_TOP;
 	y = crtc.s.TXT_YL;
 	do {
@@ -234,13 +237,13 @@ static void changemodes(void) {
 
 	lastdisp = crtc.e.dispmode;
 	if (!(lastdisp & SCRN_BANK1)) {
-		makescrn.disp1 = GRP_RAM + GRAM_BANK0;
-		makescrn.disp2 = GRP_RAM + GRAM_BANK1;
+		makescrn.disp1 = gram + GRAM_BANK0;
+		makescrn.disp2 = gram + GRAM_BANK1;
 		makescrn.dispflag = UPDATE_TRAM | UPDATE_VRAM0;
 	}
 	else {
-		makescrn.disp1 = GRP_RAM + GRAM_BANK1;
-		makescrn.disp2 = GRP_RAM + GRAM_BANK0;
+		makescrn.disp1 = gram + GRAM_BANK1;
+		makescrn.disp2 = gram + GRAM_BANK0;
 		makescrn.dispflag = UPDATE_TRAM | UPDATE_VRAM1;
 	}
 	scrnallflash = 1;
@@ -249,15 +252,24 @@ static void changemodes(void) {
 
 static void changecrtc(void) {
 
+	UINT	scrnxmax;
+	UINT	scrnymax;
+	UINT	textxl;
+	UINT	surfcx;
 	REG8	widthmode;
 	UINT	fontcy;
 	UINT	underlines;
 	REG8	y2;
 	UINT	charcy;
 	UINT	surfcy;
+	UINT	x;
+	UINT	y;
+	UINT8	*p;
 
 	makescrn.vramtop = LOW11(crtc.s.TXT_TOP);
 
+	scrnxmax = (crtc.s.TXT_XL <= 40)?40:80;
+	scrnymax = 200;
 	if (crtc.s.TXT_XL <= 40) {
 		if (lastdisp & SCRN_DRAW4096) {
 			widthmode = SCRNWIDTHMODE_4096;
@@ -271,13 +283,10 @@ static void changecrtc(void) {
 	}
 	scrndraw_changewidth(widthmode);
 
-	makescrn.surfcx = min(80, crtc.s.TXT_XL);
-	makescrn.surfrx = crtc.s.TXT_XL - makescrn.surfcx;
+	textxl = crtc.s.TXT_XL;
+	surfcx = min(scrnxmax, textxl);
 
-	fontcy = crtc.s.FNT_YL;
-	if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
-		fontcy >>= 1;
-	}
+	fontcy = crtc.e.fonty;
 	underlines = (crtc.s.SCRN_BITS & SCRN_UNDERLINE)?2:0;
 	if (fontcy > underlines) {
 		fontcy -= underlines;
@@ -301,17 +310,33 @@ static void changecrtc(void) {
 	charcy = fontcy + underlines;
 	makescrn.fontcy = fontcy;
 	makescrn.charcy = charcy;
-
 	charcy <<= y2;
-	surfcy = 200 / charcy;
+	surfcy = scrnymax / charcy;
 	if (surfcy > crtc.s.TXT_YL) {
 		surfcy = crtc.s.TXT_YL;
 	}
-	surfcy = max(1, surfcy);
+
+	x = min(scrnxmax, makescrn.surfcx);
+	if (surfcx < x) {								// ¬‚³‚­‚È‚Á‚½
+		x = (x - surfcx) * 8;
+		p = screenmap + (surfcx * 8);
+		y = surfcy * 2;
+		while(y) {
+			y--;
+			ZeroMemory(p, x);
+			p += SURFACE_WIDTH;
+		}
+	}
+	if (surfcy < makescrn.surfcy) {
+		ZeroMemory(screenmap + (SURFACE_WIDTH * surfcy * 2),
+							SURFACE_WIDTH * (makescrn.surfcy - surfcy) * 2);
+	}
+	makescrn.surfcx = surfcx;
+	makescrn.surfrx = textxl - surfcx;
 	makescrn.surfcy = surfcy;
-	makescrn.surfstep = (SURFACE_WIDTH * charcy * 2) - (makescrn.surfcx * 8);
-	makescrn.vramsize = min(0x800, surfcy * crtc.s.TXT_XL);
-	scrnmng_setheight(0, charcy * surfcy * 2);
+	makescrn.surfstep = (SURFACE_WIDTH * charcy * 2) - (surfcx * 8);
+	makescrn.vramsize = min(0x800, surfcy * textxl);
+//	scrnmng_setheight(0, charcy * surfcy * 2);
 }
 
 
@@ -335,6 +360,7 @@ static const DRAWFN screendraw2[8] = {
 void scrnupdate(void) {
 
 	BRESULT	ddrawflash;
+	BRESULT	allflash;
 
 	if (!corestat.drawframe) {
 		return;
@@ -342,6 +368,7 @@ void scrnupdate(void) {
 	corestat.drawframe = 0;
 
 	ddrawflash = FALSE;
+	allflash = FALSE;
 	if (lastdisp != crtc.e.dispmode) {
 		changemodes();
 	}
@@ -349,6 +376,7 @@ void scrnupdate(void) {
 		scrnallflash = 0;
 		fillupdatetmp();
 		changecrtc();
+		allflash = TRUE;
 		makescrn.scrnflash = 1;
 	}
 	if (makescrn.remakeattr) {
@@ -366,64 +394,66 @@ void scrnupdate(void) {
 
 	if (makescrn.scrnflash) {
 		makescrn.scrnflash = 0;
-		makescrn.fontycnt = 0;
-		switch(lastdisp & SCRN64_MASK) {
-			case SCRN64_320x200:
-//				width40x25_64s();
-				break;
+		if (makescrn.vramsize) {
+			makescrn.fontycnt = 0;
+			switch(lastdisp & SCRN64_MASK) {
+				case SCRN64_320x200:
+//					width40x25_64s();
+					break;
 
-			case SCRN64_L320x200x2:
-//				width40x25_64x2();
-				break;
+				case SCRN64_L320x200x2:
+//					width40x25_64x2();
+					break;
 
-			case SCRN64_L640x200:
-//				width80x25_64s();
-				break;
+				case SCRN64_L640x200:
+//					width80x25_64s();
+					break;
 
-			case SCRN64_H320x400:
-//				width40x25_64h();
-				break;
+				case SCRN64_H320x400:
+//					width40x25_64h();
+					break;
 
-			case SCRN64_320x200x4096:
-//				width40x25_4096();
-				break;
+				case SCRN64_320x200x4096:
+//					width40x25_4096();
+					break;
 
-			case SCRN64_320x100:
-//				width40x12_64l();
-				break;
+				case SCRN64_320x100:
+//					width40x12_64l();
+					break;
 
-			case SCRN64_320x100x2:
-//				width40x12_64x2();
-				break;
+				case SCRN64_320x100x2:
+//					width40x12_64x2();
+					break;
 
-			case SCRN64_L640x100:
-//				width80x12_64s();
-				break;
+				case SCRN64_L640x100:
+//					width80x12_64s();
+					break;
 
-			case SCRN64_H320x200:
-//				width40x12_64h();
-				break;
+				case SCRN64_H320x200:
+//					width40x12_64h();
+					break;
 
-			case SCRN64_320x100x4096:
-//				width40x12_4096();
-				break;
+				case SCRN64_320x100x4096:
+//					width40x12_4096();
+					break;
 
-//			case SCRN64_INVALID:
-			default:
-				if (!(crtc.s.SCRN_BITS & SCRN_UNDERLINE)) {
-					screendraw[crtc.s.SCRN_BITS & 7]();
-				}
-				else {
-					screendraw2[crtc.s.SCRN_BITS & 7]();
-				}
-				break;
+//				case SCRN64_INVALID:
+				default:
+					if (!(crtc.s.SCRN_BITS & SCRN_UNDERLINE)) {
+						screendraw[crtc.s.SCRN_BITS & 7]();
+					}
+					else {
+						screendraw2[crtc.s.SCRN_BITS & 7]();
+					}
+					break;
+			}
+			ddrawflash = 1;
 		}
-		ddrawflash = 1;
 	}
 
 	if (ddrawflash) {
 		ddrawflash = 0;
-		scrndraw_draw(FALSE);
+		scrndraw_draw(allflash);
 		drawtime++;
 	}
 }

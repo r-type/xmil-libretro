@@ -100,7 +100,7 @@ const UINT8	*src;
 				newline = TRUE;
 				ZeroMemory(work, sizeof(work));
 				makechr16(work, pos, fontcy, udtmp);
-				src = GRP_RAM + (pos << 5);
+				src = gram + (pos << 5);
 				makemix_mix(dst + SURFACE_WIDTH * 0, SURFACE_WIDTH * 2,
 							work, src + GRAM_BANK0, fontcy);
 				makemix_mix(dst + SURFACE_WIDTH * 1, SURFACE_WIDTH * 2,
@@ -226,7 +226,7 @@ const UINT8	*src;
 				newline = TRUE;
 				ZeroMemory(work, sizeof(work));
 				makechr16(work, pos, fontcy, udtmp);
-				src = GRP_RAM + (LOW10(pos) << 5);
+				src = gram + (LOW10(pos) << 5);
 				makemix_mix(dst + SURFACE_WIDTH * 0, SURFACE_WIDTH * 4,
 							work, src + GRAM_BANK0L, fontcy);
 				makemix_mix(dst + SURFACE_WIDTH * 1, SURFACE_WIDTH * 4,

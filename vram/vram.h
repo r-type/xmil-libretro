@@ -43,7 +43,7 @@ enum {
 extern "C" {
 #endif
 
-extern	UINT8	GRP_RAM[0x20000];
+extern	UINT8	gram[0x20000];
 extern	UINT8	tram[0x01800];
 extern	UINT8	updatetmp[0x800+0x101];
 

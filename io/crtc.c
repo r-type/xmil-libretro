@@ -25,12 +25,12 @@ static const CRTCSTAT crtcdefault = {
 				0,							// SCRN_BITS
 				0,							// CRTC_NUM
 
-				8,							// FNT_YL
+				7,							// _FNT_YL
 				40,							// TXT_XL
 				25,							// TXT_YL
 				28,							// TXT_YS
 
-				200,						// CRT_YL
+//				200,						// CRT_YL
 //				232,						// CRT_VS
 //				266,						// CRT_VL
 
@@ -38,7 +38,7 @@ static const CRTCSTAT crtcdefault = {
 				10,							// TXT_VLA
 
 				0,							// TXT_TOP
-				8,							// fnty
+//				8,							// fnty
 
 				0,							// lastpal
 
@@ -57,11 +57,11 @@ void vrambank_patch(void) {
 	UINT8	pal_disp;
 
 	if (crtc.s.SCRN_BITS & 0x10) {
-		crtc.e.gram = GRP_RAM + GRAM_BANK1;
+		crtc.e.gram = gram + GRAM_BANK1;
 		crtc.e.updatebit = UPDATE_VRAM1;
 	}
 	else {
-		crtc.e.gram = GRP_RAM + GRAM_BANK0;
+		crtc.e.gram = gram + GRAM_BANK0;
 		crtc.e.updatebit = UPDATE_VRAM0;
 	}
 	dispmode = (crtc.s.SCRN_BITS & SCRN_DISPVRAM)?SCRN_BANK1:SCRN_BANK0;
@@ -175,21 +175,19 @@ void vrambank_patch(void) {
 
 static void crtc_updt(void) {
 
+	UINT	fonty;
+
+	fonty = crtc.s._FNT_YL;
 	if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
-		crtc.s.fnty = (crtc.s.FNT_YL >> 1) & 0xfffe;
+		fonty >>= 1;
 	}
-	else {
-		crtc.s.fnty = crtc.s.FNT_YL & 0xfffe;
-	}
-	if (crtc.s.TXT_YL) {
-		crtc.s.CRT_YL = crtc.s.fnty * crtc.s.TXT_YL;
-	}
-	else {
-		crtc.s.CRT_YL = crtc.s.fnty * 1;
-	}
-	crtc.e.vs = crtc.s.fnty * (crtc.s.TXT_YS + 1);
-	crtc.e.vl = (crtc.s.TXT_VL + 1) * crtc.s.fnty + crtc.s.TXT_VLA;
-//	TRACEOUT(("set> %d / %d / %d", crtc.s.CRT_YL, crtc.s.CRT_VS, crtc.s.CRT_VL));
+	fonty += 1;
+	crtc.e.fonty = fonty;
+	crtc.e.yl = (crtc.s.TXT_YL & 0x7f);
+
+	crtc.e.dl = fonty * crtc.e.yl;
+	crtc.e.vs = fonty * ((crtc.s.TXT_YS & 0x7f) + 1);
+	crtc.e.vl = fonty * ((crtc.s.TXT_VL & 0x7f) + 1) + (crtc.s.TXT_VLA & 0x1f);
 }
 
 
@@ -230,7 +228,7 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 				break;
 
 			case 0x09:
-				crtc.s.FNT_YL = (WORD)value+1;
+				crtc.s._FNT_YL = value;
 				break;
 
 			case 0x0c:
@@ -496,7 +494,7 @@ void crtc_reset(void) {
 	}
 	if ((pccore.ROM_TYPE >= 2) && (!(pccore.DIP_SW & 1))) {
 		crtc.s.SCRN_BITS = SCRN_200LINE;
-		crtc.s.FNT_YL = 16;
+		crtc.s._FNT_YL = 15;
 	}
 
 	pal_reset();
