@@ -8,8 +8,13 @@ enum {
 	FMVOL_SFTBIT	= 5
 };
 
+#if !defined(_WIN32_WCE)
 #define	SIN_BITS		10
 #define	EVC_BITS		10
+#else
+#define	SIN_BITS		8
+#define	EVC_BITS		7
+#endif
 #define	ENV_BITS		16
 #define	KF_BITS			6
 #define	FREQ_BITS		20
