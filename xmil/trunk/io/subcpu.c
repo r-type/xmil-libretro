@@ -63,7 +63,7 @@ BRESULT ieitem_scpu(UINT id) {
 			return(FALSE);
 		}
 		key = key & (~0x20);			// rep
-		subcpu.keycountrep = 96;
+		subcpu.keycountrep = 48;		// 0.1sec
 	}
 	subcpu.Ex[0x06][0] = (UINT8)key;
 	subcpu.Ex[0x06][1] = keydata;
