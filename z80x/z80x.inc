@@ -37,8 +37,7 @@
 .r2				resb	1
 .iff			resw	1
 				resw	1
-.icount			resw	1
-				resw	1
+.icount			resd	1
 				endstruc
 
 S_FLAG		equ		0x80

@@ -22,7 +22,7 @@ typedef struct {
 } XMILCFG;
 
 typedef struct {
-	UINT16	HSYNC_CLK;
+	UINT	HSYNC_CLK;
 	UINT8	ROM_TYPE;
 	UINT8	DIP_SW;
 	UINT8	SOUND_SW;
@@ -54,10 +54,12 @@ extern	DWORD		h_cntbase;
 
 extern	BYTE	mMAIN[0x10000];
 extern	BYTE	mBIOS[0x8000];
+#if defined(SUPPORT_EMS)
 extern	BYTE	mBANK[16][0x8000];
+#endif
 
 #define	h_cnt	Z80_ICOUNT
-extern	WORD	v_cnt;
+extern	UINT	v_cnt;
 
 // BYTE reset_x1(BYTE ROM_TYPE, BYTE SOUND_SW, BYTE DIP_SW);
 // void x1r_exec(void);

@@ -13,8 +13,8 @@ static void txt16_nor(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 
 	pos = 0;										// カウンタは戻る
 	do {
-		dst[0] = src[pos+0];
-		dst[64] = src[pos+1];
+		dst[0] = src[pos + 0];
+		dst[0 + MAKETEXT_STEP] = src[pos + 1];
 		pos = (pos + 2) & 15;
 		dst++;
 	} while(dst < term);
@@ -28,7 +28,7 @@ static void txt16_x2left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	pos = 0;										// カウンタは戻る
 	do {
 		dst[0] = PATx2LEFT(src[pos]);
-		dst[64] = PATx2LEFT(src[pos+1]);
+		dst[0 + MAKETEXT_STEP] = PATx2LEFT(src[pos + 1]);
 		pos = (pos + 2) & 15;
 		dst++;
 	} while(dst < term);
@@ -42,7 +42,7 @@ static void txt16_x2right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	pos = 0;										// カウンタは戻る
 	do {
 		dst[0] = PATx2RIGHT(src[pos]);
-		dst[64] = PATx2RIGHT(src[pos+1]);
+		dst[0 + MAKETEXT_STEP] = PATx2RIGHT(src[pos + 1]);
 		pos = (pos + 2) & 15;
 		dst++;
 	} while(dst < term);
@@ -59,7 +59,7 @@ static void txt16_Yx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = src[pos];
 		pos = (pos + 1) & 15;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	} while(dst < term);
 }
@@ -75,7 +75,7 @@ static void txt16_x4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = PATx2LEFT(src[pos]);
 		pos = (pos + 1) & 15;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	} while(dst < term);
 }
@@ -91,7 +91,7 @@ static void txt16_x4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = PATx2RIGHT(src[pos]);
 		pos = (pos + 1) & 15;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	} while(dst < term);
 }
@@ -104,7 +104,7 @@ static void txt16_right4dot(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 	pos = 0;										// カウンタは戻る
 	do {
 		dst[0] = (UINT8)(src[pos] << 4);
-		dst[64] = (UINT8)(src[pos+1] << 4);
+		dst[0 + MAKETEXT_STEP] = (UINT8)(src[pos+1] << 4);
 		pos = (pos + 2) & 15;
 		dst++;
 	} while(dst < term);
@@ -121,14 +121,14 @@ static void txt16_right4half(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = src[pos] << 4;
 		pos = 0;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	}
 	while(dst < term) {
 		dat = src[pos] << 4;
 		pos = (pos + 2) & 15;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	}
 }
@@ -144,7 +144,7 @@ static void txt16_right4x2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = src[pos] << 4;
 		pos = (pos + 2) & 15;
 		dst[0] = (UINT)dat;
-		dst[64] = (UINT)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT)dat;
 		dst++;
 	} while(dst < term);
 }
@@ -160,14 +160,14 @@ static void txt16_halfx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = src[pos];
 		pos = 0;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	}
 	while(dst < term) {
 		dat = src[pos];
 		pos = (pos + 2) & 15;
 		dst[0] = (UINT8)dat;
-		dst[1] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	}
 }
@@ -183,14 +183,14 @@ static void txt16_halfx4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = PATx2LEFT(src[pos]);
 		pos = 0;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	}
 	while(dst < term) {
 		dat = PATx2LEFT(src[pos]);
 		pos = (pos + 2) & 15;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	}
 }
@@ -206,14 +206,14 @@ static void txt16_halfx4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = PATx2RIGHT(src[pos]);
 		pos = 0;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	}
 	while(dst < term) {
 		dat = PATx2RIGHT(src[pos]);
 		pos = (pos + 2) & 15;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	}
 }
@@ -232,7 +232,7 @@ static void pcg8x2_nor(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = src[pos];
 		pos = (pos + 1) & 7;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	} while(dst < term);
 }
@@ -248,7 +248,7 @@ static void pcg8x2_x2left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = PATx2LEFT(src[pos]);
 		pos = (pos + 1) & 7;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	} while(dst < term);
 }
@@ -264,7 +264,7 @@ static void pcg8x2_x2right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = PATx2RIGHT(src[pos]);
 		pos = (pos + 1) & 7;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	} while(dst < term);
 }
@@ -281,8 +281,8 @@ static void pcg8x2_Yx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = (pos + 1) & 7;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	} while(dst < term);
 }
@@ -299,8 +299,8 @@ static void pcg8x2_x4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = (pos + 1) & 7;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	} while(dst < term);
 }
@@ -317,8 +317,8 @@ static void pcg8x2_x4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = (pos + 1) & 7;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	} while(dst < term);
 }
@@ -334,7 +334,7 @@ static void pcg8x2_right4dot(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		dat = src[pos] << 4;
 		pos = (pos + 1) & 7;
 		dst[0] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
 		dst++;
 	} while(dst < term);
 }
@@ -351,8 +351,8 @@ static void pcg8x2_right4half(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = 0;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	}
 	while(dst < term) {
@@ -360,8 +360,8 @@ static void pcg8x2_right4half(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = (pos + 2) & 7;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	}
 }
@@ -378,8 +378,8 @@ static void pcg8x2_right4x2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = (pos + 1) & 7;
 		dst[0] = (UINT)dat;
 		dst[1] = (UINT)dat;
-		dst[64] = (UINT)dat;
-		dst[65] = (UINT)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT)dat;
 		dst += 2;
 	} while(dst < term);
 }
@@ -396,8 +396,8 @@ static void pcg8x2_halfx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = 0;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	}
 	while(dst < term) {
@@ -405,8 +405,8 @@ static void pcg8x2_halfx2(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = (pos + 2) & 7;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	}
 }
@@ -423,8 +423,8 @@ static void pcg8x2_halfx4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = 0;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	}
 	while(dst < term) {
@@ -432,8 +432,8 @@ static void pcg8x2_halfx4left(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = (pos + 2) & 7;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	}
 }
@@ -450,8 +450,8 @@ static void pcg8x2_halfx4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = 0;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	}
 	while(dst < term) {
@@ -459,8 +459,8 @@ static void pcg8x2_halfx4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 		pos = (pos + 2) & 7;
 		dst[0] = (UINT8)dat;
 		dst[1] = (UINT8)dat;
-		dst[64] = (UINT8)dat;
-		dst[65] = (UINT8)dat;
+		dst[0 + MAKETEXT_STEP] = (UINT8)dat;
+		dst[1 + MAKETEXT_STEP] = (UINT8)dat;
 		dst += 2;
 	}
 }

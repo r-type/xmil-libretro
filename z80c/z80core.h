@@ -84,9 +84,9 @@ typedef struct {
 	UINT8	im;
 	UINT8	r1;
 	UINT8	r2;
-	UINT16	iff;
-
-	UINT16	icount;
+	UINT8	iff;
+	UINT8	padding[3];
+	UINT32	icount;
 } Z80STAT;
 
 typedef struct {

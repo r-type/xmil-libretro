@@ -171,7 +171,7 @@ static const IOOUT defout[0x20] = {
 
 			palette_o,			palette_o,
 			palette_o,			ply_o,
-			pcg_o,				pcg_o,
+			dummy_out,			pcg_o,
 			pcg_o,				pcg_o,
 
 			crtc_o,				subcpu_o,
@@ -188,10 +188,12 @@ void iocore_reset(void) {
 	ZeroMemory(&iocore, sizeof(iocore));
 	CopyMemory(iocore.e.inpfn, definp, sizeof(definp));
 	CopyMemory(iocore.e.outfn, defout, sizeof(defout));
+#if defined(SUPPORT_EMS)
 	if (pccore.ROM_TYPE >= 2) {
 		iocore.e.inpfn[0x0b] = memio_ems_i;
 		iocore.e.outfn[0x0b] = memio_ems_o;
 	}
+#endif
 	if (pccore.ROM_TYPE >= 3) {
 		iocore.e.inpfn[0x10] = palette_i;
 		iocore.e.inpfn[0x11] = palette_i;
