@@ -126,12 +126,14 @@ static void crtc_bankupdate(void) {
 		crtc.e.updatebit = UPDATE_VRAM0;
 	}
 	dispmode = (crtc.s.SCRN_BITS & SCRN_DISPVRAM)?SCRN_BANK1:SCRN_BANK0;
-	pal_bank = pal_disp = PAL_NORMAL;
+	pal_bank = PAL_NORMAL;
+	pal_disp = PAL_NORMAL;
 
 	if ((!(crtc.s.EXTPALMODE & 0x80)) || (crtc.s.SCRN_BITS & SCRN_UNDERLINE)) {
 		updatemask = 0x7ff;
 		if ((crtc.s.SCRN_BITS & SCRN_24KHZ) && (!crtc.s.width40)) {
-			pal_bank = pal_disp = PAL_HIGHRESO;
+			pal_bank = PAL_HIGHRESO;
+			pal_disp = PAL_HIGHRESO;
 		}
 		if (crtc.s.SCRN_BITS & SCRN_TEXTYx2) {
 			updatemask = 0x3ff;
@@ -233,7 +235,6 @@ static void crtc_bankupdate(void) {
 	crtc.e.pal_bank = pal_bank;
 	crtc.e.pal_disp = pal_disp;
 }
-
 
 
 // ---- CRTC

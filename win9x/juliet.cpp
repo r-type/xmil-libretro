@@ -180,6 +180,7 @@ static void YM2151W(UINT8 addr, UINT8 data) {
 	while ( romeo.in8(romeo.addr + ROMEO_YM2151DATA)&0x80 ) Sleep(0);
 
 	romeo.out8(romeo.addr + ROMEO_YM2151ADDR, addr);
+	romeo.in8(romeo.addr + ROMEO_YM2151DATA);
 	romeo.out8(romeo.addr + ROMEO_YM2151DATA, data);
 }
 
