@@ -2,8 +2,6 @@
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"x1_io.h"
-#include	"x1_crtc.h"
 #include	"vram.h"
 #include	"font.h"
 
@@ -52,10 +50,10 @@ static UINT nowsyncoffset(void) {
 
 	UINT	ret;
 
-	ret = (((v_cnt - crtc.CRT_YL) / crtc.fnty) + crtc.TXT_YL) * crtc.TXT_XL
-															+ crtc.TXT_TOP;
+	ret = (((v_cnt - crtc.s.CRT_YL) / crtc.s.fnty) + crtc.s.TXT_YL)
+											* crtc.s.TXT_XL + crtc.s.TXT_TOP;
 	if (pccore.HSYNC_CLK) {
-		ret += (h_cnt * crtc.TXT_XL) / pccore.HSYNC_CLK;
+		ret += (h_cnt * crtc.s.TXT_XL) / pccore.HSYNC_CLK;
 	}
 
 	if (ret >= 0x0800) {
@@ -71,7 +69,7 @@ void IOOUTCALL pcg_o(UINT port, REG8 value) {
 	UINT	off;
 	UINT	l;
 
-	if (crtc.SCRN_BITS & SCRN_PCGMODE) {
+	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
 		off = pcg_offset();
 		chr = tram[TRAM_ANK + off];
 		if (tram[TRAM_KNJ + off] & 0x90) {
@@ -127,7 +125,7 @@ REG8 IOINPCALL pcg_i(UINT port) {
 	BYTE	chr,knj,val;
 
 	val = 0xff;
-	if (crtc.SCRN_BITS & SCRN_PCGMODE) {
+	if (crtc.s.SCRN_BITS & SCRN_PCGMODE) {
 		l = port & 0x0f;
 		if ((port & 0xff00) == 0x1400) {
 			off = knj_offset();
@@ -143,7 +141,7 @@ REG8 IOINPCALL pcg_i(UINT port) {
 					val = font_knjx1t[p + l];
 				}
 			}
-			else if (crtc.SCRN_BITS & SCRN_CPUFONT) {
+			else if (crtc.s.SCRN_BITS & SCRN_CPUFONT) {
 				val = font_txt[(chr << 4) + l];
 			}
 			else {

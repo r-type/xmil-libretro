@@ -1,8 +1,7 @@
 #include	"compiler.h"
 #include	"scrnmng.h"
 #include	"pccore.h"
-#include	"x1_io.h"
-#include	"x1_crtc.h"
+#include	"iocore.h"
 #include	"scrndraw.h"
 #include	"draw.h"
 #include	"palettes.h"
@@ -270,20 +269,20 @@ void palettes(void) {
 		}
 	}
 	else if ((dispmode & SCRN64_MASK) == SCRN64_INVALID) {
-		if ((xmilcfg.SKIP_LINE) && (!(crtc.SCRN_BITS & SCRN_24KHZ))) {
+		if ((xmilcfg.SKIP_LINE) && (!(crtc.s.SCRN_BITS & SCRN_24KHZ))) {
 			skip8 = 8;
 			skip16 = 16;
 		}
 		for (i=0, bit=1; i<8; i++, bit<<=1) {
-			if (!(crtc.EXTPALMODE & 0x80)) {
+			if (!(crtc.s.EXTPALMODE & 0x80)) {
 				c = 0;
-				if (crtc.PAL_B & bit) {
+				if (crtc.s.PAL_B & bit) {
 					c |= 1;
 				}
-				if (crtc.PAL_R & bit) {
+				if (crtc.s.PAL_R & bit) {
 					c |= 2;
 				}
-				if (crtc.PAL_G & bit) {
+				if (crtc.s.PAL_G & bit) {
 					c |= 4;
 				}
 			}
@@ -293,7 +292,7 @@ void palettes(void) {
 			x1n_pal32[i].d = pals.grph[pal_disp][c].d;
 			x1n_pal32[i+64].d = x1n_pal32[i+128].d
 										= pals.grph[pal_disp][c+skip8].d;
-			if (crtc.PLY & bit) {
+			if (crtc.s.PLY & bit) {
 				for (j=i+8; j<64; j+=8) {
 					x1n_pal32[j].d = x1n_pal32[i].d;
 					x1n_pal32[j+64].d = x1n_pal32[j+128].d
@@ -301,10 +300,10 @@ void palettes(void) {
 				}
 			}
 			else {
-				BYTE cnt = (crtc.BLACKPAL & 15) - 8;
+				BYTE cnt = (crtc.s.BLACKPAL & 15) - 8;
 				for (j=i+8; j<64; j+=8) {
 					if (--cnt) {
-						c = crtc.TEXT_PAL[j>>3];
+						c = crtc.s.TEXT_PAL[j>>3];
 					}
 					else {
 						c = 0;
@@ -345,7 +344,7 @@ void reflesh_palette(void) {
 	UINT	k;
 
 	pals.blankcol = xmilcfg.BLKLIGHT;
-	if ((!xmilcfg.SKIP_LINE) || (crtc.SCRN_BITS & SCRN_24KHZ)) {
+	if ((!xmilcfg.SKIP_LINE) || (crtc.s.SCRN_BITS & SCRN_24KHZ)) {
 		pals.blankcol >>= 1;
 	}
 	halfgrp = xmilcfg.LINEDEPTH;

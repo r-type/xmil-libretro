@@ -576,6 +576,10 @@ SOURCE=..\IO\CMT.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\IO\CRTC.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\IO\CTC.C
 # End Source File
 # Begin Source File
@@ -613,10 +617,6 @@ SOURCE=..\IO\SNDBOARD.C
 # Begin Source File
 
 SOURCE=..\IO\SUBCPU.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\CAVELV2\X1_CRTC.C
 # End Source File
 # Begin Source File
 

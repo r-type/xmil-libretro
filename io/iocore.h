@@ -38,6 +38,7 @@ typedef struct {
 
 #include	"cgrom.h"
 #include	"cmt.h"
+#include	"crtc.h"
 #include	"ctc.h"
 #include	"dipsw.h"
 #include	"dmac.h"
@@ -57,6 +58,7 @@ extern "C" {
 extern	IOCORE		iocore;
 extern	CGROM		cgrom;
 extern	CMT			cmt;
+extern	CRTC		crtc;
 extern	CTC			ctc;
 extern	DMAC		dma;
 extern	FDC			fdc;

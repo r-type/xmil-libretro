@@ -1,8 +1,6 @@
 #include	"compiler.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"x1_io.h"
-#include	"x1_crtc.h"
 #include	"draw.h"
 
 
@@ -14,7 +12,7 @@ void IOOUTCALL ppi_o(UINT port, REG8 value) {
 	UINT8	bit;
 	UINT8	xl;
 
-	if (crtc.TXT_XL == 40) {
+	if (crtc.s.TXT_XL == 40) {
 		ppi.PORT_C |= 0x40;
 	}
 	else {
@@ -71,9 +69,9 @@ void IOOUTCALL ppi_o(UINT port, REG8 value) {
 		ppi.IO_MODE = 1;
 	}
 	xl = ((ppi.PORT_C & 0x40)?40:80);
-	if (crtc.TXT_XL != xl) {
-		crtc.TXT_XL = (UINT8)xl;
-		crtc.GRP_XL = xl << 3;
+	if (crtc.s.TXT_XL != xl) {
+		crtc.s.TXT_XL = (UINT8)xl;
+		crtc.s.GRP_XL = xl << 3;
 		vrambank_patch();
 		scrnallflash = 1;
 	}
@@ -83,7 +81,7 @@ REG8 IOINPCALL ppi_i(UINT port) {
 
 	ppi.PORT_B = cmt_test(); // | cmt_read();	// THUNDER BALL
 
-	if (v_cnt < crtc.CRT_YL) {
+	if (v_cnt < crtc.s.CRT_YL) {
 		ppi.PORT_B |= 0x80;					// 1:DISP
 	}
 	if (subcpu.IBF) {
@@ -97,15 +95,15 @@ REG8 IOINPCALL ppi_i(UINT port) {
 		ppi.PORT_B |= 0x10;					// 1:RAM
 	}
 #if 1
-	if (!(v_cnt < crtc.CRT_VS)) {
+	if (!(v_cnt < crtc.s.CRT_VS)) {
 		ppi.PORT_B |= 0x04;					// V-SYNC
 	}
 #else								// ラプラステスト…VYSNCが長すぎるらしい
-	if (v_cnt == crtc.CRT_VS) {
+	if (v_cnt == crtc.s.CRT_VS) {
 		ppi.PORT_B |= 0x04;
 	}
 #endif
-	if (crtc.TXT_XL == 40) {
+	if (crtc.s.TXT_XL == 40) {
 		ppi.PORT_C |= 0x40;
 	}
 	else {

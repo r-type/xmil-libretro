@@ -15,8 +15,6 @@
 #include	"scrndraw.h"
 #include	"draw.h"
 #include	"palettes.h"
-#include	"x1_io.h"
-#include	"x1_crtc.h"
 
 
 typedef struct {
