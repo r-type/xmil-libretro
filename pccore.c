@@ -27,7 +27,6 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 							0, 0,
 							0, 0,
 							0, 0, 0,
-							1,
 							1, 0};
 
 	PCCORE		pccore = {250, 0, 1, 0};

@@ -151,41 +151,39 @@ END
 // Dialog
 //
 
-IDD_CONFIG DIALOG DISCARDABLE  0, 0, 195, 177
+IDD_CONFIG DIALOG DISCARDABLE  0, 0, 194, 140
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Configure"
 FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
 BEGIN
-    GROUPBOX        "Sound",IDC_STATIC,8,8,128,94
-    LTEXT           "Sapling Rate",IDC_STATIC,14,22,38,8
-    COMBOBOX        IDC_SAMPLERATE,60,20,52,64,CBS_DROPDOWN | WS_VSCROLL | 
+    GROUPBOX        "Sound",IDC_STATIC,8,8,128,60
+    LTEXT           "Sapling Rate",IDC_STATIC,16,22,38,8
+    COMBOBOX        IDC_SAMPLERATE,62,20,50,64,CBS_DROPDOWN | WS_VSCROLL | 
                     WS_TABSTOP
     LTEXT           "Hz",IDC_STATIC,116,22,8,8
-    LTEXT           "Buffer",IDC_STATIC,14,37,19,8
+    LTEXT           "Buffer",IDC_STATIC,16,37,19,8
     EDITTEXT        IDC_SNDBUFFER,70,35,30,12
     LTEXT           "ms",IDC_STATIC,116,37,10,8
-    LTEXT           "Seek Volume",IDC_STATIC,14,52,38,8
+    LTEXT           "Seek Volume",IDC_STATIC,16,52,38,8
     EDITTEXT        IDC_SEEKVOL,80,50,20,12
-    CONTROL         "Sound High Priority",IDC_HIGHPRY,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,65,73,10
-    GROUPBOX        "Screen",IDC_STATIC,7,106,181,62
-    LTEXT           "Text Type",IDC_STATIC,14,120,31,8
+    GROUPBOX        "Screen",IDC_STATIC,8,72,181,62
+    LTEXT           "Text Type",IDC_STATIC,16,86,31,8
     CONTROL         "Real",IDC_TXTREAL,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,54,119,27,10
+                    WS_GROUP | WS_TABSTOP,54,85,27,10
     CONTROL         "Enhanced",IDC_TXTENHANCED,"Button",BS_AUTORADIOBUTTON,
-                    84,119,44,10
-    LTEXT           "Text Effect",IDC_STATIC,14,135,34,8
+                    84,85,44,10
+    LTEXT           "Text Effect",IDC_STATIC,14,101,34,8
     CONTROL         "Real",IDC_TXTEXTEND,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,54,134,29,10
-    CONTROL         "400line",IDC_TXT400,"Button",BS_AUTORADIOBUTTON,84,134,
+                    WS_GROUP | WS_TABSTOP,54,100,29,10
+    CONTROL         "400line",IDC_TXT400,"Button",BS_AUTORADIOBUTTON,84,100,
                     33,10
-    CONTROL         "Custom",IDC_TXTCSTM,"Button",BS_AUTORADIOBUTTON,120,134,
+    CONTROL         "Custom",IDC_TXTCSTM,"Button",BS_AUTORADIOBUTTON,120,100,
                     38,10
-    EDITTEXT        IDC_TXTVALUE,160,133,20,12,WS_GROUP
-    LTEXT           "Black Light",IDC_STATIC,14,152,34,8
-    EDITTEXT        IDC_BLKLIGHT,52,150,20,12
-    LTEXT           "Skipline Light",IDC_STATIC,90,152,40,8
-    EDITTEXT        IDC_LINEDEPTH,134,150,20,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TXTVALUE,160,99,20,12,WS_GROUP
+    LTEXT           "Black Light",IDC_STATIC,14,118,34,8
+    EDITTEXT        IDC_BLKLIGHT,52,116,20,12
+    LTEXT           "Skipline Light",IDC_STATIC,90,118,40,8
+    EDITTEXT        IDC_LINEDEPTH,134,116,20,12,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "&OK",IDOK,144,12,44,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,30,44,14
 END
@@ -237,7 +235,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 188
         TOPMARGIN, 7
-        BOTTOMMARGIN, 158
+        BOTTOMMARGIN, 134
     END
 
     IDD_NEWDISK, DIALOG

@@ -47,13 +47,6 @@ void __stdcall file_cutext(OEMCHAR *path);
 void __stdcall file_cutseparator(OEMCHAR *path);
 void __stdcall file_setseparator(OEMCHAR *path, int maxlen);
 
-// LPSTR getFileName(LPSTR filename);
-// void cutFileName(LPSTR filename);
-// LPSTR getExtName(LPSTR filename);
-// void cutExtName(LPSTR filename);
-// void cutyen(LPSTR str);
-// void fname_mix(LPSTR str, LPSTR mix, int size);
-
 #ifdef __cplusplus
 }
 #endif
