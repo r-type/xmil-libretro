@@ -14,7 +14,7 @@ static REG8 getportb(void) {
 	ret = cmt_test(); // | cmt_read();		// THUNDER BALL
 
 	v = pccore_getraster(NULL);
-	if (v < crtc.s.CRT_YL) {
+	if (v < crtc.e.dl) {
 		ret |= 0x80;						// 1:DISP
 	}
 	if (subcpu.IBF) {

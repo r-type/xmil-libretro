@@ -88,13 +88,13 @@ void makemix_ul20(UINT8 *dst, UINT pos, UINT32 skipline) {
 
 	UINT32	dat;
 
-	dat = (tram[TRAM_KNJ + pos] & TRAMKNJ_ULINE)?0x010101010:0x00000000;
+	dat = (tram[TRAM_KNJ + pos] & TRAMKNJ_ULINE)?0x01010101:0x00000000;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 0) + 0) = dat;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 0) + 4) = dat;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 1) + 0) = dat + skipline;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 1) + 4) = dat + skipline;
-	*(UINT32 *)(dst + (SURFACE_WIDTH * 2) + 0) = 0x00000000;
-	*(UINT32 *)(dst + (SURFACE_WIDTH * 2) + 4) = 0x00000000;
+	*(UINT32 *)(dst + (SURFACE_WIDTH * 2) + 0) = 0;
+	*(UINT32 *)(dst + (SURFACE_WIDTH * 2) + 4) = 0;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 3) + 0) = skipline;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 3) + 4) = skipline;
 }
@@ -103,7 +103,7 @@ void makemix_ul10(UINT8 *dst, UINT pos, UINT32 skipline) {
 
 	UINT32	dat;
 
-	dat = (tram[TRAM_KNJ + pos] & TRAMKNJ_ULINE)?0x010101010:0x00000000;
+	dat = (tram[TRAM_KNJ + pos] & TRAMKNJ_ULINE)?0x01010101:0x00000000;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 0) + 0) = dat;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 0) + 4) = dat;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 1) + 0) = dat + skipline;
@@ -121,3 +121,4 @@ void makemix_ul10(UINT8 *dst, UINT pos, UINT32 skipline) {
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 7) + 0) = skipline;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 7) + 4) = skipline;
 }
+

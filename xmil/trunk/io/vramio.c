@@ -114,10 +114,10 @@ void IOOUTCALL gram2_o(UINT port, REG8 value) {
 
 void vramio_reset(void) {
 
-	ZeroMemory(GRP_RAM, 0x20000);
-	ZeroMemory(tram, 0x01800);
-	memset(tram + TRAM_ATR, 0x07, 0x800);
-	memset(tram + TRAM_ANK, 0x20, 0x800);
+	ZeroMemory(gram, sizeof(gram));
+	FillMemory(tram + TRAM_ATR, 0x800, 0x07);
+	FillMemory(tram + TRAM_ANK, 0x800, 0x20);
+	ZeroMemory(tram + TRAM_KNJ, 0x800);
 	ZeroMemory(updatetmp, sizeof(updatetmp));
 }
 

@@ -17,7 +17,6 @@ typedef struct {
 	UINT8	palandply;
 	UINT8	existblink;							// blinkflag
 
-
 	UINT8	*disp1;
 	UINT8	*disp2;
 	UINT8	dispflag;
@@ -35,7 +34,6 @@ typedef struct {
 	UINT	surfrx;
 	UINT	surfstep;
 	UINT	vramsize;
-
 } MAKESCRN;
 
 
@@ -47,7 +45,7 @@ extern	MAKESCRN	makescrn;
 
 extern	BYTE	updatetmp[0x800+0x101];
 extern	BYTE	scrnallflash;
-extern	DWORD	drawtime;
+extern	UINT	drawtime;
 
 
 void scrnupdate(void);

@@ -188,28 +188,6 @@ void iptrace_out(void) {
 #endif
 
 
-#if 0
-void nvitem_raster(UINT id) {
-
-	nevent_repeat(id);
-	sound_makesample(pcmbufsize[v_cnt]);
-//	x1_ctc_int();
-	if (!((++keyintcnt) & 15)) {
-		x1_sub_int();
-		if (xmilcfg.MOUSE_SW) {
-			sio_int();
-		}
-	}
-	v_cnt++;
-	if (crtc.s.CRT_YL == v_cnt) {
-		pcg.r.vsync = 1;
-		if (xmilcfg.DISPSYNC & 1) {
-			scrnupdate();
-		}
-	}
-}
-#endif
-
 UINT pccore_getraster(UINT *h) {
 
 	SINT32	work;
@@ -252,7 +230,7 @@ void pccore_exec(BRESULT draw) {
 	soundmng_sync();
 
 	corestat.tl = 266 * pccore.multiple / 2;
-	corestat.vl = min(corestat.tl, crtc.s.CRT_YL);
+	corestat.vl = min(corestat.tl, crtc.e.dl);
 	corestat.vsync = 0;
 	nevent_set(NEVENT_FRAMES, corestat.vl * 250,
 											nvitem_vdisp, NEVENT_RELATIVE);

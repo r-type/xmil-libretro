@@ -70,12 +70,12 @@ typedef struct {
 	UINT8	SCRN_BITS;
 	UINT8	CRTC_NUM;
 
-	WORD	FNT_YL;
+	BYTE	_FNT_YL;
 	BYTE	TXT_XL;
 	BYTE	TXT_YL;
 	BYTE	TXT_YS;
 
-	WORD	CRT_YL;
+//	WORD	CRT_YL;
 //	WORD	CRT_VS;
 //	WORD	CRT_VL;
 
@@ -83,7 +83,7 @@ typedef struct {
 	BYTE	TXT_VLA;
 
 	WORD	TXT_TOP;
-	WORD	fnty;
+//	WORD	fnty;
 
 	UINT8	BLACKPAL;
 	UINT8	EXTPALMODE;
@@ -100,6 +100,10 @@ typedef struct {
 	UINT8	pal_bank;
 	UINT8	pal_disp;
 
+	UINT	fonty;
+	UINT	yl;
+
+	UINT	dl;
 	UINT	vs;
 	UINT	vl;
 } CRTCEXT;

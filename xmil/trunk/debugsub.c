@@ -31,8 +31,8 @@ void debugsub_status(void) {
 						Z80_HL, Z80_IX, Z80_IY, Z80_SP,
 						Z80_AF2, Z80_BC2, Z80_DE2, Z80_HL2,
 						Z80_IM, Z80_I, subcpu.Ex[4][0],
-						crtc.s.CRT_YL, crtc.e.vs,
-						crtc.s.FNT_YL, crtc.s.TXT_YL, crtc.s.SCRN_BITS);
+						crtc.e.dl, crtc.e.vs,
+						crtc.e.fonty, crtc.s.TXT_YL, crtc.s.SCRN_BITS);
 		file_write(fh, work, STRLEN(work));
 		file_close(fh);
 	}
@@ -46,15 +46,15 @@ void debugsub_status(void) {
 	OEMSPRINTF(path, OEMTEXT("x1vram1.%.3d"), filenum);
 	fh = file_create_c(path);
 	if (fh != FILEH_INVALID) {
-		file_write(fh, &GRP_RAM[GRAM_BANK0 + 0x0000], 0x8000);
-		file_write(fh, &GRP_RAM[GRAM_BANK0 + 0x8000], 0x8000);
+		file_write(fh, gram + GRAM_BANK0 + 0x0000, 0x8000);
+		file_write(fh, gram + GRAM_BANK0 + 0x8000, 0x8000);
 		file_close(fh);
 	}
 	OEMSPRINTF(path, OEMTEXT("x1vram2.%.3d"), filenum);
 	fh = file_create_c(path);
 	if (fh != FILEH_INVALID) {
-		file_write(fh, &GRP_RAM[GRAM_BANK1 + 0x0000], 0x8000);
-		file_write(fh, &GRP_RAM[GRAM_BANK1 + 0x8000], 0x8000);
+		file_write(fh, gram + GRAM_BANK1 + 0x0000, 0x8000);
+		file_write(fh, gram + GRAM_BANK1 + 0x8000, 0x8000);
 		file_close(fh);
 	}
 	OEMSPRINTF(path, OEMTEXT("x1tram.%.3d"), filenum);

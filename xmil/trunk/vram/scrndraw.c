@@ -123,7 +123,6 @@ void scrndraw_redraw(void) {
 
 	scrnmng_allflash();
 	pal_update();
-	updateallline(0x01010101);					// fillrenewalline(0x03030303)
-	scrndraw_draw(FALSE);
+	scrndraw_draw(TRUE);
 }
 
