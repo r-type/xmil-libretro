@@ -19,8 +19,8 @@ typedef struct {
 	UINT8	r;
 	UINT8	n;
 
-	DWORD	busyclock;
-	DWORD	busystart;
+	UINT32	busyclock;
+	UINT32	busystart;
 	BYTE	media;
 	BYTE	rreg;
 } FDC;

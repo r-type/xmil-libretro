@@ -3,6 +3,13 @@
 extern "C" {
 #endif
 
+enum {
+	CRTC_PALB		= 0,
+	CRTC_PALR		= 1,
+	CRTC_PALG		= 2,
+	CRTC_PLY		= 3
+};
+
 #define	PAL_NORMAL		0x00
 #define PAL_HIGHRESO	0x01
 
@@ -59,28 +66,18 @@ enum {
 
 
 typedef struct {
-	UINT8	PAL_B;
-	UINT8	PAL_R;
-	UINT8	PAL_G;
-	UINT8	PLY;
-//	UINT8	TEXT_PAL[8];
+	UINT8	rgbp[4];
 	UINT8	SCRN_BITS;
 	UINT8	CRTC_NUM;
 
-	WORD	DISP_PAGE;
-	WORD	FNT_XL;
 	WORD	FNT_YL;
 	BYTE	TXT_XL;
 	BYTE	TXT_YL;
 	BYTE	TXT_YS;
-	WORD	GRP_XL;
-	WORD	GRP_YL;
-//	BYTE	CPU_BANK;
-//	BYTE	CRT_BANK;
 
 	WORD	CRT_YL;
-	WORD	CRT_VS;
-	WORD	CRT_VL;
+//	WORD	CRT_VS;
+//	WORD	CRT_VL;
 
 	BYTE	TXT_VL;
 	BYTE	TXT_VLA;
@@ -99,6 +96,12 @@ typedef struct {
 	UINT8	*gram;				// curvram
 	UINT	updatemask;			// updatemsk
 	UINT8	updatebit;			// curupdt
+	UINT8	dispmode;
+	UINT8	pal_bank;
+	UINT8	pal_disp;
+
+	UINT	vs;
+	UINT	vl;
 } CRTCEXT;
 
 typedef struct {

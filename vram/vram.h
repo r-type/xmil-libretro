@@ -11,9 +11,9 @@ enum {
 
 	GRAM_HALFSTEP	= 0x08000,
 
-	PLANE_B		= 8,
-	PLANE_R		= 16,
-	PLANE_G		= 24
+	GRAM_B			= 8,
+	GRAM_R			= 16,
+	GRAM_G			= 24
 };
 
 enum {
@@ -21,13 +21,13 @@ enum {
 	TRAM_ATR		= 0x0800,
 	TRAM_KNJ		= 0x1000,
 
-	X1ATR_COLOR		= 0x07,
-	X1ATR_REVERSE	= 0x08,
-	X1ATR_BLINK		= 0x10,
-	X1ATR_PCG		= 0x20,
-	X1ATR_Yx2		= 0x40,
-	X1ATR_Xx2		= 0x80,
-	X1KNJ_ULINE		= 0x20
+	TRAMATR_COLOR	= 0x07,
+	TRAMATR_REVERSE	= 0x08,
+	TRAMATR_BLINK	= 0x10,
+	TRAMATR_PCG		= 0x20,
+	TRAMATR_Yx2		= 0x40,
+	TRAMATR_Xx2		= 0x80,
+	TRAMKNJ_ULINE	= 0x20
 };
 
 enum {

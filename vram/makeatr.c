@@ -211,7 +211,7 @@ void makeatr_pcg8(UINT8 *dst, UINT cnt,
 	if (atr & 4) {
 		(*fn)(dst, dst + cnt, src + 0x1000);
 	}
-	if (atr & X1ATR_REVERSE) {
+	if (atr & TRAMATR_REVERSE) {
 		dst -= MAKETEXT_ROW * 2;
 		cnt = (cnt + 3) >> 2;
 		do {
@@ -237,7 +237,7 @@ void makeatr_pcg16(UINT8 *dst, UINT cnt,
 	if (atr & 4) {
 		(*fn)(dst, dst + cnt, src + 0x1000);
 	}
-	if (atr & X1ATR_REVERSE) {
+	if (atr & TRAMATR_REVERSE) {
 		dst -= MAKETEXT_ROW * 2;
 		cnt = (cnt + 3) >> 2;
 		do {

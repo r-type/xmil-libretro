@@ -14,8 +14,6 @@
 		BYTE	scrnallflash;
 		BYTE	blinktest = 0;
 
-extern	BYTE	dispmode;
-
 static	BYTE	lastdisp = 0;
 		BYTE	dispflg;
 		BYTE	*dispp = &GRP_RAM[GRAM_BANK0];
@@ -54,7 +52,7 @@ static void flashupdatetmp(void) {
 	y = crtc.s.TXT_YL;
 	do {
 		for (x=0; x<crtc.s.TXT_XL; x++) {
-			if (!(tram[TRAM_ATR + LOW11(posl + x)] & X1ATR_Yx2)) {
+			if (!(tram[TRAM_ATR + LOW11(posl + x)] & TRAMATR_Yx2)) {
 				break;
 			}
 		}
@@ -66,7 +64,7 @@ static void flashupdatetmp(void) {
 			atr = (tram[TRAM_ATR + posl] << 8) | tram[TRAM_ATR + posr];
 			udt = udtbase;
 			if (!y2) {
-				if (atr & (X1ATR_Yx2 << 8)) {
+				if (atr & (TRAMATR_Yx2 << 8)) {
 					udt |= (UPDATE_TRAM | 1) << 8;		// ¶’×‚êc”{Šp
 				}
 				else {
@@ -74,17 +72,17 @@ static void flashupdatetmp(void) {
 				}
 			}
 			if (!y2) {
-				if (atr & (X1ATR_Yx2 << 0)) {
+				if (atr & (TRAMATR_Yx2 << 0)) {
 					udt |= (UPDATE_TRAM | 1) << 0;		// ‰E’×‚êc”{Šp
 				}
 				else {
 					y2 = TRUE;
 				}
 			}
-			if (atr & (X1ATR_Xx2 << 8)) {				// ¶‘¤”{Šp?
+			if (atr & (TRAMATR_Xx2 << 8)) {				// ¶‘¤”{Šp?
 				udt |= 0x0812;
 			}
-			if (atr & (X1ATR_Xx2 << 0)) {				// ‰E‘¤”{Šp?
+			if (atr & (TRAMATR_Xx2 << 0)) {				// ‰E‘¤”{Šp?
 				udt |= 0x0008;
 			}
 			if ((updatetmp[posl] ^ (udt >> 8)) & 0x1f) {
@@ -240,8 +238,8 @@ static BRESULT updateblink(void) {
 
 static void changemodes(void) {
 
-	lastdisp = dispmode;
-	if (!(dispmode & SCRN_BANK1)) {
+	lastdisp = crtc.e.dispmode;
+	if (!(lastdisp & SCRN_BANK1)) {
 		dispp = GRP_RAM + GRAM_BANK0;
 		dispp2 = GRP_RAM + GRAM_BANK1;
 		dispflg = UPDATE_TRAM | UPDATE_VRAM0;
@@ -267,7 +265,7 @@ static void changecrtc(void) {
 	makescrn.vramtop = LOW11(crtc.s.TXT_TOP);
 
 	if (crtc.s.TXT_XL <= 40) {
-		if (dispmode & SCRN_DRAW4096) {
+		if (lastdisp & SCRN_DRAW4096) {
 			widthmode = SCRNWIDTHMODE_4096;
 		}
 		else {
@@ -349,7 +347,7 @@ void scrnupdate(void) {
 	corestat.drawframe = 0;
 
 	ddrawflash = FALSE;
-	if (lastdisp != dispmode) {
+	if (lastdisp != crtc.e.dispmode) {
 		changemodes();
 	}
 	if (scrnallflash) {

@@ -21,28 +21,18 @@ static const UINT16 defpalgrph[64] = {
 				0x555, 0x55f, 0x5f5, 0x5ff, 0xf55, 0xf5f, 0xff5, 0xfff};
 
 static const CRTCSTAT crtcdefault = {
-				0xaa,						// PAL_B;
-				0xcc,						// PAL_R;
-				0xf0,						// PAL_G;
-				0x00,						// PLY
-//				{0, 1, 2, 3, 4, 5, 6, 7},	// TEXT_PAL[8]
+				{0xaa, 0xcc, 0xf0, 0x00},	// rgbp
 				0,							// SCRN_BITS
 				0,							// CRTC_NUM
 
-				0,							// DISP_PAGE
-				8,							// FNT_XL
 				8,							// FNT_YL
 				40,							// TXT_XL
 				25,							// TXT_YL
 				28,							// TXT_YS
-				320,						// GRP_XL
-				200,						// GRP_YL
-//				0,							// CPU_BANK
-//				0,							// CRT_BANK
 
 				200,						// CRT_YL
-				232,						// CRT_VS
-				266,						// CRT_VL
+//				232,						// CRT_VS
+//				266,						// CRT_VL
 
 				31,							// TXT_VL
 				10,							// TXT_VLA
@@ -58,13 +48,13 @@ static const CRTCSTAT crtcdefault = {
 				0,							// ZPRY
 	};
 
-	BYTE	dispmode = SCRN64_INVALID;
-	BYTE	pal_bank = PAL_NORMAL;
-	BYTE	pal_disp = PAL_NORMAL;
 
 void vrambank_patch(void) {
 
 	UINT	updatemask;
+	UINT8	dispmode;
+	UINT8	pal_bank;
+	UINT8	pal_disp;
 
 	if (crtc.s.SCRN_BITS & 0x10) {
 		crtc.e.gram = GRP_RAM + GRAM_BANK1;
@@ -178,6 +168,9 @@ void vrambank_patch(void) {
 		}
 	}
 	crtc.e.updatemask = updatemask;
+	crtc.e.dispmode = dispmode;
+	crtc.e.pal_bank = pal_bank;
+	crtc.e.pal_disp = pal_disp;
 }
 
 static void crtc_updt(void) {
@@ -194,8 +187,8 @@ static void crtc_updt(void) {
 	else {
 		crtc.s.CRT_YL = crtc.s.fnty * 1;
 	}
-	crtc.s.CRT_VS = crtc.s.fnty * (crtc.s.TXT_YS + 1);
-	crtc.s.CRT_VL = (crtc.s.TXT_VL + 1) * crtc.s.fnty + crtc.s.TXT_VLA;
+	crtc.e.vs = crtc.s.fnty * (crtc.s.TXT_YS + 1);
+	crtc.e.vl = (crtc.s.TXT_VL + 1) * crtc.s.fnty + crtc.s.TXT_VLA;
 //	TRACEOUT(("set> %d / %d / %d", crtc.s.CRT_YL, crtc.s.CRT_VS, crtc.s.CRT_VL));
 }
 
@@ -204,10 +197,11 @@ static void crtc_updt(void) {
 
 void IOOUTCALL crtc_o(UINT port, REG8 value) {
 
-	if (port == 0x1800) {
+	port &= 0xff;
+	if (port == 0) {
 		crtc.s.CRTC_NUM = value;
 	}
-	else if (port == 0x1801) {
+	else if (port == 1) {
 		switch(crtc.s.CRTC_NUM) {
 			case 0x01:
 				if (value <= 40) {
@@ -246,7 +240,7 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 				break;
 
 			case 0x0d:
-				crtc.s.TXT_TOP &= 0x7ff;
+				crtc.s.TXT_TOP &= 0x700;
 				crtc.s.TXT_TOP |= value;
 				makescrn.remakeattr = 1;
 				break;
@@ -254,8 +248,8 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 			default:
 				return;
 		}
-		crtc.s.GRP_XL = crtc.s.TXT_XL << 3;
-		crtc.s.GRP_YL = 200;
+//		crtc.s.GRP_XL = crtc.s.TXT_XL << 3;
+//		crtc.s.GRP_YL = 200;
 		crtc_updt();
 		scrnallflash = 1;								/* 990220 puni */
 	}
@@ -277,8 +271,6 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 		crtc_updt();
 	}
 	vrambank_patch();
-//	crtc.s.CPU_BANK = (BYTE)((crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)?1:0);
-//	crtc.s.CRT_BANK = (BYTE)((crtc.s.SCRN_BITS & SCRN_DISPVRAM)?1:0);
 	(void)port;
 }
 
@@ -293,8 +285,8 @@ REG8 IOINPCALL scrn_i(UINT port) {
 
 void IOOUTCALL ply_o(UINT port, REG8 value) {
 
-	if (crtc.s.PLY != value) {
-		crtc.s.PLY = value;
+	if (crtc.s.rgbp[CRTC_PLY] != value) {
+		crtc.s.rgbp[CRTC_PLY] = value;
 		makescrn.palandply = 1;
 	}
 	(void)port;
@@ -303,7 +295,7 @@ void IOOUTCALL ply_o(UINT port, REG8 value) {
 REG8 IOINPCALL ply_i(UINT port) {
 
 	(void)port;
-	return(crtc.s.PLY);
+	return(crtc.s.rgbp[CRTC_PLY]);
 }
 
 
@@ -321,19 +313,13 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 			return;
 		}
 		sft = (port >> (8 - 2)) & (3 << 2);
-		if (pal_bank & PAL_4096) {					// use 4096palettes
-			switch(pal_bank & (PAL_4096FULL | PAL_4096BANK)) {
-				case 0:
-					num = ((port & 0xcc) << 4) + ((value & 0xc0) >> 4);
-					break;
-
-				case 1:
-					num = ((port & 0xcc) << 2) + ((value & 0xc0) >> 6);
-					break;
-
-				default:
-					num = ((port & 0xff) << 4) + (crtc.s.lastpal >> 4);
-					break;
+		if (crtc.e.pal_bank & PAL_4096) {				// use 4096palettes
+			num = ((port & 0xff) << 4) + (crtc.s.lastpal >> 4);
+			if (!(crtc.e.pal_bank & PAL_4096FULL)) {
+				num &= 0xccc;
+				if (crtc.e.pal_bank & PAL_4096BANK) {
+					num >>= 2;
+				}
 			}
 			pal = crtc.p.grph4096[num];
 			pal &= ~((0x0f) << sft);
@@ -344,42 +330,25 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 		else {
 			num = ((port & 0x80) >> 5) | ((port & 0x08) >> 2) |
 												((value & 0x80) >> 7);
-			if ((dispmode & SCRN64_MASK) == SCRN64_INVALID) {
+			if ((crtc.e.dispmode & SCRN64_MASK) == SCRN64_INVALID) {
 				num |= (num << 3);
 			}
 			else {
 				num += ((port & 0x40) >> 1) | ((port & 0x04) << 2) |
 													((value & 0x40) >> 3);
 			}
-			pal = crtc.p.grph[pal_bank][num];
+			pal = crtc.p.grph[crtc.e.pal_bank][num];
 			pal &= ~((0x0f) << sft);
 			pal |= (value & 0x0f) << sft;
-			crtc.p.grph[pal_bank][num] = pal;
-			pal_setgrph(pal_bank, (REG8)num);
+			crtc.p.grph[crtc.e.pal_bank][num] = pal;
+			pal_setgrph(crtc.e.pal_bank, (REG8)num);
 		}
 	}
 	else {
-		switch(port & 0xff00) {
-			case 0x1000:
-				if (crtc.s.PAL_B != value) {
-					crtc.s.PAL_B = value;
-					makescrn.palandply = 1;
-				}
-				break;
-
-			case 0x1100:
-				if (crtc.s.PAL_R != value) {
-					crtc.s.PAL_R = value;
-					makescrn.palandply = 1;
-				}
-				break;
-
-			case 0x1200:
-				if (crtc.s.PAL_G != value) {
-					crtc.s.PAL_G = value;
-					makescrn.palandply = 1;
-				}
-				break;
+		num = (port >> 8) & 3;
+		if (crtc.s.rgbp[num] != value) {
+			crtc.s.rgbp[num] = value;
+			makescrn.palandply = 1;
 		}
 	}
 }
@@ -391,35 +360,27 @@ REG8 IOINPCALL palette_i(UINT port) {
 	REG8	sft;
 
 	if ((crtc.s.EXTPALMODE & 0x80) && ((crtc.s.EXTGRPHPAL & 0x88) == 0x88)) {
-		if (pal_bank & PAL_4096) {					// use 4096palettes
-			switch(pal_bank & (PAL_4096FULL | PAL_4096BANK)) {
-				case 0:
-					num = ((port & 0xcc) << 4) |
-											((crtc.s.lastpal & 0xc0) >> 4);
-					break;
-
-				case 1:
-					num = ((port & 0xcc) << 2) |
-											((crtc.s.lastpal & 0xc0) >> 6);
-					break;
-
-				default:
-					num = ((port & 0xff) << 4) | (crtc.s.lastpal >> 4);
-					break;
+		if (crtc.e.pal_bank & PAL_4096) {				// use 4096palettes
+			num = ((port & 0xff) << 4) + (crtc.s.lastpal >> 4);
+			if (!(crtc.e.pal_bank & PAL_4096FULL)) {
+				num &= 0xccc;
+				if (crtc.e.pal_bank & PAL_4096BANK) {
+					num >>= 2;
+				}
 			}
 			pal = crtc.p.grph4096[num];
 		}
 		else {
 			num = ((port & 0x80) >> 5) | ((port & 0x08) >> 2) |
 											((crtc.s.lastpal & 0x80) >> 7);
-			if ((dispmode & SCRN64_MASK) == SCRN64_INVALID) {
+			if ((crtc.e.dispmode & SCRN64_MASK) == SCRN64_INVALID) {
 				num |= (num << 3);
 			}
 			else {
 				num += ((port & 0x40) >> 1) | ((port & 0x04) << 2) |
 											((crtc.s.lastpal & 0x40) >> 3);
 			}
-			pal = crtc.p.grph[pal_bank][num];
+			pal = crtc.p.grph[crtc.e.pal_bank][num];
 		}
 		sft = (port >> (8 - 2)) & (3 << 2);
 		return((REG8)(crtc.s.lastpal + ((pal >> sft) & 0xf)));
@@ -530,9 +491,6 @@ void crtc_initialize(void) {
 void crtc_reset(void) {
 
 	crtc.s = crtcdefault;
-
-	dispmode = SCRN64_INVALID;
-	pal_bank = pal_disp = PAL_NORMAL;
 	if (pccore.ROM_TYPE < 3) {
 		resetpal();
 	}

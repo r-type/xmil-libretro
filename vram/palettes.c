@@ -20,10 +20,6 @@
 	int		xm_palettes = 0;
 
 
-extern	BYTE	dispmode;
-extern	BYTE	pal_disp;
-
-
 static const UINT16 pal4096banktbl[2][64] = {
 			{	0x000, 0x008, 0x080, 0x088, 0x800, 0x808, 0x880, 0x888,
 				0x004, 0x00C, 0x084, 0x08C, 0x804, 0x80C, 0x884, 0x88C,
@@ -217,8 +213,8 @@ void pal_update(void) {
 	UINT	bcnt;
 
 	skip8 = 0;
-	if (pal_disp & PAL_4096) {
-		switch(pal_disp & 0xf) {
+	if (crtc.e.pal_disp & PAL_4096) {
+		switch(crtc.e.pal_disp & 0xf) {
 			case PAL_4096H:
 				pal4096to64(x1n_pal32, pal4096banktbl[0]);
 				xm_palettes = 64;
@@ -248,29 +244,29 @@ void pal_update(void) {
 			x1n_pal32[xm_palettes++].d = pals.text[i].d;
 		}
 	}
-	else if ((dispmode & SCRN64_MASK) == SCRN64_INVALID) {
+	else if ((crtc.e.dispmode & SCRN64_MASK) == SCRN64_INVALID) {
 		if (!(crtc.s.SCRN_BITS & SCRN_24KHZ)) {
 			skip8 = 8;
 		}
 		for (i=0, bit=1; i<8; i++, bit<<=1) {
 			if (!(crtc.s.EXTPALMODE & 0x80)) {
 				c = 0;
-				if (crtc.s.PAL_B & bit) {
-					c |= 1;
+				if (crtc.s.rgbp[CRTC_PALB] & bit) {
+					c += 1;
 				}
-				if (crtc.s.PAL_R & bit) {
-					c |= 2;
+				if (crtc.s.rgbp[CRTC_PALR] & bit) {
+					c += 2;
 				}
-				if (crtc.s.PAL_G & bit) {
-					c |= 4;
+				if (crtc.s.rgbp[CRTC_PALG] & bit) {
+					c += 4;
 				}
 			}
 			else {
 				c = i;
 			}
-			x1n_pal32[i].d = pals.grph[pal_disp][c].d;
-			x1n_pal32[i+64].d = pals.grph[pal_disp][c + skip8].d;
-			if (crtc.s.PLY & bit) {
+			x1n_pal32[i].d = pals.grph[crtc.e.pal_disp][c].d;
+			x1n_pal32[i+64].d = pals.grph[crtc.e.pal_disp][c + skip8].d;
+			if (crtc.s.rgbp[CRTC_PLY] & bit) {
 				for (j=i+8; j<64; j+=8) {
 					x1n_pal32[j].d = x1n_pal32[i].d;
 					x1n_pal32[j+64].d = x1n_pal32[i + 64].d;
@@ -295,7 +291,7 @@ void pal_update(void) {
 	}
 	else {
 		for (i=0; i<64; i++) {
-			x1n_pal32[i].d = pals.grph64[pal_disp][i].d;
+			x1n_pal32[i].d = pals.grph64[crtc.e.pal_disp][i].d;
 		}
 		for (i=0; i<8; i++) {
 			x1n_pal32[i+64].d = pals.text[i].d;

@@ -71,7 +71,7 @@ void IOOUTCALL ppi_o(UINT port, REG8 value) {
 	xl = ((ppi.PORT_C & 0x40)?40:80);
 	if (crtc.s.TXT_XL != xl) {
 		crtc.s.TXT_XL = (UINT8)xl;
-		crtc.s.GRP_XL = xl << 3;
+//		crtc.s.GRP_XL = xl << 3;
 		vrambank_patch();
 		scrnallflash = 1;
 	}
@@ -95,11 +95,11 @@ REG8 IOINPCALL ppi_i(UINT port) {
 		ppi.PORT_B |= 0x10;					// 1:RAM
 	}
 #if 1
-	if (!(v_cnt < crtc.s.CRT_VS)) {
+	if (!(v_cnt < crtc.e.vs)) {
 		ppi.PORT_B |= 0x04;					// V-SYNC
 	}
 #else								// ラプラステスト…VYSNCが長すぎるらしい
-	if (v_cnt == crtc.s.CRT_VS) {
+	if (v_cnt == crtc.e.vs) {
 		ppi.PORT_B |= 0x04;
 	}
 #endif

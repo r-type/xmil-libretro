@@ -45,13 +45,13 @@ void makemix_mix(UINT8 *dst, UINT align,
 		dat = txt[MAKETEXT_ROW * 2];
 		datl |= TO256COLL(dat, 5);
 		datr |= TO256COLR(dat, 5);
-		dat = grp[PLANE_B];
+		dat = grp[GRAM_B];
 		datl |= TO256COLL(dat, 0);
 		datr |= TO256COLR(dat, 0);
-		dat = grp[PLANE_R];
+		dat = grp[GRAM_R];
 		datl |= TO256COLL(dat, 1);
 		datr |= TO256COLR(dat, 1);
-		dat = grp[PLANE_G];
+		dat = grp[GRAM_G];
 		datl |= TO256COLL(dat, 2);
 		datr |= TO256COLR(dat, 2);
 		*(UINT32 *)(dst + 0) = datl;
@@ -88,7 +88,7 @@ void makemix_ul20(UINT8 *dst, UINT pos, UINT32 skipline) {
 
 	UINT32	dat;
 
-	dat = (tram[TRAM_KNJ + pos] & X1KNJ_ULINE)?0x010101010:0x00000000;
+	dat = (tram[TRAM_KNJ + pos] & TRAMKNJ_ULINE)?0x010101010:0x00000000;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 0) + 0) = dat;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 0) + 4) = dat;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 1) + 0) = dat + skipline;
@@ -103,7 +103,7 @@ void makemix_ul10(UINT8 *dst, UINT pos, UINT32 skipline) {
 
 	UINT32	dat;
 
-	dat = (tram[TRAM_KNJ + pos] & X1KNJ_ULINE)?0x010101010:0x00000000;
+	dat = (tram[TRAM_KNJ + pos] & TRAMKNJ_ULINE)?0x010101010:0x00000000;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 0) + 0) = dat;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 0) + 4) = dat;
 	*(UINT32 *)(dst + (SURFACE_WIDTH * 1) + 0) = dat + skipline;
