@@ -76,6 +76,8 @@ typedef	signed int			SINT32;
 #define	SUPPORT_16BPP
 #define	MEMOPTIMIZE			2
 
+#define	SUPPORT_OPM
+
 #define	SOUNDRESERVE		100
 
 #define	SCREEN_BPP			16

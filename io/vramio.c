@@ -7,54 +7,73 @@
 
 // ---- text
 
-void IOOUTCALL tram_o(UINT port, REG8 value) {
+void IOOUTCALL tram_atr_o(UINT port, REG8 value) {
 
 	UINT	addr;
 
 	addr = LOW11(port);
-	if (port < 0x3000) {
-		if (tram[TRAM_ATR + addr] == value) {
-			return;
-		}
-		if ((tram[TRAM_ATR + addr] ^ value) & (TRAMATR_Yx2 | TRAMATR_Xx2)) {
-			makescrn.remakeattr = 1;
-		}
-		if (value & TRAMATR_BLINK) {
-			makescrn.existblink = 1;
-		}
-		tram[TRAM_ATR + addr] = value;
+	if (TRAM_ATR(addr) == value) {
+		return;
 	}
-	else if ((port >= 0x3800) && (pccore.ROM_TYPE >= 2)) {
-		if (tram[TRAM_KNJ + addr] == value) {
-			return;
-		}
-		tram[TRAM_KNJ + addr] = value;
+	if ((TRAM_ATR(addr) ^ value) & (TRAMATR_Yx2 | TRAMATR_Xx2)) {
+		crtc.e.remakeattr = 1;
 	}
-	else {
-		if (tram[TRAM_ANK + addr] == value) {
-			return;
-		}
-		tram[TRAM_ANK + addr] = value;
+	if (value & TRAMATR_BLINK) {
+		crtc.e.existblink = 1;
 	}
-	makescrn.scrnflash = 1;
-	if (tram[TRAM_ATR + addr] & TRAMATR_Xx2) {
-		updatetmp[LOW11(addr + 1)] |= UPDATE_TVRAM;
+	TRAM_ATR(addr) = value;
+	crtc.e.scrnflash = 1;
+	if (TRAM_ATR(addr) & TRAMATR_Xx2) {
+		TRAMUPDATE(LOW11(addr + 1)) |= UPDATE_TRAM;
 	}
-	updatetmp[addr] |= UPDATE_TVRAM;
+	TRAMUPDATE(addr) |= UPDATE_TRAM;
 }
 
-REG8 IOINPCALL tram_i(UINT port) {
+void IOOUTCALL tram_ank_o(UINT port, REG8 value) {
 
 	UINT	addr;
 
 	addr = LOW11(port);
-	if (port < 0x3000) {
-		return(tram[TRAM_ATR + addr]);
+	if (TRAM_ANK(addr) == value) {
+		return;
 	}
-	else if ((port >= 0x3800) && (pccore.ROM_TYPE >= 2)) {
-		return(tram[TRAM_KNJ + addr]);
+	TRAM_ANK(addr) = value;
+	crtc.e.scrnflash = 1;
+	if (TRAM_ATR(addr) & TRAMATR_Xx2) {
+		TRAMUPDATE(LOW11(addr + 1)) |= UPDATE_TRAM;
 	}
-	return(tram[TRAM_ANK + addr]);
+	TRAMUPDATE(addr) |= UPDATE_TRAM;
+}
+
+void IOOUTCALL tram_knj_o(UINT port, REG8 value) {
+
+	UINT	addr;
+
+	addr = LOW11(port);
+	if (TRAM_KNJ(addr) == value) {
+		return;
+	}
+	TRAM_KNJ(addr) = value;
+	crtc.e.scrnflash = 1;
+	if (TRAM_ATR(addr) & TRAMATR_Xx2) {
+		TRAMUPDATE(LOW11(addr + 1)) |= UPDATE_TRAM;
+	}
+	TRAMUPDATE(addr) |= UPDATE_TRAM;
+}
+
+REG8 IOINPCALL tram_atr_i(UINT port) {
+
+	return(TRAM_ATR(LOW11(port)));
+}
+
+REG8 IOINPCALL tram_ank_i(UINT port) {
+
+	return(TRAM_ANK(LOW11(port)));
+}
+
+REG8 IOINPCALL tram_knj_i(UINT port) {
+
+	return(TRAM_KNJ(LOW11(port)));
 }
 
 
@@ -64,25 +83,25 @@ void IOOUTCALL gram_o(UINT port, REG8 value) {
 
 	UINT8	*p;
 
-	p = crtc.e.gram + (LOW11(port) << 5) + (port >> 11);
+	p = crtc.e.gramacc + PORT2GRAM(port);
 	if (*p == value) {
 		return;
 	}
 	*p = value;
-	updatetmp[port & crtc.e.updatemask] |= crtc.e.updatebit;
-	makescrn.scrnflash = 1;
+	TRAMUPDATE(port & crtc.e.updatemask) |= crtc.e.updatebit;
+	crtc.e.scrnflash = 1;
 }
 
 REG8 IOINPCALL gram_i(UINT port) {
 
-	return(crtc.e.gram[(LOW11(port) << 5) + (port >> 11)]);
+	return(crtc.e.gramacc[PORT2GRAM(port)]);
 }
 
 void IOOUTCALL gram2_o(UINT port, REG8 value) {
 
 	UINT8	*p;
 
-	p = crtc.e.gram + (((port << 5) + (port >> 11)) & 0xffe7);
+	p = crtc.e.gramacc + PORT2GRAM2(port);
 	switch((port >> 14) & 3) {
 		case 0:
 			p[GRAM_B] = value;
@@ -105,8 +124,8 @@ void IOOUTCALL gram2_o(UINT port, REG8 value) {
 			p[GRAM_R] = value;
 			break;
 	}
-	updatetmp[port & crtc.e.updatemask] |= crtc.e.updatebit;
-	makescrn.scrnflash = 1;
+	TRAMUPDATE(port & crtc.e.updatemask) |= crtc.e.updatebit;
+	crtc.e.scrnflash = 1;
 }
 
 
@@ -114,10 +133,14 @@ void IOOUTCALL gram2_o(UINT port, REG8 value) {
 
 void vramio_reset(void) {
 
-	ZeroMemory(gram, sizeof(gram));
-	FillMemory(tram + TRAM_ATR, 0x800, 0x07);
-	FillMemory(tram + TRAM_ANK, 0x800, 0x20);
-	ZeroMemory(tram + TRAM_KNJ, 0x800);
-	ZeroMemory(updatetmp, sizeof(updatetmp));
+	UINT	i;
+
+	ZeroMemory(gram, GRAM_SIZE);
+	for (i=0; i<0x800; i++) {
+		TRAM_ATR(i) = 0x07;
+		TRAM_ANK(i) = 0x20;
+		TRAM_KNJ(i) = 0x00;
+		TRAMUPDATE(i) = 0;
+	}
 }
 

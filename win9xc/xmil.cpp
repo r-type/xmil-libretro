@@ -243,10 +243,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			menu_setkey(2);
 			break;
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 		case IDM_FMBOARD:
 			menu_setsound(xmilcfg.SOUND_SW ^ 1);
 			update = SYS_UPDATECFG;
 			break;
+#endif
 
 		case IDM_JOYSTICK:
 			menu_setjoystick(xmiloscfg.JOYSTICK ^ 1);
@@ -633,7 +635,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	menu_setwaitflg(xmiloscfg.NOWAIT);
 	menu_setframe(xmiloscfg.DRAW_SKIP);
 	menu_setkey(0);
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	menu_setsound(xmilcfg.SOUND_SW);
+#endif
 	menu_setjoystick(xmiloscfg.JOYSTICK);
 	menu_setmouse(xmilcfg.MOUSE_SW);
 	menu_setmotorflg(xmilcfg.MOTOR);

@@ -1,10 +1,11 @@
 #include	"compiler.h"
+
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+
 #include	"sound.h"
 #include	"sndctrl.h"
 
-
 extern	OPMCFG	opmcfg;
-
 
 #define	CALCENV(e, c, s)													\
 	(c)->slot[(s)].freq_cnt += (c)->slot[(s)].freq_inc;						\
@@ -147,3 +148,4 @@ void SOUNDCALL opmgen_getpcm(void *hdl, SINT32 *pcm, UINT count) {
 	(void)hdl;
 }
 
+#endif

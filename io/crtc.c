@@ -1,5 +1,4 @@
 #include	"compiler.h"
-#include	"scrnmng.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -49,11 +48,11 @@ static const GDCCLK gdcclk[] = {
 static void crtc_bankupdate(void) {
 
 	if (!(crtc.s.SCRN_BITS & SCRN_ACCESSVRAM)) {
-		crtc.e.gram = gram + GRAM_BANK0;
+		crtc.e.gramacc = gram + GRAM_BANK0;
 		crtc.e.updatebit = UPDATE_VRAM0;
 	}
 	else {
-		crtc.e.gram = gram + GRAM_BANK1;
+		crtc.e.gramacc = gram + GRAM_BANK1;
 		crtc.e.updatebit = UPDATE_VRAM1;
 	}
 }
@@ -237,8 +236,12 @@ static void crtc_timingupdate(void) {
 
 	UINT32	fontclock;
 	UINT	yl;
+	SINT32	vsyncstart;
 
 	// とりあえず…ね
+	crtc.e.pos = crtc.s.reg[CRTCREG_POSL]
+									+ ((crtc.s.reg[CRTCREG_POSH] & 7) << 8);
+
 	crtc.e.rasterdisp8 = (crtc.e.rasterclock8 * 40) / 56;
 
 	fontclock = (crtc.s.reg[CRTCREG_CHRCY] & 0x1f) + 1;
@@ -247,13 +250,17 @@ static void crtc_timingupdate(void) {
 	// YsIIIが yl==0で disp信号見る…なんで？
 	yl = (crtc.s.reg[CRTCREG_VDISP] & 0x7f);
 	crtc.e.yl = yl;
-	crtc.e.dispclock = fontclock * max(yl, 1);
-	crtc.e.vsyncstart = fontclock * ((crtc.s.reg[CRTCREG_VSYNC] & 0x7f) + 1);
-	crtc.e.vpulseclock = ((crtc.s.reg[CRTCREG_PULSE] >> 4)
+	iocore.e.dispclock = fontclock * max(yl, 1);
+	vsyncstart = fontclock * ((crtc.s.reg[CRTCREG_VSYNC] & 0x7f) + 1);
+	iocore.e.vsyncstart = vsyncstart;
+#if !defined(MAINFRAMES_OLD)
+	iocore.e.vsyncend = vsyncstart + (((crtc.s.reg[CRTCREG_PULSE] >> 4)
+												* crtc.e.rasterclock8) >> 8);
+	neitem_mainframes(NEVENT_FRAMES);
+#else
+	iocore.e.vpulseclock = ((crtc.s.reg[CRTCREG_PULSE] >> 4)
 												* crtc.e.rasterclock8) >> 8;
-
-	crtc.e.pos = crtc.s.reg[CRTCREG_POSL]
-									+ ((crtc.s.reg[CRTCREG_POSH] & 7) << 8);
+#endif
 }
 
 
@@ -271,8 +278,8 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 				crtc.s.reg[crtc.s.regnum] = value;
 				crtc_clkupdate();
 				crtc_timingupdate();
-				makescrn.remakeattr = 1;
-				scrnallflash = 1;
+				crtc.e.remakeattr = 1;
+				crtc.e.scrnallflash = 1;
 			}
 		}
 	}
@@ -292,11 +299,11 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 	}
 	if (modify & SCRN_DISPCHANGE) {
 //		pal_reset();					// なんで？
-		scrnallflash = 1;
+		crtc.e.scrnallflash = 1;
 		crtc_dispupdate();
 		crtc_clkupdate();
 		crtc_timingupdate();
-		makescrn.palandply = 1;
+		crtc.e.palandply = 1;
 	}
 	(void)port;
 }
@@ -314,7 +321,7 @@ void IOOUTCALL ply_o(UINT port, REG8 value) {
 
 	if (crtc.s.rgbp[CRTC_PLY] != value) {
 		crtc.s.rgbp[CRTC_PLY] = value;
-		makescrn.palandply = 1;
+		crtc.e.palandply = 1;
 #if defined(SUPPORT_PALEVENT)
 		if ((!corestat.vsync) && (palevent.events < SUPPORT_PALEVENT)) {
 			PAL1EVENT *e = palevent.event + palevent.events;
@@ -346,7 +353,7 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 		num = (port >> 8) & 3;
 		if (crtc.s.rgbp[num] != value) {
 			crtc.s.rgbp[num] = value;
-			makescrn.palandply = 1;
+			crtc.e.palandply = 1;
 #if defined(SUPPORT_PALEVENT)
 			if ((!corestat.vsync) && (palevent.events < SUPPORT_PALEVENT)) {
 				PAL1EVENT *e = palevent.event + palevent.events;
@@ -402,7 +409,7 @@ void IOOUTCALL blackctrl_o(UINT port, REG8 value) {
 
 	if (crtc.s.rgbp[CRTC_BLACK] != value) {
 		crtc.s.rgbp[CRTC_BLACK] = value;
-		makescrn.palandply = 1;
+		crtc.e.palandply = 1;
 #if defined(SUPPORT_PALEVENT)
 		if ((!corestat.vsync) && (palevent.events < SUPPORT_PALEVENT)) {
 			PAL1EVENT *e = palevent.event + palevent.events;
@@ -542,8 +549,8 @@ void crtc_update(void) {
 	crtc_dispupdate();
 	crtc_clkupdate();
 	crtc_timingupdate();
-	makescrn.palandply = 1;
-	scrnallflash = 1;
+	crtc.e.palandply = 1;
+	crtc.e.scrnallflash = 1;
 }
 
 void crtc_setwidth(REG8 width40) {
@@ -594,7 +601,7 @@ void crtc_reset(void) {
 //	}
 
 	pal_reset();
-	makescrn.palandply = 1;
+	crtc.e.palandply = 1;
 	crtc_update();
 }
 
@@ -602,6 +609,6 @@ void crtc_forcesetwidth(REG8 width) {
 
 	crtc.s.reg[CRTCREG_HDISP] = (UINT8)width;
 	crtc_dispupdate();
-	scrnallflash = 1;
+	crtc.e.scrnallflash = 1;
 }
 

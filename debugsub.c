@@ -31,7 +31,7 @@ void debugsub_status(void) {
 						Z80_HL, Z80_IX, Z80_IY, Z80_SP,
 						Z80_AF2, Z80_BC2, Z80_DE2, Z80_HL2,
 						Z80_IFF,
-						Z80_IM, Z80_I, subcpu.Ex[4][0],
+						Z80_IM, Z80_I, subcpu.s.vect,
 						crtc.e.fonty, crtc.e.yl, crtc.s.SCRN_BITS);
 		file_write(fh, work, STRLEN(work));
 		file_close(fh);

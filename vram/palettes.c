@@ -109,7 +109,7 @@ static void pal_settext(REG8 num) {
 	pals.text[num+8].p.b = (UINT8)((pals.skipline * rgb.p.b) >> 8);
 	pals.text[num+8].p.g = (UINT8)((pals.skipline * rgb.p.g) >> 8);
 	pals.text[num+8].p.r = (UINT8)((pals.skipline * rgb.p.r) >> 8);
-	makescrn.palandply = 1;
+	crtc.e.palandply = 1;
 }
 #else
 void pal_settext(REG8 num) {
@@ -148,7 +148,7 @@ void pal_settext(REG8 num) {
 	pals.text[num+8].p.b = (UINT8)((pals.skipline * rgb.p.b) >> 8);
 	pals.text[num+8].p.g = (UINT8)((pals.skipline * rgb.p.g) >> 8);
 	pals.text[num+8].p.r = (UINT8)((pals.skipline * rgb.p.r) >> 8);
-	makescrn.palandply = 1;
+	crtc.e.palandply = 1;
 }
 
 void pal_setgrph(REG8 bank, REG8 num) {
@@ -185,7 +185,7 @@ void pal_setgrph(REG8 bank, REG8 num) {
 		pals.grph[bank][num+8].p.g = (UINT8)((pals.skipline * rgb.p.g) >> 8);
 		pals.grph[bank][num+8].p.r = (UINT8)((pals.skipline * rgb.p.r) >> 8);
 	}
-	makescrn.palandply = 1;
+	crtc.e.palandply = 1;
 }
 
 void pal_setgrph4096(UINT num) {
@@ -220,7 +220,7 @@ void pal_setgrph4096(UINT num) {
 		xmil_pal16[XMILPAL_4096G + num] = scrnmng_makepal16(rgb);
 	}
 #endif
-	makescrn.palandply = 1;
+	crtc.e.palandply = 1;
 }
 #endif
 

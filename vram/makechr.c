@@ -15,16 +15,16 @@ void makechr8(UINT8 *dst, UINT pos, UINT count, REG8 udtmp) {
 const UINT8		*pat;
 	MAKETXTFN	fn;
 
-	atr = tram[TRAM_ATR + pos];
+	atr = TRAM_ATR(pos);
 	if (atr & makescrn.blinktest) {
 		atr ^= TRAMATR_REVERSE;
 	}
 	if (udtmp & 0x10) {
 		pos = LOW11(pos - 1);
 	}
-	ank = tram[TRAM_ANK + pos];
-	knj = tram[TRAM_KNJ + pos];
-	if (!(tram[TRAM_ATR + pos] & 0x20)) {		// CHR
+	ank = TRAM_ANK(pos);
+	knj = TRAM_KNJ(pos);
+	if (!(TRAM_ATR(pos) & 0x20)) {				// CHR
 		if (!(knj & 0x80)) {					// ASCII
 			pat = font_ank + (ank << 3);
 			fn = maketxt8fn[udtmp & 15];
@@ -62,16 +62,16 @@ void makechr16(UINT8 *dst, UINT pos, UINT count, REG8 udtmp) {
 const UINT8		*pat;
 	MAKETXTFN	fn;
 
-	atr = tram[TRAM_ATR + pos];
+	atr = TRAM_ATR(pos);
 	if (atr & makescrn.blinktest) {
 		atr ^= TRAMATR_REVERSE;
 	}
 	if (udtmp & 0x10) {
 		pos = LOW11(pos - 1);
 	}
-	ank = tram[TRAM_ANK + pos];
-	knj = tram[TRAM_KNJ + pos];
-	if (!(tram[TRAM_ATR + pos] & 0x20)) {		// CHR
+	ank = TRAM_ANK(pos);
+	knj = TRAM_KNJ(pos);
+	if (!(TRAM_ATR(pos) & 0x20)) {				// CHR
 		if (!(knj & 0x80)) {					// ASCII
 			pat = font_txt;
 		}

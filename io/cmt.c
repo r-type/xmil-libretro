@@ -18,7 +18,8 @@ void cmt_ctrl(REG8 cmd) {
 	switch(cmd) {
 		case 0x00:				// EJECT
 		case 0x01:				// STOP
-			cmt.stop = 1;
+//			cmt.stop = 1;
+			iocore.s.ppib &= ~0x01;
 			break;
 
 //		case 0x02:				// PLAY
@@ -42,6 +43,7 @@ REG8 cmt_ctrl_stat(void) {
 	return(cmt.cmd);
 }
 
+#if 0
 REG8 cmt_test(void) {
 
 	if (cmt.stop) {
@@ -52,6 +54,7 @@ REG8 cmt_test(void) {
 		return(1);
 	}
 }
+#endif
 
 
 // ----
@@ -59,6 +62,7 @@ REG8 cmt_test(void) {
 void cmt_reset(void) {
 
 	cmt.cmd = 0;
-	cmt.stop = 1;
+//	cmt.stop = 1;
+	iocore.s.ppib &= ~0x01;
 }
 

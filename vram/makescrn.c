@@ -11,20 +11,15 @@
 
 
 	MAKESCRN	makescrn;
-
-	UINT8	scrnallflash;
-	UINT	drawtime = 0;
+	UINT		drawtime = 0;
 
 
 static void fillupdatetmp(void) {
 
-	UINT32	*p;
 	UINT	i;
 
-	p = (UINT32 *)updatetmp;
-	for (i=0; i<0x200; i++) {
-		p[i] |= (UPDATE_TVRAM << 24) | (UPDATE_TVRAM << 16) |
-										(UPDATE_TVRAM << 8) | UPDATE_TVRAM;
+	for (i=0; i<0x800; i++) {
+		TRAMUPDATE(i) |= UPDATE_TVRAM;
 	}
 }
 
@@ -47,7 +42,7 @@ static void flashupdatetmp(void) {
 	y = crtc.e.yl;
 	do {
 		for (x=0; x<crtc.s.reg[CRTCREG_HDISP]; x++) {
-			if (!(tram[TRAM_ATR + LOW11(posl + x)] & TRAMATR_Yx2)) {
+			if (!(TRAM_ATR(LOW11(posl + x)) & TRAMATR_Yx2)) {
 				break;
 			}
 		}
@@ -56,7 +51,7 @@ static void flashupdatetmp(void) {
 		r = (crtc.s.reg[CRTCREG_HDISP] + 1) >> 1;
 		do {
 			posr = LOW11(posl + 1);
-			atr = (tram[TRAM_ATR + posl] << 8) | tram[TRAM_ATR + posr];
+			atr = (TRAM_ATR(posl) << 8) | TRAM_ATR(posr);
 			udt = udtbase;
 			if (!y2) {
 				if (atr & (TRAMATR_Yx2 << 8)) {
@@ -80,11 +75,11 @@ static void flashupdatetmp(void) {
 			if (atr & (TRAMATR_Xx2 << 0)) {				// ‰E‘¤”{Šp?
 				udt |= 0x0008;
 			}
-			if ((updatetmp[posl] ^ (udt >> 8)) & 0x1f) {
-				updatetmp[posl] = (UINT8)((udt >> 8) | UPDATE_TVRAM);
+			if ((TRAMUPDATE(posl) ^ (udt >> 8)) & 0x1f) {
+				TRAMUPDATE(posl) = (UINT8)((udt >> 8) | UPDATE_TRAM);
 			}
-			if ((updatetmp[posr] ^ (udt >> 0)) & 0x1f) {
-				updatetmp[posr] = (UINT8)((udt >> 0) | UPDATE_TVRAM);
+			if ((TRAMUPDATE(posr) ^ (udt >> 0)) & 0x1f) {
+				TRAMUPDATE(posr) = (UINT8)((udt >> 0) | UPDATE_TRAM);
 			}
 			posl = LOW11(posl + 2);
 		} while(--r);
@@ -100,31 +95,23 @@ static BRESULT updateblink(void) {
 	REG8	update;
 	UINT	r;
 
-	if (makescrn.blinktime) {
-		makescrn.blinktime--;
-		return(FALSE);
+	pos = makescrn.vramtop;
+	makescrn.blinktest ^= 0x10;
+	update = 0;
+	r = makescrn.vramsize;
+	while(r) {
+		r--;
+		if (TRAM_ATR(pos) & 0x10) {
+			TRAMUPDATE(pos) |= UPDATE_TRAM;
+			update = UPDATE_TRAM;
+		}
+		pos = LOW11(pos + 1);
+	}
+	if (update) {
+		return(TRUE);
 	}
 	else {
-		makescrn.blinktime = 30 - 1;
-		pos = makescrn.vramtop;
-		makescrn.blinktest ^= 0x10;
-		update = 0;
-		r = makescrn.vramsize;
-		while(r) {
-			r--;
-			if (tram[TRAM_ATR + pos] & 0x10) {
-				updatetmp[pos] |= UPDATE_TRAM;
-				update = UPDATE_TRAM;
-			}
-			pos = LOW11(pos + 1);
-		}
-		if (update) {
-			makescrn.existblink = 1;
-			return(TRUE);
-		}
-		else {
-			return(FALSE);
-		}
+		return(FALSE);
 	}
 }
 
@@ -206,8 +193,6 @@ static void changemodes(void) {
 		makescrn.disp2 = gram + GRAM_BANK0;
 		makescrn.dispflag = UPDATE_TRAM + UPDATE_VRAM1;
 	}
-	scrnallflash = 1;
-	makescrn.palandply = 1;
 }
 
 static void changecrtc(void) {
@@ -292,44 +277,60 @@ static void changecrtc(void) {
 
 void scrnupdate(void) {
 
-	BRESULT	ddrawflash;
-	BRESULT	allflash;
+	REG8	flag;
+	REG8	existblink;
 
 	if (!corestat.drawframe) {
 		return;
 	}
 	corestat.drawframe = 0;
 
-	ddrawflash = makescrn.nextdraw;
-	allflash = FALSE;
+	flag = makescrn.nextdraw;
+	if (crtc.e.scrnflash) {
+		crtc.e.scrnflash = 0;
+		flag |= SCRNUPD_FLASH;
+	}
+	if (crtc.e.scrnallflash) {
+		crtc.e.scrnallflash = 0;
+		flag |= SCRNUPD_ALLFLASH;
+	}
+	if (crtc.e.palandply) {
+		crtc.e.palandply = 0;
+		flag |= SCRNUPD_PALANDPLY;
+	}
+
 	if (makescrn.dispmode != crtc.e.dispmode) {
 		TRACEOUT(("change mode!"));
 		changemodes();
+		flag |= SCRNUPD_ALLFLASH | SCRNUPD_PALANDPLY;
 	}
-	if (scrnallflash) {
-		scrnallflash = 0;
+	if (flag & SCRNUPD_ALLFLASH) {
 		changecrtc();
 		TRACEOUT(("flash! %dx%d", makescrn.surfcx, makescrn.surfcy));
 		fillupdatetmp();
-		ddrawflash = TRUE;
-		allflash = TRUE;
-		makescrn.scrnflash = 1;
+		flag |= SCRNUPD_FLASH;
 	}
-	if (makescrn.remakeattr) {
-		makescrn.remakeattr = 0;
+	if (crtc.e.remakeattr) {
+		crtc.e.remakeattr = 0;
 		flashupdatetmp();
 	}
-	if (makescrn.palandply) {
-		makescrn.palandply = 0;
+	if (flag & SCRNUPD_PALANDPLY) {
 		pal_update();
-		ddrawflash = TRUE;
-	}
-	if (makescrn.existblink) {
-		makescrn.scrnflash |= updateblink();
 	}
 
-	if (makescrn.scrnflash) {
-		makescrn.scrnflash = 0;
+	if (crtc.e.blinktime) {
+		crtc.e.blinktime--;
+	}
+	else {
+		crtc.e.blinktime = 30 - 1;
+		if (crtc.e.existblink) {
+			existblink = updateblink();
+			crtc.e.existblink = existblink;
+			flag |= existblink;
+		}
+	}
+
+	if (flag & SCRNUPD_FLASH) {
 		if (makescrn.vramsize) {
 			makescrn.fontycnt = 0;
 			screenmake[makescrn.dispmode & DISPMODE_MASKMODE]();
@@ -386,12 +387,11 @@ void scrnupdate(void) {
 					break;
 			}
 #endif
-			ddrawflash = TRUE;
 		}
 	}
 
-	if (ddrawflash) {
-		makescrn.nextdraw = scrndraw_draw(allflash);
+	if (flag) {
+		makescrn.nextdraw = scrndraw_draw(flag & SCRNUPD_ALLFLASH);
 		drawtime++;
 	}
 }

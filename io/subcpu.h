@@ -1,18 +1,30 @@
 
 typedef struct {
-	UINT8	Dx[16][8];
-	UINT8	Ex[16][8];
-	UINT	dataptr;
+	UINT8	timer[8][6];
+	UINT8	work[4];
+	UINT8	vect;
+	UINT8	tvctrl;
+	UINT8	zero;
+	UINT8	padding;
+	UINT8	datcnt;
+	UINT8	datptr;
+	UINT8	cmdcnt;
+	UINT8	cmdptr;
 	UINT	keycount;
 	UINT	keycountrep;
 	UINT8	mode;
 	UINT8	keydata;
-	UINT8	cmdcnt;
-	UINT8	datacnt;
-	UINT8	IBF;
-	UINT8	OBF;
-} SUBCPU;
+	UINT8	padding2[2];
+} SCPUS;
 
+typedef struct {
+	SINT32	intrclock;
+} SCPUE;
+
+typedef struct {
+	SCPUS	s;
+	SCPUE	e;
+} SUBCPU;
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,6 +32,7 @@ extern "C" {
 
 void neitem_scpu(UINT id);
 BRESULT ieitem_scpu(UINT id);
+void subcpu_sendkey(void);
 
 void IOOUTCALL subcpu_o(UINT port, REG8 dat);		// x1_sub_w
 REG8 IOINPCALL subcpu_i(UINT port);					// x1_sub_r

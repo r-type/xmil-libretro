@@ -1,12 +1,4 @@
 
-typedef struct {
-	UINT8	ram;
-#if defined(SUPPORT_BANKMEM)
-	UINT8	bank;
-#endif
-} MEMIO;
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif

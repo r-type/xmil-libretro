@@ -1,5 +1,11 @@
 
 enum {
+	SCRNUPD_FLASH		= (1 << 0),
+	SCRNUPD_ALLFLASH	= (1 << 1),
+	SCRNUPD_PALANDPLY	= (1 << 2)
+};
+
+enum {
 	MAKESCRN_320x200S	= 0,
 	MAKESCRN_640x200S	= 1,
 	MAKESCRN_320x200H	= 2,
@@ -11,22 +17,16 @@ enum {
 
 
 typedef struct {
-	UINT8	scrnflash;
-	UINT8	_scrnallflash;
-	UINT8	remakeattr;							// doubleatrchange
-	UINT8	palandply;
-
 	UINT8	*disp1;
 	UINT8	*disp2;
+
 	UINT8	dispflag;
-	UINT8	existblink;							// blinkflag
-	UINT8	blinktest;
-	UINT8	blinktime;
+	UINT8	_padding[3];
 
 	UINT8	dispmode;
 	UINT8	drawmode;
 	UINT8	nextdraw;
-	UINT8	_padding;
+	UINT8	blinktest;
 
 	UINT	vramtop;
 	UINT	fontycnt;
@@ -48,7 +48,6 @@ extern "C" {
 
 extern	MAKESCRN	makescrn;
 
-extern	UINT8	scrnallflash;
 extern	UINT	drawtime;
 
 

@@ -20,7 +20,8 @@ typedef struct {
 } _FNTMNG, *FNTMNG;
 
 
-static const OEMCHAR deffontface[] = OEMTEXT("‚l‚r ƒSƒVƒbƒN");
+// static const OEMCHAR deffontface[] = OEMTEXT("‚l‚r ƒSƒVƒbƒN");
+static const OEMCHAR deffontface[] = OEMTEXT("‚c‚e ×ŠÛƒSƒVƒbƒN‘Ì");
 static const OEMCHAR deffontface2[] = OEMTEXT("‚l‚r ‚oƒSƒVƒbƒN");
 
 

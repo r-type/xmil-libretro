@@ -66,37 +66,37 @@ secinc_exit:
 
 void calendar_getdate(UINT8 *bcd) {
 
-	bcd[0] = AdjustAfterMultiply((UINT8)(cal.dt.year % 100));
+	bcd[2] = AdjustAfterMultiply((UINT8)(cal.dt.year % 100));
 	bcd[1] = ((cal.dt.month << 4) + cal.dt.week);
-	bcd[2] = AdjustAfterMultiply((UINT8)cal.dt.day);
+	bcd[0] = AdjustAfterMultiply((UINT8)cal.dt.day);
 }
 
 void calendar_setdate(const UINT8 *bcd) {
 
 	UINT	year;
 
-	year = AdjustBeforeDivision(bcd[0]);
+	year = AdjustBeforeDivision(bcd[2]);
 	if (year < 80) {
 		year += 100;
 	}
 	cal.dt.year = (UINT16)(year + 1900);
 	cal.dt.week = (UINT8)(bcd[1] & 0x0f);
 	cal.dt.month = (UINT8)(bcd[1] >> 4);
-	cal.dt.day = AdjustBeforeDivision(bcd[2]);
+	cal.dt.day = AdjustBeforeDivision(bcd[0]);
 }
 
 void calendar_gettime(UINT8 *bcd) {
 
-	bcd[0] = AdjustAfterMultiply((UINT8)cal.dt.hour);
+	bcd[2] = AdjustAfterMultiply((UINT8)cal.dt.hour);
 	bcd[1] = AdjustAfterMultiply((UINT8)cal.dt.minute);
-	bcd[2] = AdjustAfterMultiply((UINT8)cal.dt.second);
+	bcd[0] = AdjustAfterMultiply((UINT8)cal.dt.second);
 }
 
 void calendar_settime(const UINT8 *bcd) {
 
-	cal.dt.hour = AdjustBeforeDivision(bcd[0]);
+	cal.dt.hour = AdjustBeforeDivision(bcd[2]);
 	cal.dt.minute = AdjustBeforeDivision(bcd[1]);
-	cal.dt.second = AdjustBeforeDivision(bcd[2]);
+	cal.dt.second = AdjustBeforeDivision(bcd[0]);
 }
 
 
@@ -114,7 +114,14 @@ void neitem_rtc(UINT id) {
 
 void calendar_reset(void) {
 
+	SINT32	clock;
+
 	timemng_gettime(&cal.dt);
-	nevent_set(NEVENT_RTC, pccore.realclock / 5, neitem_rtc, NEVENT_RELATIVE);
+#if defined(FIX_Z80A)
+	clock = 2000000 * 2 / 5;
+#else
+	clock = pccore.realclock / 5;
+#endif
+	nevent_set(NEVENT_RTC, clock, neitem_rtc, NEVENT_RELATIVE);
 }
 

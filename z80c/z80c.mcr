@@ -6,16 +6,40 @@
 //
 //----------------------------------------------------------------------------
 
+// #define	PCCOUNTER
+
+#if defined(TRACE) && defined(PCCOUNTER)
+extern	UINT	pccnt;
+extern	UINT	pccnt2;
+extern	UINT	pccnt3;
+extern	UINT	lastpc;
+#endif
 
 #define Z80_COUNT(clock)												\
 	do {																\
 		CPU_REMCLOCK -= (clock);										\
 	} while (/*CONSTCOND*/ 0)
 
-#define	Z80IRQCHECKTERM													\
-	do { } while (/*CONSTCOND*/ 0)
 
+#if defined(TRACE) && defined(PCCOUNTER)
+#define	GET_PC_BYTE(b)													\
+	do {																\
+		if ((lastpc ^ R_Z80PC) & 0x8000) {								\
+			TRACEOUT(("%.4x->%.4x", lastpc, R_Z80PC));					\
+			lastpc = R_Z80PC;											\
+			pccnt2++;													\
+		}																\
+		pccnt++;														\
+		(b) = mem_read8(R_Z80PC++);										\
+	} while (/*CONSTCOND*/ 0)
 
+#define	GET_PC_WORD(w)													\
+	do {																\
+		pccnt3++;														\
+		(w) = mem_read16(R_Z80PC);										\
+		R_Z80PC += 2;													\
+	} while (/*CONSTCOND*/ 0)
+#else
 #define	GET_PC_BYTE(b)													\
 	do {																\
 		(b) = mem_read8(R_Z80PC++);										\
@@ -26,6 +50,7 @@
 		(w) = mem_read16(R_Z80PC);										\
 		R_Z80PC += 2;													\
 	} while (/*CONSTCOND*/ 0)
+#endif
 
 
 #define MCR_EX1(r1, r2)													\
@@ -273,7 +298,7 @@
 #define MCR_HALT {														\
 		R_Z80PC--;														\
 		Z80_IFF |= (1 << IFF_HALT);										\
-		Z80IRQCHECKTERM;												\
+		CPU_REMCLOCK = 0;												\
 	}
 
 

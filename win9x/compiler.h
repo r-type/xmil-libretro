@@ -6,6 +6,9 @@
 #include	<stdio.h>
 #include	<stddef.h>
 #include	<setjmp.h>
+#if defined(TRACE)
+#include	<assert.h>
+#endif
 
 #define	BYTESEX_LITTLE
 #if !defined(UNICODE)
@@ -69,7 +72,11 @@ typedef signed __int64		SINT64;
 
 
 #define	GETTICK()			GetTickCount()
+#if defined(TRACE)
+#define	__ASSERT(s)			assert(s)
+#else
 #define	__ASSERT(s)
+#endif
 #if defined(UNICODE)
 #define	SPRINTF				sprintf
 #define	STRLEN				strlen
@@ -102,6 +109,7 @@ typedef signed __int64		SINT64;
 #define	SUPPORT_24BPP
 #define	SUPPORT_32BPP
 
+#define	SUPPORT_OPM
 #define	SUPPORT_BANKMEM
 #define	SUPPORT_X1F
 #define	SUPPORT_RESUME

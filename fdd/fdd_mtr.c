@@ -32,7 +32,7 @@ static void fddmtr_event(void) {
 
 // ----
 
-void fddmtr_init(void) {
+void fddmtr_initialize(void) {
 
 	soundmng_pcmstop(SOUND_PCMSEEK);
 	ZeroMemory(&fddmtr, sizeof(fddmtr));
@@ -90,7 +90,7 @@ void fddmtr_motormove(void) {
 	}
 }
 
-void fddmtr_waitsec(UINT8 value) {
+void fddmtr_waitsec(REG8 value) {
 
 	if (!xmilcfg.MOTOR) {
 		return;

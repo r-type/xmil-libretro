@@ -11,15 +11,33 @@ typedef	REG8 (IOINPCALL *IOINP)(UINT port);
 
 typedef struct {
 	UINT8	mode;
-	UINT8	padding[7];
+	UINT8	ppib;
+#if defined(SUPPORT_BANKMEM)
+	UINT8	bankmem;
+#else
+	UINT8	__bankmem;			// protect
+#endif
+	UINT8	padding;
 } IOSTAT;
 
 typedef struct {
-	IOINP	inpfn[0x20];
-	IOOUT	outfn[0x20];
+	IOINP	inpfn[0x40];
+	IOOUT	outfn[0x40];
+} IOFNTBL;
+
+typedef struct {
+	SINT32	framestartclock;
+	SINT32	dispclock;
+	SINT32	vsyncstart;
+#if !defined(MAINFRAMES_OLD)
+	SINT32	vsyncend;
+#else
+	SINT32	vpulseclock;
+#endif
 } IOEXT;
 
 typedef struct {
+	IOFNTBL	f;
 	IOSTAT	s;
 	IOEXT	e;
 } IOCORE;
@@ -52,7 +70,6 @@ extern	CRTC		crtc;
 extern	CTC			ctc;
 extern	DMAC		dma;
 extern	FDC			fdc;
-extern	MEMIO		memio;
 extern	PCG			pcg;
 extern	PPI			ppi;
 extern	SIO			sio;
@@ -61,11 +78,6 @@ extern	SUBCPU		subcpu;
 
 
 void iocore_reset(void);
-void iocore_regoutmsb(UINT msb, IOOUT fn);
-void iocore_reginpmsb(UINT msb, IOINP fn);
-
-void iocore_regout(UINT port, IOOUT fn);
-void iocore_reginp(UINT port, IOINP fn);
 
 void IOOUTCALL iocore_out(UINT port, REG8 dat);
 REG8 IOINPCALL iocore_inp(UINT port);

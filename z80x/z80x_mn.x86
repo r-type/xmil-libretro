@@ -137,6 +137,7 @@ _scf:			and		byte [edi + R_Z80F], ~(H_FLAG | N_FLAG)
 				align	16
 _halt:			dec		word [edi + R_Z80PC]
 				or		byte [edi + R_Z80IFF], (1 << IFF_HALT)
+				mov		dword [edi + z80core_t.remainclock], 0
 				ret
 
 				align	16

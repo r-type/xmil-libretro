@@ -45,11 +45,12 @@ RSC=rc.exe
 # PROP Intermediate_Dir "..\obj\evc\xmilsig3\Rel"
 # PROP CPU_ID "{DC70F430-E78B-494F-A9D5-62ADC56443B8}"
 # PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE RSC /l 0x411 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "THUMB" /d "_THUMB_" /d "ARM" /d "_ARM_" /d "ARMV4I" /r
 # ADD RSC /l 0x411 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "THUMB" /d "_THUMB_" /d "ARM" /d "_ARM_" /d "ARMV4I" /r
 # ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "ARM" /D "_ARM_" /D "$(CePlatform)" /D "ARMV4I" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /QRarch4T /QRinterwork-return /O2 /M$(CECrtMT) /c
-# ADD CPP /nologo /W3 /I ".\\" /I ".\wce" /I ".\gx" /I "..\\" /I "..\common" /I "..\z80c" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\generic" /I "..\embed" /I "..\embed\menu" /I "..\embed\menubase" /D "NDEBUG" /D "ARM" /D "_ARM_" /D "ARMV4I" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /D "GX_DLL" /YX /QRarch4T /QRinterwork-return /O2 /M$(CECrtMT) /c
+# ADD CPP /nologo /W3 /I ".\\" /I ".\wce" /I ".\gx" /I "..\\" /I "..\common" /I "..\z80awce" /I "..\io" /I "..\vram" /I "..\sound" /I "..\font" /I "..\fdd" /I "..\generic" /I "..\embed" /I "..\embed\menu" /I "..\embed\menubase" /D "NDEBUG" /D "ARM" /D "_ARM_" /D "ARMV4I" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /D "GX_DLL" /YX /QRarch4T /QRinterwork-return /O2 /M$(CECrtMT) /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 BSC32=bscmake.exe
@@ -321,6 +322,15 @@ DEP_CPP_Z80C_=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -340,6 +350,15 @@ DEP_CPP_Z80C_C=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -360,6 +379,15 @@ DEP_CPP_Z80C_I=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -380,6 +408,15 @@ DEP_CPP_Z80C_IY=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -414,6 +451,15 @@ DEP_CPP_Z80C_M=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -450,6 +496,15 @@ DEP_CPP_Z80C_S=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -484,6 +539,15 @@ DEP_CPP_Z80DM=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -502,11 +566,221 @@ DEP_CPP_Z80ME=\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Group "cpuforArm"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\Z80AWCE\Z80A.C
+DEP_CPP_Z80A_=\
+	"..\common.h"\
+	"..\COMMON\_memory.h"\
+	"..\COMMON\lstarray.h"\
+	"..\COMMON\milstr.h"\
+	"..\COMMON\parts.h"\
+	"..\COMMON\rect.h"\
+	"..\COMMON\ucscnv.h"\
+	"..\io\cgrom.h"\
+	"..\io\cmt.h"\
+	"..\io\crtc.h"\
+	"..\io\ctc.h"\
+	"..\io\dipsw.h"\
+	"..\io\dmac.h"\
+	"..\io\fdc.h"\
+	"..\io\iocore.h"\
+	"..\io\memio.h"\
+	"..\io\pcg.h"\
+	"..\io\ppi.h"\
+	"..\io\sio.h"\
+	"..\io\sndboard.h"\
+	"..\io\subcpu.h"\
+	"..\io\vramio.h"\
+	"..\pccore.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
+	".\oemtext.h"\
+	".\wce\compiler.h"\
+	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\Z80AWCE\Z80A_CB.S
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilsig3\Rel
+InputPath=..\Z80AWCE\Z80A_CB.S
+InputName=Z80A_CB
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\Z80AWCE\Z80A_I.S
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilsig3\Rel
+InputPath=..\Z80AWCE\Z80A_I.S
+InputName=Z80A_I
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\Z80AWCE\Z80A_MN.S
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilsig3\Rel
+InputPath=..\Z80AWCE\Z80A_MN.S
+InputName=Z80A_MN
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\Z80AWCE\Z80A_S.S
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilsig3\Rel
+InputPath=..\Z80AWCE\Z80A_S.S
+InputName=Z80A_S
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\Z80AWCE\Z80DMAP.C
+DEP_CPP_Z80DM=\
+	"..\common.h"\
+	"..\COMMON\_memory.h"\
+	"..\COMMON\lstarray.h"\
+	"..\COMMON\milstr.h"\
+	"..\COMMON\rect.h"\
+	"..\COMMON\ucscnv.h"\
+	"..\ievent.h"\
+	"..\io\cgrom.h"\
+	"..\io\cmt.h"\
+	"..\io\crtc.h"\
+	"..\io\ctc.h"\
+	"..\io\dipsw.h"\
+	"..\io\dmac.h"\
+	"..\io\fdc.h"\
+	"..\io\iocore.h"\
+	"..\io\memio.h"\
+	"..\io\pcg.h"\
+	"..\io\ppi.h"\
+	"..\io\sio.h"\
+	"..\io\sndboard.h"\
+	"..\io\subcpu.h"\
+	"..\io\vramio.h"\
+	"..\pccore.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
+	".\oemtext.h"\
+	".\wce\compiler.h"\
+	
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\Z80AWCE\Z80MEM.S
+
+!IF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Release"
+
+# Begin Custom Build - Assembling... $(InputPath)
+IntDir=.\..\obj\evc\xmilsig3\Rel
+InputPath=..\Z80AWCE\Z80MEM.S
+InputName=Z80MEM
+
+"$(IntDir)\$(InputName)_arm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	armasm -32 $(InputPath) $(IntDir)\$(InputName)_arm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmilsig3 - Win32 (WCE ARMV4I) Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
 # End Group
 # Begin Group "io"
 
@@ -602,11 +876,10 @@ DEP_CPP_CRTC_=\
 	"..\vram\makescrn.h"\
 	"..\VRAM\palettes.h"\
 	"..\VRAM\vram.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
-	".\scrnmng.h"\
 	".\wce\compiler.h"\
 	
 # End Source File
@@ -638,9 +911,9 @@ DEP_CPP_CTC_C=\
 	"..\io\vramio.h"\
 	"..\nevent.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
@@ -703,9 +976,9 @@ DEP_CPP_DMAC_=\
 	"..\io\vramio.h"\
 	"..\nevent.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
@@ -721,8 +994,6 @@ DEP_CPP_FDC_C=\
 	"..\COMMON\rect.h"\
 	"..\COMMON\ucscnv.h"\
 	"..\FDD\d88head.h"\
-	"..\FDD\fdd_2d.h"\
-	"..\FDD\fdd_d88.h"\
 	"..\FDD\fdd_mtr.h"\
 	"..\FDD\fddfile.h"\
 	"..\io\cgrom.h"\
@@ -742,10 +1013,9 @@ DEP_CPP_FDC_C=\
 	"..\io\vramio.h"\
 	"..\nevent.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
-	".\dosio.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
@@ -794,6 +1064,7 @@ DEP_CPP_MEMIO=\
 	"..\io\cmt.h"\
 	"..\io\crtc.h"\
 	"..\io\ctc.h"\
+	"..\IO\defipl.res"\
 	"..\io\dipsw.h"\
 	"..\io\dmac.h"\
 	"..\io\fdc.h"\
@@ -806,9 +1077,10 @@ DEP_CPP_MEMIO=\
 	"..\io\subcpu.h"\
 	"..\io\vramio.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
+	".\dosio.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
@@ -839,12 +1111,12 @@ DEP_CPP_PCG_C=\
 	"..\io\sndboard.h"\
 	"..\io\subcpu.h"\
 	"..\io\vramio.h"\
-	"..\nevent.h"\
 	"..\pccore.h"\
+	"..\vram\makescrn.h"\
 	"..\VRAM\vram.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
@@ -874,9 +1146,10 @@ DEP_CPP_PPI_C=\
 	"..\io\sndboard.h"\
 	"..\io\subcpu.h"\
 	"..\io\vramio.h"\
-	"..\nevent.h"\
 	"..\pccore.h"\
-	"..\vram\makescrn.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
@@ -907,9 +1180,9 @@ DEP_CPP_SIO_C=\
 	"..\io\subcpu.h"\
 	"..\io\vramio.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\mousemng.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
@@ -982,9 +1255,9 @@ DEP_CPP_SUBCP=\
 	"..\keystat.h"\
 	"..\nevent.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
 	".\timemng.h"\
 	".\wce\compiler.h"\
@@ -1479,12 +1752,13 @@ DEP_CPP_SOUND=\
 	"..\COMMON\milstr.h"\
 	"..\COMMON\rect.h"\
 	"..\COMMON\ucscnv.h"\
+	"..\common\wavefile.h"\
 	"..\pccore.h"\
 	"..\SOUND\sndcsec.h"\
 	"..\sound\sound.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\dosio.h"\
 	".\oemtext.h"\
 	".\soundmng.h"\
@@ -2317,9 +2591,9 @@ DEP_CPP_SYSME=\
 	"..\io\vramio.h"\
 	"..\keystat.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\fontmng.h"\
 	".\oemtext.h"\
 	".\scrnmng.h"\
@@ -2436,9 +2710,9 @@ DEP_CPP_XMIL_=\
 	"..\timing.h"\
 	"..\vram\makescrn.h"\
 	"..\vram\scrndraw.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\dosio.h"\
 	".\gx\gx.h"\
 	".\ini.h"\
@@ -2502,9 +2776,9 @@ DEP_CPP_IEVEN=\
 	"..\io\vramio.h"\
 	"..\nevent.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
@@ -2519,6 +2793,21 @@ DEP_CPP_KEYST=\
 	"..\COMMON\milstr.h"\
 	"..\COMMON\rect.h"\
 	"..\COMMON\ucscnv.h"\
+	"..\io\cgrom.h"\
+	"..\io\cmt.h"\
+	"..\io\crtc.h"\
+	"..\io\ctc.h"\
+	"..\io\dipsw.h"\
+	"..\io\dmac.h"\
+	"..\io\fdc.h"\
+	"..\io\iocore.h"\
+	"..\io\memio.h"\
+	"..\io\pcg.h"\
+	"..\io\ppi.h"\
+	"..\io\sio.h"\
+	"..\io\sndboard.h"\
+	"..\io\subcpu.h"\
+	"..\io\vramio.h"\
 	"..\keystat.h"\
 	"..\keystat.tbl"\
 	"..\pccore.h"\
@@ -2538,9 +2827,9 @@ DEP_CPP_NEVEN=\
 	"..\COMMON\ucscnv.h"\
 	"..\nevent.h"\
 	"..\pccore.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\oemtext.h"\
 	".\wce\compiler.h"\
 	
@@ -2556,7 +2845,6 @@ DEP_CPP_PCCOR=\
 	"..\COMMON\milstr.h"\
 	"..\COMMON\rect.h"\
 	"..\COMMON\ucscnv.h"\
-	"..\defrom.res"\
 	"..\FDD\d88head.h"\
 	"..\FDD\fddfile.h"\
 	"..\FONT\font.h"\
@@ -2587,9 +2875,9 @@ DEP_CPP_PCCOR=\
 	"..\vram\makescrn.h"\
 	"..\VRAM\palettes.h"\
 	"..\xmilver.h"\
-	"..\z80c\z80core.h"\
-	"..\z80c\z80dmap.h"\
-	"..\z80c\z80mem.h"\
+	"..\z80awce\z80core.h"\
+	"..\z80awce\z80dmap.h"\
+	"..\z80awce\z80mem.h"\
 	".\dosio.h"\
 	".\oemtext.h"\
 	".\scrnmng.h"\
@@ -2609,7 +2897,6 @@ DEP_CPP_TIMIN=\
 	"..\COMMON\milstr.h"\
 	"..\COMMON\rect.h"\
 	"..\COMMON\ucscnv.h"\
-	"..\fdd\diskdrv.h"\
 	"..\FDD\fdd_mtr.h"\
 	"..\pccore.h"\
 	"..\timing.h"\

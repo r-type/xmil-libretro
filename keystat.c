@@ -1,5 +1,6 @@
 #include	"compiler.h"
 #include	"pccore.h"
+#include	"iocore.h"
 #include	"keystat.h"
 #include	"keystat.tbl"
 
@@ -26,6 +27,7 @@ static void keydown(REG8 key) {
 		keystat.req_int = TRUE;
 		keystat.shift |= 0x40;
 		keystat.lastkey = key;
+		subcpu_sendkey();
 	}
 }
 
@@ -43,6 +45,7 @@ static void keyup(REG8 key) {
 	if (key < 0x70) {
 		keystat.req_int = TRUE;
 		keystat.shift &= ~0x40;
+		subcpu_sendkey();
 	}
 }
 

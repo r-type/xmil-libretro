@@ -340,125 +340,80 @@ static int flagload_common(STFLAGH sfh, const SFENTRY *tbl) {
 // ---- event
 
 typedef struct {
+	UINT32	next;
 	SINT32	clock;
-	SINT32	base;
-	UINT32	param;
+	SINT32	baseclock;
 	UINT32	proc;
 } NEVTITEM;
 
 typedef struct {
-	UINT	readys;
-	UINT	events;
-	UINT32	ready[NEVENT_MAXEVENTS];
-	UINT32	event[NEVENT_MAXEVENTS];
+	NEVTITEM	item[NEVENT_MAXEVENTS];
+	UINT32		first;
 } NEVTSAVE;
 
-static UINT32 evt2id(UINT evt) {
+static UINT32 evt2id(NEVENTITEM next) {
 
-	UINT	i;
-
-	for (i=0; i<sizeof(evtnum)/sizeof(ENUMTBL); i++) {
-		if (evtnum[i].evt == evt) {
-			return(evtnum[i].id);
-		}
+	if (next == NEVENTITEM_NONE) {
+		return((UINT32)-2);
 	}
-	return(0);
+	else if (next == NEVENTITEM_TERM) {
+		return((UINT32)-1);
+	}
+	else {
+		return(next - nevent.item);
+	}
 }
 
-static int nevent_write(STFLAGH sfh, const _NEVENTITEM *ne) {
+static NEVENTITEM id2evt(UINT32 n) {
 
-	NEVTITEM	nit;
-
-	nit.clock = ne->clock;
-	nit.base = ne->baseclock;
-	nit.proc = proc2id((INTPTR)ne->proc, evtproc, NELEMENTS(evtproc));
-	nit.param = ne->param;
-	return(statflag_write(sfh, &nit, sizeof(nit)));
+	if (n == (UINT32)-2) {
+		return(NEVENTITEM_NONE);
+	}
+	else if (n == (UINT32)-1) {
+		return(NEVENTITEM_TERM);
+	}
+	else if (n < NEVENT_MAXEVENTS) {
+		return(nevent.item + n);
+	}
+	else {
+		// error!
+		return(NEVENTITEM_TERM);
+	}
 }
 
 static int flagsave_evt(STFLAGH sfh, const SFENTRY *tbl) {
 
 	NEVTSAVE	nevt;
 	UINT		i;
-	UINT32		id;
-	UINT		eventid[NEVENT_MAXEVENTS];
-	int			ret;
 
-	ZeroMemory(&nevt, sizeof(nevt));
-	for (i=0; i<nevent.readyevents; i++) {
-		id = evt2id(nevent.level[i]);
-		if (id) {
-			nevt.ready[nevt.readys++] = id;
-		}
-	}
 	for (i=0; i<NEVENT_MAXEVENTS; i++) {
-		id = evt2id(i);
-		if (id) {
-			eventid[i] = i;
-			nevt.event[nevt.events++] = id;
-		}
+		nevt.item[i].next = evt2id(nevent.item[i].next);
+		nevt.item[i].clock = nevent.item[i].clock;
+		nevt.item[i].baseclock = nevent.item[i].baseclock;
+		nevt.item[i].proc = proc2id((INTPTR)nevent.item[i].proc,
+												evtproc, NELEMENTS(evtproc));
 	}
-	ret = statflag_write(sfh, &nevt, sizeof(nevt));
-	for (i=0; i<nevt.events; i++) {
-		ret |= nevent_write(sfh, nevent.item + eventid[i]);
-	}
+	nevt.first = evt2id(nevent.first);
 	(void)tbl;
-	return(ret);
-}
-
-static UINT id2evt(UINT32 id) {
-
-	UINT	i;
-
-	for (i=0; i<sizeof(evtnum)/sizeof(ENUMTBL); i++) {
-		if (evtnum[i].id == id) {
-			return(evtnum[i].evt);
-		}
-	}
-	return(NEVENT_MAXEVENTS);
-}
-
-static int nevent_read(STFLAGH sfh, UINT32 id) {
-
-	int			ret;
-	NEVTITEM	nit;
-	UINT		evt;
-	_NEVENTITEM	*ne;
-
-	ret = statflag_read(sfh, &nit, sizeof(nit));
-	evt = id2evt(id);
-	if (evt >= NEVENT_MAXEVENTS) {
-		return(STATFLAG_FAILURE);
-	}
-	ne = nevent.item + evt;
-	ne->clock = nit.clock;
-	ne->baseclock = nit.base;
-	ne->proc = (NEVENTCB)id2proc(nit.proc, evtproc, NELEMENTS(evtproc));
-	ne->param = nit.param;
-	return(ret);
+	return(statflag_write(sfh, &nevt, sizeof(nevt)));
 }
 
 static int flagload_evt(STFLAGH sfh, const SFENTRY *tbl) {
 
-	int			ret;
 	NEVTSAVE	nevt;
+	int			ret;
 	UINT		i;
-	UINT		evt;
-	UINT		readyevents;
 
 	ret = statflag_read(sfh, &nevt, sizeof(nevt));
 
-	readyevents = 0;
-	for (i=0; i<nevt.readys; i++) {
-		evt = id2evt(nevt.ready[i]);
-		if (evt < NEVENT_MAXEVENTS) {
-			nevent.level[readyevents++] = evt;
-		}
+	for (i=0; i<NEVENT_MAXEVENTS; i++) {
+		nevent.item[i].next = id2evt(nevt.item[i].next);
+		nevent.item[i].clock = nevt.item[i].clock;
+		nevent.item[i].baseclock = nevt.item[i].baseclock;
+		nevent.item[i].proc = (NEVENTCB)id2proc(nevt.item[i].proc,
+												evtproc, NELEMENTS(evtproc));
 	}
-	nevent.readyevents = readyevents;
-	for (i=0; i<nevt.events; i++) {
-		ret |= nevent_read(sfh, nevt.event[i]);
-	}
+	nevent.first = id2evt(nevt.first);
 	(void)tbl;
 	return(ret);
 }

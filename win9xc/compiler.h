@@ -55,6 +55,15 @@ typedef signed __int64		SINT64;
 
 #define	STRCALL		__stdcall
 
+// for RISC test
+#define	REG8		UINT
+#define REG16		UINT
+#define	LOW12(a)	(((UINT32)((a) << 20)) >> 20)
+#define	LOW14(a)	(((UINT32)((a) << 18)) >> 18)
+#define	LOW15(a)	(((UINT32)((a) << 17)) >> 17)
+#define	LOW16(a)	((UINT16)(a))
+#define	HIGH16(a)	(((UINT32)(a)) >> 16)
+
 #define	BRESULT				UINT8
 #define	OEMCHAR				TCHAR
 #define	OEMTEXT(string)		_T(string)
@@ -103,6 +112,7 @@ typedef signed __int64		SINT64;
 #define	SUPPORT_32BPP
 #define	MEMOPTIMIZE			1
 
+// #define	SUPPORT_OPM
 #define	SUPPORT_X1F
 
 #define	SOUNDRESERVE		20

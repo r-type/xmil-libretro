@@ -1,10 +1,13 @@
 #include	"compiler.h"
-#include	<math.h>
 #include	"sound.h"
 #include	"sndctrl.h"
 
 
 	PSGGENCFG	psggencfg;
+
+static const SINT32 psgvolrate[16] = {
+				   0,  508,  719, 1017, 1440, 2037, 2883, 4079,
+				5772, 8167,11556,16351,23135,32735,46317,65536};
 
 const UINT8 psggen_deftbl[0x10] =
 				{0, 0, 0, 0, 0, 0, 0, 0xbf, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
@@ -30,17 +33,14 @@ static const UINT8 psgenv_pat[16] = {
 
 void psggen_initialize(UINT rate) {
 
-	double	pom;
 	UINT	i;
 
 	ZeroMemory(&psggencfg, sizeof(psggencfg));
 	psggencfg.rate = rate;
-	pom = (double)0x0c00;
-	for (i=15; i; i--) {
-		psggencfg.voltbl[i] = (SINT32)pom;
-		pom /= 1.41492;
+	for (i=0; i<16; i++) {
+		psggencfg.voltbl[i] = (0x0c00 * psgvolrate[i]) >> 16;
 	}
-	psggencfg.puchidec = (UINT16)(rate / 11025) * 2;
+	psggencfg.puchidec = (UINT16)(rate * 2 / 11025);
 	if (psggencfg.puchidec == 0) {
 		psggencfg.puchidec = 1;
 	}

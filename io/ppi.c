@@ -1,8 +1,7 @@
 #include	"compiler.h"
+#include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
-#include	"nevent.h"
-#include	"makescrn.h"
 
 
 // ---- 8255 PPI～
@@ -10,35 +9,42 @@
 static REG8 getportb(void) {
 
 	REG8	ret;
+	REG8	ppib;
+#if defined(MAINFRAMES_OLD)
 	SINT32	clock;
+#endif
 
-	ret = cmt_test(); // | cmt_read();		// THUNDER BALL
+//	if (subcpu.IBF) {
+//		subcpu.IBF = 0;
+//		ret |= 0x40;						// 1:SUB-CPU BUSY
+//	}
+//	if (subcpu.OBF) {
+//		ret |= 0x20;						// 1:SUB-CPU Data empty
+//	}
 
-	clock = nevent_getwork(NEVENT_FRAMES);
-	if (corestat.vsync) {
-		clock += corestat.dispclock;
-	}
-	if (clock < crtc.e.dispclock) {
+	ppib = iocore.s.ppib;
+	ret = ppib;
+
+//	ret |= cmt_test();						// THUNDER BALL
+//	/* -> */ ppib |= 0x01;
+
+	iocore.s.ppib = (UINT8)((ppib & (~0x40)) | 0x01);
+
+//	ret |= cmt_read();
+
+#if defined(MAINFRAMES_OLD)
+	clock = CPU_CLOCKCOUNT - iocore.e.framestartclock;
+	if (clock < iocore.e.dispclock) {
 		ret |= 0x80;						// 1:DISP
 	}
 
 	// 実機の動きを見ると　どうも 読み込んだらリセットされるようだ？
 	// 有効範囲が絞れるならそうすべき(VSYNCを取りこぼすソフトがある
-	clock -= crtc.e.vsyncstart;
-	if ((clock >= 0) && (clock < crtc.e.vpulseclock)) {
+	clock -= iocore.e.vsyncstart;
+	if ((clock >= 0) && (clock < iocore.e.vpulseclock)) {
 		ret |= 0x04;						// 1:V-SYNC
 	}
-
-	if (subcpu.IBF) {
-		subcpu.IBF = 0;
-		ret |= 0x40;						// 1:SUB-CPU BUSY
-	}
-	if (subcpu.OBF) {
-		ret |= 0x20;						// 1:SUB-CPU Data empty
-	}
-	if (memio.ram) {
-		ret |= 0x10;						// 1:RAM
-	}
+#endif
 	return(ret);
 }
 
@@ -51,18 +57,11 @@ static void setportc(REG8 dat) {
 //	cmt_write((REG8)(dat & 1));
 	if ((modify & 0x20) && (!(dat & 0x20))) {
 		iocore.s.mode = 1;
+//		TRACEOUT(("iocore.s.mode = 1"));
 	}
 	if (modify & 0x40) {
 		crtc_setwidth((REG8)(dat & 0x40));
 	}
-#if 0
-	xl = ((dat & 0x40)?40:80);
-	if (crtc.s.reg[CRTCREG_HDISP] != xl) {
-		crtc.s.reg[CRTCREG_HDISP] = (UINT8)xl;
-		crtc_bankupdate();
-		scrnallflash = 1;
-	}
-#endif
 }
 
 

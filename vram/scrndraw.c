@@ -39,7 +39,6 @@ void scrndraw_changepalette(void) {
 #if defined(SUPPORT_8BPP)
 	if (scrnmng_getbpp() == 8) {
 		scrnmng_palchanged();
-		updateallline(0x01010101);				// fillrenewalline(0x02020202)
 		return;
 	}
 #endif
@@ -101,7 +100,7 @@ static REG8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 		for (y=0; y<nextupdate; y+=2) {
 			*(UINT16 *)(renewalline + y) |= 0x0101;
 		}
-		return(1);
+		return(SCRNUPD_FLASH);
 	}
 	else {
 		return(0);
