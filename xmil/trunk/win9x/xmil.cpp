@@ -314,14 +314,6 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			scrnmng_changescreen(scrnmode | SCRNMODE_FULLSCREEN);
 			break;
 
-		case IDM_WIDTH80:
-			crtc_forcesetwidth(80);
-			break;
-
-		case IDM_WIDTH40:
-			crtc_forcesetwidth(40);
-			break;
-
 		case IDM_DISPSYNC:
 			menu_setdispmode(xmilcfg.DISPSYNC ^ 1);
 			update = SYS_UPDATECFG;
@@ -395,6 +387,18 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			update = SYS_UPDATECFG;
 			break;
 
+		case IDM_WIDTH40:
+			crtc_forcesetwidth(40);
+			break;
+
+		case IDM_WIDTH80:
+			crtc_forcesetwidth(80);
+			break;
+
+		case IDM_Z80SAVE:
+			debugsub_status();
+			break;
+
 		case IDM_BMPSAVE:
 			winuienter();
 			dialog_writebmp(hWnd);
@@ -425,10 +429,6 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 		case IDM_RAPID:
 			menu_setbtnrapid(xmilcfg.BTN_RAPID ^ 1);
 			update = SYS_UPDATECFG;
-			break;
-
-		case IDM_Z80SAVE:
-			debugsub_status();
 			break;
 
 		case IDM_ABOUT:

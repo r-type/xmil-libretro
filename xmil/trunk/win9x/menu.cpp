@@ -104,6 +104,51 @@ void sysmenu_setbgsound(UINT8 value) {
 
 // ----
 
+typedef struct {
+	UINT16		title;
+	UINT16		items;
+const MENUITEMS	*item;
+} SUBMENUI;
+
+static const MENUITEMS fddsitem[4][3] = {
+		{	{IDM_FDD0OPEN,		IDS_OPEN},
+			{0,					0},
+			{IDM_FDD0EJECT,		IDS_EJECT}},
+		{	{IDM_FDD1OPEN,		IDS_OPEN},
+			{0,					0},
+			{IDM_FDD1EJECT,		IDS_EJECT}},
+		{	{IDM_FDD2OPEN,		IDS_OPEN},
+			{0,					0},
+			{IDM_FDD2EJECT,		IDS_EJECT}},
+		{	{IDM_FDD3OPEN,		IDS_OPEN},
+			{0,					0},
+			{IDM_FDD3EJECT,		IDS_EJECT}}};
+
+static const SUBMENUI fddmenu[4] = {
+					{IDS_FDD0, 3, fddsitem[0]},
+					{IDS_FDD1, 3, fddsitem[1]},
+					{IDS_FDD2, 3, fddsitem[2]},
+					{IDS_FDD3, 3, fddsitem[3]}};
+
+static const MENUITEMS dbgsitem[4] = {
+			{IDM_WIDTH40,		IDS_WIDTH40},
+			{IDM_WIDTH80,		IDS_WIDTH80},
+			{0,					0},
+			{IDM_Z80SAVE,		IDS_Z80SAVE}};
+
+static const SUBMENUI dbgmenu = {IDS_DEBUG, 4, dbgsitem};
+
+
+static void insertsubmenu(HMENU hMenu, UINT pos, const SUBMENUI *sm) {
+
+	HMENU	hSubMenu;
+
+	hSubMenu = CreatePopupMenu();
+	insertresmenus(hSubMenu, 0, sm->item, sm->items);
+	insertresmenu(hMenu, pos, MF_BYPOSITION | MF_POPUP,
+											(UINT)hSubMenu, sm->title);
+}
+
 #if defined(SUPPORT_STATSAVE)
 static const OEMCHAR xmenu_stat[] = OEMTEXT("S&tat");
 static const OEMCHAR xmenu_statsave[] = OEMTEXT("Save %u");
@@ -133,32 +178,33 @@ static void addstatsavemenu(HMENU hMenu, UINT pos) {
 void menu_initialize(void) {
 
 	HMENU	hMenu;
+#if defined(SUPPORT_WAVEREC) || defined(SUPPORT_TURBOZ)
 	HMENU	hSubMenu;
-//	UINT	i;
+#endif
+	UINT	i;
 
 	hMenu = GetMenu(hWndMain);
-	if (xmiloscfg.Z80SAVE) {
-		hSubMenu = GetSubMenu(hMenu, 7);
-		insertresmenu(hSubMenu, 6, MF_BYPOSITION | MF_STRING,
-												IDM_Z80SAVE, IDS_Z80SAVE);
-	}
 #if defined(SUPPORT_WAVEREC)
-	hSubMenu = GetSubMenu(hMenu, 7);
+	hSubMenu = GetSubMenu(hMenu, 5);
 	insertresmenu(hSubMenu, 2, MF_BYPOSITION | MF_STRING,
 												IDM_WAVEREC, IDS_WAVEREC);
 #endif
 
+	if (xmiloscfg.Z80SAVE) {
+		insertsubmenu(hMenu, 5, &dbgmenu);
+	}
+
 #if defined(SUPPORT_TURBOZ)
-	hSubMenu = GetSubMenu(hMenu, 3);
+	hSubMenu = GetSubMenu(hMenu, 1);
 	insertresmenu(hSubMenu, 2, MF_BYPOSITION | MF_STRING,
 												IDM_TURBOZ, IDS_TURBOZ);
 #endif
 
-//	for (i=4; i--;) {
-//		if (np2cfg.fddequip & (1 << i)) {
-//			insdiskmenu(hMenu, 1, fddmenu + i);
-//		}
-//	}
+	for (i=4; i--;) {
+		if (xmilcfg.fddequip & (1 << i)) {
+			insertsubmenu(hMenu, 1, fddmenu + i);
+		}
+	}
 
 #if defined(SUPPORT_STATSAVE)
 	if (xmiloscfg.statsave) {
