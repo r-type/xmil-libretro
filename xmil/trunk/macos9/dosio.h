@@ -98,3 +98,6 @@ void file_setseparator(char *path, int maxlen);
 }
 #endif
 
+#define	file_createex(p, t)		file_create(p)
+#define	file_createex_c(p, t)	file_create_c(p)
+

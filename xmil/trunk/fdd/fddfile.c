@@ -60,13 +60,10 @@ static UINT32 getfdtype(const OEMCHAR *fname) {
 const OEMCHAR	*ext;
 
 	ext = file_getext(fname);
-	if (!milstr_cmp(ext, str_e2d)) {
-		return(FTYPE_BETA);
-	}
 	if ((!milstr_cmp(ext, str_d88)) || (!milstr_cmp(ext, str_88d))) {
 		return(FTYPE_D88);
 	}
-	return(FTYPE_NONE);
+	return(FTYPE_BETA);
 }
 
 static void setempty(FDDFILE fdd) {
