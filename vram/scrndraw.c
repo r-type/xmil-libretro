@@ -27,11 +27,11 @@ static void updateallline(UINT32 update) {
 void scrndraw_initialize(void) {					// ddraws_init
 
 	ZeroMemory(screenmap, sizeof(screenmap));
-	ZeroMemory(x1n_pal32, sizeof(x1n_pal32));
+	ZeroMemory(xmil_pal32, sizeof(xmil_pal32));
+	xmil_palettes = 0;
 
 	scrn.widthmode = SCRNWIDTHMODE_WIDTH40;
 
-	xm_palettes = 0;
 	updateallline(0x03030303);			// updateallline(0x01010101);
 	scrnmng_allflash();
 	sysmng_scrnwidth(scrn.widthmode);

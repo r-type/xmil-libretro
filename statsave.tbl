@@ -39,7 +39,9 @@ static const SFENTRY xmiltbl[] = {
 	{"CGROM",		0,	STATFLAG_BIN,	&cgrom,			sizeof(cgrom)},
 	{"CMT",			0,	STATFLAG_BIN,	&cmt,			sizeof(cmt)},
 	{"CRTC_S",		0,	STATFLAG_BIN,	&crtc.s,		sizeof(crtc.s)},
+#if defined(SUPPORT_TURBOZ)
 	{"CRTC_P",		0,	STATFLAG_BIN,	&crtc.p,		sizeof(crtc.p)},
+#endif
 	{"CTC",			0,	STATFLAG_BIN,	&ctc,			sizeof(ctc)},
 	{"DMAC",		0,	STATFLAG_BIN,	&dma,			sizeof(dma)},
 	{"FDC",			0,	STATFLAG_BIN,	&fdc.s,			sizeof(fdc.s)},

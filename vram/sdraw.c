@@ -5,6 +5,8 @@
 #include	"palettes.h"
 
 
+#undef	SDZMODE
+
 #if defined(SUPPORT_8BPP)
 #define	SDSYM(sym)				sdraw8##sym
 #define	SDSETPIXEL(ptr, pal)	*(ptr) = (UINT8)((pal) + START_PAL)
@@ -13,38 +15,32 @@
 #undef	SDSETPIXEL
 #endif
 
+#define	SDZMODE
+
 #if defined(SUPPORT_16BPP)
 #define	SDSYM(sym)				sdraw16##sym
-#define	SDSETPIXEL(ptr, pal)	*(UINT16 *)(ptr) = x1n_pal16[(pal)]
-#define	SDSETZPIXEL(ptr, pal)	*(UINT16 *)(ptr) = x1z_pal16[(pal)]
+#define	SDSETPIXEL(ptr, pal)	*(UINT16 *)(ptr) = xmil_pal16[(pal)]
 #include	"sdraw.mcr"
 #undef	SDSYM
 #undef	SDSETPIXEL
-#undef	SDSETZPIXEL
 #endif
 
 #if defined(SUPPORT_24BPP)
 #define	SDSYM(sym)				sdraw24##sym
-#define	SDSETPIXEL(ptr, pal)	(ptr)[RGB24_R] = x1n_pal32[(pal)].p.r;	\
-								(ptr)[RGB24_G] = x1n_pal32[(pal)].p.g;	\
-								(ptr)[RGB24_B] = x1n_pal32[(pal)].p.b
-#define	SDSETZPIXEL(ptr, pal)	(ptr)[RGB24_R] = x1z_pal32[(pal)].p.r;	\
-								(ptr)[RGB24_G] = x1z_pal32[(pal)].p.g;	\
-								(ptr)[RGB24_B] = x1z_pal32[(pal)].p.b
+#define	SDSETPIXEL(ptr, pal)	(ptr)[RGB24_R] = xmil_pal32[(pal)].p.r;	\
+								(ptr)[RGB24_G] = xmil_pal32[(pal)].p.g;	\
+								(ptr)[RGB24_B] = xmil_pal32[(pal)].p.b
 #include	"sdraw.mcr"
 #undef	SDSYM
 #undef	SDSETPIXEL
-#undef	SDSETZPIXEL
 #endif
 
 #if defined(SUPPORT_32BPP)
 #define	SDSYM(sym)				sdraw32##sym
-#define	SDSETPIXEL(ptr, pal)	*(UINT32 *)(ptr) = x1n_pal32[(pal)].d
-#define	SDSETZPIXEL(ptr, pal)	*(UINT32 *)(ptr) = x1z_pal32[(pal)].d
+#define	SDSETPIXEL(ptr, pal)	*(UINT32 *)(ptr) = xmil_pal32[(pal)].d
 #include	"sdraw.mcr"
 #undef	SDSYM
 #undef	SDSETPIXEL
-#undef	SDSETZPIXEL
 #endif
 
 

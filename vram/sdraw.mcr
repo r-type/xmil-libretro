@@ -59,7 +59,7 @@ const UINT8	*p;
 	sdraw->y = y;
 }
 
-#if defined(SDSETZPIXEL)
+#if defined(SUPPORT_TURBOZ) && defined(SDZMODE)
 static void SCRNCALL SDSYM(z)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;
@@ -76,10 +76,10 @@ const UINT8	*p;
 		if (sdraw->dirty[y]) {
 			xmax = sdraw->width / 2;
 			for (x=0; x<xmax; x++) {
-				c = (p[x + 320] << 8) + p[x];
-				SDSETZPIXEL(q, c);
+				c = (p[x + 320] << 8) + p[x] + XMILPAL_4096G;
+				SDSETPIXEL(q, c);
 				q += sdraw->xalign;
-				SDSETZPIXEL(q, c);
+				SDSETPIXEL(q, c);
 				q += sdraw->xalign;
 			}
 			q -= sdraw->xbytes;
@@ -97,11 +97,14 @@ const UINT8	*p;
 
 // ----
 
-static const SDRAWFN SDSYM(p)[3] = {
-#if defined(SDSETZPIXEL)
-		SDSYM(x1),		SDSYM(x2),	SDSYM(z)
+static const SDRAWFN SDSYM(p)[] = {
+		SDSYM(x1),		SDSYM(x2),
+#if defined(SUPPORT_TURBOZ)
+#if defined(SDZMODE)
+		SDSYM(z)
 #else
-		SDSYM(x1),		SDSYM(x2),	NULL
+		NULL
+#endif
 #endif
 	};
 

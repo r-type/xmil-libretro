@@ -87,9 +87,9 @@ BEGIN
     END
     POPUP "&IPL-ROM"
     BEGIN
-        MENUITEM "turbo&Z",                     IDM_TURBOZ
-        MENUITEM "&turbo",                      IDM_TURBO
         MENUITEM "&X1",                         IDM_X1ROM
+        MENUITEM "&turbo",                      IDM_TURBO
+        MENUITEM "turbo&Z",                     IDM_TURBOZ
     END
     POPUP "&DIP-SW"
     BEGIN

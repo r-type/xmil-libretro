@@ -63,6 +63,7 @@ static void IOOUTCALL port1fxx_o(UINT port, REG8 dat) {
 			return;
 		}
 	}
+#if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE >= 3) {
 		if (lsb == 0xb0) {
 			extpal_o(port, dat);
@@ -81,6 +82,7 @@ static void IOOUTCALL port1fxx_o(UINT port, REG8 dat) {
 			return;
 		}
 	}
+#endif
 	if (msb6 == 0x90) {
 		sio_o(port, dat);
 		return;
@@ -111,6 +113,7 @@ static REG8 IOINPCALL port1fxx_i(UINT port) {
 			return(dipsw_i(port));
 		}
 	}
+#if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE >= 3) {
 		if (lsb == 0xb0) {
 			return(extpal_i(port));
@@ -128,6 +131,7 @@ static REG8 IOINPCALL port1fxx_i(UINT port) {
 			return(blackctrl_i(port));
 		}
 	}
+#endif
 	if (msb6 == 0x90) {
 		return(sio_i(port));
 	}
@@ -205,12 +209,14 @@ void iocore_reset(void) {
 		iocore.e.outfn[0x0b] = memio_bank_o;
 	}
 #endif
+#if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE >= 3) {
 		iocore.e.inpfn[0x10] = palette_i;
 		iocore.e.inpfn[0x11] = palette_i;
 		iocore.e.inpfn[0x12] = palette_i;
 		iocore.e.inpfn[0x13] = ply_i;
 	}
+#endif
 	if (pccore.SOUND_SW) {
 		iocore.e.inpfn[0x07] = opm_i;
 		iocore.e.outfn[0x07] = opm_o;

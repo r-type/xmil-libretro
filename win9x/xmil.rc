@@ -87,9 +87,8 @@ BEGIN
     END
     POPUP "&IPL-ROM"
     BEGIN
-        MENUITEM "turbo&Z",                     IDM_TURBOZ
-        MENUITEM "&turbo",                      IDM_TURBO
         MENUITEM "&X1",                         IDM_X1ROM
+        MENUITEM "&turbo",                      IDM_TURBO
     END
     POPUP "&DIP-SW"
     BEGIN
@@ -263,6 +262,7 @@ BEGIN
     IDS_BACKGROUND          "&Background"
     IDS_BGSOUND             "Back&ground Sound"
     IDS_WAVEREC             "&Wave Record"
+    IDS_TURBOZ              "turbo&Z"
     IDS_Z80SAVE             "&Z80 save"
     IDS_OPEN                "&Open..."
     IDS_EJECT               "&Eject"

@@ -7,17 +7,11 @@
 #include	"makescrn.h"
 
 
-	RGB32	x1n_pal32[256];			// xm_palette
-	RGB32	x1z_pal32[4096+8];		// GRPHPAL4096
-
+	UINT	xmil_palettes;
+	RGB32	xmil_pal32[XMILPAL_MAX];			// xm_palette
 #if defined(SUPPORT_16BPP)
-	RGB16	x1n_pal16[256];			// xmil_pal16
-	RGB16	x1z_pal16[4096+8];		// GRPHPAL16bit
+	RGB16	xmil_pal16[XMILPAL_MAX];
 #endif
-
-
-// drop
-	int		xm_palettes = 0;
 
 
 static const UINT16 pal4096banktbl[2][64] = {
@@ -71,13 +65,38 @@ typedef struct {
 	UINT8	padding;
 	UINT16	skipline;
 	RGB32	text[16];
+#if defined(SUPPORT_TURBOZ)
 	RGB32	grph[2][16];
 	RGB32	grph64[2][64];
+#endif
 } PALS;
 
 static	PALS	pals;
 
 
+#if !defined(SUPPORT_TURBOZ)
+static void pal_settext(REG8 num) {
+
+	RGB32	rgb;
+
+	rgb.p.e = 0;
+	if (!num) {
+		rgb.p.b = pals.blankcol;
+		rgb.p.g = pals.blankcol;
+		rgb.p.r = pals.blankcol;
+	}
+	else {
+		rgb.p.b = (num & 1)?0xff:0x00;
+		rgb.p.g = (num & 4)?0xff:0x00;
+		rgb.p.r = (num & 2)?0xff:0x00;
+	}
+	pals.text[num].d = rgb.d;
+	pals.text[num+8].p.b = (UINT8)((pals.skipline * rgb.p.b) >> 8);
+	pals.text[num+8].p.g = (UINT8)((pals.skipline * rgb.p.g) >> 8);
+	pals.text[num+8].p.r = (UINT8)((pals.skipline * rgb.p.r) >> 8);
+	makescrn.palandply = 1;
+}
+#else
 void pal_settext(REG8 num) {
 
 	REG8	textpal;
@@ -104,10 +123,10 @@ void pal_settext(REG8 num) {
 		rgb.p.g = pals.blankcol;
 		rgb.p.r = pals.blankcol;
 	}
-	x1z_pal32[4096 + num].d = rgb.d;
+	xmil_pal32[XMILPAL_4096T + num].d = rgb.d;
 #if defined(SUPPORT_16BPP)
 	if (scrnmng_getbpp() == 16) {
-		x1z_pal16[4096 + num] = scrnmng_makepal16(rgb);
+		xmil_pal16[XMILPAL_4096T + num] = scrnmng_makepal16(rgb);
 	}
 #endif
 	pals.text[num].d = rgb.d;
@@ -180,30 +199,34 @@ void pal_setgrph4096(UINT num) {
 		rgb.p.g = pals.blankcol;
 		rgb.p.r = pals.blankcol;
 	}
-	x1z_pal32[num].d = rgb.d;
+	xmil_pal32[XMILPAL_4096G + num].d = rgb.d;
 #if defined(SUPPORT_16BPP)
 	if (scrnmng_getbpp() == 16) {
-		x1z_pal16[num] = scrnmng_makepal16(rgb);
+		xmil_pal16[XMILPAL_4096G + num] = scrnmng_makepal16(rgb);
 	}
 #endif
 	makescrn.palandply = 1;
 }
+#endif
 
 
 // ----
 
+#if defined(SUPPORT_TURBOZ)
 static void pal4096to64(RGB32 *pal, const UINT16 *map) {
 
 	UINT	r;
 
 	r = 64;
 	do {
-		pal->d = x1z_pal32[*map++].d;
+		pal->d = xmil_pal32[XMILPAL_4096G + (*map++)].d;
 		pal++;
 	} while(--r);
 }
+#endif
 
-void pal_update(void) {
+
+void pal_update1(const UINT8 *rgbp) {
 
 	UINT	i;
 	UINT	j;
@@ -213,96 +236,117 @@ void pal_update(void) {
 	UINT	bcnt;
 
 	skip8 = 0;
+	if (!(crtc.s.SCRN_BITS & SCRN_24KHZ)) {
+		skip8 = 8;
+	}
+	for (i=0, bit=1; i<8; i++, bit<<=1) {
+#if defined(SUPPORT_TURBOZ)
+		if (!(crtc.s.EXTPALMODE & 0x80)) {
+#endif
+			c = 0;
+			if (rgbp[CRTC_PALB] & bit) {
+				c += 1;
+			}
+			if (rgbp[CRTC_PALR] & bit) {
+				c += 2;
+			}
+			if (rgbp[CRTC_PALG] & bit) {
+				c += 4;
+			}
+#if defined(SUPPORT_TURBOZ)
+		}
+		else {
+			c = i;
+		}
+#endif
+#if !defined(SUPPORT_TURBOZ)
+		xmil_pal32[i].d = pals.text[c].d;
+		xmil_pal32[i+64].d = pals.text[c + skip8].d;
+#else
+		xmil_pal32[i].d = pals.grph[crtc.e.pal_disp][c].d;
+		xmil_pal32[i+64].d = pals.grph[crtc.e.pal_disp][c + skip8].d;
+#endif
+		if (rgbp[CRTC_PLY] & bit) {
+			for (j=i+8; j<64; j+=8) {
+				xmil_pal32[j].d = xmil_pal32[i].d;
+				xmil_pal32[j+64].d = xmil_pal32[i+64].d;
+			}
+		}
+		else {
+			bcnt = (crtc.s.BLACKPAL & 15) - 8;
+			for (j=i+8; j<64; j+=8) {
+				bcnt--;
+				if (bcnt) {
+					c = j >> 3;
+				}
+				else {
+					c = 0;
+				}
+				xmil_pal32[j].d = pals.text[c].d;
+				xmil_pal32[j+64].d = pals.text[c + skip8].d;
+			}
+		}
+	}
+}
+
+void pal_update(void) {
+
+	UINT	i;
+
+#if !defined(SUPPORT_TURBOZ)
+	pal_update1(crtc.s.rgbp);
+	xmil_palettes = 64 + 64;
+#else
 	if (crtc.e.pal_disp & PAL_4096) {
 		switch(crtc.e.pal_disp & 0xf) {
 			case PAL_4096H:
-				pal4096to64(x1n_pal32, pal4096banktbl[0]);
-				xm_palettes = 64;
+				pal4096to64(xmil_pal32, pal4096banktbl[0]);
+				xmil_palettes = 64;
 				break;
 
 			case PAL_4096L:
-				pal4096to64(x1n_pal32, pal4096banktbl[1]);
-				xm_palettes = 64;
+				pal4096to64(xmil_pal32, pal4096banktbl[1]);
+				xmil_palettes = 64;
 				break;
 
 			case (PAL_4096H | PAL_64x2):
-				pal4096to64(&x1n_pal32[ 0], pal4096banktbl[0]);
-				pal4096to64(&x1n_pal32[64], pal4096banktbl[1]);
-				xm_palettes = 128;
+				pal4096to64(&xmil_pal32[ 0], pal4096banktbl[0]);
+				pal4096to64(&xmil_pal32[64], pal4096banktbl[1]);
+				xmil_palettes = 128;
 				break;
 
 			case (PAL_4096L | PAL_64x2):
-				pal4096to64(&x1n_pal32[ 0], pal4096banktbl[0]);
-				pal4096to64(&x1n_pal32[64], pal4096banktbl[1]);
-				xm_palettes = 128;
+				pal4096to64(&xmil_pal32[ 0], pal4096banktbl[0]);
+				pal4096to64(&xmil_pal32[64], pal4096banktbl[1]);
+				xmil_palettes = 128;
 				break;
 
 			default:						// fullcolor!
 				return;
 		}
 		for (i=0; i<8; i++) {
-			x1n_pal32[xm_palettes++].d = pals.text[i].d;
+			xmil_pal32[xmil_palettes++].d = pals.text[i].d;
 		}
 	}
 	else if ((crtc.e.dispmode & SCRN64_MASK) == SCRN64_INVALID) {
-		if (!(crtc.s.SCRN_BITS & SCRN_24KHZ)) {
-			skip8 = 8;
-		}
-		for (i=0, bit=1; i<8; i++, bit<<=1) {
-			if (!(crtc.s.EXTPALMODE & 0x80)) {
-				c = 0;
-				if (crtc.s.rgbp[CRTC_PALB] & bit) {
-					c += 1;
-				}
-				if (crtc.s.rgbp[CRTC_PALR] & bit) {
-					c += 2;
-				}
-				if (crtc.s.rgbp[CRTC_PALG] & bit) {
-					c += 4;
-				}
-			}
-			else {
-				c = i;
-			}
-			x1n_pal32[i].d = pals.grph[crtc.e.pal_disp][c].d;
-			x1n_pal32[i+64].d = pals.grph[crtc.e.pal_disp][c + skip8].d;
-			if (crtc.s.rgbp[CRTC_PLY] & bit) {
-				for (j=i+8; j<64; j+=8) {
-					x1n_pal32[j].d = x1n_pal32[i].d;
-					x1n_pal32[j+64].d = x1n_pal32[i+64].d;
-				}
-			}
-			else {
-				bcnt = (crtc.s.BLACKPAL & 15) - 8;
-				for (j=i+8; j<64; j+=8) {
-					bcnt--;
-					if (bcnt) {
-						c = j >> 3;
-					}
-					else {
-						c = 0;
-					}
-					x1n_pal32[j].d = pals.text[c].d;
-					x1n_pal32[j+64].d = pals.text[c + skip8].d;
-				}
-			}
-		}
-		xm_palettes = 64 + 64;
+		pal_update1(crtc.s.rgbp);
+		xmil_palettes = 64 + 64;
 	}
 	else {
 		for (i=0; i<64; i++) {
-			x1n_pal32[i].d = pals.grph64[crtc.e.pal_disp][i].d;
+			xmil_pal32[i].d = pals.grph64[crtc.e.pal_disp][i].d;
 		}
 		for (i=0; i<8; i++) {
-			x1n_pal32[i+64].d = pals.text[i].d;
+			xmil_pal32[i+64].d = pals.text[i].d;
 		}
-		xm_palettes = 64 + 8;
+		xmil_palettes = 64 + 8;
 	}
+#endif
+
 #if defined(SUPPORT_16BPP)
 	if (scrnmng_getbpp() == 16) {
-		int i;
-		for (i=0; i<xm_palettes; i++) {
-			x1n_pal16[i] = scrnmng_makepal16(x1n_pal32[i]);
+		for (i=0; i<xmil_palettes; i++) {
+			xmil_pal16[i] = scrnmng_makepal16(xmil_pal32[i]);
 		}
 	}
 #endif
@@ -315,14 +359,17 @@ void pal_update(void) {
 void pal_reset(void) {
 
 	REG8	i;
+#if defined(SUPPORT_TURBOZ)
 	REG8	j;
 	UINT	k;
+#endif
 
 	pals.blankcol = 0;
 	pals.skipline = (xmilcfg.skipline)?xmilcfg.skiplight:0;
 	for (i=0; i<8; i++) {
 		pal_settext(i);
 	}
+#if defined(SUPPORT_TURBOZ)
 	for (i=0; i<2; i++) {
 		for (j=0; j<64; j++) {
 			pal_setgrph(i, j);
@@ -331,5 +378,6 @@ void pal_reset(void) {
 	for (k=0; k<4096; k++) {
 		pal_setgrph4096(k);
 	}
+#endif
 }
 

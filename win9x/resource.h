@@ -24,9 +24,10 @@
 #define IDS_BACKGROUND                  30003
 #define IDS_BGSOUND                     30004
 #define	IDS_WAVEREC						30005
-#define	IDS_Z80SAVE						30006
-#define IDS_OPEN                        30007
-#define IDS_EJECT                       30008
+#define	IDS_TURBOZ						30006
+#define	IDS_Z80SAVE						30007
+#define IDS_OPEN                        30008
+#define IDS_EJECT                       30009
 #define IDM_IPLRESET                    40000
 #define IDM_NMIRESET                    40001
 #define IDM_CONFIG                      40002
@@ -40,9 +41,9 @@
 #define IDM_FDD2EJECT                   40010
 #define IDM_FDD3OPEN                    40011
 #define IDM_FDD3EJECT                   40012
-#define IDM_TURBOZ                      40013
+#define IDM_X1ROM                       40013
 #define IDM_TURBO                       40014
-#define IDM_X1ROM                       40015
+#define IDM_TURBOZ                      40015
 #define IDM_BOOT2D                      40016
 #define IDM_BOOT2HD                     40017
 #define IDM_HIGHRES                     40018

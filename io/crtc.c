@@ -112,10 +112,12 @@ static void crtc_timingupdate(void) {
 
 static void crtc_bankupdate(void) {
 
+#if defined(SUPPORT_TURBOZ)
 	UINT	updatemask;
 	UINT8	dispmode;
 	UINT8	pal_bank;
 	UINT8	pal_disp;
+#endif
 
 	if (crtc.s.SCRN_BITS & 0x10) {
 		crtc.e.gram = gram + GRAM_BANK1;
@@ -125,10 +127,15 @@ static void crtc_bankupdate(void) {
 		crtc.e.gram = gram + GRAM_BANK0;
 		crtc.e.updatebit = UPDATE_VRAM0;
 	}
+
+#if !defined(SUPPORT_TURBOZ)
+	crtc.e.updatemask = (crtc.s.SCRN_BITS & SCRN_TEXTYx2)?0x3ff:0x7ff;
+	crtc.e.dispmode =
+					(crtc.s.SCRN_BITS & SCRN_DISPVRAM)?SCRN_BANK1:SCRN_BANK0;
+#else
 	dispmode = (crtc.s.SCRN_BITS & SCRN_DISPVRAM)?SCRN_BANK1:SCRN_BANK0;
 	pal_bank = PAL_NORMAL;
 	pal_disp = PAL_NORMAL;
-
 	if ((!(crtc.s.EXTPALMODE & 0x80)) || (crtc.s.SCRN_BITS & SCRN_UNDERLINE)) {
 		updatemask = 0x7ff;
 		if ((crtc.s.SCRN_BITS & SCRN_24KHZ) && (!crtc.s.width40)) {
@@ -234,6 +241,7 @@ static void crtc_bankupdate(void) {
 	crtc.e.dispmode = dispmode;
 	crtc.e.pal_bank = pal_bank;
 	crtc.e.pal_disp = pal_disp;
+#endif
 }
 
 
@@ -297,23 +305,29 @@ void IOOUTCALL ply_o(UINT port, REG8 value) {
 	(void)port;
 }
 
-REG8 IOINPCALL ply_i(UINT port) {
-
-	(void)port;
-	return(crtc.s.rgbp[CRTC_PLY]);
-}
-
 
 // ---- ƒpƒŒƒbƒg
 
 void IOOUTCALL palette_o(UINT port, REG8 value) {
 
-	REG8	sft;
 	UINT	num;
+#if defined(SUPPORT_TURBOZ)
+	REG8	sft;
 	UINT	pal;
+#endif
 
+#if defined(SUPPORT_TURBOZ)
 	crtc.s.lastpal = (value & 0xf0);
-	if (crtc.s.EXTPALMODE & 0x80) {
+	if (!(crtc.s.EXTPALMODE & 0x80)) {
+#endif
+		num = (port >> 8) & 3;
+		if (crtc.s.rgbp[num] != value) {
+			crtc.s.rgbp[num] = value;
+			makescrn.palandply = 1;
+		}
+#if defined(SUPPORT_TURBOZ)
+	}
+	else {
 		if ((crtc.s.EXTGRPHPAL & 0x88) != 0x80) {
 			return;
 		}
@@ -349,13 +363,31 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 			pal_setgrph(crtc.e.pal_bank, (REG8)num);
 		}
 	}
-	else {
-		num = (port >> 8) & 3;
-		if (crtc.s.rgbp[num] != value) {
-			crtc.s.rgbp[num] = value;
-			makescrn.palandply = 1;
-		}
-	}
+#endif
+}
+
+void IOOUTCALL blackctrl_o(UINT port, REG8 value) {
+
+	crtc.s.BLACKPAL = value;
+	makescrn.palandply = 1;
+	(void)port;
+}
+
+REG8 IOINPCALL blackctrl_i(UINT port) {
+
+	(void)port;
+	return(crtc.s.BLACKPAL);
+}
+
+
+// ---- turboZ
+
+#if defined(SUPPORT_TURBOZ)
+
+REG8 IOINPCALL ply_i(UINT port) {
+
+	(void)port;
+	return(crtc.s.rgbp[CRTC_PLY]);
 }
 
 REG8 IOINPCALL palette_i(UINT port) {
@@ -395,8 +427,6 @@ REG8 IOINPCALL palette_i(UINT port) {
 	}
 }
 
-
-// ---- turboZ
 
 void IOOUTCALL extpal_o(UINT port, REG8 value) {
 
@@ -459,19 +489,7 @@ REG8 IOINPCALL exttextdisp_i(UINT port) {
 	(void)port;
 	return(0xff);
 }
-
-void IOOUTCALL blackctrl_o(UINT port, REG8 value) {
-
-	crtc.s.BLACKPAL = value;
-	makescrn.palandply = 1;
-	(void)port;
-}
-
-REG8 IOINPCALL blackctrl_i(UINT port) {
-
-	(void)port;
-	return(crtc.s.BLACKPAL);
-}
+#endif
 
 
 // ----
@@ -494,13 +512,16 @@ void crtc_setwidth(REG8 width40) {
 
 // ----
 
+#if defined(SUPPORT_TURBOZ)
 static void resetpal(void) {
 
 	CopyMemory(crtc.p.text, defpaltext, sizeof(defpaltext));
 	CopyMemory(crtc.p.grph[0], defpalgrph, sizeof(defpalgrph));
 	CopyMemory(crtc.p.grph[1], defpalgrph, sizeof(defpalgrph));
 }
+#endif
 
+#if defined(SUPPORT_TURBOZ)
 void crtc_initialize(void) {
 
 	UINT	p;
@@ -510,6 +531,7 @@ void crtc_initialize(void) {
 		crtc.p.grph4096[p] = p;
 	}
 }
+#endif
 
 void crtc_reset(void) {
 
@@ -517,9 +539,11 @@ void crtc_reset(void) {
 	CopyMemory(crtc.s.rgbp, defrgbp, 4);
 	CopyMemory(crtc.s.reg, defreg, 18);
 	crtc.s.width40 = 1;
+#if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE < 3) {
 		resetpal();
 	}
+#endif
 //	IPL‚ªŸŽè‚ÉØ‚è‘Ö‚¦‚é”¤‚Å‚ ‚é
 //	if ((pccore.ROM_TYPE >= 2) && (!(pccore.DIP_SW & 1))) {
 //		crtc.s.SCRN_BITS = SCRN_200LINE;
