@@ -173,19 +173,20 @@ BRESULT ieitem_ctc(UINT id) {
 	if (intr) {
 		for (i=0, bit=1; i<4; i++, bit<<=1) {
 			if (intr & bit) {
-#if 1			// アークスのタイミング→あとで修正
-				if (0)
-#elif 1
-				if ((ch->countmax[i] - ch->count[i]) >= 256)
-#elif 0
-				if (((ch->count[i] * 17) >> 4) < ch->countmax[i])
-#else
-				if (ch->count[i] != ch->countmax[i])
-#endif
-				{
+				if (!(ch->cmd[i] & 0x80)) {
 					intr ^= bit;
 				}
-				else if (!(ch->cmd[i] & 0x80)) {
+#if 0			// アークスのタイミング→あとで修正
+				else if (0)
+#elif 1
+				else if (((ch->cmd[i] & 0x10) == 0) &&
+						((ch->countmax[i] - ch->count[i]) >= 256))
+#elif 0
+				else if (((ch->count[i] * 17) >> 4) < ch->countmax[i])
+#else
+				else if (ch->count[i] != ch->countmax[i])
+#endif
+				{
 					intr ^= bit;
 				}
 				else if (!r) {
