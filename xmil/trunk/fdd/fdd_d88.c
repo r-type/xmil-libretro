@@ -7,7 +7,7 @@
 #include	"fdd_mtr.h"
 
 
-static	D88_HEADER	d88head[4];
+// static	D88_HEADER	d88head[4];
 static	_D88SEC		cursec;
 static	REG8		curdrv = (REG8)-1;
 static	UINT		curtrk = (UINT)-1;
@@ -69,15 +69,13 @@ static	BYTE		TAO_BUF[0x3000];
 
 //----------------------------------------------------------------------
 
-static UINT32 nexttrackp(D88_HEADER *head, UINT32 fptr, UINT32 last) {
+static UINT32 nexttrackptr(FDDFILE fdd, UINT32 fptr, UINT32 last) {
 
 	UINT	t;
-const DWORD	*trkp;
 	UINT32	cur;
 
-	trkp = (DWORD *)head->trackp;
 	for (t=0; t<164; t++) {
-		cur = trkp[t];
+		cur = fdd->inf.d88.ptr[t];
 		if ((cur > fptr) && (cur < last)) {
 			last = cur;
 		}
@@ -130,16 +128,16 @@ static DWORD read_d88track(REG8 drv, UINT track, BYTE type) {
 	crcnum = 0;
 	crcerror = 0;
 
+	fdd = fddfile + drv;
 	if ((drv < 0) || (drv > 3) || (track > 163) ||
-		((type == 0) && (d88head[drv].fd_type == 0x20)) ||
-		((type == 1) && (d88head[drv].fd_type != 0x20)) ||
-		((curfp = d88head[drv].trackp[track]) == 0) ||
-		((cursize = nexttrackp(&d88head[drv], curfp,
-								d88head[drv].fd_size) - curfp) > 0x4000)) {
+		((type == 0) && (fdd->inf.d88.head.fd_type == 0x20)) ||
+		((type == 1) && (fdd->inf.d88.head.fd_type != 0x20)) ||
+		((curfp = fdd->inf.d88.ptr[track]) == 0) ||
+		((cursize = nexttrackptr(fdd, curfp,
+								fdd->inf.d88.fd_size) - curfp) > 0x4000)) {
 		goto readd88_err;
 	}
 
-	fdd = fddfile + drv;
 	if ((hdr = file_open(fdd->fname)) == FILEH_INVALID) {
 		goto readd88_err;
 	}
@@ -411,10 +409,13 @@ BYTE fdd_incoff_d88(void) {
 
 void init_tao_d88(void) {
 
-	if ((fdc.media == 0) && (d88head[fdc.drv].fd_type != 0x20)) {
+	FDDFILE		fdd;
+
+	fdd = fddfile + fdc.drv;
+	if ((fdc.media == 0) && (fdd->inf.d88.head.fd_type != 0x20)) {
 		tao = WID_2D;
 	}
-	else if ((fdc.media == 1) && (d88head[fdc.drv].fd_type == 0x20)) {
+	else if ((fdc.media == 1) && (fdd->inf.d88.head.fd_type == 0x20)) {
 		tao = WID_2HD;
 	}
 	else {
@@ -422,57 +423,56 @@ void init_tao_d88(void) {
 	}
 }
 
-int fileappend(FILEH hdr, D88_HEADER *head,
-									long ptr, long last, long apsize) {
+static int fileappend(FILEH hdl, FDDFILE fdd,
+									UINT32 ptr, long last, long apsize) {
 
 	long	length;
-	WORD	size;
-	WORD	rsize;
-	int		t;
-	long	*trkp;
+	UINT	size;
+	UINT	rsize;
+	UINT	t;
+	BYTE	tmp[0x400];
+	UINT32	cur;
 
-	if ((length = last - ptr) <= 0) {			// 書き換える必要なし
+	length = last - ptr;
+	if (length <= 0) {							// 書き換える必要なし
 		return(0);
 	}
 	while(length) {
-		if (length >= 0x4000) {
-			size = 0x4000;
+		if (length >= (long)(sizeof(tmp))) {
+			size = sizeof(tmp);
 		}
 		else {
-			size = (WORD)length;
+			size = length;
 		}
-		length -= (long)size;
-		file_seek(hdr, ptr+length, 0);
-		rsize = file_read(hdr, D88_BUF, size);
-		file_seek(hdr, ptr+length+apsize, 0);
-		file_write(hdr, D88_BUF, rsize);
+		length -= size;
+		file_seek(hdl, ptr + length, FSEEK_SET);
+		rsize = file_read(hdl, tmp, size);
+		file_seek(hdl, ptr + length + apsize, FSEEK_SET);
+		file_write(hdl, tmp, rsize);
 	}
-
-	trkp = head->trackp;
-	for (t=0; t<164; t++, trkp++) {
-		if ((*trkp) && (*trkp >= ptr)) {
-			(*trkp) += apsize;
+	for (t=0; t<164; t++) {
+		cur = fdd->inf.d88.ptr[t];
+		if ((cur) && (cur >= ptr)) {
+			fdd->inf.d88.ptr[t] = cur + apsize;
 		}
 	}
 	return(0);
 }
 
-
-
 void endoftrack(void) {
 
-	FDDFILE		fdd;
-	FILEH		hdr;
-	int			i;
-	WORD		trk;
-	D88_HEADER	*head;
-	long		fpointer;
-	long		endpointer;
-	long		lastpointer;
-	long		trksize;
-	long		apsize;
-	D88SEC		p;
-	UINT		secsize;
+	FDDFILE	fdd;
+	FILEH	hdr;
+	int		i;
+	UINT	trk;
+	long	fpointer;
+	long	endpointer;
+	long	lastpointer;
+	long	trksize;
+	long	apsize;
+	D88SEC	p;
+	UINT	secsize;
+	UINT8	ptr[D88_TRACKMAX][4];
 
 	if (!tao.sector) {
 		tao.flag = 4;
@@ -483,7 +483,7 @@ void endoftrack(void) {
 	curdataflush();						// write cache flush &
 	curdrv = (REG8)-1;					// use D88_BUF[] for temp
 
-	head = &d88head[fdc.drv];
+	fdd = fddfile + fdc.drv;
 	trk = (fdc.c << 1) + fdc.h;
 
 	p = (D88SEC)TAO_BUF;
@@ -493,44 +493,47 @@ void endoftrack(void) {
 		p = (D88SEC)(((UINT8 *)(p + 1)) + secsize);
 	}
 
-	fdd = fddfile + fdc.drv;
 	if ((hdr = file_open(fdd->fname)) == FILEH_INVALID) {
 		return;
 	}
 	lastpointer = file_seek(hdr, 0, 2);
-	if ((fpointer = head->trackp[trk]) == 0) {
-		fpointer = 0;								// 新規トラック
-		for (i=trk; i>=0; i--) {
-			if (head->trackp[i]) {
-				fpointer = head->trackp[i];
+	fpointer = fdd->inf.d88.ptr[trk];
+	if (fpointer = 0) {
+		for (i=trk; i>=0; i--) {					// 新規トラック
+			fpointer = fdd->inf.d88.ptr[i];
+			if (fpointer) {
 				break;
 			}
 		}
 		if (fpointer) {								// ヒットした
-			fpointer = nexttrackp(head, fpointer, lastpointer);
+			fpointer = nexttrackptr(fdd, fpointer, lastpointer);
 		}
 		else {
-			fpointer = sizeof(D88_HEADER);
+			fpointer = D88_HEADERSIZE;
 		}
 		endpointer = fpointer;
 	}
 	else {										// トラックデータは既にある
-		endpointer = nexttrackp(head, fpointer, lastpointer);
+		endpointer = nexttrackptr(fdd, fpointer, lastpointer);
 	}
 	trksize = endpointer - fpointer;
 	if ((apsize = (long)tao.size - trksize) > 0) {
 								// 書き込むデータのほーが大きい
-		fileappend(hdr, head, endpointer, lastpointer, apsize);
-		head->fd_size += apsize;
+		fileappend(hdr, fdd, endpointer, lastpointer, apsize);
+		fdd->inf.d88.fd_size += apsize;
 	}
-	head->trackp[trk] = fpointer;
-	file_seek(hdr, fpointer, 0);
+	STOREINTELDWORD(fdd->inf.d88.head.fd_size, fdd->inf.d88.fd_size);
+	fdd->inf.d88.ptr[trk] = fpointer;
+	for (i=0; i<D88_TRACKMAX; i++) {
+		STOREINTELDWORD(ptr[i], fdd->inf.d88.ptr[i]);
+	}
+	file_seek(hdr, 0, FSEEK_SET);
+	file_write(hdr, &fdd->inf.d88.head, sizeof(fdd->inf.d88.head));
+	file_write(hdr, ptr, sizeof(ptr));
+	file_seek(hdr, fpointer, FSEEK_SET);
 	file_write(hdr, TAO_BUF, tao.size);
-	file_seek(hdr, 0, 0);
-	file_write(hdr, head, sizeof(D88_HEADER));
 	file_close(hdr);
 }
-
 
 void fdd_wtao_d88(BYTE data) {
 
@@ -654,7 +657,7 @@ void fdd_wtao_d88(BYTE data) {
 BRESULT fddd88_eject(FDDFILE fdd, REG8 drv) {
 
 	drvflush(drv);
-	ZeroMemory(&d88head[drv], sizeof(D88_HEADER));
+	ZeroMemory(&fdd->inf.d88, sizeof(fdd->inf.d88));
 	fdd->fname[0] = '\0';
 	fdd->type = DISKTYPE_NOTREADY;
 	return(SUCCESS);
@@ -664,27 +667,35 @@ BRESULT fddd88_set(FDDFILE fdd, REG8 drv, const OEMCHAR *fname) {
 
 	short	attr;
 	FILEH	fh;
-	UINT	rsize;
+	BOOL	r;
+	UINT8	ptr[D88_TRACKMAX][4];
+	UINT	i;
 
 	attr = file_attr(fname);
 	if (attr & 0x18) {
 		goto fdst_err;
 	}
-	fh = file_open(fname);
+	fh = file_open_rb(fname);
 	if (fh == FILEH_INVALID) {
 		goto fdst_err;
 	}
-	rsize = file_read(fh, &d88head[drv], sizeof(D88_HEADER));
+	r = (file_read(fh, &fdd->inf.d88.head, sizeof(fdd->inf.d88.head))
+											!= sizeof(fdd->inf.d88.head)) ||
+		(file_read(fh, ptr, sizeof(ptr)) != sizeof(ptr));
 	file_close(fh);
-	if (rsize != sizeof(D88_HEADER)) {
+	if (r) {
 		goto fdst_err;
 	}
-	if (d88head[drv].protect & 0x10) {
+	fdd->inf.d88.fd_size = LOADINTELDWORD(fdd->inf.d88.head.fd_size);
+	for (i=0; i<D88_TRACKMAX; i++) {
+		fdd->inf.d88.ptr[i] = LOADINTELDWORD(ptr[i]);
+	}
+	if (fdd->inf.d88.head.protect & 0x10) {
 		attr |= 1;
 	}
-	milstr_ncpy(fdd->fname, fname, NELEMENTS(fdd->fname));
 	fdd->type = DISKTYPE_D88;
 	fdd->protect = (UINT8)(attr & 1);
+	milstr_ncpy(fdd->fname, fname, NELEMENTS(fdd->fname));
 	return(SUCCESS);
 
 fdst_err:

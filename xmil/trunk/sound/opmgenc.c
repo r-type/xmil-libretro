@@ -2,12 +2,10 @@
 #include	<math.h>
 #include	"sound.h"
 #include	"sndctrl.h"
-#include	"juliet.h"
-#include	"x1f.h"
 
 
-extern	int		s_cnt;
-extern	DWORD	basedclk;
+// extern	int		s_cnt;
+// extern	DWORD	basedclk;
 
 
 #define	OPM_ARRATE		 399128L
@@ -23,7 +21,6 @@ extern	DWORD	basedclk;
 
 
 		OPMCFG	opmcfg;
-		UINT8	fmop[256];
 static	SINT32	detunetable[8][32];
 static	SINT32	attacktable[94];
 static	SINT32	decaytable[94];
@@ -353,9 +350,6 @@ void opmgen_reset(void) {
 	OPMSLOT	*slot;
 	UINT	j;
 
-	juliet_YM2151Reset();
-	juliet_YMF288Reset();
-
 	opmgen.mode = 0;
 	ch = opmch;
 	for(i=0; i<OPMCH_MAX; i++) {
@@ -387,13 +381,10 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 	OPMCH		*ch;
 	OPMSLOT		*slot;
 
-	fmop[reg] = value;
-	x1f_opm(reg, value);
-
-	if (romeo_exist) {
-		juliet2_YM2151W(reg, value, (basedclk * s_cnt / 1600));
-		return;
-	}
+//	if (romeo_exist) {
+//		juliet2_YM2151W(reg, value, (basedclk * s_cnt / 1600));
+//		return;
+//	}
 
 	c = reg & 7;
 	ch = opmch + c;

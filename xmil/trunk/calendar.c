@@ -69,7 +69,11 @@ void calendar_initialize(void) {
 
 void calendar_inc(void) {
 
-	secinc(&cal.dt);
+	cal.steps++;
+	if (cal.steps >= 60) {
+		cal.steps = 0;
+		secinc(&cal.dt);
+	}
 }
 
 void calendar_getdate(UINT8 *bcd) {

@@ -1,5 +1,6 @@
 #include	"compiler.h"
 #include	"dosio.h"
+#include	"iocore.h"
 #include	"sound.h"
 #include	"sndctrl.h"
 #include	"x1f.h"
@@ -16,9 +17,6 @@ typedef struct {
 } _X1F, *X1F;
 
 static	_X1F	x1f;
-
-
-extern	UINT8	fmop[256];
 
 
 static void writedata(X1F hdl, REG16 value) {
@@ -62,9 +60,9 @@ BRESULT x1f_open(const OEMCHAR *filename) {
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
-	CopyMemory(buf, fmop, 256);
+	CopyMemory(buf, sndboard.opmdat, 256);
 	CopyMemory(buf, "X1F", 4);
-	file_write(fh, fmop, 256);
+	file_write(fh, buf, 256);
 
 	x1f.enable = 1;
 	x1f.fh = fh;

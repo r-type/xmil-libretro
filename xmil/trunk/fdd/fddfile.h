@@ -15,12 +15,20 @@ enum {
 	DISKTYPE_2HD
 };
 
+typedef struct {
+	UINT32		fd_size;
+	_D88HEAD	head;
+	UINT32		ptr[D88_TRACKMAX];
+} _D88INFO, *D88INFO;
 
 typedef struct {
-	OEMCHAR	fname[MAX_PATH];
 	UINT8	type;
 	UINT8	protect;
 	UINT8	padding[2];
+	union {
+		_D88INFO	d88;
+	} inf;
+	OEMCHAR	fname[MAX_PATH];
 } _FDDFILE, *FDDFILE;
 
 

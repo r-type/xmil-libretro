@@ -3,6 +3,9 @@ typedef struct {
 	UINT8	psgreg;
 	UINT8	opmreg;
 	UINT8	rapids;
+	UINT8	padding;
+	UINT8	psgdat[0x10];
+	UINT8	opmdat[0x100];
 } SNDBOARD;
 
 
@@ -10,9 +13,8 @@ typedef struct {
 extern "C" {
 #endif
 
-void IOOUTCALL sndboard_opmreg(UINT port, REG8 dat);
-void IOOUTCALL sndboard_opmdat(UINT port, REG8 dat);
-REG8 IOINPCALL sndboard_opmsta(UINT port);
+void IOOUTCALL opm_o(UINT port, REG8 dat);
+REG8 IOINPCALL opm_i(UINT port);
 
 void IOOUTCALL sndboard_psgreg(UINT port, REG8 dat);
 void IOOUTCALL sndboard_psgdat(UINT port, REG8 dat);

@@ -1,26 +1,25 @@
 #include	"compiler.h"
+
 #include	"romeo.h"
 #include	"juliet.h"
 
 
-#ifndef SUCCESS
-#define	SUCCESS		0
-#endif
-
-#ifndef FAILURE
-#define	FAILURE		(!SUCCESS)
-#endif
-
-#ifndef LABEL
-#define	LABEL		__declspec(naked)
-#endif
-
-
 enum {
 	ROMEO_AVAIL			= 0x01,
-	ROMEO_YMF288		= 0x02,			// 必ず存在する筈？
+	ROMEO_YMF288		= 0x02,
 	ROMEO_YM2151		= 0x04
 };
+
+typedef struct {
+	UINT8	op[8];
+	UINT8	ttl[8*4];
+} YM2151FLAG;
+
+typedef struct {
+	UINT8	algo[8];
+	UINT8	ttl[8*4];
+	UINT8	psgmix;
+} YMF288FLAG;
 
 typedef struct {
 	HMODULE			mod;
@@ -39,21 +38,16 @@ typedef struct {
 	ULONG			avail;
 	ULONG			snoopcount;
 
-	BYTE			YM2151_outop[8];
-	BYTE			YM2151_ttl[8*4];
-
-	BYTE			YMF288_outop[8];
-	BYTE			YMF288_ttl[8*4];
-	BYTE			YMF288_PSG;
+	YM2151FLAG		ym2151;
+	YMF288FLAG		ymf288;
 } _ROMEO;
 
 
-#define	ROMEO_TPTR(member)	(int)&(((_ROMEO *)NULL)->member)
-
+static const UINT8 opmask[] = {0x08,0x08,0x08,0x08,0x0c,0x0e,0x0e,0x0f};
 
 typedef struct {
 const char	*symbol;
-	int		addr;
+	UINT	addr;
 } DLLPROCESS;
 
 static const char fnstr_finddev[] = FN_PCIFINDDEV;
@@ -66,23 +60,21 @@ static const char fnstr_inp16[] = FN_PCIMEMRD16;
 static const char fnstr_inp32[] = FN_PCIMEMRD32;
 
 static const DLLPROCESS	dllproc[] = {
-				{fnstr_finddev,		ROMEO_TPTR(finddev)},
-				{fnstr_read32,		ROMEO_TPTR(read32)},
-				{fnstr_out8,		ROMEO_TPTR(out8)},
-				{fnstr_out16,		ROMEO_TPTR(out16)},
-				{fnstr_out32,		ROMEO_TPTR(out32)},
-				{fnstr_inp8,		ROMEO_TPTR(in8)},
-				{fnstr_inp16,		ROMEO_TPTR(in16)},
-				{fnstr_inp32,		ROMEO_TPTR(in32)}};
+				{fnstr_finddev,		offsetof(_ROMEO, finddev)},
+				{fnstr_read32,		offsetof(_ROMEO, read32)},
+				{fnstr_out8,		offsetof(_ROMEO, out8)},
+				{fnstr_out16,		offsetof(_ROMEO, out16)},
+				{fnstr_out32,		offsetof(_ROMEO, out32)},
+				{fnstr_inp8,		offsetof(_ROMEO, in8)},
+				{fnstr_inp16,		offsetof(_ROMEO, in16)},
+				{fnstr_inp32,		offsetof(_ROMEO, in32)}};
 
 
-static	_ROMEO	romeo = {NULL};
+static	_ROMEO	romeo;
 static	SINT8	YM2151vol = -12;
 
-static const UINT8 FMoutop[] = {0x08,0x08,0x08,0x08,0x0c,0x0e,0x0e,0x0f};
 
-
-BOOL juliet_load(void) {
+BRESULT juliet_load(void) {
 
 	int				i;
 const DLLPROCESS	*dp;
@@ -101,7 +93,7 @@ const DLLPROCESS	*dp;
 			r = FAILURE;
 			break;
 		}
-		*(DWORD *)(((BYTE *)&romeo) + (dp->addr)) = (DWORD)proc;
+		*(DWORD *)(((UINT8 *)&romeo) + dp->addr) = (DWORD)proc;
 	}
 	if (r) {
 		juliet_unload();
@@ -115,33 +107,44 @@ void juliet_unload(void) {
 		FreeLibrary(romeo.mod);
 	}
 	ZeroMemory(&romeo, sizeof(romeo));
-	FillMemory(romeo.YM2151_ttl, 8*4, 0x7f);
-	FillMemory(romeo.YMF288_ttl, 8*4, 0x7f);
-	romeo.YMF288_PSG = 0x3f;
+	FillMemory(romeo.ym2151.ttl, 8*4, 0x7f);
+	FillMemory(romeo.ymf288.ttl, 8*4, 0x7f);
+	romeo.ymf288.psgmix = 0x3f;
 }
 
 
 // ----
 
-// pciFindPciDevice使うと、OS起動後一発目に見つけられないことが多いので、自前で検索する（矢野さん方式）
-static ULONG searchRomeo(void)
-{
-	int bus, dev, func;
-	for (bus=0; bus<256; bus++) {
-		for (dev=0; dev<32; dev++) {
-			for (func=0; func<8; func++) {
-				ULONG addr = pciBusDevFunc(bus, dev, func);
-				ULONG dev_vend = romeo.read32(addr, 0x0000);
-				if ( (dev_vend&0xffff)!=ROMEO_VENDORID ) continue;
-				dev_vend >>= 16;
-				if ( (dev_vend==ROMEO_DEVICEID)||(dev_vend==ROMEO_DEVICEID2) ) return addr;
+// pciFindPciDevice使うと、OS起動後一発目に見つけられないことが多いので
+// 自前で検索する（矢野さん方式）
+
+#define PCIBUSDEVFUNC(b, d, f)	(((b) << 8) | ((d) << 3) | (f))
+#define	DEVVEND(v, d)			((ULONG)((v) | ((d) << 16)))
+
+static ULONG searchRomeo(void) {
+
+	UINT	bus;
+	UINT	dev;
+	UINT	func;
+	ULONG	addr;
+	ULONG	dev_vend;
+
+	for (bus=0; bus<0x100; bus++) {
+		for (dev=0; dev<0x20; dev++) {
+			for (func=0; func<0x08; func++) {
+				addr = PCIBUSDEVFUNC(bus, dev, func);
+				dev_vend = romeo.read32(addr, 0x0000);
+				if ((dev_vend == DEVVEND(ROMEO_VENDORID, ROMEO_DEVICEID)) ||
+					(dev_vend == DEVVEND(ROMEO_VENDORID, ROMEO_DEVICEID2))) {
+					return(addr);
+				}
 			}
 		}
 	}
-	return ((ULONG)0xffffffff);
+	return((ULONG)-1);
 }
 
-BOOL juliet_prepare(void) {
+BRESULT juliet_prepare(void) {
 
 	ULONG	pciaddr;
 
@@ -150,27 +153,68 @@ BOOL juliet_prepare(void) {
 	}
 
 	pciaddr = searchRomeo();
-	if ( pciaddr!=(ULONG)0xffffffff ) {
+	if (pciaddr != (ULONG)-1) {
 		romeo.addr = romeo.read32(pciaddr, ROMEO_BASEADDRESS1);
-		romeo.irq  = romeo.read32(pciaddr, ROMEO_PCIINTERRUPT) & 0xff;
+		romeo.irq = romeo.read32(pciaddr, ROMEO_PCIINTERRUPT) & 0xff;
 		if (romeo.addr) {
 			romeo.avail = ROMEO_AVAIL | ROMEO_YMF288;
 			juliet_YM2151Reset();
 			juliet_YMF288Reset();
 		}
-		return (SUCCESS);
+		return(SUCCESS);
 	}
-	return (FAILURE);
+	return(FAILURE);
 }
 
+
 // ---- YM2151部
+
+static void YM2151W(UINT8 addr, UINT8 data) {
+
+	// 書き込み直後だと、ROMEOチップでの遅延のため、まだ書き込みが起こっていない（＝Busyが
+	// 立っていない）可能性がある。ので、Snoopカウンタで書き込み発生を見張る
+	while ( romeo.snoopcount==romeo.in32(romeo.addr + ROMEO_SNOOPCTRL) ) Sleep(0);
+	romeo.snoopcount = romeo.in32(romeo.addr + ROMEO_SNOOPCTRL);
+
+	// カウンタ増えた時点ではまだBusyの可能性があるので、OPMのBusyも見張る
+	while ( romeo.in8(romeo.addr + ROMEO_YM2151DATA)&0x80 ) Sleep(0);
+
+	romeo.out8(romeo.addr + ROMEO_YM2151ADDR, addr);
+	romeo.out8(romeo.addr + ROMEO_YM2151DATA, data);
+}
+
+static void YM2151setvolume(UINT8 ch, int vol) {
+
+	UINT8	mask;
+	int		ttl;
+
+	ch &= 7;
+	mask = romeo.ym2151.op[ch];
+	do {
+		if (mask & 1) {
+			ttl = romeo.ym2151.ttl[ch] & 0x7f;
+			ttl -= vol;
+			if (ttl < 0) {
+				ttl = 0;
+			}
+			else if (ttl > 0x7f) {
+				ttl = 0x7f;
+			}
+			YM2151W(ch + 0x60, (UINT8)ttl);
+		}
+		ch += 0x08;
+		mask >>= 1;
+	} while(mask);
+}
+
+
 // リセットと同時に、OPMチップの有無も確認
-void juliet_YM2151Reset(void)
-{
-	BYTE flag;
+void juliet_YM2151Reset(void) {
+
+	BYTE	flag;
 
 	if (romeo.avail & ROMEO_AVAIL) {
-		juliet_YM2151Mute(TRUE);
+		juliet_YM2151Enable(FALSE);
 		romeo.out32(romeo.addr + ROMEO_YM2151CTRL, 0x00);
 		Sleep(10);					// 44.1kHz x 192 clk = 4.35ms 以上ないと、DACのリセットかからない
 		flag = romeo.in8(romeo.addr + ROMEO_YM2151DATA) + 1;
@@ -186,94 +230,66 @@ void juliet_YM2151Reset(void)
 	}
 }
 
-int juliet_YM2151IsEnable(void)
-{
-	return (( romeo.avail&ROMEO_YM2151 )?TRUE:FALSE);
+BRESULT juliet_YM2151IsEnable(void) {
+
+	return((romeo.avail & ROMEO_YM2151) != 0);
 }
 
-int juliet_YM2151IsBusy(void)
-{
-	int ret = FALSE;
-	if ( romeo.avail&ROMEO_YM2151 ) {
-		if ( (romeo.snoopcount==romeo.in32(romeo.addr + ROMEO_SNOOPCTRL)) ||
-		     (romeo.in8(romeo.addr + ROMEO_YM2151DATA)&0x80 ) ) ret = TRUE;
-	}
-	return ret;
-}
+BRESULT juliet_YM2151IsBusy(void) {
 
-static void YM2151W(BYTE addr, BYTE data) {
+	BRESULT	ret;
 
-	// 書き込み直後だと、ROMEOチップでの遅延のため、まだ書き込みが起こっていない（＝Busyが
-	// 立っていない）可能性がある。ので、Snoopカウンタで書き込み発生を見張る
-	while ( romeo.snoopcount==romeo.in32(romeo.addr + ROMEO_SNOOPCTRL) ) Sleep(0);
-	romeo.snoopcount = romeo.in32(romeo.addr + ROMEO_SNOOPCTRL);
-
-	// カウンタ増えた時点ではまだBusyの可能性があるので、OPMのBusyも見張る
-	while ( romeo.in8(romeo.addr + ROMEO_YM2151DATA)&0x80 ) Sleep(0);
-
-	romeo.out8(romeo.addr + ROMEO_YM2151ADDR, addr);
-	romeo.out8(romeo.addr + ROMEO_YM2151DATA, data);
-}
-
-static void YM2151volset(BYTE ch, BYTE mask, char vol) {
-
-	BYTE	data;
-	BYTE	out;
-
-	ch &= 7;
-	out = romeo.YM2151_outop[ch];
-	ch += 0x60;
-	do {
-		if (mask & 1) {
-			data = romeo.YM2151_ttl[ch & 0x1f];
-			if (out & 1) {
-				data -= vol;
-				if (data & 0x80) {
-					data = ((vol < 0)?0x7f:0);
-				}
-			}
-			YM2151W(ch, data);
-		}
-		ch += 0x08;
-		out >>= 1;
-		mask >>= 1;
-	} while(mask);
-}
-
-void juliet_YM2151Mute(BOOL mute) {
-
-	BYTE	ch;
-	char	vol;
-
+	ret = FALSE;
 	if (romeo.avail & ROMEO_YM2151) {
-		vol = (mute?-127:YM2151vol);
-		for (ch=0; ch<8; ch++) {
-			YM2151volset(ch, romeo.YM2151_outop[ch & 7], vol);
+		if ((romeo.snoopcount == romeo.in32(romeo.addr + ROMEO_SNOOPCTRL)) ||
+			(romeo.in8(romeo.addr + ROMEO_YM2151DATA) & 0x80)) {
+			ret = TRUE;
 		}
 	}
+	return(ret);
 }
 
-void juliet_YM2151W(BYTE addr, BYTE data) {
+void juliet_YM2151W(UINT8 addr, UINT8 data) {
+
+	UINT	ch;
+	int		ttl;
+	UINT8	mask;
 
 	if (romeo.avail & ROMEO_YM2151) {
 		if ((addr & 0xe0) == 0x60) {				// ttl
-			data &= 0x7f;
-			romeo.YM2151_ttl[addr & 0x1f] = data;
-			if (romeo.YM2151_outop[addr & 7] & (1 << ((addr >> 3) & 3))) {
-				data -= YM2151vol;
-				if (data & 0x80) {
-					data = ((YM2151vol < 0)?0x7f:0);
+			romeo.ym2151.ttl[addr & 0x1f] = data;
+			if (romeo.ym2151.op[addr & 7] & (1 << ((addr >> 3) & 3))) {
+				ttl = (data & 0x7f) - YM2151vol;
+				if (ttl < 0) {
+					ttl = 0;
 				}
+				else if (ttl > 0x7f) {
+					ttl = 0x7f;
+				}
+				data = (UINT8)ttl;
+			}
+		}
+		else if ((addr & 0xf8) == 0x20) {				// algorithm
+			ch = addr & 7;
+			mask = opmask[ch];
+			if (romeo.ym2151.op[ch] != mask) {
+				romeo.ym2151.op[ch] = mask;
+				YM2151setvolume((UINT8)ch, YM2151vol);
 			}
 		}
 		YM2151W(addr, data);
-		if ((addr & 0xf8) == 0x20) {				// algorithm
-			BYTE op;
-			op = romeo.YM2151_outop[addr & 7] ^ FMoutop[data & 7];
-			if (op) {
-				romeo.YM2151_outop[addr & 7] = FMoutop[data & 7];
-				YM2151volset(addr & 7, op, YM2151vol);
-			}
+	}
+}
+
+void juliet_YM2151Enable(BRESULT enable) {
+
+	UINT8	ch;
+	int		vol;
+
+	if (romeo.avail & ROMEO_YM2151) {
+		vol = (enable)?YM2151vol:-127;
+		for (ch=0; ch<8; ch++) {
+			YM2151setvolume(ch, vol);
 		}
 	}
 }
@@ -281,29 +297,7 @@ void juliet_YM2151W(BYTE addr, BYTE data) {
 
 // ---- YMF288部
 
-void juliet_YMF288Reset(void) {
-
-	if (romeo.avail & ROMEO_YMF288) {
-		juliet_YMF288Mute(TRUE);
-		romeo.out32(romeo.addr + ROMEO_YMF288CTRL, 0x00);
-		Sleep(100);
-		romeo.out32(romeo.addr + ROMEO_YMF288CTRL, 0x80);
-		Sleep(100);
-	}
-}
-
-int juliet_YMF288IsEnable(void) {
-
-	return(TRUE);
-}
-
-int juliet_YMF288IsBusy(void) {
-
-	return((!(romeo.avail&ROMEO_YMF288)) ||
-			((romeo.in8(romeo.addr + ROMEO_YMF288ADDR1) & 0x80) != 0));
-}
-
-static void YMF288W(BYTE a1, BYTE addr, BYTE data) {
+static void YMF288W(UINT8 a1, UINT8 addr, UINT8 data) {
 
 	while(romeo.in8(romeo.addr + ROMEO_YMF288ADDR1) & 0x80) {
 		Sleep(0);
@@ -315,81 +309,103 @@ static void YMF288W(BYTE a1, BYTE addr, BYTE data) {
 	romeo.out8(romeo.addr + (a1?ROMEO_YMF288DATA2:ROMEO_YMF288DATA1), data);
 }
 
-static void YMF288volset(BYTE ch, BYTE mask, char vol) {
+static void YMF288setvolume(UINT ch, int vol) {
 
-	BYTE	data;
-	BYTE	out;
-	BYTE	a1;
-	BYTE	*datp;
+	UINT8	a1;
+	UINT8	mask;
+const UINT8	*pttl;
+	int		ttl;
 
 	a1 = ch & 4;
-	out = romeo.YMF288_outop[ch & 7];
-	ch &= 3;
-	datp = romeo.YMF288_ttl + (a1 << 2);
-	ch += 0x40;
+	mask = opmask[romeo.ymf288.algo[ch & 7] & 7];
+	pttl = romeo.ymf288.ttl + ((ch & 4) << 2);
+	ch = 0x40 + (ch & 3);
 	do {
 		if (mask & 1) {
-			data = datp[ch & 0x0f];
-			if (out & 1) {
-				data -= vol;
-				if (data & 0x80) {
-					data = ((vol < 0)?0x7f:0);
-				}
+			ttl = pttl[ch & 0x0f] & 0x7f;
+			ttl -= vol;
+			if (ttl < 0) {
+				ttl = 0;
 			}
-			YMF288W(a1, ch, data);
+			else if (ttl > 0x7f) {
+				ttl = 0x7f;
+			}
+			YMF288W(a1, ch, (UINT8)ttl);
 		}
 		ch += 0x04;
-		out >>= 1;
 		mask >>= 1;
 	} while(mask);
 }
 
-void juliet_YMF288Mute(BOOL mute) {
 
-	BYTE	ch;
-	char	vol;
+void juliet_YMF288Reset(void) {
 
 	if (romeo.avail & ROMEO_YMF288) {
-		YMF288W(0, 0x07, mute?0x3f:romeo.YMF288_PSG);
-
-		vol = (mute?-127:0);
-		for (ch=0; ch<3; ch++) {
-			YMF288volset(ch+0, romeo.YMF288_outop[ch+0], vol);
-			YMF288volset(ch+4, romeo.YMF288_outop[ch+4], vol);
-		}
+		juliet_YMF288Enable(FALSE);
+		romeo.out32(romeo.addr + ROMEO_YMF288CTRL, 0x00);
+		Sleep(150);
+		romeo.out32(romeo.addr + ROMEO_YMF288CTRL, 0x80);
+		Sleep(150);
 	}
 }
 
-void juliet_YMF288A(BYTE addr, BYTE data) {
+BRESULT juliet_YMF288IsEnable(void) {
+
+	return((romeo.avail & ROMEO_YMF288) != 0);
+}
+
+BRESULT juliet_YMF288IsBusy(void) {
+
+	return((!(romeo.avail & ROMEO_YMF288)) ||
+			((romeo.in8(romeo.addr + ROMEO_YMF288ADDR1) & 0x80) != 0));
+}
+
+void juliet_YMF288A(UINT8 addr, UINT8 data) {
 
 	if (romeo.avail & ROMEO_YMF288) {
 		if (addr == 0x07) {							// psg mix
-			romeo.YMF288_PSG = data;
+			romeo.ymf288.psgmix = data;
 		}
 		else if ((addr & 0xf0) == 0x40) {			// ttl
-			romeo.YMF288_ttl[addr & 0x0f] = data & 0x7f;
+			romeo.ymf288.ttl[addr & 0x0f] = data;
 		}
 		else if ((addr & 0xfc) == 0xb0) {			// algorithm
-			romeo.YMF288_outop[addr & 3] = FMoutop[data & 7];
+			romeo.ymf288.algo[addr & 3] = data;
 		}
 		YMF288W(0, addr, data);
 	}
 }
 
-void juliet_YMF288B(BYTE addr, BYTE data) {
+void juliet_YMF288B(UINT8 addr, UINT8 data) {
 
 	if (romeo.avail & ROMEO_YMF288) {
 		if ((addr & 0xf0) == 0x40) {				// ttl
-			romeo.YMF288_ttl[0x10 + addr & 0x0f] = data & 0x7f;
+			romeo.ymf288.ttl[0x10 + (addr & 0x0f)] = data;
 		}
 		else if ((addr & 0xfc) == 0xb0) {			// algorithm
-			romeo.YMF288_outop[4 + addr & 3] = FMoutop[data & 7];
+			romeo.ymf288.algo[4 + (addr & 3)] = data;
 		}
 		YMF288W(1, addr, data);
 	}
 }
 
+void juliet_YMF288Enable(BRESULT enable) {
 
+	UINT8	ch;
+	int		vol;
+
+	if (romeo.avail & ROMEO_YMF288) {
+		YMF288W(0, 0x07, (enable)?romeo.ymf288.psgmix:0x3f);
+		vol = (enable)?0:-127;
+		for (ch=0; ch<3; ch++) {
+			YMF288setvolume(ch + 0, vol);
+			YMF288setvolume(ch + 4, vol);
+		}
+	}
+}
+
+
+#if 0
 // ---- delay...
 
 #define	FM_BUFBIT		10
@@ -583,4 +599,5 @@ void juliet2_YMF288B(BYTE addr, BYTE data, DWORD clock) {
 		}
 	}
 }
+#endif
 

@@ -365,9 +365,9 @@ void reflesh_palette(void) {
 	for (i=0; i<8; i++) {
 		pal_settext(i);
 	}
-	for (j=0; j<2; j++) {
-		for (i=0; i<64; i++) {
-			pal_setgrph(j, i);
+	for (i=0; i<2; i++) {
+		for (j=0; j<64; j++) {
+			pal_setgrph(i, j);
 		}
 	}
 	for (k=0; k<4096; k++) {

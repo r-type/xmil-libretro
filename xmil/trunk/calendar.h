@@ -1,7 +1,7 @@
 
 typedef struct {
 	_SYSTIME	dt;
-//	UINT		steps;
+	UINT		steps;
 } _CALENDAR, *CALENDAR;
 
 

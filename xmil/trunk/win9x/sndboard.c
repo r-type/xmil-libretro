@@ -5,6 +5,10 @@
 #include	"sndctrl.h"
 #include	"keystat.h"
 #include	"x1f.h"
+#include	"juliet.h"
+
+
+static	BRESULT		romeo_exist;
 
 
 void IOOUTCALL opm_o(UINT port, REG8 dat) {
@@ -20,7 +24,12 @@ void IOOUTCALL opm_o(UINT port, REG8 dat) {
 		reg = sndboard.opmreg;
 		sndboard.opmdat[reg] = dat;
 		x1f_opm(reg, dat);
-		opmgen_setreg(reg, dat);
+		if (romeo_exist) {
+			juliet_YM2151W(reg, dat);
+		}
+		else {
+			opmgen_setreg(reg, dat);
+		}
 	}
 	else if ((lsb & (~3)) == 0x04) {	// 0704-0707
 		ctc_o(port, dat);
@@ -57,7 +66,12 @@ void IOOUTCALL sndboard_psgdat(UINT port, REG8 dat) {
 	if (reg < 0x0e) {
 		sndboard.psgdat[reg] = dat;
 		x1f_psg(reg, dat);
-		psggen_setreg(&psggen, reg, dat);
+		if (romeo_exist) {
+			juliet_YMF288A(reg, dat);
+		}
+		else {
+			psggen_setreg(&psggen, reg, dat);
+		}
 	}
 }
 
@@ -97,6 +111,13 @@ void sndboard_reset(void) {
 
 	ZeroMemory(&sndboard, sizeof(sndboard));
 	CopyMemory(sndboard.psgdat, psggen_deftbl, sizeof(psggen_deftbl));
-	sndctrl_reset();
+	romeo_exist = juliet_YM2151IsEnable();
+	if (romeo_exist) {
+		juliet_YM2151Reset();
+		juliet_YMF288Reset();
+	}
+	else {
+		sndctrl_reset();
+	}
 }
 

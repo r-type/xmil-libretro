@@ -1,4 +1,5 @@
 #include	"compiler.h"
+#include	"z80core.h"
 #include	"pccore.h"
 
 
