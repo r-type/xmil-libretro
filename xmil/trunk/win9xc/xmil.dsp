@@ -99,6 +99,10 @@ SOURCE=..\COMMON\_MEMORY.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\COMMON\BMPDATA.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\COMMON\MILSTR.C
 # End Source File
 # Begin Source File
@@ -259,6 +263,10 @@ SOURCE=..\VRAM\SCRNDRAW.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\VRAM\SCRNSAVE.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\VRAM\SDRAW.C
 # End Source File
 # Begin Source File
@@ -362,6 +370,10 @@ SOURCE=.\DIALOG\D_ABOUT.CPP
 # End Source File
 # Begin Source File
 
+SOURCE=.\DIALOG\D_BMP.CPP
+# End Source File
+# Begin Source File
+
 SOURCE=.\DIALOG\D_CFG.CPP
 # End Source File
 # Begin Source File
@@ -381,10 +393,6 @@ SOURCE=.\DIALOG\DIALOGS.CPP
 SOURCE=.\DIALOG\EXTCLASS.CPP
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\DDRAWBMP.CPP
-# End Source File
 # Begin Source File
 
 SOURCE=.\DOSIO.CPP
