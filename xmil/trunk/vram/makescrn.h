@@ -32,6 +32,7 @@ typedef struct {
 	UINT	surfcx;
 	UINT	surfcy;
 	UINT	surfrx;
+	UINT	surfsy;
 	UINT	surfstep;
 	UINT	vramsize;
 } MAKESCRN;
