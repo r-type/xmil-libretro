@@ -63,6 +63,7 @@ void IOOUTCALL sndboard_psgdat(UINT port, REG8 dat) {
 	REG8	reg;
 
 	reg = sndboard.psgreg;
+	TRACEOUT(("psg %.2x %.2x", reg, dat));
 	if (reg < 0x0e) {
 		sndboard.psgdat[reg] = dat;
 		x1f_psg(reg, dat);
@@ -124,7 +125,6 @@ void sndboard_update(void) {
 			psggen_setreg(&psggen, (REG8)i, sndboard.psgdat[i]);
 		}
 		for (i=0x20; i<0x100; i++) {
-TRACEOUT(("%.2x %.2x", (REG8)i, sndboard.opmdat[i]));
 			opmgen_setreg((REG8)i, sndboard.opmdat[i]);
 		}
 	}

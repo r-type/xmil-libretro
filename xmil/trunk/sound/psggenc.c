@@ -106,6 +106,7 @@ void psggen_setreg(PSGGEN psg, REG8 reg, REG8 value) {
 			}
 			else {
 				psg->tone[ch].freq = 0;
+				psg->tone[ch].count = 0;	// ‚Æ‚µ‚Ä‚¨‚©‚È‚¢‚ÆƒmƒCƒYo‚È‚¢
 			}
 			break;
 

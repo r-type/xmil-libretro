@@ -65,6 +65,7 @@ void SOUNDCALL psggen_getpcm(PSGGEN psg, SINT32 *pcm, UINT count) {
 				}
 				noisetbl += psg->noise.base;
 				noisetbl >>= 1;
+TRACEOUT(("noisetbl = %.8x", noisetbl));
 			}
 		}
 		tone = psg->tone;
@@ -100,7 +101,7 @@ void SOUNDCALL psggen_getpcm(PSGGEN psg, SINT32 *pcm, UINT count) {
 						noise = noisetbl;
 						for (i=0; i<(1 << PSGADDEDBIT); i++) {
 							tone->count += tone->freq;
-							if ((tone->count >= 0) || (noise & 1)) {
+							if ((tone->count >= 0) && (noise & 1)) {
 								samp += vol;
 							}
 							else {
