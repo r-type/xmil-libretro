@@ -233,6 +233,7 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 		dma.WR_OFF++;
 		dma.WR_CNT--;
 	}
+	(void)port;
 }
 
 REG8 IOINPCALL dmac_i(UINT port) {
@@ -259,6 +260,7 @@ REG8 IOINPCALL dmac_i(UINT port) {
 		}
 		ret = (*(((UINT8 *)&dma) + dma.RR_TBL[dma.RR_OFF++]));
 	}
+	(void)port;
 	return(ret);
 }
 

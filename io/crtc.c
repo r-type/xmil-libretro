@@ -184,7 +184,7 @@ void vrambank_patch(void) {
 	crtc.e.updatemask = updatemask;
 }
 
-void crtc_updt(void) {
+static void crtc_updt(void) {
 
 	if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
 		crtc.s.fnty = (crtc.s.FNT_YL >> 1) & 0xfffe;
@@ -475,10 +475,12 @@ void IOOUTCALL extpal_o(UINT port, REG8 value) {
 
 	crtc.s.EXTPALMODE = value;
 	vrambank_patch();
+	(void)port;
 }
 
 REG8 IOINPCALL extpal_i(UINT port) {
 
+	(void)port;
 	return(crtc.s.EXTPALMODE);
 }
 
@@ -487,6 +489,7 @@ void IOOUTCALL extgrphpal_o(UINT port, REG8 value) {
 	if (crtc.s.EXTPALMODE & 0x80) {
 		crtc.s.EXTGRPHPAL = value;
 	}
+	(void)port;
 }
 
 REG8 IOINPCALL extgrphpal_i(UINT port) {
@@ -494,6 +497,7 @@ REG8 IOINPCALL extgrphpal_i(UINT port) {
 	if (crtc.s.EXTPALMODE & 0x80) {
 		return(crtc.s.EXTGRPHPAL);
 	}
+	(void)port;
 	return(0xff);
 }
 
@@ -517,6 +521,7 @@ void IOOUTCALL exttextdisp_o(UINT port, REG8 value) {
 
 	crtc.s.ZPRY = value;
 	vrambank_patch();
+	(void)port;
 }
 
 REG8 IOINPCALL exttextdisp_i(UINT port) {
@@ -524,6 +529,7 @@ REG8 IOINPCALL exttextdisp_i(UINT port) {
 	if (crtc.s.EXTPALMODE & 0x80) {
 		return(crtc.s.ZPRY);
 	}
+	(void)port;
 	return(0xff);
 }
 
@@ -531,10 +537,12 @@ void IOOUTCALL blackctrl_o(UINT port, REG8 value) {
 
 	crtc.s.BLACKPAL = value;
 	makescrn.palandply = 1;
+	(void)port;
 }
 
 REG8 IOINPCALL blackctrl_i(UINT port) {
 
+	(void)port;
 	return(crtc.s.BLACKPAL);
 }
 

@@ -66,6 +66,10 @@ const SDRAWFN	*sdrawfn;
 	_SDRAW		sdraw;
 	UINT		i;
 
+	if (redraw) {
+		updateallline(0x01010101);
+	}
+
 	surf = scrnmng_surflock();
 	if (surf == NULL) {
 		goto sddr_exit1;

@@ -469,6 +469,10 @@ static void pcg8x2_halfx4right(UINT8 *dst, UINT8 *term, const UINT8 *src) {
 // ----
 
 static void draw_nop(UINT8 *dst, UINT8 *term, const UINT8 *src) {
+
+	(void)dst;
+	(void)term;
+	(void)src;
 }
 
 

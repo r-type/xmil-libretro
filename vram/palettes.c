@@ -67,13 +67,6 @@ void pal_makegrad(RGB32 *pal, int pals, UINT32 bg, UINT32 fg) {
 	}
 }
 
-void pals_cnv16pal(RGB16 *dst, const RGB32 *src, UINT pals) {
-
-	while(pals--) {
-		*dst++ = scrnmng_makepal16(*src++);
-	}
-}
-
 
 // ----
 
@@ -333,7 +326,10 @@ void pal_update(void) {
 	}
 #if defined(SUPPORT_16BPP)
 	if (scrnmng_getbpp() == 16) {
-		pals_cnv16pal(x1n_pal16, x1n_pal32, xm_palettes);
+		int i;
+		for (i=0; i<xm_palettes; i++) {
+			x1n_pal16[i] = scrnmng_makepal16(x1n_pal32[i]);
+		}
 	}
 #endif
 	scrndraw_changepalette();

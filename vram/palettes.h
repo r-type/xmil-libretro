@@ -14,7 +14,6 @@ extern	RGB16	x1z_pal16[4096+8];		// GRPHPAL16bit
 extern	int		xm_palettes;
 
 void pal_makegrad(RGB32 *pal, int pals, UINT32 bg, UINT32 fg);
-void pals_cnv16pal(RGB16 *dst, const RGB32 *src, UINT pals);
 
 void pal_settext(REG8 num);							// textpalette1
 void pal_setgrph(REG8 bank, REG8 num);				// grphpalette1

@@ -10,7 +10,6 @@
 #include	"scrnmng.h"
 #include	"soundmng.h"
 #include	"sysmng.h"
-#include	"scrndraw.h"
 #include	"ddrawbmp.h"
 #include	"winloc.h"
 #include	"dclock.h"
@@ -24,7 +23,9 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"timing.h"
+#include	"keystat.h"
 #include	"debugsub.h"
+#include	"scrndraw.h"
 #include	"makescrn.h"
 #include	"diskdrv.h"
 #include	"fdd_ini.h"
@@ -272,7 +273,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 				case IDM_DISPSYNC:
 					xmenu_setdispmode(xmilcfg.DISPSYNC ^ 1);
+					updateflag = SYS_UPDATECFG;
 					break;
+
+//				case IDM_RASTER:
+//					menu_setraster(xmilcfg.RASTER ^ 1);
+//					updateflag = SYS_UPDATECFG;
+//					break;
 
 				case IDM_NOWAIT:
 					xmenu_setwaitflg(xmiloscfg.NOWAIT ^ 1);
@@ -676,20 +683,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	WNDCLASS	wc;
 	MSG			msg;
 
+	GetModuleFileName(NULL, modulefile, sizeof(modulefile));
+	dosio_init();
+	file_setcd(modulefile);
+	initload();
+
+//	rand_setseed((unsigned)time(NULL));
+
 	hWnd = FindWindow(szClassName, NULL);
 	if (hWnd != NULL) {
 		ShowWindow(hWnd, SW_RESTORE);
 		SetForegroundWindow(hWnd);
+		dosio_term();
 		return(FALSE);
 	}
-
-	GetModuleFileName(NULL, modulefile, sizeof(modulefile));
-	file_setcd(modulefile);
-	initload();
 
 	hInst = hInstance;
 	hPreI = hPreInst;
 	TRACEINIT();
+
+//	keystat_initialize();
 
 	if (!hPreInst) {
 		wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW;
@@ -719,25 +732,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	hWndMain = hWnd;
 	scrnmng_initialize();
 
-	sysmng_updatecaption(3);
-
 	xmenu_setiplrom(xmilcfg.ROM_TYPE);
-	xmenu_setsound(xmilcfg.SOUND_SW);
-	xmenu_setskipline(xmilcfg.SKIP_LINE);
-	xmenu_setresolute(xmilcfg.DIP_SW);
 	xmenu_setbootmedia(xmilcfg.DIP_SW);
-	xmenu_setkey(0);
-	xmenu_setbtnrapid(xmilcfg.BTN_RAPID);
-	xmenu_setbtnmode(xmilcfg.BTN_MODE);
-	xmenu_setcpuspeed(xmilcfg.CPU8MHz);
+	xmenu_setresolute(xmilcfg.DIP_SW);
+	xmenu_setdispmode(xmilcfg.DISPSYNC);
+//	xmenu_setraster(xmilcfg.RASTER);
 	xmenu_setwaitflg(xmiloscfg.NOWAIT);
 	xmenu_setframe(xmiloscfg.DRAW_SKIP);
-	xmenu_setmotorflg(xmilcfg.MOTOR);
-	xmenu_setz80save(xmiloscfg.Z80SAVE);
+	xmenu_setkey(0);
+	xmenu_setsound(xmilcfg.SOUND_SW);
 	xmenu_setjoystick(xmiloscfg.JOYSTICK);
-	xmenu_setdispclk(xmiloscfg.DISPCLK);
-	xmenu_setdispmode(xmilcfg.DISPSYNC);
 	xmenu_setmouse(xmilcfg.MOUSE_SW);
+	xmenu_setcpuspeed(xmilcfg.CPU8MHz);
+	xmenu_setmotorflg(xmilcfg.MOTOR);
+	xmenu_setdispclk(xmiloscfg.DISPCLK);
+	xmenu_setskipline(xmilcfg.SKIP_LINE);
+	xmenu_setbtnmode(xmilcfg.BTN_MODE);
+	xmenu_setbtnrapid(xmilcfg.BTN_RAPID);
+	xmenu_setz80save(xmiloscfg.Z80SAVE);
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -760,11 +772,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 			return(FALSE);
 		}
 	}
-	joymng_initialize();
 
 	juliet_load();
 	juliet_prepare();
-
 //	juliet2_reset();
 	if (soundmng_initialize() == SUCCESS) {
 		soundmng_pcmload(SOUND_PCMSEEK, OEMTEXT("fddseek.wav"), 0);
@@ -772,6 +782,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 		soundmng_pcmvolume(SOUND_PCMSEEK, xmilcfg.MOTORVOL);
 		soundmng_pcmvolume(SOUND_PCMSEEK1, xmilcfg.MOTORVOL);
 	}
+
+	sysmng_initialize();
+	joymng_initialize();
 
 	pccore_initialize();
 	pccore_reset();

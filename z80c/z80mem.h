@@ -1,4 +1,9 @@
 
+#ifndef MEMCALL
+#define	MEMCALL
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

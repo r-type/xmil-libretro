@@ -48,7 +48,7 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	IPL-ROM LOAD
 ***********************************************************************/
 
-void ipl_load(void) {
+static void ipl_load(void) {
 
 	FILEH	hdl;
 
