@@ -4,17 +4,18 @@
   <object name="rootObject" class="NSCustomObject" id="1">
     <string name="customClass">NSApplication</string>
   </object>
-  <array count="38" name="allObjects">
+  <array count="100" name="allObjects">
     <object class="IBCarbonMenu" id="29">
       <string name="title">main</string>
-      <array count="4" name="items">
+      <array count="13" name="items">
         <object class="IBCarbonMenuItem" id="185">
-          <string name="title">Foo</string>
+          <string name="title">X millennium</string>
           <object name="submenu" class="IBCarbonMenu" id="184">
-            <string name="title">Foo</string>
+            <string name="title">X millennium</string>
+            <int name="menuID">128</int>
             <array count="1" name="items">
               <object class="IBCarbonMenuItem" id="187">
-                <string name="title">About Foo</string>
+                <string name="title">About X millennium...</string>
                 <int name="keyEquivalentModifier">0</int>
                 <ostype name="command">abou</ostype>
               </object>
@@ -22,56 +23,32 @@
             <string name="name">_NSAppleMenu</string>
           </object>
         </object>
-        <object class="IBCarbonMenuItem" id="127">
-          <string name="title">File</string>
-          <object name="submenu" class="IBCarbonMenu" id="131">
-            <string name="title">File</string>
-            <array count="10" name="items">
-              <object class="IBCarbonMenuItem" id="139">
-                <string name="title">New</string>
-                <string name="keyEquivalent">n</string>
-                <ostype name="command">new </ostype>
+        <object class="IBCarbonMenuItem" id="201">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">Emulate</string>
+          <object name="submenu" class="IBCarbonMenu" id="202">
+            <string name="title">Emulate</string>
+            <int name="menuID">129</int>
+            <array count="5" name="items">
+              <object class="IBCarbonMenuItem" id="200">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">IPL Reset</string>
               </object>
-              <object class="IBCarbonMenuItem" id="134">
-                <string name="title">Open…</string>
-                <string name="keyEquivalent">o</string>
-                <ostype name="command">open</ostype>
+              <object class="IBCarbonMenuItem" id="203">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">NMI Reset</string>
               </object>
-              <object class="IBCarbonMenuItem" id="133">
+              <object class="IBCarbonMenuItem" id="204">
                 <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
               </object>
-              <object class="IBCarbonMenuItem" id="130">
-                <string name="title">Close</string>
-                <string name="keyEquivalent">w</string>
-                <ostype name="command">clos</ostype>
+              <object class="IBCarbonMenuItem" id="205">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Configure...</string>
               </object>
-              <object class="IBCarbonMenuItem" id="138">
-                <string name="title">Save</string>
-                <string name="keyEquivalent">s</string>
-                <ostype name="command">save</ostype>
-              </object>
-              <object class="IBCarbonMenuItem" id="137">
-                <string name="title">Save As…</string>
-                <string name="keyEquivalent">S</string>
-                <ostype name="command">svas</ostype>
-              </object>
-              <object class="IBCarbonMenuItem" id="132">
-                <string name="title">Revert</string>
-                <string name="keyEquivalent">r</string>
-                <ostype name="command">rvrt</ostype>
-              </object>
-              <object class="IBCarbonMenuItem" id="128">
-                <boolean name="separator">TRUE</boolean>
-              </object>
-              <object class="IBCarbonMenuItem" id="135">
-                <string name="title">Page Setup…</string>
-                <string name="keyEquivalent">P</string>
-                <ostype name="command">page</ostype>
-              </object>
-              <object class="IBCarbonMenuItem" id="136">
-                <string name="title">Print…</string>
-                <string name="keyEquivalent">p</string>
-                <ostype name="command">prnt</ostype>
+              <object class="IBCarbonMenuItem" id="206">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">New Disk...</string>
               </object>
             </array>
           </object>
@@ -80,6 +57,7 @@
           <string name="title">Edit</string>
           <object name="submenu" class="IBCarbonMenu" id="147">
             <string name="title">Edit</string>
+            <int name="menuID">130</int>
             <array count="10" name="items">
               <object class="IBCarbonMenuItem" id="141">
                 <string name="title">Undo</string>
@@ -128,6 +106,303 @@
             </array>
           </object>
         </object>
+        <object class="IBCarbonMenuItem" id="127">
+          <string name="title">FDD0</string>
+          <object name="submenu" class="IBCarbonMenu" id="131">
+            <string name="title">FDD0</string>
+            <int name="menuID">132</int>
+            <array count="3" name="items">
+              <object class="IBCarbonMenuItem" id="134">
+                <string name="title">Open…</string>
+                <string name="keyEquivalent">o</string>
+                <ostype name="command">open</ostype>
+              </object>
+              <object class="IBCarbonMenuItem" id="133">
+                <boolean name="separator">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="130">
+                <string name="title">Eject</string>
+                <string name="keyEquivalent">e</string>
+                <ostype name="command">clos</ostype>
+              </object>
+            </array>
+          </object>
+        </object>
+        <object class="IBCarbonMenuItem" id="227">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">FDD1</string>
+          <object name="submenu" class="IBCarbonMenu" id="225">
+            <string name="title">FDD1</string>
+            <int name="menuID">133</int>
+            <array count="3" name="items">
+              <object class="IBCarbonMenuItem" id="226">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Open…</string>
+                <string name="keyEquivalent">O</string>
+                <ostype name="command">open</ostype>
+              </object>
+              <object class="IBCarbonMenuItem" id="228">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="224">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Eject</string>
+                <string name="keyEquivalent">E</string>
+                <ostype name="command">clos</ostype>
+              </object>
+            </array>
+          </object>
+        </object>
+        <object class="IBCarbonMenuItem" id="277">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">FDD2</string>
+          <object name="submenu" class="IBCarbonMenu" id="279">
+            <string name="title">FDD2</string>
+            <int name="menuID">134</int>
+            <array count="3" name="items">
+              <object class="IBCarbonMenuItem" id="278">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Open…</string>
+                <ostype name="command">open</ostype>
+              </object>
+              <object class="IBCarbonMenuItem" id="280">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="276">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Eject</string>
+                <ostype name="command">clos</ostype>
+              </object>
+            </array>
+          </object>
+        </object>
+        <object class="IBCarbonMenuItem" id="282">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">FDD3</string>
+          <object name="submenu" class="IBCarbonMenu" id="285">
+            <string name="title">FDD3</string>
+            <int name="menuID">135</int>
+            <array count="3" name="items">
+              <object class="IBCarbonMenuItem" id="283">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Open…</string>
+                <int name="keyEquivalentModifier">1179648</int>
+                <ostype name="command">open</ostype>
+              </object>
+              <object class="IBCarbonMenuItem" id="281">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="284">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Eject</string>
+                <int name="keyEquivalentModifier">1179648</int>
+                <ostype name="command">clos</ostype>
+              </object>
+            </array>
+          </object>
+        </object>
+        <object class="IBCarbonMenuItem" id="229">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">IPL-ROM</string>
+          <object name="submenu" class="IBCarbonMenu" id="230">
+            <string name="title">IPL-ROM</string>
+            <int name="menuID">136</int>
+            <array count="3" name="items">
+              <object class="IBCarbonMenuItem" id="231">
+                <boolean name="disabled">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">TurboZ</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="232">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">turbo</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="233">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">X1</string>
+              </object>
+            </array>
+          </object>
+        </object>
+        <object class="IBCarbonMenuItem" id="234">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">DIP-SW</string>
+          <object name="submenu" class="IBCarbonMenu" id="235">
+            <string name="title">DIP-SW</string>
+            <int name="menuID">137</int>
+            <array count="5" name="items">
+              <object class="IBCarbonMenuItem" id="236">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">boot 2D</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="237">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">boot 2HD</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="238">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="239">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">HIGH RESO.</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="240">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Standard</string>
+              </object>
+            </array>
+          </object>
+        </object>
+        <object class="IBCarbonMenuItem" id="243">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">Screen</string>
+          <object name="submenu" class="IBCarbonMenu" id="241">
+            <string name="title">Screen</string>
+            <int name="menuID">138</int>
+            <array count="12" name="items">
+              <object class="IBCarbonMenuItem" id="242">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Width 80</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="244">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Width 40</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="245">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="246">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">DispVsync</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="247">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Raster</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="248">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">No Wait</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="249">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="250">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Auto frame</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="251">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Full frame</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="252">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">1/2 frame</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="253">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">1/3 frame</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="254">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">1/4 frame</string>
+              </object>
+            </array>
+          </object>
+        </object>
+        <object class="IBCarbonMenuItem" id="256">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">Device</string>
+          <object name="submenu" class="IBCarbonMenu" id="255">
+            <string name="title">Device</string>
+            <int name="menuID">139</int>
+            <array count="10" name="items">
+              <object class="IBCarbonMenuItem" id="257">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Keyboard</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="258">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">JoyKey-1</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="259">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">JoyKey-2</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="260">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="261">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">FM Board</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="262">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Joystick</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="263">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Mouse</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="264">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">8MHz</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="265">
+                <boolean name="separator">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <object class="IBCarbonMenuItem" id="266">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">SeekSound</string>
+              </object>
+            </array>
+          </object>
+        </object>
+        <object class="IBCarbonMenuItem" id="269">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">Other</string>
+          <object name="submenu" class="IBCarbonMenu" id="267">
+            <string name="title">Other</string>
+            <int name="menuID">140</int>
+            <array count="7" name="items">
+              <object class="IBCarbonMenuItem" id="268">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">BMP Save</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="270">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">OPM LOG</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="271">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Clock Disp</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="272">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Frame Disp</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="273">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Joy Reverse</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="274">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Joy Rapid</string>
+              </object>
+              <object class="IBCarbonMenuItem" id="275">
+                <boolean name="updateSingleItem">TRUE</boolean>
+                <string name="title">Z80 Save</string>
+              </object>
+            </array>
+          </object>
+        </object>
         <object class="IBCarbonMenuItem" id="192">
           <string name="title">Window</string>
           <object name="submenu" class="IBCarbonMenu" id="195">
@@ -172,17 +447,10 @@
       <string name="name">_NSMainMenu</string>
     </object>
     <reference idRef="127"/>
-    <reference idRef="128"/>
     <reference idRef="130"/>
     <reference idRef="131"/>
-    <reference idRef="132"/>
     <reference idRef="133"/>
     <reference idRef="134"/>
-    <reference idRef="135"/>
-    <reference idRef="136"/>
-    <reference idRef="137"/>
-    <reference idRef="138"/>
-    <reference idRef="139"/>
     <reference idRef="141"/>
     <reference idRef="142"/>
     <reference idRef="143"/>
@@ -225,19 +493,81 @@
     <reference idRef="197"/>
     <reference idRef="198"/>
     <reference idRef="199"/>
+    <reference idRef="200"/>
+    <reference idRef="201"/>
+    <reference idRef="202"/>
+    <reference idRef="203"/>
+    <reference idRef="204"/>
+    <reference idRef="205"/>
+    <reference idRef="206"/>
+    <reference idRef="224"/>
+    <reference idRef="225"/>
+    <reference idRef="226"/>
+    <reference idRef="227"/>
+    <reference idRef="228"/>
+    <reference idRef="229"/>
+    <reference idRef="230"/>
+    <reference idRef="231"/>
+    <reference idRef="232"/>
+    <reference idRef="233"/>
+    <reference idRef="234"/>
+    <reference idRef="235"/>
+    <reference idRef="236"/>
+    <reference idRef="237"/>
+    <reference idRef="238"/>
+    <reference idRef="239"/>
+    <reference idRef="240"/>
+    <reference idRef="241"/>
+    <reference idRef="242"/>
+    <reference idRef="243"/>
+    <reference idRef="244"/>
+    <reference idRef="245"/>
+    <reference idRef="246"/>
+    <reference idRef="247"/>
+    <reference idRef="248"/>
+    <reference idRef="249"/>
+    <reference idRef="250"/>
+    <reference idRef="251"/>
+    <reference idRef="252"/>
+    <reference idRef="253"/>
+    <reference idRef="254"/>
+    <reference idRef="255"/>
+    <reference idRef="256"/>
+    <reference idRef="257"/>
+    <reference idRef="258"/>
+    <reference idRef="259"/>
+    <reference idRef="260"/>
+    <reference idRef="261"/>
+    <reference idRef="262"/>
+    <reference idRef="263"/>
+    <reference idRef="264"/>
+    <reference idRef="265"/>
+    <reference idRef="266"/>
+    <reference idRef="267"/>
+    <reference idRef="268"/>
+    <reference idRef="269"/>
+    <reference idRef="270"/>
+    <reference idRef="271"/>
+    <reference idRef="272"/>
+    <reference idRef="273"/>
+    <reference idRef="274"/>
+    <reference idRef="275"/>
+    <reference idRef="276"/>
+    <reference idRef="277"/>
+    <reference idRef="278"/>
+    <reference idRef="279"/>
+    <reference idRef="280"/>
+    <reference idRef="281"/>
+    <reference idRef="282"/>
+    <reference idRef="283"/>
+    <reference idRef="284"/>
+    <reference idRef="285"/>
   </array>
-  <array count="38" name="allParents">
+  <array count="100" name="allParents">
     <reference idRef="1"/>
     <reference idRef="29"/>
     <reference idRef="131"/>
-    <reference idRef="131"/>
     <reference idRef="127"/>
-    <reference idRef="131"/>
-    <reference idRef="131"/>
-    <reference idRef="131"/>
-    <reference idRef="131"/>
-    <reference idRef="131"/>
-    <reference idRef="131"/>
     <reference idRef="131"/>
     <reference idRef="131"/>
     <reference idRef="147"/>
@@ -265,6 +595,75 @@
     <reference idRef="195"/>
     <reference idRef="147"/>
     <reference idRef="147"/>
+    <reference idRef="202"/>
+    <reference idRef="29"/>
+    <reference idRef="201"/>
+    <reference idRef="202"/>
+    <reference idRef="202"/>
+    <reference idRef="202"/>
+    <reference idRef="202"/>
+    <reference idRef="225"/>
+    <reference idRef="227"/>
+    <reference idRef="225"/>
+    <reference idRef="29"/>
+    <reference idRef="225"/>
+    <reference idRef="29"/>
+    <reference idRef="229"/>
+    <reference idRef="230"/>
+    <reference idRef="230"/>
+    <reference idRef="230"/>
+    <reference idRef="29"/>
+    <reference idRef="234"/>
+    <reference idRef="235"/>
+    <reference idRef="235"/>
+    <reference idRef="235"/>
+    <reference idRef="235"/>
+    <reference idRef="235"/>
+    <reference idRef="243"/>
+    <reference idRef="241"/>
+    <reference idRef="29"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="241"/>
+    <reference idRef="256"/>
+    <reference idRef="29"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="255"/>
+    <reference idRef="269"/>
+    <reference idRef="267"/>
+    <reference idRef="29"/>
+    <reference idRef="267"/>
+    <reference idRef="267"/>
+    <reference idRef="267"/>
+    <reference idRef="267"/>
+    <reference idRef="267"/>
+    <reference idRef="267"/>
+    <reference idRef="279"/>
+    <reference idRef="29"/>
+    <reference idRef="279"/>
+    <reference idRef="277"/>
+    <reference idRef="279"/>
+    <reference idRef="285"/>
+    <reference idRef="29"/>
+    <reference idRef="285"/>
+    <reference idRef="285"/>
+    <reference idRef="282"/>
   </array>
   <dictionary count="3" name="nameTable">
     <string>Files Owner</string>
@@ -274,5 +673,5 @@
     <string>MenuBar</string>
     <reference idRef="29"/>
   </dictionary>
-  <unsigned_int name="nextObjectID">200</unsigned_int>
+  <unsigned_int name="nextObjectID">286</unsigned_int>
 </object>

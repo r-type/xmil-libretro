@@ -60,7 +60,6 @@ static pascal OSErr handleQuitApp(const AppleEvent *event, AppleEvent *reply,
 
 static void InitToolBox(void) {
 
-	FlushEvents(everyEvent, 0);
 	InitCursor();
 
 	AEInstallEventHandler(kCoreEventClass, kAEQuitApplication,
@@ -69,37 +68,19 @@ static void InitToolBox(void) {
 
 static void MenuBarInit(void) {
 
-	Handle		hdl;
-	MenuHandle	hmenu;
-
-	hdl = GetNewMBar(IDM_MAINMENU);
-	if (hdl == NULL) {
-		ExitToShell();
-	}
-	SetMenuBar(hdl);
-	hmenu = GetMenuHandle(IDM_APPLE);
-	if (hmenu) {
-		AppendResMenu(hmenu, 'DRVR');
-	}
+    OSStatus	err;
+	IBNibRef	nibRef;
+    
+    err = CreateNibReference(CFSTR("main"), &nibRef);
+    if (err != noErr) ExitToShell();
+    err = SetMenuBarFromNib(nibRef, CFSTR("MenuBar"));
 
 	if (!xmiloscfg.Z80SAVE) {
-		hmenu = GetMenuHandle(IDM_OTHER);
-		if (hmenu) {
-			DeleteMenuItem(hmenu, 7);
-		}
+		DeleteMenuItem(GetMenuRef(IDM_OTHER), 7);
 	}
-
-	hmenu = GetMenuHandle(IDM_FDD1);
-	SetItemCmd(hmenu, LoWord(IDM_FDD1OPEN), 'D');
-	SetMenuItemModifiers(hmenu, LoWord(IDM_FDD1OPEN), kMenuShiftModifier);
-	SetItemCmd(hmenu, LoWord(IDM_FDD1EJECT), 'E');
-	SetMenuItemModifiers(hmenu, LoWord(IDM_FDD1EJECT), kMenuShiftModifier);
-	EnableMenuItem(GetMenuHandle(IDM_DEVICE), LoWord(IDM_MOUSE));
 
 	DeleteMenu(IDM_FDD2);
 	DeleteMenu(IDM_FDD3);
-
-	DrawMenuBar();
 }
 
 static void HandleMenuChoice(long wParam) {
@@ -325,16 +306,12 @@ static void HandleMenuChoice(long wParam) {
 			break;
 
 		default:
-			if (HiWord(wParam) == IDM_APPLE) {
-				GetMenuItemText(GetMenuHandle(IDM_APPLE), 
-											LoWord(wParam), applname);
-			}
 			break;
 	}
 	sysmng_update(update);
 	HiliteMenu(0);
 }
-
+#if 0
 static void HandleUpdateEvent(EventRecord *pevent) {
 
 	WindowPtr	hWnd;
@@ -349,7 +326,7 @@ static void HandleUpdateEvent(EventRecord *pevent) {
 	}
 	EndUpdate(hWnd);
 }
-
+#endif
 static void HandleMouseDown(EventRecord *pevent) {
 
 	WindowPtr	hWnd;
@@ -364,13 +341,9 @@ static void HandleMouseDown(EventRecord *pevent) {
 				soundmng_play();
 			}
 			break;
-
-		case inContent:
-			mousemng_buttonevent(MOUSEMNG_LEFTDOWN);
-			break;
 	}
 }
-
+#if 0
 static void eventproc(EventRecord *event) {
 
 	int		keycode;
@@ -425,7 +398,7 @@ static void eventproc(EventRecord *event) {
 			break;
 	}
 }
-
+#endif
 
 #if 0
 // ----
