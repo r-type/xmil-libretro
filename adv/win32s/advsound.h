@@ -35,6 +35,7 @@ enum {
 #define	REG_SOUNDCNT_L		((UINT16 *)(__adv_reg + 0x080))
 #define	REG_SOUNDCNT_H		((UINT16 *)(__adv_reg + 0x082))
 #define	REG_SOUNDCNT_X		((UINT16 *)(__adv_reg + 0x084))
+#define REG_SOUNDBIAS		((UINT16 *)(__adv_reg + 0x088))
 
 #define REG_WAVE_RAM0		((UINT32 *)(__adv_reg + 0x090))
 #define REG_WAVE_RAM0_L		((UINT16 *)(__adv_reg + 0x090))

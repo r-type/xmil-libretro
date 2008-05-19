@@ -41,11 +41,19 @@ void makechr16(UINT8 *dst, UINT pos, UINT count, REG8 udtmp);
 
 // ---- make mixer
 
+#if defined(ADV_SIMULATE)
+void makemix_mixstep(BRESULT x2);
+void makemix_mixtext40(UINT8 *dst, const UINT8 *txt, UINT count);
+void makemix_mixgrph40(UINT8 *dst, const UINT8 *grp, UINT count);
+void makemix_mixtext80(UINT8 *dst, const UINT8 *txt, UINT count);
+void makemix_mixgrph80(UINT8 *dst, const UINT8 *grp, UINT count);
+#else
 void __attribute__((long_call)) makemix_mixstep(BRESULT x2);
 void __attribute__((long_call)) makemix_mixtext40(UINT8 *dst, const UINT8 *txt, UINT count);
 void __attribute__((long_call)) makemix_mixgrph40(UINT8 *dst, const UINT8 *grp, UINT count);
 void __attribute__((long_call)) makemix_mixtext80(UINT8 *dst, const UINT8 *txt, UINT count);
 void __attribute__((long_call)) makemix_mixgrph80(UINT8 *dst, const UINT8 *grp, UINT count);
+#endif
 
 #if 0
 void makemix_mixtext(UINT8 *dst, UINT align, const UINT8 *txt, UINT count);
