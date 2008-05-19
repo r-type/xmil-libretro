@@ -1,4 +1,6 @@
 #include	"compiler.h"
+#if !defined(DISABLE_SOUND)
+
 #include	"soundmng.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -101,4 +103,6 @@ void fddmtr_waitsec(REG8 value) {
 		fddmtr.nextevent = GETTICK() + SEKSEC_MS;
 	}
 }
+
+#endif	// !defined(DISABLE_SOUND)
 

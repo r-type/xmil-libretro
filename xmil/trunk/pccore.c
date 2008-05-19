@@ -61,7 +61,7 @@ void pccore_initialize(void) {
 	sndctrl_initialize();
 	makescrn_initialize();
 
-	(void)font_load(NULL, TRUE);
+	font_load(NULL, TRUE);
 
 	crtc_initialize();
 	pcg_initialize();

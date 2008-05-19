@@ -4,10 +4,9 @@
 //
 #define IDI_ICON1                       101
 #define IDM_MAIN                        102
-#define IDC_HAND                        103
-#define IDD_CONFIG                      104
-#define IDD_NEWDISK                     105
-#define IDD_ABOUT                       106
+#define IDD_CONFIG                      103
+#define IDD_NEWDISK                     104
+#define IDD_ABOUT                       105
 #define IDC_SAMPLERATE                  1000
 #define IDC_SNDBUFFER                   1001
 #define IDC_SEEKVOL                     1002

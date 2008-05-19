@@ -1,5 +1,5 @@
 
-#if 1
+#if !defined(DISABLE_SOUND)
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +27,7 @@ void fddmtr_drvset(void);
 }
 #endif
 
-#else
+#else	//  !defined(DISABLE_SOUND)
 
 #define fddmtr_initialize()
 #define fddmtr_motormove()
@@ -36,5 +36,5 @@ void fddmtr_drvset(void);
 #define fddmtr_drvset()
 #define	fddmtr_isbusy()		(FALSE)
 
-#endif
+#endif	// !defined(DISABLE_SOUND)
 
