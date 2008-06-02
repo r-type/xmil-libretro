@@ -60,7 +60,7 @@ static void dataflash(WAVEWR hdl) {
 }
 
 
-// ----
+/* ---- */
 
 WAVEWR wavewr_open(const char *filename, UINT rate, UINT bits, UINT ch) {
 

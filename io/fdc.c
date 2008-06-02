@@ -36,7 +36,7 @@ static const UINT8 fdctype[] = {
 					FDCCTYPE_CMD3};
 
 
-// write track
+/* write track */
 
 #if !defined(CONST_DISKIMAGE)
 enum {
@@ -183,7 +183,7 @@ static void wrtrkdata(FDC *f, REG8 data) {
 			}
 			break;
 
-		case TAO_MODE_DATA:						// DATA WRITE
+		case TAO_MODE_DATA:						/* DATA WRITE */
 			if ((f->s.wt_ptr == 0) &&
 				((data == TAO_CMD_DAM) || (data == TAO_CMD_DDAM))) {
 				break;
@@ -217,13 +217,13 @@ wtd_err:
 #endif
 
 
-// ----
+/* ---- */
 
 void neitem_fdcbusy(UINT id) {
 
 	fdc.s.busy = 0;
 	if (fdc.s.bufdir) {
-//		TRACEOUT(("dma ready!"));
+		/* TRACEOUT(("dma ready!")); */
 		dmac_sendready(TRUE);
 	}
 	(void)id;
@@ -297,7 +297,7 @@ static SINT32 motorwait(const FDC *f) {
 		curclock -= f->s.motorclock[f->s.drv];
 		if (curclock < (SINT32)pccore.realclock) {
 			nextclock = pccore.realclock - curclock;
-//			TRACEOUT(("motor starting busy %d", nextclock));
+			/* TRACEOUT(("motor starting busy %d", nextclock)); */
 			return(nextclock);
 		}
 	}
@@ -436,8 +436,8 @@ static REG8 type2cmd(FDC *f, REG8 sc) {
 		if (nextclock < 0) {
 			nextclock += f->s.loopclock;
 		}
-//		TRACEOUT(("wait clock -> %d [%d/%d]", nextclock,
-//									LOW16(secinfo), LOW16(secinfo >> 16)));
+		/* TRACEOUT(("wait clock -> %d [%d/%d]", nextclock,
+									LOW16(secinfo), LOW16(secinfo >> 16))); */
 		clock += nextclock;
 	}
 #endif
@@ -479,7 +479,7 @@ static REG8 crccmd(FDC *f) {
 
 	track = (f->s.c << 1) + f->s.h;
 	fdd = fddfile + f->s.drv;
-// TRACEOUT(("fdd->crc %d %d %d", f->s.drv, track, f->s.crcnum));
+	/* TRACEOUT(("fdd->crc %d %d %d", f->s.drv, track, f->s.crcnum)); */
 	stat = fdd->crc(fdd, f->s.media, track, f->s.crcnum, crcbuf);
 	if (stat & FDDSTAT_RECNFND) {
 		f->s.crcnum = 0;
@@ -540,7 +540,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 	}
 	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
 	switch(port & 7) {
-		case 0:									// コマンド
+		case 0:									/* コマンド */
 			if (fdc.s.bufwrite) {
 				fdc.s.stat = type2flash(&fdc);
 			}
@@ -552,34 +552,35 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 			fdc.s.cmd = value;
 			cmd = (REG8)(value >> 4);
 			fdc.s.ctype = fdctype[cmd];
-//			TRACEOUT(("fdc cmd: %.2x", value));
-			// リストアコマンドにおいて
-			// 　マリオは コマンド発行後にbusyを見張る
-			// 　逆にソーサリアンとかは busyだとエラーになる…
-			// 条件は何？
+			/* TRACEOUT(("fdc cmd: %.2x", value)); */
+			/* リストアコマンドにおいて
+			 * 　マリオは コマンド発行後にbusyを見張る
+			 * 　逆にソーサリアンとかは busyだとエラーになる…
+			 * 条件は何？
+			 */
 			setbusy(&fdc, 20);
 			switch(cmd) {
-				case 0x00:								// リストア
-					fdc.s.motor = 0x80;					// モーターOn?
+				case 0x00:								/* リストア */
+					fdc.s.motor = 0x80;					/* モーターOn? */
 					fdc.s.c = 0;
 					fdc.s.step = 1;
-					fdc.s.r = 0;						// デゼニワールド
+					fdc.s.r = 0;						/* デゼニワールド */
 					seekcmd(&fdc);
 					fdc.s.rreg = 0;
 					break;
 
-				case 0x01:								// シーク
-					fdc.s.motor = 0x80;					// モーターOn
+				case 0x01:								/* シーク */
+					fdc.s.motor = 0x80;					/* モーターOn */
 					fdc.s.step = (SINT8)((fdc.s.c<=fdc.s.data)?1:-1);
 					fdc.s.c = fdc.s.data;
 					seekcmd(&fdc);
 					break;
 
-				case 0x02:								// ステップ
+				case 0x02:								/* ステップ */
 				case 0x03:
-				case 0x04:								// ステップイン
+				case 0x04:								/* ステップイン */
 				case 0x05:
-				case 0x06:								// ステップアウト
+				case 0x06:								/* ステップアウト */
 				case 0x07:
 					fdc.s.stat = FDDSTAT_HEADENG;
 					if (fdc.s.motor) {
@@ -593,26 +594,26 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 					}
 					break;
 
-				case 0x08:								// リードデータ
+				case 0x08:								/* リードデータ */
 				case 0x09:
-				case 0x0a:								// ライトデータ
+				case 0x0a:								/* ライトデータ */
 				case 0x0b:
 					fdc.s.stat = type2cmd(&fdc, fdc.s.r);
 					break;
 
-				case 0xc:								// リードアドレス
+				case 0xc:								/* リードアドレス */
 					setbusy(&fdc, 200);
 					fdc.s.stat = crccmd(&fdc);
 					break;
 
-				case 0x0d:								// フォースインタラプト
-					setbusy(&fdc, 0);					// 必要ない？
-//					fdc.s.skip = 0;						// 000330
+				case 0x0d:								/* フォースインタラプト */
+					setbusy(&fdc, 0);					/* 必要ない？ */
+					/* fdc.s.skip = 0; */				/* 000330 */
 					fdc.s.stat = 0;
 					dmac_sendready(FALSE);
 					break;
 
-				case 0x0e:								// リードトラック
+				case 0x0e:								/* リードトラック */
 #if !defined(CONST_DISKIMAGE)
 					setbusy(&fdc, 200);
 					ZeroMemory(fdc.s.buffer, 0x1a00);
@@ -625,7 +626,7 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 #endif
 					break;
 
-				case 0x0f:								// ライトトラック
+				case 0x0f:								/* ライトトラック */
 #if !defined(CONST_DISKIMAGE)
 					setbusy(&fdc, 200);
 					fdc.s.stat = wrtrkstart(&fdc);
@@ -636,17 +637,17 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 			}
 			break;
 
-		case 1:									// トラック
+		case 1:									/* トラック */
 			fdc.s.creg = value;
 			break;
 
-		case 2:									// セクタ
+		case 2:									/* セクタ */
 			fddmtr_waitsec(value);
 			fdc.s.r = value;
 			fdc.s.rreg = value;
 			break;
 
-		case 3:									// データ
+		case 3:									/* データ */
 			fdc.s.data = value;
 #if !defined(CONST_DISKIMAGE)
 			if (fdc.s.motor) {
@@ -668,19 +669,19 @@ void IOOUTCALL fdc_o(UINT port, REG8 value) {
 #endif
 			break;
 
-		case 4:									// ドライブ・サイド
+		case 4:									/* ドライブ・サイド */
 			fdc.s.ctbl[fdc.s.drv] = fdc.s.c;
 			fdc.s.c = fdc.s.ctbl[value & 0x03];
 			fdc.s.motor = (UINT8)(value & 0x80);
 			fdc.s.drv = (UINT8)(value & 0x03);
 			fdc.s.h = (UINT8)((value >> 4) & 1);
-			fdc.s.cmd = 0;							// T&E SORCERIAN
+			fdc.s.cmd = 0;							/* T&E SORCERIAN */
 			fdc.s.ctype = 0;
 			fdc.s.stat = 0;
 
 			fddmtr_drvset();
 			if (!fdc.s.motor) {
-				fdc.s.r = 0;						// SACOM TELENET
+				fdc.s.r = 0;						/* SACOM TELENET */
 				fdc.s.rreg = 0;
 			}
 #if defined(SUPPORT_MOTORRISEUP)
@@ -694,19 +695,19 @@ REG8 IOINPCALL fdc_i(UINT port) {
 
 	REG8	ret;
 
-//	TRACEOUT(("fdc inp %.4x", port));
+	/* TRACEOUT(("fdc inp %.4x", port)); */
 
 	if ((port & (~7)) != 0x0ff8) {
 		return(0xff);
 	}
 	switch(port & 7) {
-		case 0:										// ステータス
+		case 0:										/* ステータス */
 			ret = fdc.s.busy;
 			if (ret) {
 				return(ret);
 			}
 #if 1
-			if (fdc.s.bufdir >= FDCDIR_IN) {		// YsII
+			if (fdc.s.bufdir >= FDCDIR_IN) {		/* YsII */
 				fdc.s.curtime++;
 				if (fdc.s.curtime >= 8) {
 					fdc.s.curtime = 0;
@@ -724,18 +725,18 @@ REG8 IOINPCALL fdc_i(UINT port) {
 				dmac_sendready(FALSE);
 			}
 #endif
-//			TRACEOUT(("ret->%.2x", ret));
+			/* TRACEOUT(("ret->%.2x", ret)); */
 			return(ret);
 
-		case 1:									// トラック
+		case 1:									/* トラック */
 TRACEOUT(("fdc inp %.4x,%.2x", port, fdc.s.creg));
 			return(fdc.s.creg);
 
-		case 2:									// セクタ
+		case 2:									/* セクタ */
 TRACEOUT(("fdc inp %.4x,%.2x", port, fdc.s.rreg));
 			return(fdc.s.rreg);
 
-		case 3:									// データ
+		case 3:									/* データ */
 			if (fdc.s.motor) {
 				if (fdc.s.bufdir == FDCDIR_IN) {
 					fdc.s.curtime = 0;
@@ -744,26 +745,26 @@ TRACEOUT(("fdc inp %.4x,%.2x", port, fdc.s.rreg));
 #else
 					fdc.s.data = fdc.e.buffer[fdc.s.bufpos];
 #endif
-// TRACEOUT(("read %.2x - %.2x [%.4x]", fdc.s.bufpos, fdc.s.data, Z80_PC));
 					if (!fdc.s.busy) {
 						fdc.s.bufpos++;
 						if (fdc.s.bufpos >= fdc.s.bufsize) {
 							fdcenddata(&fdc);
 						}
 					}
+					/* TRACEOUT(("read %.2x - %.2x [%.4x]", fdc.s.bufpos, fdc.s.data, Z80_PC)); */
 				}
 			}
 			return(fdc.s.data);
 
-		case 4:									// FM
-		case 5:									// MFM
+		case 4:									/* FM */
+		case 5:									/* MFM */
 			return(0x00);
 
-		case 6:									// 1.6M
+		case 6:									/* 1.6M */
 			fdc.s.media = DISKTYPE_2HD;
 			break;
 
-		case 7:									// 500K/1M
+		case 7:									/* 500K/1M */
 			fdc.s.media = DISKTYPE_2D;
 			break;
 	}
@@ -771,7 +772,7 @@ TRACEOUT(("fdc inp %.4x,%.2x", port, fdc.s.rreg));
 }
 
 
-// ----
+/* reset */
 
 void fdc_reset(void) {
 

@@ -25,7 +25,7 @@ void timing_reset(void) {
 
 void timing_setrate(UINT32 clock) {
 
-//	timing.msstep = (1 << MSSHIFT) / (clock / 4000);
+	/* timing.msstep = (1 << MSSHIFT) / (clock / 4000) */;
 	timing.msstep = (4000 << MSSHIFT) / clock;
 }
 

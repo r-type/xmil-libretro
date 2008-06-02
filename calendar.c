@@ -38,7 +38,7 @@ static void secinc(_SYSTIME *dt) {
 	if (month < 12) {
 		daylimit = days[month];
 		if ((daylimit == 28) && (!(dt->year & 3))) {
-			daylimit++;						// = 29;
+			daylimit++;						/* = 29 */
 		}
 	}
 	else {
@@ -62,7 +62,7 @@ secinc_exit:
 }
 
 
-// ----
+/* ---- */
 
 void calendar_getdate(UINT8 *bcd) {
 
@@ -100,7 +100,7 @@ void calendar_settime(const UINT8 *bcd) {
 }
 
 
-// ----
+/* ---- */
 
 void neitem_rtc(UINT id) {
 

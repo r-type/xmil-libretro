@@ -113,7 +113,7 @@ const _D88SEC	*sec;
 	trk->fptr = fptr;
 	trk->size = size;
 
-	// セクタ数チェック
+	/* セクタ数チェック */
 	sec = (D88SEC)trk->buf;
 	rem = size;
 	maxsectors = 0;
@@ -184,7 +184,7 @@ const _D88SEC	*sec;
 }
 
 
-// ----
+/* ---- */
 
 static BRESULT fileappend(FILEH fh, UINT32 ptr, UINT size) {
 
@@ -213,8 +213,8 @@ static BRESULT writetrack(FDDFILE fdd, REG8 media, UINT track,
 
 	FILEH	fh;
 	UINT	i;
-	UINT32	curptr;				// fpointer;
-	UINT32	nextptr;			// endpointer;
+	UINT32	curptr;
+	UINT32	nextptr;
 	UINT	cursize;
 	UINT	addsize;
 	UINT32	cur;
@@ -230,13 +230,13 @@ static BRESULT writetrack(FDDFILE fdd, REG8 media, UINT track,
 	}
 	curptr = fdd->inf.d88.ptr[track];
 	if (curptr == 0) {
-		for (i=track; i>0;) {					// 新規トラック
+		for (i=track; i>0;) {				/* 新規トラック */
 			curptr = fdd->inf.d88.ptr[--i];
 			if (curptr) {
 				break;
 			}
 		}
-		if (curptr) {								// ヒットした
+		if (curptr) {						/* ヒットした */
 			curptr = nexttrackptr(fdd, curptr, fdd->inf.d88.fd_size);
 		}
 		else {
@@ -244,7 +244,7 @@ static BRESULT writetrack(FDDFILE fdd, REG8 media, UINT track,
 		}
 		nextptr = curptr;
 	}
-	else {										// トラックデータは既にある
+	else {									/* トラックデータは既にある */
 		nextptr = nexttrackptr(fdd, curptr, fdd->inf.d88.fd_size);
 	}
 	cursize = nextptr - curptr;
@@ -274,7 +274,7 @@ static BRESULT writetrack(FDDFILE fdd, REG8 media, UINT track,
 }
 
 
-// ----
+/* ---- */
 
 static REG8 fddd88_seek(FDDFILE fdd, REG8 media, UINT track) {
 
@@ -360,7 +360,7 @@ static REG8 fddd88_wrtrk(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
 
 	trackflush(&d88trk);
 
-	// データ作る
+	/* データ作る */
 	ZeroMemory(d88trk.buf, sizeof(d88trk.buf));
 	pos = 0;
 	for (i=0; i<sc; i++) {
@@ -417,7 +417,9 @@ const _D88SEC	*sec;
 	ptr[3] = sec->n;
 	ptr[4] = 0;
 	ptr[5] = 0;
-//	fdc.s.rreg = sec->c;								// メルヘンヴェール
+#if 0
+	fdc.s.rreg = sec->c; 							/* メルヘンヴェール */
+#endif	/* 0 */
 	if (sec->stat) {
 		return(FDDSTAT_CRCERR);
 	}
@@ -454,7 +456,7 @@ const _D88SEC	*sec;
 #endif
 
 
-// ----
+/* ---- */
 
 BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname) {
 

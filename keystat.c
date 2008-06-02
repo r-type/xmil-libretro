@@ -5,8 +5,8 @@
 #include	"keystat.tbl"
 
 
-// キーコードがないので PC-98シリーズのキーコードをベースとする
-// … つまり猫のがそのまま使える
+/* キーコードがないので PC-98シリーズのキーコードをベースとする */
+/* … つまり猫のがそのまま使える */
 
 
 	KEYSTAT		keystat;
@@ -60,29 +60,29 @@ UINT keystat_getflag(void) {
 	kc = 0;
 	if (ks & 0x40) {
 		kf = keyflag[keystat.lastkey];
-		ks |= (kf & 0x80);								// function
-		if (ks & 0x04) {								// kana
-			if (!(ks & 0x02)) {							// shift
+		ks |= (kf & 0x80);								/* function */
+		if (ks & 0x04) {								/* kana */
+			if (!(ks & 0x02)) {							/* shift */
 				tbl = 4;
 			}
 			else {
 				tbl = 5;
 			}
 		}
-		else if (ks & 0x01) {							// ctrl
+		else if (ks & 0x01) {							/* ctrl */
 			tbl = 3;
 		}
-		else if (ks & 0x10) {							// grph
+		else if (ks & 0x10) {							/* grph */
 			tbl = 2;
 		}
-		else if (ks & 0x02) {							// shift
+		else if (ks & 0x02) {							/* shift */
 			tbl = 1;
 		}
 		else {
 			tbl = 0;
 		}
 		kc = keytbl[tbl][keystat.lastkey];
-		if (ks & 0x08) {								// caps
+		if (ks & 0x08) {								/* caps */
 			if (((kc >= 'A') && (kc <= 'Z')) ||
 				((kc >= 'a') && (kc <= 'z'))) {
 				kc ^= 0x20;
@@ -103,7 +103,7 @@ REG8 keystat_getjoy(void) {
 }
 
 
-// ----
+/* extension */
 
 void keystat_keydown(REG8 ref) {
 
@@ -179,31 +179,26 @@ void keystat_allrelease(void) {
 	}
 }
 
-
-// ----
-
-// キーコード変更
-
 static REG8 cnvnewcode(REG8 oldcode) {
 
 	switch(oldcode) {
-		case 0x71:				// 通常caps
+		case 0x71:				/* 通常caps */
 			return(0x81);
 
-		case 0x72:				// 通常カナ
+		case 0x72:				/* 通常カナ */
 			return(0x82);
 
-		case 0x79:				// メカニカルロックcaps
+		case 0x79:				/* メカニカルロックcaps */
 			return(0x71);
 
-		case 0x7a:				// メカニカルロックcaps
+		case 0x7a:				/* メカニカルロックcaps */
 			return(0x72);
 
 		case 0x76:
-			return(0x90);		// NKEY_USER + 0
+			return(0x90);		/* NKEY_USER + 0 */
 
 		case 0x77:
-			return(0x91);		// NKEY_USER + 1
+			return(0x91);		/* NKEY_USER + 1 */
 
 		default:
 			return(oldcode);
@@ -224,7 +219,7 @@ void keystat_senddata(REG8 data) {
 }
 
 
-//		0x80 --> 0x01
-//		Ｑ  Ｗ  Ｅ  Ａ  Ｄ  Ｚ  Ｘ  Ｃ
-//		[7] [4] [1] [8] [2] [9] [6] [3]
-//		ESC １  [-] [+] [*] TAB ' ' Ent
+/*		0x80 --> 0x01
+ *		Ｑ  Ｗ  Ｅ  Ａ  Ｄ  Ｚ  Ｘ  Ｃ
+ *		[7] [4] [1] [8] [2] [9] [6] [3]
+ *		ESC １  [-] [+] [*] TAB ' ' Ent */

@@ -91,26 +91,27 @@ static void crtc_dispupdate(void) {
 			updatemask = 0x3ff;
 		}
 	}
-	else {													// Analog mode
+	else {												/* Analog mode */
 		updatemask = 0x3ff;
 		if (!(crtc.s.SCRN_BITS & SCRN_TEXTYx2)) {
 			if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
 				if (crtc.s.width40) {
-					if (crtc.s.SCRN_BITS & SCRN_200LINE) {	// width 40,25,0,2
+					if (crtc.s.SCRN_BITS & SCRN_200LINE) {
+														/* width 40,25,0,2 */
 						dispmode = scrnpage + SCRN64_320x200;
 					}
-					else {									// width 40,25,1,2
+					else {								/* width 40,25,1,2 */
 						dispmode = SCRN64_H320x400;
 					}
 				}
-				else {										// width 80,25,?,2
+				else {									/* width 80,25,?,2 */
 					updatemask = 0x7ff;
 					pal_bank = PAL_HIGHRESO;
 					pal_disp = PAL_HIGHRESO;
 				}
 			}
 			else {
-				if (crtc.s.width40) {						// width 40,25,0,1
+				if (crtc.s.width40) {					/* width 40,25,0,1 */
 					if (crtc.s.EXTPALMODE & 0x10) {
 						if (crtc.s.ZPRY & 0x10) {
 							dispmode = SCRN64_L320x200x2 +
@@ -134,7 +135,7 @@ static void crtc_dispupdate(void) {
 						pal_disp = PAL_4096 + PAL_4096FULL;
 					}
 				}
-				else {										// width 80,25,0,1
+				else {									/* width 80,25,0,1 */
 					updatemask = 0x7ff;
 					dispmode = SCRN_WIDTH80 + SCRN64_L640x200;
 				}
@@ -143,20 +144,21 @@ static void crtc_dispupdate(void) {
 		else {
 			if (crtc.s.SCRN_BITS & SCRN_24KHZ) {
 				if (crtc.s.width40) {
-					if (crtc.s.SCRN_BITS & SCRN_200LINE) {	// width 40,12,0,2
+					if (crtc.s.SCRN_BITS & SCRN_200LINE) {
+														/* width 40,12,0,2 */
 						dispmode = scrnpage + SCRN64_320x100;
 					}
-					else {									// width 40,12,1,2
+					else {								/* width 40,12,1,2 */
 						dispmode = SCRN64_H320x200;
 					}
 				}
-				else {										// width 80,12,?,2
+				else {									/* width 80,12,?,2 */
 					pal_bank = PAL_HIGHRESO;
 					pal_disp = PAL_HIGHRESO;
 				}
 			}
 			else {
-				if (crtc.s.width40) {						// width 40,12,0,1
+				if (crtc.s.width40) {					/* width 40,12,0,1 */
 					if (crtc.s.EXTPALMODE & 0x10) {
 						if (crtc.s.ZPRY & 0x10) {
 							dispmode = SCRN64_320x100x2 +
@@ -180,7 +182,7 @@ static void crtc_dispupdate(void) {
 						pal_disp = PAL_4096 + PAL_4096FULL;
 					}
 				}
-				else {										// width 80,12,0,1
+				else {									/* width 80,12,0,1 */
 					dispmode = SCRN_WIDTH80 + SCRN64_L640x100;
 				}
 			}
@@ -238,7 +240,7 @@ static void crtc_timingupdate(void) {
 	UINT	yl;
 	SINT32	vsyncstart;
 
-	// とりあえず…ね
+	/* とりあえず…ね */
 	crtc.e.pos = crtc.s.reg[CRTCREG_POSL]
 									+ ((crtc.s.reg[CRTCREG_POSH] & 7) << 8);
 
@@ -247,7 +249,7 @@ static void crtc_timingupdate(void) {
 	fontclock = (crtc.s.reg[CRTCREG_CHRCY] & 0x1f) + 1;
 	fontclock = (fontclock * crtc.e.rasterclock8) >> 8;
 
-	// YsIIIが yl==0で disp信号見る…なんで？
+	/* YsIIIが yl==0で disp信号見る…なんで？ */
 	yl = (crtc.s.reg[CRTCREG_VDISP] & 0x7f);
 	crtc.e.yl = yl;
 	iocore.e.dispclock = fontclock * max(yl, 1);
@@ -264,7 +266,7 @@ static void crtc_timingupdate(void) {
 }
 
 
-// ---- CRTC
+/* CRTC */
 
 void IOOUTCALL crtc_o(UINT port, REG8 value) {
 
@@ -286,7 +288,7 @@ void IOOUTCALL crtc_o(UINT port, REG8 value) {
 }
 
 
-// ---- スクリーンモード
+/* スクリーンモード */
 
 void IOOUTCALL scrn_o(UINT port, REG8 value) {
 
@@ -298,7 +300,6 @@ void IOOUTCALL scrn_o(UINT port, REG8 value) {
 		crtc_bankupdate();
 	}
 	if (modify & SCRN_DISPCHANGE) {
-//		pal_reset();					// なんで？
 		crtc.e.scrnallflash = 1;
 		crtc_dispupdate();
 		crtc_clkupdate();
@@ -315,7 +316,7 @@ REG8 IOINPCALL scrn_i(UINT port) {
 }
 
 
-// ---- プライオリティ
+/* プライオリティ */
 
 void IOOUTCALL ply_o(UINT port, REG8 value) {
 
@@ -336,7 +337,7 @@ void IOOUTCALL ply_o(UINT port, REG8 value) {
 }
 
 
-// ---- パレット
+/* パレット */
 
 void IOOUTCALL palette_o(UINT port, REG8 value) {
 
@@ -371,7 +372,7 @@ void IOOUTCALL palette_o(UINT port, REG8 value) {
 			return;
 		}
 		sft = (port >> (8 - 2)) & (3 << 2);
-		if (crtc.e.pal_bank & PAL_4096) {				// use 4096palettes
+		if (crtc.e.pal_bank & PAL_4096) {				/* use 4096palettes */
 			num = ((port & 0xff) << 4) + (crtc.s.lastpal >> 4);
 			if (!(crtc.e.pal_bank & PAL_4096FULL)) {
 				num &= 0xccc;
@@ -430,7 +431,7 @@ REG8 IOINPCALL blackctrl_i(UINT port) {
 }
 
 
-// ---- turboZ
+/* turboZ */
 
 #if defined(SUPPORT_TURBOZ)
 REG8 IOINPCALL ply_i(UINT port) {
@@ -446,7 +447,7 @@ REG8 IOINPCALL palette_i(UINT port) {
 	REG8	sft;
 
 	if ((crtc.s.EXTPALMODE & 0x80) && ((crtc.s.EXTGRPHPAL & 0x88) == 0x88)) {
-		if (crtc.e.pal_bank & PAL_4096) {				// use 4096palettes
+		if (crtc.e.pal_bank & PAL_4096) {				/* use 4096palettes */
 			num = ((port & 0xff) << 4) + (crtc.s.lastpal >> 4);
 			if (!(crtc.e.pal_bank & PAL_4096FULL)) {
 				num &= 0xccc;
@@ -541,7 +542,7 @@ REG8 IOINPCALL exttextdisp_i(UINT port) {
 #endif
 
 
-// ----
+/* extension */
 
 void crtc_update(void) {
 
@@ -560,7 +561,7 @@ void crtc_setwidth(REG8 width40) {
 }
 
 
-// ----
+/* init/reset */
 
 #if defined(SUPPORT_TURBOZ)
 static void resetpal(void) {
@@ -594,11 +595,13 @@ void crtc_reset(void) {
 		resetpal();
 	}
 #endif
-//	IPLが勝手に切り替える筈である
-//	if ((pccore.ROM_TYPE >= 2) && (!(pccore.DIP_SW & 1))) {
-//		crtc.s.SCRN_BITS = SCRN_200LINE;
-//		crtc.s.reg[CRTCREG_CHRCY] = 15;
-//	}
+#if 0
+	/* IPLが勝手に切り替える筈である */
+	if ((pccore.ROM_TYPE >= 2) && (!(pccore.DIP_SW & 1))) {
+		crtc.s.SCRN_BITS = SCRN_200LINE;
+		crtc.s.reg[CRTCREG_CHRCY] = 15;
+	}
+#endif	/* 0 */
 
 	pal_reset();
 	crtc.e.palandply = 1;

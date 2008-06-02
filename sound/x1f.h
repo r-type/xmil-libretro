@@ -3,7 +3,7 @@
 extern "C" {
 #endif
 
-#if !defined(SUPPORT_X1F)		// コールすら面倒だ！
+#if !defined(SUPPORT_X1F)		/* コールすら面倒だ！ */
 
 #define	x1f_open(f)			(FAILURE)
 #define	x1f_close()

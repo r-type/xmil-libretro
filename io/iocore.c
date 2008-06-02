@@ -1,5 +1,5 @@
 
-// #define	IOCOUNTER
+/* #define IOCOUNTER */
 
 #include	"compiler.h"
 #include	"pccore.h"
@@ -7,7 +7,7 @@
 
 
 	IOCORE		iocore;
-	CGROM		cgrom;		//	x1k;
+	CGROM		cgrom;
 	CMT			cmt;
 	CRTC		crtc;
 	CTC			ctc;
@@ -20,7 +20,7 @@
 	SUBCPU		subcpu;
 
 
-// ----
+/* ---- */
 
 static void IOOUTCALL dummy_out(UINT port, REG8 dat) {
 
@@ -35,7 +35,7 @@ static REG8 IOINPCALL dummy_inp(UINT port) {
 }
 
 
-// ----
+/* ---- */
 
 static void IOOUTCALL port1fxx_o(UINT port, REG8 dat) {
 
@@ -137,7 +137,7 @@ static REG8 IOINPCALL port1fxx_i(UINT port) {
 }
 
 
-// ----
+/* ---- */
 
 static const IOINP definp[0x20] = {
 			dummy_inp,			dummy_inp,
@@ -192,7 +192,7 @@ static const INITFN initfn[] = {
 			vramio_reset};
 
 
-// ----
+/* ---- */
 
 void iocore_reset(void) {
 
@@ -239,7 +239,7 @@ void iocore_reset(void) {
 }
 
 
-// ----
+/* ---- */
 
 #if defined(TRACE) && defined(IOCOUNTER)
 extern	UINT	ocounter[0x2008];

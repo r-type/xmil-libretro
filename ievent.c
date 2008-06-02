@@ -6,7 +6,7 @@
 #include	"ievent.h"
 
 
-// ここでデイジーチェイン
+/* ここでデイジーチェイン */
 
 
 typedef BRESULT (*IEVENTFN)(UINT id);
@@ -18,15 +18,15 @@ static BRESULT dummy(UINT id) {
 }
 
 static const IEVENTFN ieventfn[IEVENT_MAX] = {
-				dummy,			// IEVENT_SIO
-				ieitem_dmac,	// IEVENT_DMA
-				ieitem_ctc,		// IEVENT_CTC0
-				ieitem_ctc,		// IEVENT_CTC1
-				ieitem_ctc,		// IEVENT_CTC2
-				ieitem_scpu};	// IEVENT_SUBCPU
+				dummy,			/* IEVENT_SIO    */
+				ieitem_dmac,	/* IEVENT_DMA    */
+				ieitem_ctc,		/* IEVENT_CTC0   */
+				ieitem_ctc,		/* IEVENT_CTC1   */
+				ieitem_ctc,		/* IEVENT_CTC2   */
+				ieitem_scpu};	/* IEVENT_SUBCPU */
 
 
-// ----
+/* ---- */
 
 void ievent_progress(void) {
 
@@ -43,7 +43,7 @@ void ievent_progress(void) {
 		if (CPU_REQIRQ & bit) {
 			CPU_REQIRQ ^= bit;
 			if (ieventfn[i](i)) {
-				if (i != IEVENT_SUBCPU) {		// サブCPUは別処理
+				if (i != IEVENT_SUBCPU) {		/* サブCPUは別処理 */
 					CPU_IRQ |= bit;
 				}
 				return;
@@ -75,8 +75,6 @@ void ievent_eoi(void) {
 
 	UINT	i;
 	UINT	bit;
-
-//	CPU_IRQ = CPU_IRQ & (CPU_IRQ - 1);
 
 	if (CPU_IRQ == 0) {
 		return;

@@ -9,7 +9,7 @@
 #include	"pccore.h"
 #include	"sound.h"
 #include	"sndcsec.h"
-// #include	"getsnd.h"
+/* #include	"getsnd.h" */
 
 
 	SOUNDCFG	soundcfg;
@@ -67,7 +67,7 @@ static void streamprepare(UINT samples) {
 
 
 #if defined(SUPPORT_WAVEREC)
-// ---- wave rec
+/* wave rec */
 
 BRESULT sound_recstart(const OEMCHAR *filename) {
 
@@ -126,7 +126,7 @@ static void streamfilewrite(UINT samples) {
 			else if (samp < -32768) {
 				samp = -32768;
 			}
-			// little endianなので satuation_s16は使えない
+			/* little endianなので satuation_s16は使えない */
 			buf[i*2+0] = (UINT8)samp;
 			buf[i*2+1] = (UINT8)(samp >> 8);
 		}
@@ -166,7 +166,7 @@ static void filltailsample(UINT count) {
 #endif
 
 
-// ----
+/* ---- */
 
 BRESULT sound_create(UINT rate, UINT ms) {
 
@@ -240,11 +240,11 @@ void sound_changeclock(void) {
 		return;
 	}
 
-	// とりあえず 25で割り切れる。
+	/* とりあえず 25で割り切れる。 */
 	clock = pccore.realclock / 25;
 	hz = soundcfg.rate / 25;
 
-	// で、クロック数に合せて調整。(64bit演算しろよな的)
+	/* で、クロック数に合せて調整。(64bit演算しろよな的) */
 	hzmax = (1 << (32 - 8)) / (clock >> 8);
 	while(hzmax < hz) {
 		clock = (clock + 1) >> 1;
@@ -270,7 +270,7 @@ void sound_streamregist(void *hdl, SOUNDCB cbfn) {
 }
 
 
-// ----
+/* ---- */
 
 void sound_sync(void) {
 
@@ -313,7 +313,7 @@ const SINT32 *sound_pcmlock(void) {
 const SINT32 *ret;
 
 	if (locks) {
-//		TRACEOUT(("sound pcm lock: already locked"));
+		/* TRACEOUT(("sound pcm lock: already locked")); */
 		return(NULL);
 	}
 	locks++;
@@ -351,7 +351,7 @@ void sound_pcmunlock(const SINT32 *hdl) {
 		}
 		sndstream.ptr = sndstream.buffer + (leng * 2);
 		sndstream.remain = sndstream.samples + sndstream.reserve - leng;
-//		sndstream.remain += sndstream.samples;
+		/* sndstream.remain += sndstream.samples; */
 		SNDCSEC_LEAVE;
 		locks--;
 	}

@@ -16,7 +16,7 @@ typedef struct {
 } JISPAIR;
 
 static const UINT8 deltable[] = {
-		//     del         del         del         del         del
+		/*     del         del         del         del         del */
 			0x0f, 0x5f, 0,
 			0x01, 0x10, 0x1a, 0x21, 0x3b, 0x41, 0x5b, 0x5f, 0,
 			0x54, 0x5f, 0,

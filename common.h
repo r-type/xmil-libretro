@@ -44,7 +44,7 @@ enum {
 #endif
 
 
-// ---- Optimize Macros
+/* Optimize Macros */
 
 #ifndef REG8
 #define	REG8		UINT8

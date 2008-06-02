@@ -15,7 +15,7 @@
 
 #elif defined(X11) || defined(SLZAURUS)
 
-	pthread_mutex_t		sndcsec;		// = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t		sndcsec;		/* = PTHREAD_MUTEX_INITIALIZER; */
 
 #endif
 

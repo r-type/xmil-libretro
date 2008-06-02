@@ -1,7 +1,7 @@
 
 typedef struct {
 	UINT8	cmd;
-//	UINT8	stop;
+	/* UINT8	stop; */
 } CMT;
 
 

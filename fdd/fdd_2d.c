@@ -97,8 +97,8 @@ static REG8 fdd2d_crc(FDDFILE fdd, REG8 media, UINT track, UINT num,
 	ptr[1] = (UINT8)(track & 1);
 	ptr[2] = (UINT8)(num + 1);
 	ptr[3] = fdd->inf.xdf.n;
-	ptr[4] = 0;										// CRC(Lo)
-	ptr[5] = 0;										// CRC(Hi)
+	ptr[4] = 0;										/* CRC(Lo) */
+	ptr[5] = 0;										/* CRC(Hi) */
 	return(0x00);
 }
 
@@ -122,7 +122,7 @@ static UINT32 fdd2d_sec(FDDFILE fdd, REG8 media, UINT track, REG8 sc) {
 #endif
 
 
-// ----
+/* ---- */
 
 BRESULT fdd2d_set(FDDFILE fdd, const OEMCHAR *fname) {
 

@@ -61,21 +61,21 @@ void SOUNDCALL psggen_getpcm(PSGGEN psg, SINT32 *pcm, UINT count) {
 				if (vol) {
 					samp = 0;
 					switch(mixer & 9) {
-						case 0:							// no mix
+						case 0:							/* no mix */
 							if (tone->puchi) {
 								tone->puchi--;
 								samp += vol << PSGADDEDBIT;
 							}
 							break;
 
-						case 1:							// tone only
+						case 1:							/* tone only */
 							for (i=0; i<(1 << PSGADDEDBIT); i++) {
 								tone->count += tone->freq;
 								samp += vol * ((tone->count>=0)?1:-1);
 							}
 							break;
 
-						case 8:							// noise only
+						case 8:							/* noise only */
 							noise = noisetbl;
 							for (i=0; i<(1 << PSGADDEDBIT); i++) {
 								samp += vol * ((noise & 1)?1:-1);

@@ -34,7 +34,7 @@ void cmndraw_setpat(const CMNVRAM *vram, const UINT8 *src,
 void cmddraw_text8(CMNVRAM *vram, int x, int y, const char *str, CMNPAL fg);
 
 
-// ----
+/* bitmap */
 
 enum {
 	CMNBMP_LEFT		= 0x00,

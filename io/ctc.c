@@ -1,6 +1,6 @@
 
-// #define	CTCCOUNTER
-#define	CTCFAST
+/* #define CTCCOUNTER */
+#define CTCFAST
 
 #include	"compiler.h"
 #include	"z80core.h"
@@ -56,7 +56,7 @@ static REG8 ctcwork(CTCCH *ch) {
 
 	baseclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
 	stepclock = baseclock - ch->s.baseclock;
-#if defined(FIX_Z80A)			// 2x2MHz
+#if defined(FIX_Z80A)			/* 2x2MHz */
 	ch->s.baseclock += stepclock & (~1);
 	stepclock = stepclock >> 1;
 #else
@@ -67,7 +67,7 @@ static REG8 ctcwork(CTCCH *ch) {
 	intr = 0;
 	pulse3 = 0;
 
-	// 0
+	/* 0 */
 	if (!(ch->s.cmd[0] & 0x02)) {
 		pulse = stepclock;
 		count = ch->s.count[0];
@@ -91,7 +91,7 @@ static REG8 ctcwork(CTCCH *ch) {
 		ch->s.count[0] = count;
 	}
 
-	// 3
+	/* 3 */
 	if (!(ch->s.cmd[3] & 0x02)) {
 		if (!(ch->s.cmd[3] & 0x40)) {
 			pulse3 = stepclock;
@@ -108,14 +108,16 @@ static REG8 ctcwork(CTCCH *ch) {
 			count = ch->s.countmax[3] - ((0 - count) % ch->s.countmax[3]);
 #endif
 			intr |= (ch->s.cmd[3] & 0x80) >> (7 - 3);
-//			TRACEOUT(("<- ch.3 %.8x [%.2x:%.2x %.2x:%.2x]", baseclock,
-//								ch->s.basecnt[0], ch->s.cmd[0],
-//								ch->s.basecnt[3], ch->s.cmd[3]));
+#if 0
+			TRACEOUT(("<- ch.3 %.8x [%.2x:%.2x %.2x:%.2x]", baseclock,
+								ch->s.basecnt[0], ch->s.cmd[0],
+								ch->s.basecnt[3], ch->s.cmd[3]));
+#endif
 		}
 		ch->s.count[3] = count;
 	}
 
-	// 1
+	/* 1 */
 	if (!(ch->s.cmd[1] & 0x02)) {
 		pulse = stepclock;
 		count = ch->s.count[1];
@@ -127,7 +129,7 @@ static REG8 ctcwork(CTCCH *ch) {
 		ch->s.count[1] = count;
 	}
 
-	// 2
+	/* 2 */
 	if (!(ch->s.cmd[2] & 0x02)) {
 		pulse = stepclock;
 		count = ch->s.count[2];
@@ -196,8 +198,11 @@ BRESULT ieitem_ctc(UINT id) {
 	intr |= ch->s.intr;
 	r = FALSE;
 	if (intr) {
+#if 1
 		for (i=0, bit=1; i<4; i++, bit<<=1)
-//		for (i=4, bit=8; i--; bit>>=1)
+#else	/* 1 */
+		for (i=4, bit=8; i--; bit>>=1)
+#endif	/* 1 */
 		{
 			if (intr & bit) {
 				if (!(ch->s.cmd[i] & 0x80)) {
@@ -207,7 +212,7 @@ BRESULT ieitem_ctc(UINT id) {
 					r = TRUE;
 					intr ^= bit;
 					ch->s.irq = (UINT8)i;
-//	TRACEOUT(("ctc int %d %d [%.2x]", ch->s.num, i, ch->s.cmd[i]));
+					/* TRACEOUT(("ctc int %d %d [%.2x]", ch->s.num, i, ch->s.cmd[i])); */
 					Z80_INTERRUPT((REG8)(ch->s.vector + (i << 1)));
 				}
 			}
@@ -232,8 +237,8 @@ void ieeoi_ctc(UINT id) {
 	ch = ctc.ch + (id - IEVENT_CTC0);
 	intr = ctcwork(ch) | ch->s.intr;
 	curirq = ch->s.irq;
-	if (intr & (1 << curirq)) {			// 割り込み中に割り込んだ…
-		// カウンタが０でなければ割り込みを消す
+	if (intr & (1 << curirq)) {			/* 割り込み中に割り込んだ… */
+		/* カウンタが０でなければ割り込みを消す */
 		if ((ch->s.countmax[curirq] - ch->s.count[curirq])
 													>= ch->s.range[curirq]) {
 			intr ^= (1 << curirq);
@@ -249,7 +254,7 @@ void ieeoi_ctc(UINT id) {
 }
 
 
-// ----
+/* ---- */
 
 static void ctcch_o(CTCCH *ch, UINT port, REG8 value) {
 
@@ -282,7 +287,7 @@ static void ctcch_o(CTCCH *ch, UINT port, REG8 value) {
 		ch->s.cmd[port] = value;
 		ctcnextevent(ch);
 	}
-	else if (!port) {												// ver0.25
+	else if (!port) {												/* ver0.25 */
 		ch->s.vector = (UINT8)(value & 0xf8);
 	}
 }
@@ -300,7 +305,7 @@ static REG8 ctcch_i(CTCCH *ch, UINT port) {
 }
 
 
-// ----
+/* ---- */
 
 static CTCCH *getctcch(UINT port) {
 
@@ -321,7 +326,7 @@ void IOOUTCALL ctc_o(UINT port, REG8 value) {
 
 	CTCCH	*ch;
 
-//	TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC));
+	/* TRACEOUT(("ctc - %.4x %.2x [%.4x]", port, value, Z80_PC)); */
 	ch = getctcch(port);
 	if (ch != NULL) {
 		ctcch_o(ch, port, value);
@@ -342,7 +347,7 @@ REG8 IOINPCALL ctc_i(UINT port) {
 }
 
 
-// ----
+/* ---- */
 
 void ctc_reset(void) {
 

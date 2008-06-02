@@ -37,7 +37,7 @@ const UINT8	*p;
 	for (i=from; i<to; i++) {
 		h = i << 8;
 		for (l=0x21; l<0x7f; l++) {
-			// 漢字のポインタを求める
+			/* 漢字のポインタを求める */
 			sjis = jis2sjis(h + l);
 			if ((sjis >= 0x8140) && (sjis < 0x84c0)) {
 				p = src + 0x00000 + ((sjis - 0x8140) << 5);
@@ -51,9 +51,9 @@ const UINT8	*p;
 			else {
 				p = NULL;
 			}
-			if (p) {							// 規格内コードならば
+			if (p) {							/* 規格内コードならば */
 				q = font_adrsx1t(h + l);
-				// コピーする
+				/* コピーする */
 				if (q) {
 					for (j=0; j<16; j++) {
 						q[0] = p[0];

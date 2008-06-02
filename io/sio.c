@@ -5,7 +5,7 @@
 #include	"iocore.h"
 
 
-// sw ... 割り込み 1=かける 0=かけない
+/* sw ... 割り込み 1=かける 0=かけない */
 static void fifo_w(SIOFIFO *sf, REG8 data, REG8 sw) {
 
 	UINT	off;
@@ -120,30 +120,30 @@ static void mouse_read(SIOCH *ch) {
 		dat2 = (UINT8)my;
 	}
 	if ((ch->wr[1] & 0x18) == 0x08) {
-		fifo_w(&ch->RxD, dat0, 1);		// 最初の１バイトだけ受信割り込み
+		fifo_w(&ch->RxD, dat0, 1);		/* 最初の１バイトだけ受信割り込み */
 		fifo_w(&ch->RxD, dat1, 0);
 		fifo_w(&ch->RxD, dat2, 0);
 	}
 	else {
-		fifo_w(&ch->RxD, dat0, 1);		// １バイト毎に割り込み
+		fifo_w(&ch->RxD, dat0, 1);		/* １バイト毎に割り込み */
 		fifo_w(&ch->RxD, dat1, 1);
 		fifo_w(&ch->RxD, dat2, 1);
 	}
 }
 
 
-// ----
+/* ---- */
 
 void IOOUTCALL sio_o(UINT port, REG8 value) {
 
 	switch(port) {
-		case 0x1f90:				// CH-A ﾃﾞｰﾀ
+		case 0x1f90:				/* CH-A ﾃﾞｰﾀ */
 			if (sio.ch[SIOCH_A].wr[3] & 0x08) {
 				fifo_w(&sio.ch[SIOCH_A].TxD, value, 0);
 			}
 			break;
 
-		case 0x1f91:				// CH-A ｺﾝﾄﾛｰﾙ
+		case 0x1f91:				/* CH-A ｺﾝﾄﾛｰﾙ */
 			sio.ch[SIOCH_A].wr[sio.ch[SIOCH_A].num] = value;
 			if (sio.ch[SIOCH_A].num) {
 				sio.ch[SIOCH_A].num = 0;
@@ -153,16 +153,16 @@ void IOOUTCALL sio_o(UINT port, REG8 value) {
 			}
 			break;
 #if 0
-		case 0x1f92:				// CH-B ﾃﾞｰﾀ   (Mouse)
+		case 0x1f92:				/* CH-B ﾃﾞｰﾀ   (Mouse) */
 			if (CH_B.wr[3] & 0x08) {
 				fifo_w(&CH_B.T_D, value, 0);
 			}
 			break;
 #endif
-		case 0x1f93:				// CH-B ｺﾝﾄﾛｰﾙ (Mouse)
+		case 0x1f93:				/* CH-B ｺﾝﾄﾛｰﾙ (Mouse) */
 			if (sio.ch[SIOCH_B].num == 5) {
-				// RTS(WR5:BIT1)を０から１へ変化させると
-				// マウスから３バイトのデータが送られてくる
+				/* RTS(WR5:BIT1)を０から１へ変化させると */
+				/* マウスから３バイトのデータが送られてくる */
 				if (!(sio.ch[SIOCH_B].wr[5] & 2) && (value & 2)) {
 					mouse_read(sio.ch + SIOCH_B);
 				}
@@ -184,13 +184,13 @@ REG8 IOINPCALL sio_i(UINT port) {
 
 	ret = 0;
 	switch(port) {
-		case 0x1f90:				// CH-A ﾃﾞｰﾀ
+		case 0x1f90:				/* CH-A ﾃﾞｰﾀ */
 			if (sio.ch[SIOCH_A].RxD.cnt) {
 				return(fifo_r(&sio.ch[SIOCH_A].RxD));
 			}
 			break;
 
-		case 0x1f91:				// CH-A ｺﾝﾄﾛｰﾙ
+		case 0x1f91:				/* CH-A ｺﾝﾄﾛｰﾙ */
 			if (sio.ch[SIOCH_A].num == 0) {
 				if (sio.ch[SIOCH_A].RxD.cnt != 0) {
 					ret |= 1;
@@ -201,14 +201,14 @@ REG8 IOINPCALL sio_i(UINT port) {
 			}
 			break;
 
-		case 0x1f92:				// CH-B ﾃﾞｰﾀ   (Mouse)
+		case 0x1f92:				/* CH-B ﾃﾞｰﾀ   (Mouse) */
 			if (sio.ch[SIOCH_B].RxD.cnt) {
 				return(fifo_r(&sio.ch[SIOCH_B].RxD));
 			}
 			break;
 
-		case 0x1f93:				// CH-B ｺﾝﾄﾛｰﾙ (Mouse)
-			if (sio.ch[SIOCH_B].num == 0) {		// ??
+		case 0x1f93:				/* CH-B ｺﾝﾄﾛｰﾙ (Mouse) */
+			if (sio.ch[SIOCH_B].num == 0) {		/* ?? */
 				if (sio.ch[SIOCH_B].RxD.cnt != 0) {
 					ret |= 1;
 				}
@@ -222,7 +222,7 @@ REG8 IOINPCALL sio_i(UINT port) {
 }
 
 
-// ----
+/* reset */
 
 void sio_reset(void) {
 

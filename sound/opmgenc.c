@@ -12,7 +12,7 @@
 #define	OPM_ARRATE		 399128L
 #define	OPM_DRRATE		5514396L
 
-#define	EG_STEP	(96.0 / EVC_ENT)					// dB step
+#define	EG_STEP	(96.0 / EVC_ENT)					/* dB step */
 #define	SC(db)	(SINT32)((db) * ((3.0 / EG_STEP) * (1 << ENV_BITS))) + EC_DECAY
 #define	KF(sn)	((sn) << KF_BITS)
 #define	D2(value)		(SINT32)(((double)(6 << KF_BITS)*log((double)value) / \
@@ -61,7 +61,7 @@ void opmgen_initialize(UINT rate) {
 	UINT	rate1;
 	UINT	rate2;
 
-	rate1 = rate;	// 44100
+	rate1 = rate;	/* 44100 */
 	rate2 = 62500;
 	while((rate1 * 2) < rate2) {
 		rate2 >>= 1;
@@ -100,7 +100,7 @@ void opmgen_initialize(UINT rate) {
 	}
 	for (i=4; i<64; i++) {
 		freq = (double)(EVC_ENT << ENV_BITS) * FREQBASE4096;
-		if (i < 8) {							// –Y‚ê‚Ä‚Ü‚·B
+		if (i < 8) {							/* –Y‚ê‚Ä‚Ü‚·B */
 			freq *= 1.0 + (i & 2) * 0.25;
 		}
 		else if (i < 60) {
@@ -129,7 +129,7 @@ void opmgen_setvol(UINT vol) {
 }
 
 
-// ----
+/* ---- */
 
 static void keyon(OPMCH *ch, REG8 value) {
 
@@ -142,7 +142,7 @@ static void keyon(OPMCH *ch, REG8 value) {
 	slot = ch->slot;
 	bit = 0x08;
 	for (i=0; i<4; i++) {
-		if (value & bit) {							// keyon
+		if (value & bit) {							/* keyon */
 			if (slot->env_mode <= EM_RELEASE) {
 				slot->freq_cnt = 0;
 				if (i == OPMSLOT1) {
@@ -154,7 +154,7 @@ static void keyon(OPMCH *ch, REG8 value) {
 				slot->env_end = EC_DECAY;
 			}
 		}
-		else {										// keyoff
+		else {										/* keyoff */
 			if (slot->env_mode > EM_RELEASE) {
 				slot->env_mode = EM_RELEASE;
 				if (!(slot->env_cnt & EC_DECAY)) {
@@ -351,7 +351,7 @@ static void channelupdate(OPMCH *ch) {
 }
 
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------- */
 
 void opmgen_reset(void) {
 
@@ -398,11 +398,11 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 	switch(reg & 0xe0) {
 		case 0x00:
 			switch(reg) {
-				case 0x08:				// key on/off
+				case 0x08:				/* key on/off */
 					keyon(opmch + (value & 7), value);
 					break;
 
-				case 0x14:				// mode
+				case 0x14:				/* mode */
 					opmgen.mode = value;
 					if ((value & 0x81) == 0x81) {
 						opmgen.playing++;
@@ -428,18 +428,18 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 
 		case 0x20:
 			switch(reg & 0x18) {
-				case 0x00: 			// pan feedback connection
+				case 0x00: 			/* pan feedback connection */
 					set_algorithm(ch, value);
 					break;
 
-				case 0x08:			// keycode
+				case 0x08:			/* keycode */
 					ch->kcode = (UINT8)((value >> 2) & 0x1f);
 					ch->keynote = (((value >> 4) & 7) * (12 << KF_BITS)) +
 									halftunetable[value & 0x0f] + ch->keyfunc;
 					channelupdate(ch);
 					break;
 
-				case 0x10:			// keyfunction
+				case 0x10:			/* keyfunction */
 					ch->keyfunc = (UINT8)(value >> (8 - KF_BITS));
 					ch->keynote &= (((UINT32)-1) << KF_BITS);
 					ch->keynote += ch->keyfunc;
@@ -448,30 +448,30 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 			}
 			break;
 
-		case 0x40:					// DT1 MUL
+		case 0x40:					/* DT1 MUL */
 			set_dt1_mul(slot, value);
 			channelupdate(ch);
 			break;
 
-		case 0x60:					// TL
+		case 0x60:					/* TL */
 			set_tl(slot, value);
 			break;
 
-		case 0x80:					// KS AR
+		case 0x80:					/* KS AR */
 			set_ks_ar(slot, value);
 			channelupdate(ch);
 			break;
 
-		case 0xa0:					// D1R
+		case 0xa0:					/* D1R */
 			set_d1r(slot, value);
 			break;
 
-		case 0xc0:					// DT2 D2R
+		case 0xc0:					/* DT2 D2R */
 			set_dt2_d2r(slot, value);
 			channelupdate(ch);
 			break;
 
-		case 0xe0:					// D1L RR
+		case 0xe0:					/* D1L RR */
 			set_d1l_rr(slot, value);
 			break;
 	}

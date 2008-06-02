@@ -9,9 +9,10 @@
 #include	"calendar.h"
 
 
-// 							     e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef
-//static const UINT8 cmdtbl[] = { 0, 1, 0, 0, 1, 0, 1, 0, 0, 3, 0, 3, 0};
-//static const UINT8 dattbl[] = { 3, 0, 0, 2, 0, 1, 0, 1, 1, 0, 3, 0, 3};
+/*     e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef
+ * cmd: 0, 1, 0, 0, 1, 0, 1, 0, 0, 3, 0, 3, 0
+ * dat: 3, 0, 0, 2, 0, 1, 0, 1, 1, 0, 3, 0, 3
+ */
 
 typedef struct {
 	UINT8	pos;
@@ -24,48 +25,48 @@ enum {
 };
 
 static const SCPUTBL scputbl[0x20] = {
-		{offsetof(SUBCPU, s.timer[0]),	6},					// d0: timer0 set
-		{offsetof(SUBCPU, s.timer[1]),	6},					// d1: timer1 set
-		{offsetof(SUBCPU, s.timer[2]),	6},					// d2: timer2 set
-		{offsetof(SUBCPU, s.timer[3]),	6},					// d3: timer3 set
-		{offsetof(SUBCPU, s.timer[4]),	6},					// d4: timer4 set
-		{offsetof(SUBCPU, s.timer[5]),	6},					// d5: timer5 set
-		{offsetof(SUBCPU, s.timer[6]),	6},					// d6: timer6 set
-		{offsetof(SUBCPU, s.timer[7]),	6},					// d7: timer7 set
-		{offsetof(SUBCPU, s.timer[0]),	6 + SCPU_INPUT},	// d8: timer0 get
-		{offsetof(SUBCPU, s.timer[1]),	6 + SCPU_INPUT},	// d9: timer1 get
-		{offsetof(SUBCPU, s.timer[2]),	6 + SCPU_INPUT},	// da: timer2 get
-		{offsetof(SUBCPU, s.timer[3]),	6 + SCPU_INPUT},	// db: timer3 get
-		{offsetof(SUBCPU, s.timer[4]),	6 + SCPU_INPUT},	// dc: timer4 get
-		{offsetof(SUBCPU, s.timer[5]),	6 + SCPU_INPUT},	// dd: timer5 get
-		{offsetof(SUBCPU, s.timer[6]),	6 + SCPU_INPUT},	// de: timer6 get
-		{offsetof(SUBCPU, s.timer[7]),	6 + SCPU_INPUT},	// df: timer7 get
-		{offsetof(SUBCPU, s.zero),		0},					// e0:
-		{offsetof(SUBCPU, s.zero),		0},					// e1:
-		{offsetof(SUBCPU, s.zero),		0},					// e2:
-		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT},	// e3: game keys
-		{offsetof(SUBCPU, s.vect),		1},					// e4: intr vector
-		{offsetof(SUBCPU, s.zero),		0},					// e5:
-		{offsetof(SUBCPU, s.work),		2 + SCPU_INPUT},	// e6: game keys
-		{offsetof(SUBCPU, s.tvctrl),	1},					// e7: set TV ctrl
-		{offsetof(SUBCPU, s.tvctrl),	1 + SCPU_INPUT},	// e8: get TV ctrl
-		{offsetof(SUBCPU, s.work),		1},					// e9: cmt ctrl
-		{offsetof(SUBCPU, s.work),		1 + SCPU_INPUT},	// ea: cmtctrlstat
-		{offsetof(SUBCPU, s.work),		1 + SCPU_INPUT},	// eb: cmttypestat
-		{offsetof(SUBCPU, s.work),		3},					// ec: date set
-		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT},	// ed: date set
-		{offsetof(SUBCPU, s.work),		3},					// ee: time set
-		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT}};	// ef: time set
+		{offsetof(SUBCPU, s.timer[0]),	6},					/* d0: timer0 set  */
+		{offsetof(SUBCPU, s.timer[1]),	6},					/* d1: timer1 set  */
+		{offsetof(SUBCPU, s.timer[2]),	6},					/* d2: timer2 set  */
+		{offsetof(SUBCPU, s.timer[3]),	6},					/* d3: timer3 set  */
+		{offsetof(SUBCPU, s.timer[4]),	6},					/* d4: timer4 set  */
+		{offsetof(SUBCPU, s.timer[5]),	6},					/* d5: timer5 set  */
+		{offsetof(SUBCPU, s.timer[6]),	6},					/* d6: timer6 set  */
+		{offsetof(SUBCPU, s.timer[7]),	6},					/* d7: timer7 set  */
+		{offsetof(SUBCPU, s.timer[0]),	6 + SCPU_INPUT},	/* d8: timer0 get  */
+		{offsetof(SUBCPU, s.timer[1]),	6 + SCPU_INPUT},	/* d9: timer1 get  */
+		{offsetof(SUBCPU, s.timer[2]),	6 + SCPU_INPUT},	/* da: timer2 get  */
+		{offsetof(SUBCPU, s.timer[3]),	6 + SCPU_INPUT},	/* db: timer3 get  */
+		{offsetof(SUBCPU, s.timer[4]),	6 + SCPU_INPUT},	/* dc: timer4 get  */
+		{offsetof(SUBCPU, s.timer[5]),	6 + SCPU_INPUT},	/* dd: timer5 get  */
+		{offsetof(SUBCPU, s.timer[6]),	6 + SCPU_INPUT},	/* de: timer6 get  */
+		{offsetof(SUBCPU, s.timer[7]),	6 + SCPU_INPUT},	/* df: timer7 get  */
+		{offsetof(SUBCPU, s.zero),		0},					/* e0:             */
+		{offsetof(SUBCPU, s.zero),		0},					/* e1:             */
+		{offsetof(SUBCPU, s.zero),		0},					/* e2:             */
+		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT},	/* e3: game keys   */
+		{offsetof(SUBCPU, s.vect),		1},					/* e4: intr vector */
+		{offsetof(SUBCPU, s.zero),		0},					/* e5:             */
+		{offsetof(SUBCPU, s.work),		2 + SCPU_INPUT},	/* e6: game keys   */
+		{offsetof(SUBCPU, s.tvctrl),	1},					/* e7: set TV ctrl */
+		{offsetof(SUBCPU, s.tvctrl),	1 + SCPU_INPUT},	/* e8: get TV ctrl */
+		{offsetof(SUBCPU, s.work),		1},					/* e9: cmt ctrl    */
+		{offsetof(SUBCPU, s.work),		1 + SCPU_INPUT},	/* ea: cmtctrlstat */
+		{offsetof(SUBCPU, s.work),		1 + SCPU_INPUT},	/* eb: cmttypestat */
+		{offsetof(SUBCPU, s.work),		3},					/* ec: date set    */
+		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT},	/* ed: date set    */
+		{offsetof(SUBCPU, s.work),		3},					/* ee: time set    */
+		{offsetof(SUBCPU, s.work),		3 + SCPU_INPUT}};	/* ef: time set    */
 
 
-// ----
+/* ---- */
 
 void neitem_scpu(UINT id) {
 
 	BRESULT	intr;
 
 	intr = FALSE;
-	// こうすると同時押しが判定できないのでキーバッファを持つべし
+	/* こうすると同時押しが判定できないのでキーバッファを持つべし */
 	if (keystat.req_int) {
 		keystat.req_int = 0;
 		intr = TRUE;
@@ -90,11 +91,11 @@ BRESULT ieitem_scpu(UINT id) {
 	UINT8	keydata;
 
 	if ((subcpu.s.cmdcnt) || (subcpu.s.datcnt)) {
-		keystat.req_int = 1;			// 再送しる
+		keystat.req_int = 1;			/* 再送しる */
 		subcpu_sendkey();
 		return(FALSE);
 	}
-	if (subcpu.s.vect == 0) {			// 割り込み不要だったら捨てる
+	if (subcpu.s.vect == 0) {			/* 割り込み不要だったら捨てる */
 		return(FALSE);
 	}
 	key = keystat_getflag();
@@ -108,8 +109,8 @@ BRESULT ieitem_scpu(UINT id) {
 		if (keydata == 0) {
 			return(FALSE);
 		}
-		key = key & (~0x20);			// rep
-		subcpu.s.keycountrep = 48;		// 0.1sec
+		key = key & (~0x20);			/* rep */
+		subcpu.s.keycountrep = 48;		/* 0.1sec */
 	}
 	subcpu.s.work[1] = (UINT8)key;
 	subcpu.s.work[0] = keydata;
@@ -119,8 +120,6 @@ BRESULT ieitem_scpu(UINT id) {
 	subcpu.s.cmdcnt = 0;
 	subcpu.s.datcnt = 2;
 
-//	subcpu.s.OBF = 0;
-//	subcpu.s.IBF = 1;
 	iocore.s.ppib = (UINT8)((iocore.s.ppib & (~0x20)) | 0x40);
 
 	Z80_INTERRUPT(subcpu.s.vect);
@@ -129,7 +128,7 @@ BRESULT ieitem_scpu(UINT id) {
 }
 
 
-// ----
+/* ---- */
 
 static void subcpusetbuffer(SUBCPU *s) {
 
@@ -172,7 +171,7 @@ void IOOUTCALL subcpu_o(UINT port, REG8 value) {
 	UINT		tblpos;
 const SCPUTBL	*p;
 
-	if (iocore.s.ppib & 0x40) {		// subcpu.IBF
+	if (iocore.s.ppib & 0x40) {
 		return;
 	}
 	if (!subcpu.s.cmdcnt) {
@@ -186,10 +185,8 @@ const SCPUTBL	*p;
 		if (p->flag & SCPU_INPUT) {
 			subcpu.s.cmdptr = offsetof(SUBCPU, s.zero);
 			subcpu.s.datptr = p->pos;
-		//	subcpu.s.cmdcnt = 0;
+			/* subcpu.s.cmdcnt = 0; */
 			subcpu.s.datcnt = p->flag & SCPU_CNTMASK;
-		//	subcpu.s.OBF = (UINT8)(subcpu.s.datacnt?0:1);	// = 0
-		//	subcpu.s.IBF = (UINT8)(subcpu.s.datacnt?1:0);	// = 1
 			iocore.s.ppib |= 0x40;
 			subcpusetbuffer(&subcpu);
 		}
@@ -198,8 +195,6 @@ const SCPUTBL	*p;
 			subcpu.s.datptr = offsetof(SUBCPU, s.zero);
 			subcpu.s.cmdcnt = p->flag & SCPU_CNTMASK;
 			subcpu.s.datcnt = 0;
-		//	subcpu.s.OBF = (UINT8)(subcpu.s.datacnt?0:1);	// = 1
-		//	subcpu.s.IBF = (UINT8)(subcpu.s.datacnt?1:0);	// = 0
 			iocore.s.ppib |= 0x20;
 		}
 	}
@@ -230,12 +225,10 @@ REG8 IOINPCALL subcpu_i(UINT port) {
 	if (subcpu.s.datcnt) {
 		subcpu.s.datcnt--;
 	}
-	else {									// D-SIDE で通るように…
+	else {									/* D-SIDE で通るように… */
 		subcpusetbuffer(&subcpu);
 	}
 
-//	subcpu.s.OBF = (UINT8)(subcpu.s.datacnt?0:1);
-//	subcpu.s.IBF = (UINT8)(subcpu.s.datacnt?1:0);
 	iocore.s.ppib = (UINT8)(iocore.s.ppib & (~0x60));
 	if (subcpu.s.datcnt) {
 		 iocore.s.ppib |= 0x40;
@@ -249,13 +242,12 @@ REG8 IOINPCALL subcpu_i(UINT port) {
 }
 
 
-// ----
+/* reset */
 
 void subcpu_reset(void) {
 
 	ZeroMemory(&subcpu, sizeof(subcpu));
 
-//	subcpu.s.OBF = 1;
 	iocore.s.ppib = (UINT8)(iocore.s.ppib | 0x20);
 
 #if defined(FIX_Z80A)

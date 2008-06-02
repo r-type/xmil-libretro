@@ -48,7 +48,7 @@ static void setdata(X1F hdl, REG16 value) {
 }
 
 
-// ----
+/* ---- */
 
 BRESULT x1f_open(const OEMCHAR *filename) {
 

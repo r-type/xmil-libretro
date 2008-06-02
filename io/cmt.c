@@ -16,19 +16,20 @@ void cmt_write(REG8 dat) {
 void cmt_ctrl(REG8 cmd) {
 
 	switch(cmd) {
-		case 0x00:				// EJECT
-		case 0x01:				// STOP
-//			cmt.stop = 1;
+		case 0x00:				/* EJECT */
+		case 0x01:				/* STOP */
+			/* cmt.stop = 1; */
 			iocore.s.ppib &= ~0x01;
 			break;
-
-//		case 0x02:				// PLAY
-//		case 0x03:				// FF
-//		case 0x04:				// REW
-//		case 0x05:				// APSS_FF
-//		case 0x06:				// APSS_REW
-//		case 0x0a:				// REC
-//			break;
+#if 0
+		case 0x02:				/* PLAY */
+		case 0x03:				/* FF */
+		case 0x04:				/* REW */
+		case 0x05:				/* APSS_FF */
+		case 0x06:				/* APSS_REW */
+		case 0x0a:				/* REC */
+			break;
+#endif	/* 0 */
 	}
 	cmt.cmd = (UINT8)cmd;
 }
@@ -57,12 +58,12 @@ REG8 cmt_test(void) {
 #endif
 
 
-// ----
+/* reset */
 
 void cmt_reset(void) {
 
 	cmt.cmd = 0;
-//	cmt.stop = 1;
+	/* cmt.stop = 1; */
 	iocore.s.ppib &= ~0x01;
 }
 

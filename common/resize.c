@@ -43,7 +43,7 @@ typedef struct {
 
 
 
-// ---- convert sub
+/* convert sub */
 
 typedef void (*FNCNV)(RSZHDL hdl, UINT8 *dst, const UINT8 *src);
 
@@ -106,7 +106,7 @@ static const FNCNV cnvcpy[RSZFNMAX] = {cc8, cc16, cc24, cc16by24, cc24by16};
 
 
 
-// ----
+/* ---- */
 
 #if defined(RESIZE_FASTCOPY)
 static void fastcopyfunc(RSZHDL hdl, UINT type, UINT8 *dst, int dalign,
@@ -142,7 +142,7 @@ static RSZHDL fastcopy(int width, int height) {
 #endif
 
 
-// ---- area average
+/* area average */
 
 #if defined(RESIZE_AREAAVG)
 static void aamix8(RSZEX hdl, const UINT8 *src, int volume) {
@@ -407,7 +407,7 @@ static RSZHDL areaave(int width, int height, int orgx, int orgy) {
 #endif
 
 
-// ----
+/* ---- */
 
 UINT resize_gettype(int dbpp, int sbpp) {
 

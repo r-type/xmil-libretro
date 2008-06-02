@@ -1,4 +1,6 @@
 
+/* Profile Base */
+
 enum {
 	PFTYPE_STR			= 0,
 	PFTYPE_BOOL,
@@ -46,7 +48,7 @@ void profile_iniwrite(const OEMCHAR *path, const char *app,
 #endif
 
 
-// ----
+/* Profile File I/O */
 
 enum {
 	PFILEH_READONLY		= 0x0001,

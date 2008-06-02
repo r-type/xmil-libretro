@@ -84,14 +84,15 @@ enum {
 };
 
 
-//	SCRN_24KHZ		0x01	// 0:15KHz		1:24KHz
-//	SCRN_200LINE	0x02	// 0:400line	1:200line
-//	SCRN_TEXTYx2	0x04	// 0:ノーマル	1:縦に拡大
-//	SCRN_DISPVRAM	0x08	// 0:表			1:裏
-//	SCRN_ACCESSVRAM	0x10	// 0:表			1:裏
-//	SCRN_PCGMODE	0x20	// 0:互換		1:高速
-//	SCRN_CPUFONT	0x40	// 0:8ラスタ	1:16ラスタ
-//	SCRN_UNDERLINE	0x80	// 0:なし		1:あり
+/*	SCRN_24KHZ		0x01	- 0:15KHz		1:24KHz
+ *	SCRN_200LINE	0x02	- 0:400line		1:200line
+ *	SCRN_TEXTYx2	0x04	- 0:ノーマル	1:縦に拡大
+ *	SCRN_DISPVRAM	0x08	- 0:表			1:裏
+ *	SCRN_ACCESSVRAM	0x10	- 0:表			1:裏
+ *	SCRN_PCGMODE	0x20	- 0:互換		1:高速
+ *	SCRN_CPUFONT	0x40	- 0:8ラスタ		1:16ラスタ
+ *	SCRN_UNDERLINE	0x80	- 0:なし		1:あり
+ */
 
 enum {
 	SCRN_24KHZ		= 0x01,
@@ -141,21 +142,21 @@ typedef struct {
 typedef struct {
 	UINT8	scrnflash;
 	UINT8	scrnallflash;
-	UINT8	remakeattr;							// doubleatrchange
+	UINT8	remakeattr;							/* doubleatrchange */
 	UINT8	palandply;
 
-	UINT8	*gramacc;							// curvram
+	UINT8	*gramacc;							/* curvram */
 #if (!defined(MEMOPTIMIZE)) || (MEMOPTIMIZE < 100)
-	UINT	updatemask;							// updatemsk
-	UINT8	updatebit;							// curupdt
+	UINT	updatemask;							/* updatemsk */
+	UINT8	updatebit;							/* curupdt */
 #else
-	UINT8	updatebit;							// curupdt
+	UINT8	updatebit;							/* curupdt */
 	UINT8	_padding1;
-	UINT16	updatemask;							// updatemsk
+	UINT16	updatemask;							/* updatemsk */
 	UINT8	_padding2;
 #endif
 	UINT8	dispmode;
-	UINT8	existblink;							// blinkflag
+	UINT8	existblink;							/* blinkflag */
 	UINT8	blinktime;
 
 #if defined(SUPPORT_TURBOZ)
@@ -189,35 +190,35 @@ typedef struct {
 } CRTC;
 
 
-// ----
+/* functions */
 
 void crtc_setwidth(REG8 width40);
 void crtc_update(void);
 
-void IOOUTCALL crtc_o(UINT port, REG8 value);			// x1_crtc_w
+void IOOUTCALL crtc_o(UINT port, REG8 value);
 
-void IOOUTCALL scrn_o(UINT port, REG8 value);			// x1_scrn_w
-REG8 IOINPCALL scrn_i(UINT port);						// x1_scrn_r
+void IOOUTCALL scrn_o(UINT port, REG8 value);
+REG8 IOINPCALL scrn_i(UINT port);
 
-void IOOUTCALL ply_o(UINT port, REG8 value);			// x1_ply_w
-void IOOUTCALL palette_o(UINT port, REG8 value);		// x1_palet_w
+void IOOUTCALL ply_o(UINT port, REG8 value);
+void IOOUTCALL palette_o(UINT port, REG8 value);
 
-void IOOUTCALL blackctrl_o(UINT port, REG8 value);		// x1_blackctrl_w
-REG8 IOINPCALL blackctrl_i(UINT port);					// x1_blackctrl_r
+void IOOUTCALL blackctrl_o(UINT port, REG8 value);
+REG8 IOINPCALL blackctrl_i(UINT port);
 
 
 #if defined(SUPPORT_TURBOZ)
-REG8 IOINPCALL ply_i(UINT port);						// x1_ply_r
-REG8 IOINPCALL palette_i(UINT port);					// x1_palet_r
+REG8 IOINPCALL ply_i(UINT port);
+REG8 IOINPCALL palette_i(UINT port);
 
-void IOOUTCALL extpal_o(UINT port, REG8 value);			// x1_extpal_w
-REG8 IOINPCALL extpal_i(UINT port);						// x1_extpal_r
-void IOOUTCALL extgrphpal_o(UINT port, REG8 value);		// x1_extgrphpal_w
-REG8 IOINPCALL extgrphpal_i(UINT port);					// x1_extgrphpal_r
-void IOOUTCALL exttextpal_o(UINT port, REG8 value);		// x1_exttextpal_w
-REG8 IOINPCALL exttextpal_i(UINT port);					// x1_exttextpal_r
-void IOOUTCALL exttextdisp_o(UINT port, REG8 value);	// x1_exttextdisp_w
-REG8 IOINPCALL exttextdisp_i(UINT port);				// x1_exttextdisp_r
+void IOOUTCALL extpal_o(UINT port, REG8 value);
+REG8 IOINPCALL extpal_i(UINT port);
+void IOOUTCALL extgrphpal_o(UINT port, REG8 value);
+REG8 IOINPCALL extgrphpal_i(UINT port);
+void IOOUTCALL exttextpal_o(UINT port, REG8 value);
+REG8 IOINPCALL exttextpal_i(UINT port);
+void IOOUTCALL exttextdisp_o(UINT port, REG8 value);
+REG8 IOINPCALL exttextdisp_i(UINT port);
 #endif
 
 

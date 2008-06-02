@@ -14,7 +14,7 @@ enum {
 typedef struct {
 	SINT32	freq;
 	SINT32	count;
-	SINT32	*pvol;			// !!
+	SINT32	*pvol;			/* !! */
 	UINT16	puchi;
 	UINT8	pan;
 	UINT8	padding;
@@ -27,12 +27,12 @@ typedef struct {
 } PSGNOISE;
 
 typedef struct {
-	UINT8	tune[3][2];		// 0
-	UINT8	noise;			// 6
-	UINT8	mixer;			// 7
-	UINT8	vol[3];			// 8
-	UINT8	envtime[2];		// b
-	UINT8	env;			// d
+	UINT8	tune[3][2];		/* 0 */
+	UINT8	noise;			/* 6 */
+	UINT8	mixer;			/* 7 */
+	UINT8	vol[3];			/* 8 */
+	UINT8	envtime[2];		/* b */
+	UINT8	env;			/* d */
 	UINT8	io1;
 	UINT8	io2;
 } PSGREG;
@@ -47,7 +47,7 @@ typedef struct {
 	UINT8		envmode;
 	UINT8		envvol;
 	SINT8		envvolcnt;
-	SINT32		evol;				// !!
+	SINT32		evol;			/* !! */
 	UINT		puchicount;
 } _PSGGEN, *PSGGEN;
 

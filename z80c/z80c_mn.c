@@ -1,11 +1,10 @@
-//----------------------------------------------------------------------------
-//
-//  Z80C : Z80 Engine - GENERIC
-//
-//                                  Copyright by Studio Milmake 1999-2000,2004
-//
-//----------------------------------------------------------------------------
-
+/* -----------------------------------------------------------------------
+ *
+ * Z80C : Z80 Engine - GENERIC
+ *
+ *                              Copyright by Studio Milmake 1999-2000,2004
+ *
+ *------------------------------------------------------------------------ */
 
 #include	"compiler.h"
 #include	"z80core.h"
@@ -14,73 +13,73 @@
 #include	"z80c.mcr"
 
 
-Z80FN _ld_nop(void)			{ }							// 00: nop
-Z80FN _ld_bc_word(void)		LDW_w(R_Z80BC)				// 01: ld bc, imm16
-Z80FN _ld_xbc_a(void)		LDx_B(R_Z80BC, R_Z80A)		// 02: ld (bc), a
-Z80FN _inc_bc(void)			MCR_INC_W(R_Z80BC)			// 03: inc bc
-Z80FN _inc_b(void)			MCR_INC(R_Z80B)				// 04: inc b
-Z80FN _dec_b(void)			MCR_DEC(R_Z80B)				// 05: dec b
-Z80FN _ld_b_byte(void)		LDB_b(R_Z80B)				// 06: ld b, imm8
-Z80FN _rlca(void)			MCR_RLCA					// 07: rcla
-Z80FN _ex_af_af(void)		MCR_EX(R_Z80AF, R_Z80AF2)	// 08: ex af, af'
-Z80FN _add_hl_bc(void)		MCR_ADD_W(R_Z80HL, R_Z80BC)	// 09: add hl, bc
-Z80FN _ld_a_xbc(void)		LDB_x(R_Z80A, R_Z80BC)		// 0a: ld a, (bc)
-Z80FN _dec_bc(void)			MCR_DEC_W(R_Z80BC)			// 0b: dec bc
-Z80FN _inc_c(void)			MCR_INC(R_Z80C)				// 0c: inc c
-Z80FN _dec_c(void)			MCR_DEC(R_Z80C)				// 0d: dec c
-Z80FN _ld_c_byte(void)		LDB_b(R_Z80C)				// 0e: ld c, imm8
-Z80FN _rrca(void)			MCR_RRCA					// 0f: rrca
+Z80FN _ld_nop(void)			{ }
+Z80FN _ld_bc_word(void)		LDW_w(R_Z80BC)
+Z80FN _ld_xbc_a(void)		LDx_B(R_Z80BC, R_Z80A)
+Z80FN _inc_bc(void)			MCR_INC_W(R_Z80BC)
+Z80FN _inc_b(void)			MCR_INC(R_Z80B)
+Z80FN _dec_b(void)			MCR_DEC(R_Z80B)
+Z80FN _ld_b_byte(void)		LDB_b(R_Z80B)
+Z80FN _rlca(void)			MCR_RLCA
+Z80FN _ex_af_af(void)		MCR_EX(R_Z80AF, R_Z80AF2)
+Z80FN _add_hl_bc(void)		MCR_ADD_W(R_Z80HL, R_Z80BC)
+Z80FN _ld_a_xbc(void)		LDB_x(R_Z80A, R_Z80BC)
+Z80FN _dec_bc(void)			MCR_DEC_W(R_Z80BC)
+Z80FN _inc_c(void)			MCR_INC(R_Z80C)
+Z80FN _dec_c(void)			MCR_DEC(R_Z80C)
+Z80FN _ld_c_byte(void)		LDB_b(R_Z80C)
+Z80FN _rrca(void)			MCR_RRCA
 
-Z80FN _djnz(void)			MCR_DJNZ					// 10:
-Z80FN _ld_de_word(void)		LDW_w(R_Z80DE)				// 11:
-Z80FN _ld_xde_a(void)		LDx_B(R_Z80DE, R_Z80A)		// 12:
-Z80FN _inc_de(void)			MCR_INC_W(R_Z80DE)			// 13:
-Z80FN _inc_d(void)			MCR_INC(R_Z80D)				// 14:
-Z80FN _dec_d(void)			MCR_DEC(R_Z80D)				// 15:
-Z80FN _ld_d_byte(void)		LDB_b(R_Z80D)				// 16:
-Z80FN _rla(void)			MCR_RLA						// 17:
-Z80FN _jr(void)				MCR_JR						// 18:
-Z80FN _add_hl_de(void)		MCR_ADD_W(R_Z80HL, R_Z80DE)	// 19:
-Z80FN _ld_a_xde(void)		LDB_x(R_Z80A, R_Z80DE)		// 1a: 
-Z80FN _dec_de(void)			MCR_DEC_W(R_Z80DE)			// 1b: dec de
-Z80FN _inc_e(void)			MCR_INC(R_Z80E)				// 1c: inc e
-Z80FN _dec_e(void)			MCR_DEC(R_Z80E)				// 1d: dec e
-Z80FN _ld_e_byte(void)		LDB_b(R_Z80E)				// 1e: ld b, imm8
-Z80FN _rra(void)			MCR_RRA						// 1f: rra
+Z80FN _djnz(void)			MCR_DJNZ
+Z80FN _ld_de_word(void)		LDW_w(R_Z80DE)
+Z80FN _ld_xde_a(void)		LDx_B(R_Z80DE, R_Z80A)
+Z80FN _inc_de(void)			MCR_INC_W(R_Z80DE)
+Z80FN _inc_d(void)			MCR_INC(R_Z80D)
+Z80FN _dec_d(void)			MCR_DEC(R_Z80D)
+Z80FN _ld_d_byte(void)		LDB_b(R_Z80D)
+Z80FN _rla(void)			MCR_RLA
+Z80FN _jr(void)				MCR_JR
+Z80FN _add_hl_de(void)		MCR_ADD_W(R_Z80HL, R_Z80DE)
+Z80FN _ld_a_xde(void)		LDB_x(R_Z80A, R_Z80DE)
+Z80FN _dec_de(void)			MCR_DEC_W(R_Z80DE)
+Z80FN _inc_e(void)			MCR_INC(R_Z80E)
+Z80FN _dec_e(void)			MCR_DEC(R_Z80E)
+Z80FN _ld_e_byte(void)		LDB_b(R_Z80E)
+Z80FN _rra(void)			MCR_RRA
 
-Z80FN _jr_nz(void)			MCR_JRNFLG(Z_FLAG)			// 20
-Z80FN _ld_hl_word(void)		LDW_w(R_Z80HL)				// 21
-Z80FN _ld_xword_hl(void)	LDx_W(R_Z80HL)				// 22
-Z80FN _inc_hl(void)			MCR_INC_W(R_Z80HL)			// 23
-Z80FN _inc_h(void)			MCR_INC(R_Z80H)				// 24
-Z80FN _dec_h(void)			MCR_DEC(R_Z80H)				// 25
-Z80FN _ld_h_byte(void)		LDB_b(R_Z80H)				// 26
-Z80FN _daa(void)			MCR_DDA						// 27
-Z80FN _jr_z(void)			MCR_JRFLG(Z_FLAG)			// 28
-Z80FN _add_hl_hl(void)		MCR_ADDx2(R_Z80HL)			// 29
-Z80FN _ld_hl_xword(void)	LDW_x(R_Z80HL)				// 2a
-Z80FN _dec_hl(void)			MCR_DEC_W(R_Z80HL)			// 2b
-Z80FN _inc_l(void)			MCR_INC(R_Z80L)				// 2c
-Z80FN _dec_l(void)			MCR_DEC(R_Z80L)				// 2d
-Z80FN _ld_l_byte(void)		LDB_b(R_Z80L)				// 2e
-Z80FN _cpl(void)			MCR_CPL						// 2f
+Z80FN _jr_nz(void)			MCR_JRNFLG(Z_FLAG)
+Z80FN _ld_hl_word(void)		LDW_w(R_Z80HL)
+Z80FN _ld_xword_hl(void)	LDx_W(R_Z80HL)
+Z80FN _inc_hl(void)			MCR_INC_W(R_Z80HL)
+Z80FN _inc_h(void)			MCR_INC(R_Z80H)
+Z80FN _dec_h(void)			MCR_DEC(R_Z80H)
+Z80FN _ld_h_byte(void)		LDB_b(R_Z80H)
+Z80FN _daa(void)			MCR_DDA
+Z80FN _jr_z(void)			MCR_JRFLG(Z_FLAG)
+Z80FN _add_hl_hl(void)		MCR_ADDx2(R_Z80HL)
+Z80FN _ld_hl_xword(void)	LDW_x(R_Z80HL)
+Z80FN _dec_hl(void)			MCR_DEC_W(R_Z80HL)
+Z80FN _inc_l(void)			MCR_INC(R_Z80L)
+Z80FN _dec_l(void)			MCR_DEC(R_Z80L)
+Z80FN _ld_l_byte(void)		LDB_b(R_Z80L)
+Z80FN _cpl(void)			MCR_CPL
 
-Z80FN _jr_nc(void)			MCR_JRNFLG(C_FLAG)			// 30
-Z80FN _ld_sp_word(void)		LDW_w(R_Z80SP)				// 31
-Z80FN _ld_xbyte_a(void)		LDB_x_a						// 32
-Z80FN _inc_sp(void)			MCR_INC_W(R_Z80SP)			// 33
-Z80FN _inc_xhl(void)		MCR_INC_MEM(R_Z80HL)		// 34
-Z80FN _dec_xhl(void)		MCR_DEC_MEM(R_Z80HL)		// 35
-Z80FN _ld_xhl_byte(void)	LDB_xhl_b					// 36
-Z80FN _scf(void)			MCR_SCF						// 37
-Z80FN _jr_c(void)			MCR_JRFLG(C_FLAG)			// 38
-Z80FN _add_hl_sp(void)		MCR_ADD_W(R_Z80HL, R_Z80SP)	// 39
-Z80FN _ld_a_xbyte(void)		LDB_a_x						// 3a
-Z80FN _dec_sp(void)			MCR_DEC_W(R_Z80SP)			// 3b
-Z80FN _inc_a(void)			MCR_INC(R_Z80A)				// 3c
-Z80FN _dec_a(void)			MCR_DEC(R_Z80A)				// 3d
-Z80FN _ld_a_byte(void)		LDB_b(R_Z80A)				// 3e
-Z80FN _ccf(void)			MCR_CCF						// 3f
+Z80FN _jr_nc(void)			MCR_JRNFLG(C_FLAG)
+Z80FN _ld_sp_word(void)		LDW_w(R_Z80SP)
+Z80FN _ld_xbyte_a(void)		LDB_x_a
+Z80FN _inc_sp(void)			MCR_INC_W(R_Z80SP)
+Z80FN _inc_xhl(void)		MCR_INC_MEM(R_Z80HL)
+Z80FN _dec_xhl(void)		MCR_DEC_MEM(R_Z80HL)
+Z80FN _ld_xhl_byte(void)	LDB_xhl_b
+Z80FN _scf(void)			MCR_SCF
+Z80FN _jr_c(void)			MCR_JRFLG(C_FLAG)
+Z80FN _add_hl_sp(void)		MCR_ADD_W(R_Z80HL, R_Z80SP)
+Z80FN _ld_a_xbyte(void)		LDB_a_x
+Z80FN _dec_sp(void)			MCR_DEC_W(R_Z80SP)
+Z80FN _inc_a(void)			MCR_INC(R_Z80A)
+Z80FN _dec_a(void)			MCR_DEC(R_Z80A)
+Z80FN _ld_a_byte(void)		LDB_b(R_Z80A)
+Z80FN _ccf(void)			MCR_CCF
 
 Z80FN _ld_b_c(void)			MCR_LD(R_Z80B, R_Z80C)
 Z80FN _ld_b_d(void)			MCR_LD(R_Z80B, R_Z80D)
@@ -150,7 +149,7 @@ Z80FN _add_a_e(void)		MCR_ADD(R_Z80E)
 Z80FN _add_a_h(void)		MCR_ADD(R_Z80H)
 Z80FN _add_a_l(void)		MCR_ADD(R_Z80L)
 Z80FN _add_a_xhl(void)		MCR_ADD_XHL
-Z80FN _add_a_a(void)		MCR_ADD(R_Z80A)				// !!
+Z80FN _add_a_a(void)		MCR_ADD(R_Z80A)				/* !! */
 Z80FN _adc_a_b(void)		MCR_ADC(R_Z80B)
 Z80FN _adc_a_c(void)		MCR_ADC(R_Z80C)
 Z80FN _adc_a_d(void)		MCR_ADC(R_Z80D)
@@ -158,7 +157,7 @@ Z80FN _adc_a_e(void)		MCR_ADC(R_Z80E)
 Z80FN _adc_a_h(void)		MCR_ADC(R_Z80H)
 Z80FN _adc_a_l(void)		MCR_ADC(R_Z80L)
 Z80FN _adc_a_xhl(void)		MCR_ADC_XHL
-Z80FN _adc_a_a(void)		MCR_ADC(R_Z80A)				// !!
+Z80FN _adc_a_a(void)		MCR_ADC(R_Z80A)				/* !! */
 
 Z80FN _sub_b(void)			MCR_SUB(R_Z80B)
 Z80FN _sub_c(void)			MCR_SUB(R_Z80C)
@@ -167,7 +166,7 @@ Z80FN _sub_e(void)			MCR_SUB(R_Z80E)
 Z80FN _sub_h(void)			MCR_SUB(R_Z80H)
 Z80FN _sub_l(void)			MCR_SUB(R_Z80L)
 Z80FN _sub_xhl(void)		MCR_SUB_XHL
-Z80FN _sub_a(void)			MCR_SUB(R_Z80A)				// !!
+Z80FN _sub_a(void)			MCR_SUB(R_Z80A)				/* !! */
 Z80FN _sbc_a_b(void)		MCR_SBC(R_Z80B)
 Z80FN _sbc_a_c(void)		MCR_SBC(R_Z80C)
 Z80FN _sbc_a_d(void)		MCR_SBC(R_Z80D)
@@ -175,7 +174,7 @@ Z80FN _sbc_a_e(void)		MCR_SBC(R_Z80E)
 Z80FN _sbc_a_h(void)		MCR_SBC(R_Z80H)
 Z80FN _sbc_a_l(void)		MCR_SBC(R_Z80L)
 Z80FN _sbc_a_xhl(void)		MCR_SBC_XHL
-Z80FN _sbc_a_a(void)		MCR_SBC(R_Z80A)				// !!
+Z80FN _sbc_a_a(void)		MCR_SBC(R_Z80A)				/* !! */
 
 Z80FN _and_b(void)			MCR_AND(R_Z80B)
 Z80FN _and_c(void)			MCR_AND(R_Z80C)
@@ -184,7 +183,7 @@ Z80FN _and_e(void)			MCR_AND(R_Z80E)
 Z80FN _and_h(void)			MCR_AND(R_Z80H)
 Z80FN _and_l(void)			MCR_AND(R_Z80L)
 Z80FN _and_xhl(void)		MCR_AND_XHL
-Z80FN _and_a(void)			MCR_AND(R_Z80A)				// !!
+Z80FN _and_a(void)			MCR_AND(R_Z80A)				/* !! */
 Z80FN _xor_b(void)			MCR_XOR(R_Z80B)
 Z80FN _xor_c(void)			MCR_XOR(R_Z80C)
 Z80FN _xor_d(void)			MCR_XOR(R_Z80D)
@@ -192,7 +191,7 @@ Z80FN _xor_e(void)			MCR_XOR(R_Z80E)
 Z80FN _xor_h(void)			MCR_XOR(R_Z80H)
 Z80FN _xor_l(void)			MCR_XOR(R_Z80L)
 Z80FN _xor_xhl(void)		MCR_XOR_XHL
-Z80FN _xor_a(void)			MCR_XOR(R_Z80A)				// !!
+Z80FN _xor_a(void)			MCR_XOR(R_Z80A)				/* !! */
 
 Z80FN _or_b(void)			MCR_OR(R_Z80B)
 Z80FN _or_c(void)			MCR_OR(R_Z80C)
@@ -201,7 +200,7 @@ Z80FN _or_e(void)			MCR_OR(R_Z80E)
 Z80FN _or_h(void)			MCR_OR(R_Z80H)
 Z80FN _or_l(void)			MCR_OR(R_Z80L)
 Z80FN _or_xhl(void)			MCR_OR_XHL
-Z80FN _or_a(void)			MCR_OR(R_Z80A)				// !!
+Z80FN _or_a(void)			MCR_OR(R_Z80A)				/* !! */
 Z80FN _cp_b(void)			MCR_CP(R_Z80B)
 Z80FN _cp_c(void)			MCR_CP(R_Z80C)
 Z80FN _cp_d(void)			MCR_CP(R_Z80D)
@@ -209,7 +208,7 @@ Z80FN _cp_e(void)			MCR_CP(R_Z80E)
 Z80FN _cp_h(void)			MCR_CP(R_Z80H)
 Z80FN _cp_l(void)			MCR_CP(R_Z80L)
 Z80FN _cp_xhl(void)			MCR_CP_XHL
-Z80FN _cp_a(void)			MCR_CP(R_Z80A)				// !!
+Z80FN _cp_a(void)			MCR_CP(R_Z80A)				/* !! */
 
 Z80FN _ret_nz(void)			MCR_RETNFLG(Z_FLAG)
 Z80FN _pop_bc(void)			MCR_POP(R_Z80BC)
@@ -277,84 +276,84 @@ Z80FN _rst_38(void)			MCR_RST(0x38)
 
 
 const Z80OP z80c_mainop[256] = {
-		_ld_nop,		_ld_bc_word,	_ld_xbc_a,		_inc_bc,		// 00
-		_inc_b,			_dec_b,			_ld_b_byte,		_rlca,
-		_ex_af_af,		_add_hl_bc,		_ld_a_xbc,		_dec_bc,
-		_inc_c,			_dec_c,			_ld_c_byte,		_rrca,
+	_ld_nop,		_ld_bc_word,	_ld_xbc_a,		_inc_bc,		/* 00 */
+	_inc_b,			_dec_b,			_ld_b_byte,		_rlca,
+	_ex_af_af,		_add_hl_bc,		_ld_a_xbc,		_dec_bc,
+	_inc_c,			_dec_c,			_ld_c_byte,		_rrca,
 
-		_djnz,			_ld_de_word,	_ld_xde_a,		_inc_de,		// 10
-		_inc_d,			_dec_d,			_ld_d_byte,		_rla,
-		_jr,			_add_hl_de,		_ld_a_xde,		_dec_de,
-		_inc_e,			_dec_e,			_ld_e_byte,		_rra,
+	_djnz,			_ld_de_word,	_ld_xde_a,		_inc_de,		/* 10 */
+	_inc_d,			_dec_d,			_ld_d_byte,		_rla,
+	_jr,			_add_hl_de,		_ld_a_xde,		_dec_de,
+	_inc_e,			_dec_e,			_ld_e_byte,		_rra,
 
-		_jr_nz,			_ld_hl_word,	_ld_xword_hl,	_inc_hl,		// 20
-		_inc_h,			_dec_h,			_ld_h_byte,		_daa,
-		_jr_z,			_add_hl_hl,		_ld_hl_xword,	_dec_hl,
-		_inc_l,			_dec_l,			_ld_l_byte,		_cpl,
+	_jr_nz,			_ld_hl_word,	_ld_xword_hl,	_inc_hl,		/* 20 */
+	_inc_h,			_dec_h,			_ld_h_byte,		_daa,
+	_jr_z,			_add_hl_hl,		_ld_hl_xword,	_dec_hl,
+	_inc_l,			_dec_l,			_ld_l_byte,		_cpl,
 
-		_jr_nc,			_ld_sp_word,	_ld_xbyte_a,	_inc_sp,		// 30
-		_inc_xhl,		_dec_xhl,		_ld_xhl_byte,	_scf,
-		_jr_c,			_add_hl_sp,		_ld_a_xbyte,	_dec_sp,
-		_inc_a,			_dec_a,			_ld_a_byte,		_ccf,
+	_jr_nc,			_ld_sp_word,	_ld_xbyte_a,	_inc_sp,		/* 30 */
+	_inc_xhl,		_dec_xhl,		_ld_xhl_byte,	_scf,
+	_jr_c,			_add_hl_sp,		_ld_a_xbyte,	_dec_sp,
+	_inc_a,			_dec_a,			_ld_a_byte,		_ccf,
 
-		_ld_nop,		_ld_b_c,		_ld_b_d,		_ld_b_e,		// 40
-		_ld_b_h,		_ld_b_l,		_ld_b_xhl,		_ld_b_a,
-		_ld_c_b,		_ld_nop,		_ld_c_d,		_ld_c_e,
-		_ld_c_h,		_ld_c_l,		_ld_c_xhl,		_ld_c_a,
+	_ld_nop,		_ld_b_c,		_ld_b_d,		_ld_b_e,		/* 40 */
+	_ld_b_h,		_ld_b_l,		_ld_b_xhl,		_ld_b_a,
+	_ld_c_b,		_ld_nop,		_ld_c_d,		_ld_c_e,
+	_ld_c_h,		_ld_c_l,		_ld_c_xhl,		_ld_c_a,
 
-		_ld_d_b,		_ld_d_c,		_ld_nop,		_ld_d_e,		// 50
-		_ld_d_h,		_ld_d_l,		_ld_d_xhl,		_ld_d_a,
-		_ld_e_b,		_ld_e_c,		_ld_e_d,		_ld_nop,
-		_ld_e_h,		_ld_e_l,		_ld_e_xhl,		_ld_e_a,
+	_ld_d_b,		_ld_d_c,		_ld_nop,		_ld_d_e,		/* 50 */
+	_ld_d_h,		_ld_d_l,		_ld_d_xhl,		_ld_d_a,
+	_ld_e_b,		_ld_e_c,		_ld_e_d,		_ld_nop,
+	_ld_e_h,		_ld_e_l,		_ld_e_xhl,		_ld_e_a,
 
-		_ld_h_b,		_ld_h_c,		_ld_h_d,		_ld_h_e,		// 60
-		_ld_nop,		_ld_h_l,		_ld_h_xhl,		_ld_h_a,
-		_ld_l_b,		_ld_l_c,		_ld_l_d,		_ld_l_e,
-		_ld_l_h,		_ld_nop,		_ld_l_xhl,		_ld_l_a,
+	_ld_h_b,		_ld_h_c,		_ld_h_d,		_ld_h_e,		/* 60 */
+	_ld_nop,		_ld_h_l,		_ld_h_xhl,		_ld_h_a,
+	_ld_l_b,		_ld_l_c,		_ld_l_d,		_ld_l_e,
+	_ld_l_h,		_ld_nop,		_ld_l_xhl,		_ld_l_a,
 
-		_ld_xhl_b,		_ld_xhl_c,		_ld_xhl_d,		_ld_xhl_e,		// 70
-		_ld_xhl_h,		_ld_xhl_l,		_halt,			_ld_xhl_a,
-		_ld_a_b,		_ld_a_c,		_ld_a_d,		_ld_a_e,
-		_ld_a_h,		_ld_a_l,		_ld_a_xhl,		_ld_nop,
+	_ld_xhl_b,		_ld_xhl_c,		_ld_xhl_d,		_ld_xhl_e,		/* 70 */
+	_ld_xhl_h,		_ld_xhl_l,		_halt,			_ld_xhl_a,
+	_ld_a_b,		_ld_a_c,		_ld_a_d,		_ld_a_e,
+	_ld_a_h,		_ld_a_l,		_ld_a_xhl,		_ld_nop,
 
-		_add_a_b,		_add_a_c,		_add_a_d,		_add_a_e,		// 80
-		_add_a_h,		_add_a_l,		_add_a_xhl,		_add_a_a,
-		_adc_a_b,		_adc_a_c,		_adc_a_d,		_adc_a_e,
-		_adc_a_h,		_adc_a_l,		_adc_a_xhl,		_adc_a_a,
+	_add_a_b,		_add_a_c,		_add_a_d,		_add_a_e,		/* 80 */
+	_add_a_h,		_add_a_l,		_add_a_xhl,		_add_a_a,
+	_adc_a_b,		_adc_a_c,		_adc_a_d,		_adc_a_e,
+	_adc_a_h,		_adc_a_l,		_adc_a_xhl,		_adc_a_a,
 
-		_sub_b,			_sub_c,			_sub_d,			_sub_e,			// 90
-		_sub_h,			_sub_l,			_sub_xhl,		_sub_a,
-		_sbc_a_b,		_sbc_a_c,		_sbc_a_d,		_sbc_a_e,
-		_sbc_a_h,		_sbc_a_l,		_sbc_a_xhl,		_sbc_a_a,
+	_sub_b,			_sub_c,			_sub_d,			_sub_e,			/* 90 */
+	_sub_h,			_sub_l,			_sub_xhl,		_sub_a,
+	_sbc_a_b,		_sbc_a_c,		_sbc_a_d,		_sbc_a_e,
+	_sbc_a_h,		_sbc_a_l,		_sbc_a_xhl,		_sbc_a_a,
 
-		_and_b,			_and_c,			_and_d,			_and_e,			// a0
-		_and_h,			_and_l,			_and_xhl,		_and_a,
-		_xor_b,			_xor_c,			_xor_d,			_xor_e,
-		_xor_h,			_xor_l,			_xor_xhl,		_xor_a,
+	_and_b,			_and_c,			_and_d,			_and_e,			/* a0 */
+	_and_h,			_and_l,			_and_xhl,		_and_a,
+	_xor_b,			_xor_c,			_xor_d,			_xor_e,
+	_xor_h,			_xor_l,			_xor_xhl,		_xor_a,
 
-		_or_b,			_or_c,			_or_d,			_or_e,			// b0
-		_or_h,			_or_l,			_or_xhl,		_or_a,
-		_cp_b,			_cp_c,			_cp_d,			_cp_e,
-		_cp_h,			_cp_l,			_cp_xhl,		_cp_a,
+	_or_b,			_or_c,			_or_d,			_or_e,			/* b0 */
+	_or_h,			_or_l,			_or_xhl,		_or_a,
+	_cp_b,			_cp_c,			_cp_d,			_cp_e,
+	_cp_h,			_cp_l,			_cp_xhl,		_cp_a,
 
-		_ret_nz,		_pop_bc,		_jp_nz,			_jp,			// c0
-		_call_nz,		_push_bc,		_add_a_byte,	_rst_00,
-		_ret_z,			_ret,			_jp_z,			z80c_cb,
-		_call_z,		_call,			_adc_a_byte,	_rst_08,
+	_ret_nz,		_pop_bc,		_jp_nz,			_jp,			/* c0 */
+	_call_nz,		_push_bc,		_add_a_byte,	_rst_00,
+	_ret_z,			_ret,			_jp_z,			z80c_cb,
+	_call_z,		_call,			_adc_a_byte,	_rst_08,
 
-		_ret_nc,		_pop_de,		_jp_nc,			_out_byte_a,	// d0
-		_call_nc,		_push_de,		_sub_byte,		_rst_10,
-		_ret_c,			_exx,			_jp_c,			_in_a_byte,
-		_call_c,		z80c_ix,		_sbc_a_byte,	_rst_18,
+	_ret_nc,		_pop_de,		_jp_nc,			_out_byte_a,	/* d0 */
+	_call_nc,		_push_de,		_sub_byte,		_rst_10,
+	_ret_c,			_exx,			_jp_c,			_in_a_byte,
+	_call_c,		z80c_ix,		_sbc_a_byte,	_rst_18,
 
-		_ret_po,		_pop_hl,		_jp_po,			_ex_xsp_hl,		// e0
-		_call_po,		_push_hl,		_and_byte,		_rst_20,
-		_ret_pe,		_jp_hl,			_jp_pe,			_ex_de_hl,
-		_call_pe,		z80c_sub,		_xor_byte,		_rst_28,
+	_ret_po,		_pop_hl,		_jp_po,			_ex_xsp_hl,		/* e0 */
+	_call_po,		_push_hl,		_and_byte,		_rst_20,
+	_ret_pe,		_jp_hl,			_jp_pe,			_ex_de_hl,
+	_call_pe,		z80c_sub,		_xor_byte,		_rst_28,
 
-		_ret_p,			_pop_af,		_jp_p,			_di,			// f0
-		_call_p,		_push_af,		_or_byte,		_rst_30,
-		_ret_m,			_ld_sp_hl,		_jp_m,			_ei,
-		_call_m,		z80c_iy,		_cp_byte,		_rst_38
+	_ret_p,			_pop_af,		_jp_p,			_di,			/* f0 */
+	_call_p,		_push_af,		_or_byte,		_rst_30,
+	_ret_m,			_ld_sp_hl,		_jp_m,			_ei,
+	_call_m,		z80c_iy,		_cp_byte,		_rst_38
 };
 

@@ -27,7 +27,7 @@ void fddmtr_drvset(void);
 }
 #endif
 
-#else	//  !defined(DISABLE_SOUND)
+#else	/* !defined(DISABLE_SOUND) */
 
 #define fddmtr_initialize()
 #define fddmtr_motormove()
@@ -36,5 +36,5 @@ void fddmtr_drvset(void);
 #define fddmtr_drvset()
 #define	fddmtr_isbusy()		(FALSE)
 
-#endif	// !defined(DISABLE_SOUND)
+#endif	/* !defined(DISABLE_SOUND) */
 

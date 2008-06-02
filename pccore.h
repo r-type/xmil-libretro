@@ -39,9 +39,8 @@ typedef struct {
 } PCCORE;
 
 typedef struct {
-//	SINT32	dispclock;
 	SINT32	syncclock;
-	SINT32	framebaseclock;			// by 4MHz
+	SINT32	framebaseclock;			/* by 4MHz */
 	UINT8	vsync;
 	UINT8	drawframe;
 	UINT8	soundrenewal;

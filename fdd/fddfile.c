@@ -77,7 +77,7 @@ static void setempty(FDDFILE fdd) {
 }
 
 
-// ----
+/* ---- */
 
 void fddfile_initialize(void) {
 

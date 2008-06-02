@@ -43,7 +43,7 @@ void rect_enumout(const RECT_T *tag, const RECT_T *base,
 	RECT_T	rect;
 
 	if ((tag != NULL) && (base != NULL) && (outcb != NULL)) {
-		// base.top -> tag.top
+		/* base.top -> tag.top */
 		rect.top = base->top;
 		rect.bottom = min(tag->top, base->bottom);
 		if (rect.top < rect.bottom) {
@@ -53,7 +53,7 @@ void rect_enumout(const RECT_T *tag, const RECT_T *base,
 				rect.top = rect.bottom;
 		}
 
-		// -> tag.bottom
+		/* -> tag.bottom */
 		rect.bottom = min(tag->bottom, base->bottom);
 		if (rect.top < rect.bottom) {
 			rect.left = base->left;
@@ -69,7 +69,7 @@ void rect_enumout(const RECT_T *tag, const RECT_T *base,
 			rect.top = rect.bottom;
 		}
 
-		// -> base.bottom
+		/* -> base.bottom */
 		rect.bottom = base->bottom;
 		if (rect.top < rect.bottom) {
 			rect.left = base->left;

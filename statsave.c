@@ -15,11 +15,7 @@
 #include	"palettes.h"
 #include	"makescrn.h"
 #include	"sound.h"
-// #include	"sndctrl.h"
-// #include	"font.h"
 #include	"fddfile.h"
-// #include	"fdd_mtr.h"
-
 
 #if defined(MACOS)
 #define	CRCONST		str_cr
@@ -64,9 +60,9 @@ typedef struct {
 #include "statsave.tbl"
 
 
-// ----
+/* ---- */
 
-// 関数ポインタを intに変更。
+/* 関数ポインタを intに変更。 */
 static UINT32 proc2id(INTPTR func, const PROCTBL *tbl, UINT count) {
 
 	while(count) {
@@ -92,7 +88,7 @@ static INTPTR id2proc(UINT32 id, const PROCTBL *tbl, UINT count) {
 }
 
 
-// ----
+/* ---- */
 
 enum {
 	SFFILEH_WRITE	= 0x0001,
@@ -324,7 +320,7 @@ void statflag_seterr(STFLAGH sfh, const OEMCHAR *str) {
 }
 
 
-// ---- common
+/* common */
 
 static int flagsave_common(STFLAGH sfh, const SFENTRY *tbl) {
 
@@ -337,7 +333,7 @@ static int flagload_common(STFLAGH sfh, const SFENTRY *tbl) {
 }
 
 
-// ---- event
+/* event */
 
 typedef struct {
 	UINT32	next;
@@ -376,7 +372,7 @@ static NEVENTITEM id2evt(UINT32 n) {
 		return(nevent.item + n);
 	}
 	else {
-		// error!
+		/* error! */
 		return(NEVENTITEM_TERM);
 	}
 }
@@ -419,7 +415,7 @@ static int flagload_evt(STFLAGH sfh, const SFENTRY *tbl) {
 }
 
 
-// ---- disk
+/* disk */
 
 typedef struct {
 	OEMCHAR	fname[MAX_PATH];
@@ -529,7 +525,7 @@ static int flagload_disk(STFLAGH sfh, const SFENTRY *tbl) {
 }
 
 
-// ----
+/* checker */
 
 static int flagcheck_versize(STFLAGH sfh, const SFENTRY *tbl) {
 
@@ -548,7 +544,7 @@ static int flagcheck_veronly(STFLAGH sfh, const SFENTRY *tbl) {
 }
 
 
-// ----
+/* interface */
 
 int statsave_save(const OEMCHAR *filename) {
 
@@ -656,7 +652,7 @@ const SFENTRY	*tblterm;
 		return(STATFLAG_FAILURE);
 	}
 
-	// PCCORE read!
+	/* PCCORE read! */
 	ret = statflag_readsection(sffh);
 	if ((ret != STATFLAG_SUCCESS) ||
 		(memcmp(sffh->sfh.hdr.index, xmiltbl[0].index, 10))) {

@@ -70,11 +70,9 @@ UINT bmpdata_setinfo(BMPINFO *bi, const BMPDATA *inf) {
 	STOREINTELDWORD(bi->biHeight, inf->height);
 	STOREINTELWORD(bi->biPlanes, 1);
 	STOREINTELWORD(bi->biBitCount, inf->bpp);
-//	STOREINTELDWORD(bi->biCompression, BI_RGB);
+/*	STOREINTELDWORD(bi->biCompression, BI_RGB); */
 	ret = bmpdata_getdatasize(bi);
 	STOREINTELDWORD(bi->biSizeImage, ret);
-//	STOREINTELDWORD(bi->biXPelsPerMeter, 0);
-//	STOREINTELDWORD(bi->biYPelsPerMeter, 0);
 	if (inf->bpp <= 8) {
 		tmp = 1 << inf->bpp;
 		STOREINTELDWORD(bi->biClrUsed, tmp);

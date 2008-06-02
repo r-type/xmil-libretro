@@ -8,72 +8,72 @@
 extern "C" {
 #endif
 
-// １文字分のサイズを取得
+/* １文字分のサイズを取得 */
 int STRCALL milank_charsize(const OEMCHAR *str);
 int STRCALL milsjis_charsize(const char *str);
 int STRCALL mileuc_charsize(const char *str);
 int STRCALL milutf8_charsize(const char *str);
 
-// 大文字小文字を同一視して比較
-// ret 0:一致
+/* 大文字小文字を同一視して比較 */
+/* ret 0:一致 */
 int STRCALL milank_cmp(const OEMCHAR *str, const OEMCHAR *cmp);
 int STRCALL milsjis_cmp(const char *str, const char *cmp);
 int STRCALL mileuc_cmp(const char *str, const char *cmp);
 int STRCALL milutf8_cmp(const char *str, const char *cmp);
 
-// 大文字小文字を 同一視してcmpのヌルまで比較
-// ret 0:一致
+/* 大文字小文字を 同一視してcmpのヌルまで比較 */
+/* ret 0:一致 */
 int STRCALL milank_memcmp(const OEMCHAR *str, const OEMCHAR *cmp);
 int STRCALL milsjis_memcmp(const char *str, const char *cmp);
 int STRCALL mileuc_memcmp(const char *str, const char *cmp);
 int STRCALL milutf8_memcmp(const char *str, const char *cmp);
 
-// str[pos]が漢字１バイト目かどうか…
+/* str[pos]が漢字１バイト目かどうか… */
 int STRCALL milsjis_kanji1st(const char *str, int pos);
 int STRCALL mileuc_kanji1st(const char *str, int pos);
 int STRCALL milutf8_kanji1st(const char *str, int pos);
 
-// str[pos]が漢字２バイト目かどうか…
+/* str[pos]が漢字２バイト目かどうか… */
 int STRCALL milsjis_kanji2nd(const char *str, int pos);
 int STRCALL mileuc_kanji2nd(const char *str, int pos);
 int STRCALL milutf8_kanji2nd(const char *str, int pos);
 
-// maxlen分だけ文字列をコピー
+/* maxlen分だけ文字列をコピー */
 void STRCALL milank_ncpy(OEMCHAR *dst, const OEMCHAR *src, int maxlen);
 void STRCALL milsjis_ncpy(char *dst, const char *src, int maxlen);
 void STRCALL mileuc_ncpy(char *dst, const char *src, int maxlen);
 void STRCALL milutf8_ncpy(char *dst, const char *src, int maxlen);
 
-// maxlen分だけ文字列をキャット
+/* maxlen分だけ文字列をキャット */
 void STRCALL milank_ncat(OEMCHAR *dst, const OEMCHAR *src, int maxlen);
 void STRCALL milsjis_ncat(char *dst, const char *src, int maxlen);
 void STRCALL mileuc_ncat(char *dst, const char *src, int maxlen);
 void STRCALL milutf8_ncat(char *dst, const char *src, int maxlen);
 
-// 文字を検索
+/* 文字を検索 */
 OEMCHAR * STRCALL milank_chr(const OEMCHAR *str, int c);
 char * STRCALL milsjis_chr(const char *str, int c);
 char * STRCALL mileuc_chr(const char *str, int c);
 char * STRCALL milutf8_chr(const char *str, int c);
 
 
-// 0~9, A~Z のみを大文字小文字を同一視して比較
-// ret 0:一致
+/* 0~9, A~Z のみを大文字小文字を同一視して比較 */
+/* ret 0:一致 */
 int STRCALL milstr_extendcmp(const OEMCHAR *str, const OEMCHAR *cmp);
 
-// 次の語を取得
+/* 次の語を取得 */
 OEMCHAR * STRCALL milstr_nextword(const OEMCHAR *str);
 
-// 文字列からARGの取得
+/* 文字列からARGの取得 */
 int STRCALL milstr_getarg(OEMCHAR *str, OEMCHAR *arg[], int maxarg);
 
-// HEX2INT
+/* HEX2INT */
 long STRCALL milstr_solveHEX(const OEMCHAR *str);
 
-// STR2INT
+/* STR2INT */
 long STRCALL milstr_solveINT(const OEMCHAR *str);
 
-// STRLIST
+/* STRLIST */
 OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos);
 
 #ifdef __cplusplus
@@ -81,7 +81,7 @@ OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos);
 #endif
 
 
-// ---- macros
+/* macros */
 
 #if defined(OSLANG_SJIS)
 #define milstr_charsize(s)		milsjis_charsize(s)

@@ -30,22 +30,22 @@ REG8 IOINPCALL cgrom_i(UINT port) {
 	}
 	ret = 0;
 	if (cgrom.reg[1]) {
-		if (!(port & 1)) {		// 0x0e80
+		if (!(port & 1)) {		/* 0x0e80 */
 			ret = font_knjx1[cgrom.face + cgrom.count];
 			cgrom.flag |= 1;
 		}
-		else {					// 0x0e81
+		else {					/* 0x0e81 */
 			ret = font_knjx1[cgrom.face + cgrom.count + FONTX1_LR];
 			cgrom.flag |= 2;
 		}
-		// 0x0e81 ポートリードの時だけインクリメントの筈だが…？
+		/* 0x0e81 ポートリードの時だけインクリメントの筈だが…？ */
 		if (cgrom.flag == 3) {
 			cgrom.flag = 0;
 			cgrom.count = (cgrom.count + 1) & 15;
 		}
 	}
 	else {
-		if (!(port & 1)) {		// 0x0e80
+		if (!(port & 1)) {		/* 0x0e80 */
 			if (cgrom.reg[0] >= 0x30) {
 				ret = 0x40 + ((cgrom.reg[0] - 0x30) * 6);
 			}
@@ -58,7 +58,7 @@ REG8 IOINPCALL cgrom_i(UINT port) {
 }
 
 
-// ----
+/* reset */
 
 void cgrom_reset(void) {
 
