@@ -32,7 +32,7 @@ static void fddmtr_event(void) {
 }
 
 
-// ----
+/* ---- */
 
 void fddmtr_initialize(void) {
 
@@ -104,5 +104,5 @@ void fddmtr_waitsec(REG8 value) {
 	}
 }
 
-#endif	// !defined(DISABLE_SOUND)
+#endif	/* !defined(DISABLE_SOUND) */
 

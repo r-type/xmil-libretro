@@ -5,7 +5,7 @@
 #include	"makescrn.h"
 
 
-// ---- text
+/* text */
 
 void IOOUTCALL tram_atr_o(UINT port, REG8 value) {
 
@@ -77,7 +77,7 @@ REG8 IOINPCALL tram_knj_i(UINT port) {
 }
 
 
-// ---------------------------------------------------------------------- grph
+/* grph */
 
 void IOOUTCALL gram_o(UINT port, REG8 value) {
 
@@ -129,7 +129,7 @@ void IOOUTCALL gram2_o(UINT port, REG8 value) {
 }
 
 
-// ----
+/* reset */
 
 void vramio_reset(void) {
 

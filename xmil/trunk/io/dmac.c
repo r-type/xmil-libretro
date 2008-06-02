@@ -93,7 +93,7 @@ BRESULT ieitem_dmac(UINT id) {
 }
 
 
-// ----
+/* ---- */
 
 static void setdmareaddat(DMAC *d) {
 
@@ -132,12 +132,12 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 
 	REG8	working;
 
-	TRACEOUT(("out %.4x %.2x", port, value));
+	/* TRACEOUT(("out %.4x %.2x", port, value)); */
 
 	dma.enable = 0;
 
 	if (!dma.wcnt) {
-//		dma.wcnt = 0;
+		/* dma.wcnt = 0; */
 		dma.wptr = 0;
 		if (!(value & 0x80)) {
 			if ((value & 3) != 0) {
@@ -171,7 +171,7 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 			REG8 cmd;
 			cmd = value & 3;
 			if (cmd == 0) {
-//				dma.WR3 = value;
+				/* dma.WR3 = value; */
 				if (value & 0x08) {
 					dma.wtbl[dma.wcnt++] = offsetof(DMAC, MASK_BYT);
 				}
@@ -211,11 +211,11 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 #endif
 			else if (cmd == 3) {
 				switch(DMACMD(value)) {
-					case DMACMD(0x83):		// dma disable
-					//	dma.enable = 0;
+					case DMACMD(0x83):		/* dma disable */
+						/* dma.enable = 0; */
 						break;
 
-					case DMACMD(0x87):		// dma enable
+					case DMACMD(0x87):		/* dma enable */
 #if !defined(DMAS_STOIC)
 						dma.increment = 0;
 #else
@@ -224,7 +224,7 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 						dma.enable = 1;
 						break;
 
-					case DMACMD(0x8b):		// re-init status byte
+					case DMACMD(0x8b):		/* re-init status byte */
 #if !defined(DMAS_STOIC)
 						dma.MACH_FLG = 0;
 						dma.ENDB_FLG = 0;
@@ -233,49 +233,49 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 #endif
 						break;
 
-					case DMACMD(0xa7):		// イニシエイトリードシーケンス
+					case DMACMD(0xa7):		/* イニシエイトリードシーケンス */
 						setdmareaddat(&dma);
 						break;
 
-					case DMACMD(0xab):		// interrupt enable
+					case DMACMD(0xab):		/* interrupt enable */
 						dma.INT_ENBL = 1;
 						break;
 
-					case DMACMD(0xaf):		// interrupt disable
+					case DMACMD(0xaf):		/* interrupt disable */
 						dma.INT_ENBL = 0;
 						break;
 
-					case DMACMD(0xb3):		// force ready
+					case DMACMD(0xb3):		/* force ready */
 						dma.ready = (dma.WR5 & 0x08);
 						break;
 
-					case DMACMD(0xbb):		// read mask follows
+					case DMACMD(0xbb):		/* read mask follows */
 						dma.wtbl[dma.wcnt++] = offsetof(DMAC, RR_MSK);
 						break;
 
-					case DMACMD(0xbf):		// read status byte
+					case DMACMD(0xbf):		/* read status byte */
 						dma.RR_MSK = 1;
 						setdmareaddat(&dma);
 						break;
 
-					case DMACMD(0xc3):		// reset
-											// ローグアライアンス	// ver0.25
-						dma.WR0 &= ~3;		// 0でいいと思うケド…
+					case DMACMD(0xc3):		/* reset */
+											/* ローグアライアンス */	/* ver0.25 */
+						dma.WR0 &= ~3;		/* 0でいいと思うケド… */
 #if !defined(DMAS_STOIC)
 						dma.increment = 0;
 #else
 						dma.flag &= ~DMAF_INCREMENT;
 #endif
-					//	dma.enable = 0;
+						/* dma.enable = 0; */
 						dma.INT_ENBL = 0;
 						break;
 
-					case DMACMD(0xc7):				// リセットタイミングA
-					case DMACMD(0xcb):				// リセットタイミングB
+					case DMACMD(0xc7):				/* リセットタイミングA */
+					case DMACMD(0xcb):				/* リセットタイミングB */
 						break;
 
-					case DMACMD(0xcf):				// ロード
-//						dma.mode = (UINT8)((dma.WR4 >> 5) & 3);
+					case DMACMD(0xcf):				/* ロード */
+						/* dma.mode = (UINT8)((dma.WR4 >> 5) & 3); */
 						dma.cnt_a.w.addr = dma.addr.w.a;
 						dma.cnt_b.w.addr = dma.addr.w.b;
 						dma.leng.w.n = 0;
@@ -285,10 +285,10 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 #else
 						dma.flag |= DMAF_MACH | DMAF_ENDB;
 #endif
-					//	dma.enable = 0;
+						/* dma.enable = 0; */
 						break;
 
-					case DMACMD(0xd3):				// コンティニュー
+					case DMACMD(0xd3):				/* コンティニュー */
 #if !defined(DMAS_STOIC)
 						if (dma.increment) {
 							dma.increment = 0;
@@ -414,12 +414,12 @@ REG8 IOINPCALL dmac_i(UINT port) {
 		ret = (*(((UINT8 *)&dma) + dma.rtbl[dma.rptr++]));
 	}
 	(void)port;
-	TRACEOUT(("inp %.4x %.2x", port, ret));
+	/* TRACEOUT(("inp %.4x %.2x", port, ret)); */
 	return(ret);
 }
 
 
-// ----
+/* reset */
 
 void dmac_reset(void) {
 

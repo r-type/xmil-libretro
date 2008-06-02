@@ -1,11 +1,10 @@
-//----------------------------------------------------------------------------
-//
-//  Z80C : Z80 Engine - GENERIC
-//
-//                                  Copyright by Studio Milmake 1999-2000,2004
-//
-//----------------------------------------------------------------------------
-
+/* -----------------------------------------------------------------------
+ *
+ * Z80C : Z80 Engine - GENERIC
+ *
+ *                              Copyright by Studio Milmake 1999-2000,2004
+ *
+ *------------------------------------------------------------------------ */
 
 #include	"compiler.h"
 #include	"z80core.h"
@@ -48,7 +47,7 @@ Z80FN _ld_a_r(void)			MCR_LD_AR
 
 Z80FN _in_h_c(void)			MCR_Z80INF(R_Z80H)
 Z80FN _out_c_h(void)		MCR_Z80OUT(R_Z80H)
-Z80FN _sbc_hl_hl(void)		MCR_SBC_W(R_Z80HL)				// !!
+Z80FN _sbc_hl_hl(void)		MCR_SBC_W(R_Z80HL)				/* !! */
 Z80FN _ld_xword_hl(void)	LDx_W(R_Z80HL)
 Z80FN _rrd(void)			MCR_RRD
 Z80FN _in_l_c(void)			MCR_Z80INF(R_Z80L)
@@ -86,85 +85,85 @@ Z80FN _otdr(void)			MCR_OTDR
 
 
 static const Z80OP z80c_subp[256] = {
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// 00
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* 00 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// 10
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* 10 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// 20
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* 20 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// 30
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* 30 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_in_b_c,		_out_c_b,		_sbc_hl_bc,		_ld_xword_bc,	// 40
-		_neg,			_retn,			_im_0,			_ld_i_a,
-		_in_c_c,		_out_c_c,		_adc_hl_bc,		_ld_bc_xword,
-		_neg,			_reti,			_im_0,			_ld_r_a,
+	_in_b_c,		_out_c_b,		_sbc_hl_bc,		_ld_xword_bc,	/* 40 */
+	_neg,			_retn,			_im_0,			_ld_i_a,
+	_in_c_c,		_out_c_c,		_adc_hl_bc,		_ld_bc_xword,
+	_neg,			_reti,			_im_0,			_ld_r_a,
 
-		_in_d_c,		_out_c_d,		_sbc_hl_de,		_ld_xword_de,	// 50
-		_neg,			_retn,			_im_1,			_ld_a_i,
-		_in_e_c,		_out_c_e,		_adc_hl_de,		_ld_de_xword,
-		_neg,			_reti,			_im_2,			_ld_a_r,
+	_in_d_c,		_out_c_d,		_sbc_hl_de,		_ld_xword_de,	/* 50 */
+	_neg,			_retn,			_im_1,			_ld_a_i,
+	_in_e_c,		_out_c_e,		_adc_hl_de,		_ld_de_xword,
+	_neg,			_reti,			_im_2,			_ld_a_r,
 
-		_in_h_c,		_out_c_h,		_sbc_hl_hl,		_ld_xword_hl,	// 60
-		_neg,			_retn,			_im_0,			_rrd,
-		_in_l_c,		_out_c_l,		_adc_hl_hl,		_ld_hl_xword,
-		_neg,			_reti,			_im_0,			_rld,
+	_in_h_c,		_out_c_h,		_sbc_hl_hl,		_ld_xword_hl,	/* 60 */
+	_neg,			_retn,			_im_0,			_rrd,
+	_in_l_c,		_out_c_l,		_adc_hl_hl,		_ld_hl_xword,
+	_neg,			_reti,			_im_0,			_rld,
 
-		_in_0_c,		_out_c_0,		_sbc_hl_sp,		_ld_xword_sp,	// 70
-		_neg,			_retn,			_im_1,			_ld_nop,
-		_in_a_c,		_out_c_a,		_adc_hl_sp,		_ld_sp_xword,
-		_neg,			_reti,			_im_2,			_ld_nop,
+	_in_0_c,		_out_c_0,		_sbc_hl_sp,		_ld_xword_sp,	/* 70 */
+	_neg,			_retn,			_im_1,			_ld_nop,
+	_in_a_c,		_out_c_a,		_adc_hl_sp,		_ld_sp_xword,
+	_neg,			_reti,			_im_2,			_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// 80
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* 80 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// 90
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* 90 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ldi,			_cpi,			_ini,			_outi,			// a0
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ldd,			_cpd,			_ind,			_outd,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ldi,			_cpi,			_ini,			_outi,			/* a0 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ldd,			_cpd,			_ind,			_outd,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ldir,			_cpir,			_inir,			_otir,			// b0
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_lddr,			_cpdr,			_indr,			_otdr,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ldir,			_cpir,			_inir,			_otir,			/* b0 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_lddr,			_cpdr,			_indr,			_otdr,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// c0
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* c0 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// d0
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* d0 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// e0
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* e0 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
 
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		// f0
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
-		_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,		/* f0 */
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop,
+	_ld_nop,		_ld_nop,		_ld_nop,		_ld_nop
 };
 
 

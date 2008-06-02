@@ -4,7 +4,7 @@
 #include	"iocore.h"
 
 
-// ---- 8255 PPI～
+/* 8255 PPI～ */
 
 static REG8 getportb(void) {
 
@@ -14,35 +14,36 @@ static REG8 getportb(void) {
 	SINT32	clock;
 #endif
 
-//	if (subcpu.IBF) {
-//		subcpu.IBF = 0;
-//		ret |= 0x40;						// 1:SUB-CPU BUSY
-//	}
-//	if (subcpu.OBF) {
-//		ret |= 0x20;						// 1:SUB-CPU Data empty
-//	}
+#if 0
+	if (subcpu.IBF) {
+		subcpu.IBF = 0;
+		ret |= 0x40;						/* 1:SUB-CPU BUSY */
+	}
+	if (subcpu.OBF) {
+		ret |= 0x20;						/* 1:SUB-CPU Data empty */
+	}
+#endif	/* 0 */
 
 	ppib = iocore.s.ppib;
 	ret = ppib;
 
-//	ret |= cmt_test();						// THUNDER BALL
-//	/* -> */ ppib |= 0x01;
+	/* ret |= cmt_test(); */				/* THUNDER BALL */
 
 	iocore.s.ppib = (UINT8)((ppib & (~0x40)) | 0x01);
 
-//	ret |= cmt_read();
+	/* ret |= cmt_read(); */
 
 #if defined(MAINFRAMES_OLD)
 	clock = CPU_CLOCKCOUNT - iocore.e.framestartclock;
 	if (clock < iocore.e.dispclock) {
-		ret |= 0x80;						// 1:DISP
+		ret |= 0x80;						/* 1:DISP */
 	}
 
-	// 実機の動きを見ると　どうも 読み込んだらリセットされるようだ？
-	// 有効範囲が絞れるならそうすべき(VSYNCを取りこぼすソフトがある
+	/* 実機の動きを見ると　どうも 読み込んだらリセットされるようだ？ */
+	/* 有効範囲が絞れるならそうすべき(VSYNCを取りこぼすソフトがある) */
 	clock -= iocore.e.vsyncstart;
 	if ((clock >= 0) && (clock < iocore.e.vpulseclock)) {
-		ret |= 0x04;						// 1:V-SYNC
+		ret |= 0x04;						/* 1:V-SYNC */
 	}
 #endif
 	return(ret);
@@ -54,10 +55,10 @@ static void setportc(REG8 dat) {
 
 	modify = ppi.portc ^ dat;
 	ppi.portc = dat;
-//	cmt_write((REG8)(dat & 1));
+	/* cmt_write((REG8)(dat & 1)); */
 	if ((modify & 0x20) && (!(dat & 0x20))) {
 		iocore.s.mode = 1;
-//		TRACEOUT(("iocore.s.mode = 1"));
+		/* TRACEOUT(("iocore.s.mode = 1")); */
 	}
 	if (modify & 0x40) {
 		crtc_setwidth((REG8)(dat & 0x40));
@@ -65,7 +66,7 @@ static void setportc(REG8 dat) {
 }
 
 
-// ----
+/* ---- */
 
 void IOOUTCALL ppi_o(UINT port, REG8 value) {
 
@@ -106,9 +107,11 @@ REG8 IOINPCALL ppi_i(UINT port) {
 
 	switch(port & 0x0f) {
 		case 0:
-		//	if (!(ppi.mode & 0x10)) {
-		//		return(ppi.porta);
-		//	}
+#if 0
+			if (!(ppi.mode & 0x10)) {
+				return(ppi.porta);
+			}
+#endif	/* 0 */
 			return(ppi.porta);
 
 		case 1:
@@ -118,7 +121,7 @@ REG8 IOINPCALL ppi_i(UINT port) {
 			return(getportb());
 
 		case 2:
-		// mode?
+			/* mode? */
 			return(ppi.portc);
 
 		case 3:
@@ -128,7 +131,7 @@ REG8 IOINPCALL ppi_i(UINT port) {
 }
 
 
-// ----
+/* initialize & reset */
 
 void ppi_initialize(void) {
 

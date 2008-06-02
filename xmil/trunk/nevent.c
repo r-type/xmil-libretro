@@ -55,9 +55,9 @@ void nevent_progress(void) {
 	}
 	CPU_BASECLOCK = nextbase;
 	CPU_REMCLOCK += nextbase;
-//	TRACEOUT(("nextbase = %d (%d)", nextbase, CPU_REMCLOCK));
+	/* TRACEOUT(("nextbase = %d (%d)", nextbase, CPU_REMCLOCK)); */
 
-	// イベント発生
+	/* イベント発生 */
 	wi = waititem;
 	while(wi < witem) {
 		item = *wi++;
@@ -96,7 +96,7 @@ void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, BRESULT absolute) {
 	NEVENTITEM	n;
 	NEVENTITEM	p;
 
-//	TRACEOUT(("event %d - %xclocks", id, eventclock));
+	/* TRACEOUT(("event %d - %xclocks", id, eventclock)); */
 
 	clock = CPU_BASECLOCK - CPU_REMCLOCK;
 	item = nevent.item + id;
@@ -133,7 +133,7 @@ void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, BRESULT absolute) {
 		}
 		CPU_BASECLOCK -= clock;
 		CPU_REMCLOCK -= clock;
-//		TRACEOUT(("reset nextbase -%d (%d)", clock, CPU_REMCLOCK));
+		/* TRACEOUT(("reset nextbase -%d (%d)", clock, CPU_REMCLOCK)); */
 	}
 	else {
 		p = n->next;

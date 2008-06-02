@@ -11,8 +11,8 @@ typedef struct {
 extern "C" {
 #endif
 
-void IOOUTCALL ppi_o(UINT port, REG8 value);		// x1_8255_w
-REG8 IOINPCALL ppi_i(UINT port);					// x1_8255_r
+void IOOUTCALL ppi_o(UINT port, REG8 value);
+REG8 IOINPCALL ppi_i(UINT port);
 
 void ppi_initialize(void);
 void ppi_reset(void);

@@ -12,8 +12,8 @@ typedef struct {
 extern "C" {
 #endif
 
-void IOOUTCALL cgrom_o(UINT port, REG8 dat);		// x1_knj_w
-REG8 IOINPCALL cgrom_i(UINT port);					// x1_knj_r
+void IOOUTCALL cgrom_o(UINT port, REG8 dat);
+REG8 IOINPCALL cgrom_i(UINT port);
 
 void cgrom_reset(void);
 

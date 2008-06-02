@@ -146,14 +146,14 @@ void keystat_resetjoykey(void);
 void keystat_allrelease(void);
 
 
-// ---- I/O
+/* I/O */
 
 UINT keystat_getflag(void);
 UINT32 keystat_gete3(void);
 REG8 keystat_getjoy(void);
 
 
-// ---- îpé~ä÷êî
+/* îpé~ä÷êî */
 
 void keystat_senddata(REG8 data);
 void keystat_forcerelease(REG8 data);

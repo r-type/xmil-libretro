@@ -7,7 +7,7 @@
 #endif
 
 
-// ---- fdd
+/* fdd */
 
 void newdisk_fdd(const OEMCHAR *fname, REG8 type, const OEMCHAR *label) {
 

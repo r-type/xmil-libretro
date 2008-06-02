@@ -1,5 +1,5 @@
 
-// Ç†Ç∆Ç≈ GETSNDÇ…èÊÇËä∑Ç¶ÇÈÇ©Ç‡Åc
+/* Ç†Ç∆Ç≈ GETSNDÇ…èÊÇËä∑Ç¶ÇÈÇ©Ç‡Åc */
 
 #if defined(BYTESEX_BIG)
 #define	WAVE_SIG(a, b, c, d)	\
@@ -30,7 +30,7 @@ typedef struct {
 } WAVE_INFOS;
 
 
-// ---- write
+/* write */
 
 typedef struct {
 	long		fh;

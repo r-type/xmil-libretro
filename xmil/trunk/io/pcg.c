@@ -74,9 +74,9 @@ static UINT nowsyncoffset(UINT *line) {
 	ret = (ret * crtc.s.reg[CRTCREG_HDISP]) + crtc.e.pos;
 	ret += (h * crtc.s.reg[CRTCREG_HDISP]) / crtc.e.rasterclock8;
 	if (ret >= 0x0800) {
-		ret = 0x07ff;		// オーバーフロー
+		ret = 0x07ff;		/* オーバーフロー */
 	}
-	return(ret);			// まさに表示しようとしている TXT-RAMアドレス
+	return(ret);			/* まさに表示しようとしている TXT-RAMアドレス */
 }
 
 
@@ -165,7 +165,7 @@ REG8 IOINPCALL pcg_i(UINT port) {
 }
 
 
-// ----
+/* initialize & reset */
 
 void pcg_initialize(void) {
 

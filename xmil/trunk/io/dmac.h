@@ -95,7 +95,7 @@ enum {
 typedef struct {
 	UINT8	flag;
 	UINT8	WR0;
-	UINT8	mode;				// DMA_MODE
+	UINT8	mode;				/* DMA_MODE */
 	UINT8	INT_ENBL;
 
 	UINT8	WR4;
@@ -109,8 +109,8 @@ typedef struct {
 	DMALENG	leng;
 	DMAADDR	addr;
 
-	UINT8	enable;				// DMA_ENBL
-	UINT8	ready;				// DMA_REDY
+	UINT8	enable;				/* DMA_ENBL */
+	UINT8	ready;				/* DMA_REDY */
 	UINT8	RR_MSK;
 	UINT8	RR;
 
@@ -133,11 +133,11 @@ typedef struct {
 	UINT8	working;
 	UINT8	increment;
 
-	UINT8	mode;				// DMA_MODE
-	UINT8	__cmd;				// DMA_CMND
+	UINT8	mode;				/* DMA_MODE */
+	UINT8	__cmd;				/* DMA_CMND */
 
-	UINT8	enable;				// DMA_ENBL
-	UINT8	ready;				// DMA_REDY
+	UINT8	enable;				/* DMA_ENBL */
+	UINT8	ready;				/* DMA_REDY */
 
 	UINT8	INT_ENBL;
 	UINT8	INT_FLG;
@@ -153,13 +153,17 @@ typedef struct {
 	UINT8	RR;
 
 	UINT8	WR0;
-//	UINT8	WR1;
-//	UINT8	WR2;
-//	UINT8	WR3;
+#if 0
+	UINT8	WR1;
+	UINT8	WR2;
+	UINT8	WR3;
+#endif	/* 0 */
 	UINT8	WR4;
 	UINT8	WR5;
 	UINT8	dummydat;
-//	UINT8	padding;
+#if 0
+	UINT8	padding;
+#endif	/* 0 */
 
 	DMACNT	cnt_a;
 	DMACNT	cnt_b;
@@ -185,8 +189,8 @@ extern "C" {
 void dmac_sendready(BRESULT ready);
 BRESULT ieitem_dmac(UINT id);
 
-void IOOUTCALL dmac_o(UINT port, REG8 dat);			// x1_dma_w
-REG8 IOINPCALL dmac_i(UINT port);					// x1_dma_r
+void IOOUTCALL dmac_o(UINT port, REG8 dat);
+REG8 IOINPCALL dmac_i(UINT port);
 
 void dmac_reset(void);
 

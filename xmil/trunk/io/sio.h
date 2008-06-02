@@ -21,8 +21,8 @@ typedef struct {
 	UINT8	padding;
 	UINT8	wr[8];
 	UINT8	rr[4];
-	SIOFIFO	TxD;			// 送信
-	SIOFIFO	RxD;			// 受信
+	SIOFIFO	TxD;			/* 送信 */
+	SIOFIFO	RxD;			/* 受信 */
 } SIOCH;
 
 typedef struct {
@@ -35,8 +35,8 @@ extern "C" {
 #endif
 
 void sio_int(void);
-void IOOUTCALL sio_o(UINT port, REG8 dat);			// x1_sio_w
-REG8 IOINPCALL sio_i(UINT port);					// x1_sio_r
+void IOOUTCALL sio_o(UINT port, REG8 dat);
+REG8 IOINPCALL sio_i(UINT port);
 
 void sio_reset(void);
 

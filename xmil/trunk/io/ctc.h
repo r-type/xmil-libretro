@@ -43,8 +43,8 @@ void neitem_ctc(UINT id);
 BRESULT ieitem_ctc(UINT id);
 void ieeoi_ctc(UINT id);
 
-void IOOUTCALL ctc_o(UINT port, REG8 dat);			// x1_ctc_w
-REG8 IOINPCALL ctc_i(UINT port);					// x1_ctc_r
+void IOOUTCALL ctc_o(UINT port, REG8 dat);
+REG8 IOINPCALL ctc_i(UINT port);
 
 void ctc_reset(void);
 

@@ -77,7 +77,7 @@ void IOOUTCALL memio_ram(UINT port, REG8 dat) {
 }
 
 
-// ----
+/* ---- */
 
 static const OEMCHAR iplromx1[] = OEMTEXT("IPLROM.X1");
 static const OEMCHAR iplromx1t[] = OEMTEXT("IPLROM.X1T");

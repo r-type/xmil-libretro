@@ -15,7 +15,7 @@ typedef struct {
 #if defined(SUPPORT_BANKMEM)
 	UINT8	bankmem;
 #else
-	UINT8	__bankmem;			// protect
+	UINT8	__bankmem;			/* protect */
 #endif
 	UINT8	padding;
 } IOSTAT;

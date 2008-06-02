@@ -2,7 +2,7 @@
 #include	"ucscnv.h"
 
 
-// ---- UCS2
+/* UCS2 */
 
 UINT ucscnv_utf8toucs2(UINT16 *dst, UINT dcnt, const char *src, UINT scnt) {
 

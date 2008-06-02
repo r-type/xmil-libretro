@@ -1,7 +1,7 @@
 #include	"compiler.h"
 
 
-// ---- ANK / UCS2 / UCS4
+/* ANK / UCS2 / UCS4 */
 
 #if defined(SUPPORT_ANK)
 int STRCALL milank_charsize(const OEMCHAR *str) {
@@ -101,7 +101,7 @@ OEMCHAR * STRCALL milank_chr(const OEMCHAR *str, int c) {
 #endif
 
 
-// ---- Shift-JIS
+/* Shift-JIS */
 
 #if defined(SUPPORT_SJIS)
 int STRCALL milsjis_charsize(const char *str) {
@@ -264,9 +264,9 @@ char * STRCALL milsjis_chr(const char *str, int c) {
 #endif
 
 
-// ---- EUC
+/* EUC */
 
-#if defined(SUPPORT_EUC)		// Ç†ÇÍ îºäpÉJÉiñYÇÍÇƒÇÈÇºÅH
+#if defined(SUPPORT_EUC)		/* Ç†ÇÍ îºäpÉJÉiñYÇÍÇƒÇÈÇºÅH */
 int STRCALL mileuc_charsize(const char *str) {
 
 	int		pos;
@@ -426,7 +426,7 @@ char * STRCALL mileuc_chr(const char *str, int c) {
 #endif
 
 
-// ---- UTF8
+/* UTF8 */
 
 #if defined(SUPPORT_UTF8)
 int STRCALL milutf8_charsize(const char *str) {
@@ -567,7 +567,7 @@ char * STRCALL milutf8_chr(const char *str, int c) {
 #endif
 
 
-// ---- other
+/* other */
 
 int STRCALL milstr_extendcmp(const OEMCHAR *str, const OEMCHAR *cmp) {
 

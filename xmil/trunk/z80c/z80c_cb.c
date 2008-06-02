@@ -1,11 +1,10 @@
-//----------------------------------------------------------------------------
-//
-//  Z80C : Z80 Engine - GENERIC
-//
-//                                  Copyright by Studio Milmake 1999-2000,2004
-//
-//----------------------------------------------------------------------------
-
+/* -----------------------------------------------------------------------
+ *
+ * Z80C : Z80 Engine - GENERIC
+ *
+ *                              Copyright by Studio Milmake 1999-2000,2004
+ *
+ *------------------------------------------------------------------------ */
 
 #include	"compiler.h"
 #include	"z80core.h"
@@ -116,7 +115,7 @@ void z80c_cb(void) {
 				*reg = rolsft_proc[bit](*reg);
 				break;
 
-			case 0x40:										// bit
+			case 0x40:										/* bit */
 				R_Z80F &= C_FLAG;
 				if ((*reg) & (1 << bit)) {
 					if (bit != 7) {
@@ -131,11 +130,11 @@ void z80c_cb(void) {
 				}
 				break;
 
-			case 0x80:										// reset
+			case 0x80:										/* reset */
 				(*reg) &= ~(1 << bit);
 				break;
 
-			case 0xc0:										// set
+			case 0xc0:										/* set */
 				(*reg) |= 1 << bit;
 				break;
 		}
@@ -148,7 +147,7 @@ void z80c_cb(void) {
 				xhl = rolsft_proc[bit](xhl);
 				break;
 
-			case 0x40:										// bit
+			case 0x40:										/* bit */
 				Z80_COUNT(12);
 				R_Z80F &= C_FLAG;
 				if (xhl & (1 << bit)) {
@@ -164,12 +163,12 @@ void z80c_cb(void) {
 				}
 				return;
 
-			case 0x80:										// reset
+			case 0x80:										/* reset */
 				Z80_COUNT(15);
 				xhl &= ~(1 << bit);
 				break;
 
-			case 0xc0:										// set
+			case 0xc0:										/* set */
 				Z80_COUNT(15);
 				xhl |= 1 << bit;
 				break;
@@ -196,7 +195,7 @@ void z80c_ixcb(void) {
 			xi = rolsft_proc[bit](xi);
 			break;
 
-		case 0x40:										// bit
+		case 0x40:										/* bit */
 			Z80_COUNT(20);
 			R_Z80F &= C_FLAG;
 			if (xi & (1 << bit)) {
@@ -212,12 +211,12 @@ void z80c_ixcb(void) {
 			}
 			return;
 
-		case 0x80:										// reset
+		case 0x80:										/* reset */
 			Z80_COUNT(23);
 			xi &= ~(1 << bit);
 			break;
 
-		case 0xc0:										// set
+		case 0xc0:										/* set */
 			Z80_COUNT(23);
 			xi |= 1 << bit;
 			break;
@@ -243,7 +242,7 @@ void z80c_iycb(void) {
 			xi = rolsft_proc[bit](xi);
 			break;
 
-		case 0x40:										// bit
+		case 0x40:										/* bit */
 			Z80_COUNT(20);
 			R_Z80F &= C_FLAG;
 			if (xi & (1 << bit)) {
@@ -259,12 +258,12 @@ void z80c_iycb(void) {
 			}
 			return;
 
-		case 0x80:										// reset
+		case 0x80:										/* reset */
 			Z80_COUNT(23);
 			xi &= ~(1 << bit);
 			break;
 
-		case 0xc0:										// set
+		case 0xc0:										/* set */
 			Z80_COUNT(23);
 			xi |= 1 << bit;
 			break;

@@ -1,5 +1,5 @@
 
-// #define	SUPPORT_MOTORRISEUP
+/* #define SUPPORT_MOTORRISEUP */
 
 enum {
 	FDCDIR_NONE			= 0x00,
@@ -97,8 +97,8 @@ void fdc_callback(void);
 #define	fdc_callback()
 #endif
 
-void IOOUTCALL fdc_o(UINT port, REG8 value);		// x1_fdc_w
-REG8 IOINPCALL fdc_i(UINT port);					// x1_fdc_r
+void IOOUTCALL fdc_o(UINT port, REG8 value);
+REG8 IOINPCALL fdc_i(UINT port);
 
 void fdc_reset(void);
 

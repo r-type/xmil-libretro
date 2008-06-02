@@ -5,7 +5,7 @@ extern "C" {
 
 void diskdrv_setfddex(REG8 drv, const OEMCHAR *fname,
 												UINT32 ftype, int readonly);
-// void diskdrv_callback(void);
+/* void diskdrv_callback(void); */
 
 #ifdef __cplusplus
 }

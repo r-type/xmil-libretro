@@ -23,7 +23,7 @@ void cmndraw_makegrad(RGB32 *pal, int pals, RGB32 bg, RGB32 fg) {
 }
 
 
-// ----
+/* ---- */
 
 void cmndraw_fill(const CMNVRAM *vram, int x, int y,
 										int cx, int cy, CMNPAL fg) {
@@ -283,7 +283,7 @@ const UINT8	*p;
 }
 
 
-// ----
+/* ---- */
 
 void cmddraw_text8(CMNVRAM *vram, int x, int y, const char *str, CMNPAL fg) {
 
@@ -316,7 +316,7 @@ const UINT8	*ptr;
 }
 
 
-// ---- bmp
+/* bmp */
 
 BRESULT cmndraw_bmp4inf(CMNBMP *bmp, const void *ptr) {
 

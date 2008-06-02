@@ -1,11 +1,10 @@
-//----------------------------------------------------------------------------
-//
-//  Z80C : Z80 Engine - GENERIC
-//
-//                                  Copyright by Studio Milmake 1999-2000,2004
-//
-//----------------------------------------------------------------------------
-
+/* -----------------------------------------------------------------------
+ *
+ * Z80C : Z80 Engine - GENERIC
+ *
+ *                              Copyright by Studio Milmake 1999-2000,2004
+ *
+ *------------------------------------------------------------------------ */
 
 #include	"compiler.h"
 #include	"z80core.h"
@@ -122,85 +121,85 @@ Z80FN _ld_sp_iy(void)		MCR_LD_W(R_Z80SP, R_Z80IY)
 
 
 static const Z80OP z80c_iyp[256] = {
-		_no_op,			_no_op,			_no_op,			_no_op,			// 00
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_no_op,			_add_iy_bc,		_no_op,			_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* 00 */
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_add_iy_bc,		_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// 10
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_no_op,			_add_iy_de,		_no_op,			_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* 10 */
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_add_iy_de,		_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
 
-		_no_op,			_ld_iy_word,	_ld_xword_iy,	_inc_iy,		// 20
-		_inc_iyh,		_dec_iyh,		_ld_iyh_byte,	_no_op,
-		_no_op,			_add_iy_iy,		_ld_iy_xword,	_dec_iy,
-		_inc_iyl,		_dec_iyl,		_ld_iyl_byte,	_no_op,
+	_no_op,			_ld_iy_word,	_ld_xword_iy,	_inc_iy,		/* 20 */
+	_inc_iyh,		_dec_iyh,		_ld_iyh_byte,	_no_op,
+	_no_op,			_add_iy_iy,		_ld_iy_xword,	_dec_iy,
+	_inc_iyl,		_dec_iyl,		_ld_iyl_byte,	_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// 30
-		_inc_xiy,		_dec_xiy,		_ld_xiy_byte,	_no_op,
-		_no_op,			_add_iy_sp,		_no_op,			_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* 30 */
+	_inc_xiy,		_dec_xiy,		_ld_xiy_byte,	_no_op,
+	_no_op,			_add_iy_sp,		_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// 40
-		_ld_b_iyh,		_ld_b_iyl,		_ld_b_xiy,		_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_ld_c_iyh,		_ld_c_iyl,		_ld_c_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* 40 */
+	_ld_b_iyh,		_ld_b_iyl,		_ld_b_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_ld_c_iyh,		_ld_c_iyl,		_ld_c_xiy,		_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// 50
-		_ld_d_iyh,		_ld_d_iyl,		_ld_d_xiy,		_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_ld_e_iyh,		_ld_e_iyl,		_ld_e_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* 50 */
+	_ld_d_iyh,		_ld_d_iyl,		_ld_d_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_ld_e_iyh,		_ld_e_iyl,		_ld_e_xiy,		_no_op,
 
-		_ld_iyh_b,		_ld_iyh_c,		_ld_iyh_d,		_ld_iyh_e,		// 60
-		_ld_nop,		_ld_iyh_iyl,	_ld_h_xiy,		_ld_iyh_a,
-		_ld_iyl_b,		_ld_iyl_c,		_ld_iyl_d,		_ld_iyl_e,
-		_ld_iyl_iyh,	_ld_nop,		_ld_l_xiy,		_ld_iyl_a,
+	_ld_iyh_b,		_ld_iyh_c,		_ld_iyh_d,		_ld_iyh_e,		/* 60 */
+	_ld_nop,		_ld_iyh_iyl,	_ld_h_xiy,		_ld_iyh_a,
+	_ld_iyl_b,		_ld_iyl_c,		_ld_iyl_d,		_ld_iyl_e,
+	_ld_iyl_iyh,	_ld_nop,		_ld_l_xiy,		_ld_iyl_a,
 
-		_ld_xiy_b,		_ld_xiy_c,		_ld_xiy_d,		_ld_xiy_e,		// 70
-		_ld_xiy_h,		_ld_xiy_l,		_no_op,			_ld_xiy_a,
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_ld_a_iyh,		_ld_a_iyl,		_ld_a_xiy,		_no_op,
+	_ld_xiy_b,		_ld_xiy_c,		_ld_xiy_d,		_ld_xiy_e,		/* 70 */
+	_ld_xiy_h,		_ld_xiy_l,		_no_op,			_ld_xiy_a,
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_ld_a_iyh,		_ld_a_iyl,		_ld_a_xiy,		_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// 80
-		_add_a_iyh,		_add_a_iyl,		_add_a_xiy,		_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_adc_a_iyh,		_adc_a_iyl,		_adc_a_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* 80 */
+	_add_a_iyh,		_add_a_iyl,		_add_a_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_adc_a_iyh,		_adc_a_iyl,		_adc_a_xiy,		_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// 90
-		_sub_iyh,		_sub_iyl,		_sub_xiy,		_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_sbc_a_iyh,		_sbc_a_iyl,		_sbc_a_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* 90 */
+	_sub_iyh,		_sub_iyl,		_sub_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_sbc_a_iyh,		_sbc_a_iyl,		_sbc_a_xiy,		_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// a0
-		_and_iyh,		_and_iyl,		_and_xiy,		_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_xor_iyh,		_xor_iyl,		_xor_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* a0 */
+	_and_iyh,		_and_iyl,		_and_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_xor_iyh,		_xor_iyl,		_xor_xiy,		_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// b0
-		_or_iyh,		_or_iyl,		_or_xiy,		_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_cp_iyh,		_cp_iyl,		_cp_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* b0 */
+	_or_iyh,		_or_iyl,		_or_xiy,		_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_cp_iyh,		_cp_iyl,		_cp_xiy,		_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// c0
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_no_op,			_no_op,			_no_op,			z80c_iycb,
-		_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* c0 */
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			z80c_iycb,
+	_no_op,			_no_op,			_no_op,			_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// d0
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,			/* d0 */
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
 
-		_no_op,			_pop_iy,		_no_op,			_ex_xsp_iy,		// e0
-		_no_op,			_push_iy,		_no_op,			_no_op,
-		_no_op,			_jp_iy,			_no_op,			_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_pop_iy,		_no_op,			_ex_xsp_iy,		/* e0 */
+	_no_op,			_push_iy,		_no_op,			_no_op,
+	_no_op,			_jp_iy,			_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op,
 
-		_no_op,			_no_op,			_no_op,			_no_op,			// f0
-		_no_op,			_no_op,			_no_op,			_no_op,
-		_no_op,			_ld_sp_iy,		_no_op,			_no_op,
-		_no_op,			_no_op,			_no_op,			_no_op
+	_no_op,			_no_op,			_no_op,			_no_op,			/* f0 */
+	_no_op,			_no_op,			_no_op,			_no_op,
+	_no_op,			_ld_sp_iy,		_no_op,			_no_op,
+	_no_op,			_no_op,			_no_op,			_no_op
 };
 
 

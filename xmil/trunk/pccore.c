@@ -1,10 +1,10 @@
 
-// #define	SINGLESTEPONLY
-// #define	IPTRACE			(1 << 14)
-// #define	NEVENT_COUNTER
-// #define	PCCOUNTER
-// #define	IOCOUNTER
-// #define	CTCCOUNTER
+/* #define	SINGLESTEPONLY */
+/* #define	IPTRACE			(1 << 14) */
+/* #define	NEVENT_COUNTER */
+/* #define	PCCOUNTER */
+/* #define	IOCOUNTER */
+/* #define	CTCCOUNTER */
 
 #include	"compiler.h"
 #if defined(TRACE) && IPTRACE
@@ -52,7 +52,7 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	CORESTAT	corestat;
 
 
-// ----
+/* ---- */
 
 void pccore_initialize(void) {
 
@@ -105,7 +105,7 @@ void pccore_reset(void) {
 	pccore.ROM_TYPE = xmilcfg.ROM_TYPE;
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	if (xmilcfg.ROM_TYPE >= 3) {
-		pccore.SOUND_SW = 1;					// 無条件で搭載
+		pccore.SOUND_SW = 1;					/* 無条件で搭載 */
 	}
 	else {
 		pccore.SOUND_SW = xmilcfg.SOUND_SW;
@@ -113,7 +113,7 @@ void pccore_reset(void) {
 #endif
 	pccore.DIP_SW = xmilcfg.DIP_SW;
 
-	// スクリーンモードの変更...
+	/* スクリーンモードの変更... */
 #if defined(SUPPORT_TURBOZ)
 	if (pccore.ROM_TYPE >= 3) {
 		if (scrnmng_setcolormode(TRUE) != SUCCESS) {
@@ -135,7 +135,7 @@ void pccore_reset(void) {
 	ievent_reset();
 	calendar_reset();
 	iocore_reset();
-//	nevent_set(15, 4000000 / (60 * 50), neitem_dummy, NEVENT_RELATIVE);
+/*	nevent_set(15, 4000000 / (60 * 50), neitem_dummy, NEVENT_RELATIVE); */
 
 	pal_reset();
 	makescrn_reset();
@@ -147,7 +147,7 @@ void pccore_reset(void) {
 }
 
 
-// ----
+/* ---- */
 
 #if defined(TRACE) && IPTRACE
 static	UINT	trpos = 0;
@@ -234,7 +234,7 @@ void neitem_vsync(UINT id) {
 #endif
 
 
-// ----
+/* ---- */
 
 #if defined(TRACE) && defined(IOCOUNTER)
 static	UINT	iocounter = 0;
@@ -283,7 +283,6 @@ void pccore_exec(BRESULT draw) {
 	frameclock = frameclock * pccore.multiple / 2;
 #endif
 	dispclock = min(frameclock, iocore.e.dispclock);
-//	corestat.dispclock = dispclock;
 	corestat.syncclock = frameclock - dispclock;
 	nevent_set(NEVENT_FRAMES, dispclock, neitem_disp, NEVENT_RELATIVE);
 #endif
@@ -298,7 +297,7 @@ void pccore_exec(BRESULT draw) {
 		}
 #else
 		while(CPU_REMCLOCK > 0) {
-		//	TRACEOUT(("%.4x", Z80_PC));
+			/* TRACEOUT(("%.4x", Z80_PC)); */
 #if defined(TRACE) && IPTRACE
 			treip[trpos & (IPTRACE - 1)] = Z80_PC;
 			trpos++;

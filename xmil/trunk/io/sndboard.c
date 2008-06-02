@@ -15,10 +15,10 @@ void IOOUTCALL opm_o(UINT port, REG8 dat) {
 	REG8	reg;
 
 	lsb = (UINT8)port;
-	if (lsb == 0x00) {					// 0700
+	if (lsb == 0x00) {					/* 0700 */
 		sndboard.opmreg = (UINT8)dat;
 	}
-	else if (lsb == 0x01) {				// 0701
+	else if (lsb == 0x01) {				/* 0701 */
 		reg = sndboard.opmreg;
 		sndboard.opmdat[reg] = dat;
 		x1f_opm(reg, dat);
@@ -26,7 +26,7 @@ void IOOUTCALL opm_o(UINT port, REG8 dat) {
 		opmgen_setreg(reg, dat);
 #endif
 	}
-	else if ((lsb & (~3)) == 0x04) {	// 0704-0707
+	else if ((lsb & (~3)) == 0x04) {	/* 0704-0707 */
 		ctc_o(port, dat);
 	}
 }
@@ -36,10 +36,10 @@ REG8 IOINPCALL opm_i(UINT port) {
 	REG8	lsb;
 
 	lsb = (UINT8)port;
-	if ((lsb & (~1)) == 0x00) {			// 0700/0701
-		return(0x00);											// ゼリアード
+	if ((lsb & (~1)) == 0x00) {			/* 0700/0701 */
+		return(0x00);											/* ゼリアード */
 	}
-	else if ((lsb & (~3)) == 0x04) {	// 0704-0707
+	else if ((lsb & (~3)) == 0x04) {	/* 0704-0707 */
 		return(ctc_i(port));
 	}
 	else {
@@ -101,7 +101,7 @@ REG8 IOINPCALL sndboard_psgsta(UINT port) {
 }
 
 
-// ----
+/* reset */
 
 #if !defined(DISABLE_SOUND)
 void sndboard_update(void) {

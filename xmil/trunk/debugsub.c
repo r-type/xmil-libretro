@@ -7,7 +7,7 @@
 #include	"debugsub.h"
 
 
-//	状態吐き出し　げろりんこ
+/*	状態吐き出し　げろりんこ */
 
 static	int		filenum = 0;
 
