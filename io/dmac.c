@@ -28,27 +28,29 @@ static REG8 iswork(const DMAC *d) {
 
 void dmac_sendready(BRESULT ready) {
 
+	DMAC	*d;
 	REG8	working;
 
+	d = &dma;
 	if (!ready) {
 #if !defined(DMAS_STOIC)
-		dma.working = FALSE;
+		d->working = FALSE;
 #else
-		dma.flag &= ~DMAF_WORKING;
+		d->flag &= ~DMAF_WORKING;
 #endif
-		dma.ready = 8;
+		d->ready = 8;
 	}
 	else {
-		dma.ready = 0;
+		d->ready = 0;
 		working = iswork(&dma);
 #if !defined(DMAS_STOIC)
-		if (dma.working != working) {
-			dma.working = working;
+		if (d->working != working) {
+			d->working = working;
 			nevent_forceexit();
 		}
 #else
-		if ((dma.flag ^ working) & DMAF_WORKING) {
-			dma.flag ^= DMAF_WORKING;
+		if ((d->flag ^ working) & DMAF_WORKING) {
+			d->flag ^= DMAF_WORKING;
 			nevent_forceexit();
 		}
 #endif
@@ -58,31 +60,33 @@ void dmac_sendready(BRESULT ready) {
 
 BRESULT ieitem_dmac(UINT id) {
 
+	DMAC	*d;
 	REG8	vect;
 
-	if (dma.INT_ENBL) {
+	d = &dma;
+	if (d->INT_ENBL) {
 		vect = 0;
 #if !defined(DMAS_STOIC)
-		if ((dma.INT_FLG & 1) && (dma.MACH_FLG)) {
+		if ((d->INT_FLG & 1) && (d->MACH_FLG)) {
 			vect = 2;
 		}
-		else if ((dma.INT_FLG & 2) && (dma.ENDB_FLG)) {
+		else if ((d->INT_FLG & 2) && (d->ENDB_FLG)) {
 			vect = 4;
 		}
 #else
-		if ((dma.INT_FLG & 1) && (!(dma.flag & DMAF_MACH))) {
+		if ((d->INT_FLG & 1) && (!(d->flag & DMAF_MACH))) {
 			vect = 2;
 		}
-		else if ((dma.INT_FLG & 2) && (!(dma.flag & DMAF_ENDB))) {
+		else if ((d->INT_FLG & 2) && (!(d->flag & DMAF_ENDB))) {
 			vect = 4;
 		}
 #endif
 		if (vect) {
-			if (dma.INT_FLG & 0x20) {
-				vect += (dma.INT_VCT & 0xf9);
+			if (d->INT_FLG & 0x20) {
+				vect += (d->INT_VCT & 0xf9);
 			}
 			else {
-				vect = dma.INT_VCT;
+				vect = d->INT_VCT;
 			}
 			Z80_INTERRUPT(vect);
 			return(TRUE);
@@ -127,147 +131,189 @@ static void setdmareaddat(DMAC *d) {
 	d->rptr = 0;
 }
 
-
-void IOOUTCALL dmac_o(UINT port, REG8 value) {
+static void enable(DMAC *d) {
 
 	REG8	working;
 
+	d->enable = 1;
+	working = iswork(d);
+#if !defined(DMAS_STOIC)
+	if (d->working != working) {
+		d->working = working;
+		if (d->mode == 1) {
+			z80dmap();
+		}
+		else {
+			nevent_forceexit();
+		}
+	}
+#else
+	if ((d->flag ^ working) & DMAF_WORKING) {
+		d->flag ^= DMAF_WORKING;
+		if (d->mode == 1) {
+			z80dmap();
+		}
+		else {
+			nevent_forceexit();
+		}
+	}
+#endif
+}
+
+static void disable(DMAC *d) {
+
+	if (!d->enable)
+	{
+		d->enable = 0;
+#if !defined(DMAS_STOIC)
+		d->working = 0;
+#else
+		d->flag &= ~DMAF_WORKING;
+#endif
+	}
+}
+
+void IOOUTCALL dmac_o(UINT port, REG8 value) {
+
+	DMAC	*d;
+	REG8	cmd;
+	REG8	mode;
+
 	/* TRACEOUT(("out %.4x %.2x", port, value)); */
 
-	dma.enable = 0;
-
-	if (!dma.wcnt) {
-		/* dma.wcnt = 0; */
-		dma.wptr = 0;
+	d = &dma;
+	if (!d->wcnt) {
+		disable(d);
+		d->wptr = 0;
 		if (!(value & 0x80)) {
 			if ((value & 3) != 0) {
-				dma.WR0 = value;
+				d->WR0 = value;
 				if (value & 0x08) {
-					dma.wtbl[dma.wcnt++] = offsetof(DMAC, addr.b.al);
+					d->wtbl[d->wcnt++] = offsetof(DMAC, addr.b.al);
 				}
 				if (value & 0x10) {
-					dma.wtbl[dma.wcnt++] = offsetof(DMAC, addr.b.ah);
+					d->wtbl[d->wcnt++] = offsetof(DMAC, addr.b.ah);
 				}
 				if (value & 0x20) {
-					dma.wtbl[dma.wcnt++] = offsetof(DMAC, leng.b.ll);
+					d->wtbl[d->wcnt++] = offsetof(DMAC, leng.b.ll);
 				}
 				if (value & 0x40) {
-					dma.wtbl[dma.wcnt++] = offsetof(DMAC, leng.b.lh);
+					d->wtbl[d->wcnt++] = offsetof(DMAC, leng.b.lh);
 				}
 			}
 			else {
 				if (value & 4) {
-					dma.cnt_a.b.flag = value;
+					d->cnt_a.b.flag = value;
 				}
 				else {
-					dma.cnt_b.b.flag = value;
+					d->cnt_b.b.flag = value;
 				}
 				if (value & 0x40) {
-					dma.wtbl[dma.wcnt++] = offsetof(DMAC, dummydat);
+					d->wtbl[d->wcnt++] = offsetof(DMAC, dummydat);
 				}
 			}
 		}
 		else {
-			REG8 cmd;
 			cmd = value & 3;
 			if (cmd == 0) {
-				/* dma.WR3 = value; */
+				/* d->WR3 = value; */
 				if (value & 0x08) {
-					dma.wtbl[dma.wcnt++] = offsetof(DMAC, MASK_BYT);
+					d->wtbl[d->wcnt++] = offsetof(DMAC, MASK_BYT);
 				}
 				if (value & 0x10) {
-					dma.wtbl[dma.wcnt++] = offsetof(DMAC, MACH_BYT);
+					d->wtbl[d->wcnt++] = offsetof(DMAC, MACH_BYT);
 				}
-				dma.INT_ENBL = (UINT8)((value & 0x20)?1:0);
-				dma.enable = (UINT8)((value & 0x40)?1:0);
+				d->INT_ENBL = (UINT8)((value & 0x20)?1:0);
+				if (value & 0x40)
+				{
+					enable(d);
+				}
 			}
 			else if (cmd == 1) {
-				REG8 mode;
 				mode = (REG8)(value & (3 << 5));
 				if (mode != (3 << 5)) {
-					dma.WR4 = value;
-					dma.mode = (UINT8)(mode >> 5);
+					d->WR4 = value;
+					d->mode = (UINT8)(mode >> 5);
 					if (value & 0x04) {
-						dma.wtbl[dma.wcnt++] = offsetof(DMAC, addr.b.bl);
+						d->wtbl[d->wcnt++] = offsetof(DMAC, addr.b.bl);
 					}
 					if (value & 0x08) {
-						dma.wtbl[dma.wcnt++] = offsetof(DMAC, addr.b.bh);
+						d->wtbl[d->wcnt++] = offsetof(DMAC, addr.b.bh);
 					}
 					if (value & 0x10) {
-						dma.wtbl[dma.wcnt++] = offsetof(DMAC, INT_FLG);
+						d->wtbl[d->wcnt++] = offsetof(DMAC, INT_FLG);
 					}
 				}
 			}
 #if 1
 			else if (cmd == 2) {
 				if (!(value & 0x44)) {
-					dma.WR5 = value;
+					d->WR5 = value;
 				}
 			}
 #else
 			else if (((value & 7) == 2) && (!(value & 0x40))) {
-				dma.WR5 = value;
+				d->WR5 = value;
 			}
 #endif
 			else if (cmd == 3) {
 				switch(DMACMD(value)) {
 					case DMACMD(0x83):		/* dma disable */
-						/* dma.enable = 0; */
 						break;
 
 					case DMACMD(0x87):		/* dma enable */
 #if !defined(DMAS_STOIC)
-						dma.increment = 0;
+						d->increment = 0;
 #else
-						dma.flag &= ~DMAF_INCREMENT;
+						d->flag &= ~DMAF_INCREMENT;
 #endif
-						dma.enable = 1;
+						enable(d);
 						break;
 
 					case DMACMD(0x8b):		/* re-init status byte */
 #if !defined(DMAS_STOIC)
-						dma.MACH_FLG = 0;
-						dma.ENDB_FLG = 0;
+						d->MACH_FLG = 0;
+						d->ENDB_FLG = 0;
 #else
-						dma.flag |= DMAF_MACH | DMAF_ENDB;
+						d->flag |= DMAF_MACH | DMAF_ENDB;
 #endif
 						break;
 
 					case DMACMD(0xa7):		/* イニシエイトリードシーケンス */
-						setdmareaddat(&dma);
+						setdmareaddat(d);
 						break;
 
 					case DMACMD(0xab):		/* interrupt enable */
-						dma.INT_ENBL = 1;
+						d->INT_ENBL = 1;
 						break;
 
 					case DMACMD(0xaf):		/* interrupt disable */
-						dma.INT_ENBL = 0;
+						d->INT_ENBL = 0;
 						break;
 
 					case DMACMD(0xb3):		/* force ready */
-						dma.ready = (dma.WR5 & 0x08);
+						d->ready = (d->WR5 & 0x08);
 						break;
 
 					case DMACMD(0xbb):		/* read mask follows */
-						dma.wtbl[dma.wcnt++] = offsetof(DMAC, RR_MSK);
+						d->wtbl[d->wcnt++] = offsetof(DMAC, RR_MSK);
 						break;
 
 					case DMACMD(0xbf):		/* read status byte */
-						dma.RR_MSK = 1;
-						setdmareaddat(&dma);
+						d->RR_MSK = 1;
+						setdmareaddat(d);
 						break;
 
 					case DMACMD(0xc3):		/* reset */
 											/* ローグアライアンス */	/* ver0.25 */
-						dma.WR0 &= ~3;		/* 0でいいと思うケド… */
+						d->WR0 &= ~3;		/* 0でいいと思うケド… */
 #if !defined(DMAS_STOIC)
-						dma.increment = 0;
+						d->increment = 0;
 #else
-						dma.flag &= ~DMAF_INCREMENT;
+						d->flag &= ~DMAF_INCREMENT;
 #endif
-						/* dma.enable = 0; */
-						dma.INT_ENBL = 0;
+						/* d->enable = 0; */
+						d->INT_ENBL = 0;
 						break;
 
 					case DMACMD(0xc7):				/* リセットタイミングA */
@@ -275,143 +321,128 @@ void IOOUTCALL dmac_o(UINT port, REG8 value) {
 						break;
 
 					case DMACMD(0xcf):				/* ロード */
-						/* dma.mode = (UINT8)((dma.WR4 >> 5) & 3); */
-						dma.cnt_a.w.addr = dma.addr.w.a;
-						dma.cnt_b.w.addr = dma.addr.w.b;
-						dma.leng.w.n = 0;
+						/* d->mode = (UINT8)((d->WR4 >> 5) & 3); */
+						d->cnt_a.w.addr = d->addr.w.a;
+						d->cnt_b.w.addr = d->addr.w.b;
+						d->leng.w.n = 0;
 #if !defined(DMAS_STOIC)
-						dma.MACH_FLG = 0;
-						dma.ENDB_FLG = 0;
+						d->MACH_FLG = 0;
+						d->ENDB_FLG = 0;
 #else
-						dma.flag |= DMAF_MACH | DMAF_ENDB;
+						d->flag |= DMAF_MACH | DMAF_ENDB;
 #endif
-						/* dma.enable = 0; */
+						/* d->enable = 0; */
 						break;
 
 					case DMACMD(0xd3):				/* コンティニュー */
 #if !defined(DMAS_STOIC)
-						if (dma.increment) {
-							dma.increment = 0;
-							switch(dma.cnt_a.b.flag & 0x30) {
+						if (d->increment) {
+							d->increment = 0;
+							switch(d->cnt_a.b.flag & 0x30) {
 								case 0x00:
-									dma.cnt_a.w.addr--;
+									d->cnt_a.w.addr--;
 									break;
 
 								case 0x10:
-									dma.cnt_a.w.addr++;
+									d->cnt_a.w.addr++;
 									break;
 							}
-							switch(dma.cnt_b.b.flag & 0x30) {
+							switch(d->cnt_b.b.flag & 0x30) {
 								case 0x00:
-									dma.cnt_b.w.addr--;
+									d->cnt_b.w.addr--;
 									break;
 
 								case 0x10:
-									dma.cnt_b.w.addr++;
+									d->cnt_b.w.addr++;
 									break;
 							}
 						}
 #else
-						if (dma.flag & DMAF_INCREMENT) {
-							dma.flag &= ~DMAF_INCREMENT;
-							switch(dma.cnt_a.b.flag & 0x30) {
+						if (d->flag & DMAF_INCREMENT) {
+							d->flag &= ~DMAF_INCREMENT;
+							switch(d->cnt_a.b.flag & 0x30) {
 								case 0x00:
-									dma.cnt_a.w.addr--;
+									d->cnt_a.w.addr--;
 									break;
 
 								case 0x10:
-									dma.cnt_a.w.addr++;
+									d->cnt_a.w.addr++;
 									break;
 							}
-							switch(dma.cnt_b.b.flag & 0x30) {
+							switch(d->cnt_b.b.flag & 0x30) {
 								case 0x00:
-									dma.cnt_b.w.addr--;
+									d->cnt_b.w.addr--;
 									break;
 
 								case 0x10:
-									dma.cnt_b.w.addr++;
+									d->cnt_b.w.addr++;
 									break;
 							}
 						}
 #endif
 #if !defined(DMAS_STOIC)
-						dma.MACH_FLG = 0;
-						dma.ENDB_FLG = 0;
+						d->MACH_FLG = 0;
+						d->ENDB_FLG = 0;
 #else
-						dma.flag |= DMAF_MACH | DMAF_ENDB;
+						d->flag |= DMAF_MACH | DMAF_ENDB;
 #endif
-						dma.leng.w.n = 0;
-						dma.enable = 1;
+						d->leng.w.n = 0;
+						enable(d);
 						break;
 				}
 			}
 		}
 	}
 	else {
-		*(((UINT8 *)&dma) + dma.wtbl[dma.wptr]) = value;
-		if (dma.wtbl[dma.wptr] == offsetof(DMAC, INT_FLG)) {
+		*(((UINT8 *)d) + d->wtbl[d->wptr]) = value;
+		if (d->wtbl[d->wptr] == offsetof(DMAC, INT_FLG)) {
 			if (value & 0x08) {
-				dma.wtbl[dma.wptr + dma.wcnt] = offsetof(DMAC, INT_PLS);
-				dma.wcnt++;
+				d->wtbl[d->wptr + d->wcnt] = offsetof(DMAC, INT_PLS);
+				d->wcnt++;
 			}
 			if (value & 0x10) {
-				dma.wtbl[dma.wptr + dma.wcnt] = offsetof(DMAC, INT_VCT);
-				dma.wcnt++;
+				d->wtbl[d->wptr + d->wcnt] = offsetof(DMAC, INT_VCT);
+				d->wcnt++;
 			}
 		}
-		else if (dma.wtbl[dma.wptr] == offsetof(DMAC, RR_MSK)) {
-			setdmareaddat(&dma);
+		else if (d->wtbl[d->wptr] == offsetof(DMAC, RR_MSK)) {
+			setdmareaddat(d);
 		}
-		dma.wptr++;
-		dma.wcnt--;
+		d->wptr++;
+		d->wcnt--;
 	}
-
-	working = iswork(&dma);
-#if !defined(DMAS_STOIC)
-	if (dma.working != working) {
-		dma.working = working;
-		if (working) {
-			nevent_forceexit();
-		}
-	}
-#else
-	if ((dma.flag ^ working) & DMAF_WORKING) {
-		dma.flag ^= DMAF_WORKING;
-		if (working) {
-			nevent_forceexit();
-		}
-	}
-#endif
 	(void)port;
 }
 
 REG8 IOINPCALL dmac_i(UINT port) {
 
+	DMAC	*d;
 	REG8	ret;
 
+	d = &dma;
 	ret = 0xcc;
-	if (dma.enable) {
+	if (d->enable) {
 		ret |= 0x01;
 	}
-	if ((dma.mode != 1) && ((dma.WR5 ^ dma.ready) & 8)) {
+	if ((d->mode != 1) && ((d->WR5 ^ d->ready) & 8)) {
 		ret |= 0x02;
 	}
 #if !defined(DMAS_STOIC)
-	if (!dma.MACH_FLG) {
+	if (!d->MACH_FLG) {
 		ret |= 0x10;
 	}
-	if (!dma.ENDB_FLG) {
+	if (!d->ENDB_FLG) {
 		ret |= 0x20;
 	}
 #else
-	ret |= (dma.flag & (DMAF_MACH | DMAF_ENDB));
+	ret |= (d->flag & (DMAF_MACH | DMAF_ENDB));
 #endif
-	dma.RR = ret;
-	if (dma.rcnt) {
-		if (dma.rptr >= dma.rcnt) {
-			dma.rptr = 0;
+	d->RR = ret;
+	if (d->rcnt) {
+		if (d->rptr >= d->rcnt) {
+			d->rptr = 0;
 		}
-		ret = (*(((UINT8 *)&dma) + dma.rtbl[dma.rptr++]));
+		ret = (*(((UINT8 *)d) + d->rtbl[d->rptr++]));
 	}
 	(void)port;
 	/* TRACEOUT(("inp %.4x %.2x", port, ret)); */
@@ -423,11 +454,14 @@ REG8 IOINPCALL dmac_i(UINT port) {
 
 void dmac_reset(void) {
 
-	ZeroMemory(&dma, sizeof(dma));
+	DMAC *d;
+
+	d = &dma;
+	ZeroMemory(d, sizeof(*d));
 #if defined(DMAS_STOIC)
-	dma.flag = DMAF_MACH | DMAF_ENDB;
+	d->flag = DMAF_MACH | DMAF_ENDB;
 #endif
-	dma.ready = 8;
-	dma.RR = 0x38;
+	d->ready = 8;
+	d->RR = 0x38;
 }
 

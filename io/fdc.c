@@ -512,7 +512,7 @@ static void fdcenddata(FDC *f) {
 			r = TRUE;
 		}
 		if ((f->s.cmd & 0x20) && (f->s.bufwrite)) {
-			stat = type2flash(&fdc);
+			stat = type2flash(f);
 			if (stat & (FDDSTAT_RECNFND | FDDSTAT_WRITEFAULT)) {
 				r = FALSE;
 			}
@@ -531,244 +531,306 @@ static void fdcenddata(FDC *f) {
 	}
 }
 
-void IOOUTCALL fdc_o(UINT port, REG8 value) {
+
+
+/* IO-Sub */
+
+static void IOOUTCALL fdc_o0ff8(FDC *f, REG8 value) {
 
 	REG8	cmd;
 
-	if ((port & (~7)) != 0x0ff8) {
-		return;
+	/* コマンド */
+	if (f->s.bufwrite) {
+		f->s.stat = type2flash(f);
 	}
-	TRACEOUT(("fdc %.4x,%.2x [%.4x]", port, value, Z80_PC));
-	switch(port & 7) {
-		case 0:									/* コマンド */
-			if (fdc.s.bufwrite) {
-				fdc.s.stat = type2flash(&fdc);
-			}
-			if (fdc.s.bufdir != FDCDIR_NONE) {
-				fdc.s.bufdir = FDCDIR_NONE;
-				dmac_sendready(FALSE);
-			}
+	if (f->s.bufdir != FDCDIR_NONE) {
+		f->s.bufdir = FDCDIR_NONE;
+		dmac_sendready(FALSE);
+	}
 
-			fdc.s.cmd = value;
-			cmd = (REG8)(value >> 4);
-			fdc.s.ctype = fdctype[cmd];
-			/* TRACEOUT(("fdc cmd: %.2x", value)); */
-			/* リストアコマンドにおいて
-			 * 　マリオは コマンド発行後にbusyを見張る
-			 * 　逆にソーサリアンとかは busyだとエラーになる…
-			 * 条件は何？
-			 */
-			setbusy(&fdc, 20);
-			switch(cmd) {
-				case 0x00:								/* リストア */
-					fdc.s.motor = 0x80;					/* モーターOn? */
-					fdc.s.c = 0;
-					fdc.s.step = 1;
-					fdc.s.r = 0;						/* デゼニワールド */
-					seekcmd(&fdc);
-					fdc.s.rreg = 0;
-					break;
-
-				case 0x01:								/* シーク */
-					fdc.s.motor = 0x80;					/* モーターOn */
-					fdc.s.step = (SINT8)((fdc.s.c<=fdc.s.data)?1:-1);
-					fdc.s.c = fdc.s.data;
-					seekcmd(&fdc);
-					break;
-
-				case 0x02:								/* ステップ */
-				case 0x03:
-				case 0x04:								/* ステップイン */
-				case 0x05:
-				case 0x06:								/* ステップアウト */
-				case 0x07:
-					fdc.s.stat = FDDSTAT_HEADENG;
-					if (fdc.s.motor) {
-						if (cmd & 0x04) {
-							fdc.s.step = (cmd & 0x02)?-1:1;
-						}
-						fdc.s.c += fdc.s.step;
-						if (cmd & 1) {
-							seekcmd(&fdc);
-						}
-					}
-					break;
-
-				case 0x08:								/* リードデータ */
-				case 0x09:
-				case 0x0a:								/* ライトデータ */
-				case 0x0b:
-					fdc.s.stat = type2cmd(&fdc, fdc.s.r);
-					break;
-
-				case 0xc:								/* リードアドレス */
-					setbusy(&fdc, 200);
-					fdc.s.stat = crccmd(&fdc);
-					break;
-
-				case 0x0d:								/* フォースインタラプト */
-					setbusy(&fdc, 0);					/* 必要ない？ */
-					/* fdc.s.skip = 0; */				/* 000330 */
-					fdc.s.stat = 0;
-					dmac_sendready(FALSE);
-					break;
-
-				case 0x0e:								/* リードトラック */
-#if !defined(CONST_DISKIMAGE)
-					setbusy(&fdc, 200);
-					ZeroMemory(fdc.s.buffer, 0x1a00);
-					fdc.s.bufpos = 0;
-					fdc.s.bufsize = 0x1a00;
-					fdc.s.bufdir = FDCDIR_IN;
-					fdc.s.stat = 0;
-#else
-					fdc.s.stat = FDDSTAT_SEEKERR;
-#endif
-					break;
-
-				case 0x0f:								/* ライトトラック */
-#if !defined(CONST_DISKIMAGE)
-					setbusy(&fdc, 200);
-					fdc.s.stat = wrtrkstart(&fdc);
-#else
-					fdc.s.stat = FDDSTAT_LOSTDATA;
-#endif
-					break;
-			}
+	f->s.cmd = value;
+	cmd = (REG8)(value >> 4);
+	f->s.ctype = fdctype[cmd];
+	/* TRACEOUT(("fdc cmd: %.2x", value)); */
+	/* リストアコマンドにおいて
+	 * 　マリオは コマンド発行後にbusyを見張る
+	 * 　逆にソーサリアンとかは busyだとエラーになる…
+	 * 条件は何？
+	 */
+	setbusy(f, 20);
+	switch(cmd) {
+		case 0x00:								/* リストア */
+			f->s.motor = 0x80;					/* モーターOn? */
+			f->s.c = 0;
+			f->s.step = 1;
+			f->s.r = 0;							/* デゼニワールド */
+			seekcmd(f);
+			f->s.rreg = 0;
 			break;
 
-		case 1:									/* トラック */
-			fdc.s.creg = value;
+		case 0x01:								/* シーク */
+			f->s.motor = 0x80;					/* モーターOn */
+			f->s.step = (SINT8)((f->s.c<=f->s.data)?1:-1);
+			f->s.c = f->s.data;
+			seekcmd(f);
 			break;
 
-		case 2:									/* セクタ */
-			fddmtr_waitsec(value);
-			fdc.s.r = value;
-			fdc.s.rreg = value;
-			break;
-
-		case 3:									/* データ */
-			fdc.s.data = value;
-#if !defined(CONST_DISKIMAGE)
-			if (fdc.s.motor) {
-				if (fdc.s.bufdir == FDCDIR_OUT) {
-					fdc.s.bufwrite = TRUE;
-					fdc.s.curtime = 0;
-					fdc.s.buffer[fdc.s.bufpos] = value;
-					if (!fdc.s.busy) {
-						fdc.s.bufpos++;
-						if (fdc.s.bufpos >= fdc.s.bufsize) {
-							fdcenddata(&fdc);
-						}
-					}
+		case 0x02:								/* ステップ */
+		case 0x03:
+		case 0x04:								/* ステップイン */
+		case 0x05:
+		case 0x06:								/* ステップアウト */
+		case 0x07:
+			f->s.stat = FDDSTAT_HEADENG;
+			if (f->s.motor) {
+				if (cmd & 0x04) {
+					f->s.step = (cmd & 0x02)?-1:1;
 				}
-				else if (fdc.s.bufdir == FDCDIR_TAO) {
-					wrtrkdata(&fdc, value);
+				f->s.c += f->s.step;
+				if (cmd & 1) {
+					seekcmd(f);
 				}
 			}
+			break;
+
+		case 0x08:								/* リードデータ */
+		case 0x09:
+		case 0x0a:								/* ライトデータ */
+		case 0x0b:
+			f->s.stat = type2cmd(f, f->s.r);
+			break;
+
+		case 0xc:								/* リードアドレス */
+			setbusy(f, 200);
+			f->s.stat = crccmd(f);
+			break;
+
+		case 0x0d:								/* フォースインタラプト */
+			setbusy(f, 0);						/* 必要ない？ */
+			/* f->s.skip = 0; */				/* 000330 */
+			f->s.stat = 0;
+			dmac_sendready(FALSE);
+			break;
+
+		case 0x0e:								/* リードトラック */
+#if !defined(CONST_DISKIMAGE)
+			setbusy(f, 200);
+			ZeroMemory(f->s.buffer, 0x1a00);
+			f->s.bufpos = 0;
+			f->s.bufsize = 0x1a00;
+			f->s.bufdir = FDCDIR_IN;
+			f->s.stat = 0;
+#else
+			f->s.stat = FDDSTAT_SEEKERR;
 #endif
 			break;
 
-		case 4:									/* ドライブ・サイド */
-			fdc.s.ctbl[fdc.s.drv] = fdc.s.c;
-			fdc.s.c = fdc.s.ctbl[value & 0x03];
-			fdc.s.motor = (UINT8)(value & 0x80);
-			fdc.s.drv = (UINT8)(value & 0x03);
-			fdc.s.h = (UINT8)((value >> 4) & 1);
-			fdc.s.cmd = 0;							/* T&E SORCERIAN */
-			fdc.s.ctype = 0;
-			fdc.s.stat = 0;
-
-			fddmtr_drvset();
-			if (!fdc.s.motor) {
-				fdc.s.r = 0;						/* SACOM TELENET */
-				fdc.s.rreg = 0;
-			}
-#if defined(SUPPORT_MOTORRISEUP)
-			setmotor(&fdc, value);
+		case 0x0f:								/* ライトトラック */
+#if !defined(CONST_DISKIMAGE)
+			setbusy(f, 200);
+			f->s.stat = wrtrkstart(f);
+#else
+			f->s.stat = FDDSTAT_LOSTDATA;
 #endif
 			break;
 	}
 }
 
-REG8 IOINPCALL fdc_i(UINT port) {
+static void IOOUTCALL fdc_o0ff9(FDC *f, REG8 value) {
+
+	/* トラック */
+	f->s.creg = value;
+}
+
+static void IOOUTCALL fdc_o0ffa(FDC *f, REG8 value) {
+
+	/* セクタ */
+	fddmtr_waitsec(value);
+	f->s.r = value;
+	f->s.rreg = value;
+}
+
+static void IOOUTCALL fdc_o0ffb(FDC *f, REG8 value) {
+
+	/* データ */
+	f->s.data = value;
+#if !defined(CONST_DISKIMAGE)
+	if (f->s.motor) {
+		if (f->s.bufdir == FDCDIR_OUT) {
+			f->s.bufwrite = TRUE;
+			f->s.curtime = 0;
+			f->s.buffer[f->s.bufpos] = value;
+			if (!f->s.busy) {
+				f->s.bufpos++;
+				if (f->s.bufpos >= f->s.bufsize) {
+					fdcenddata(f);
+				}
+			}
+		}
+		else if (f->s.bufdir == FDCDIR_TAO) {
+			wrtrkdata(f, value);
+		}
+	}
+#endif
+}
+
+static void IOOUTCALL fdc_o0ffc(FDC *f, REG8 value) {
+
+	/* ドライブ・サイド */
+	f->s.ctbl[f->s.drv] = f->s.c;
+	f->s.c = f->s.ctbl[value & 0x03];
+	f->s.motor = (UINT8)(value & 0x80);
+	f->s.drv = (UINT8)(value & 0x03);
+	f->s.h = (UINT8)((value >> 4) & 1);
+	f->s.cmd = 0;							/* T&E SORCERIAN */
+	f->s.ctype = 0;
+	f->s.stat = 0;
+
+	fddmtr_drvset();
+	if (!f->s.motor) {
+		f->s.r = 0;						/* SACOM TELENET */
+		f->s.rreg = 0;
+	}
+#if defined(SUPPORT_MOTORRISEUP)
+	setmotor(f, value);
+#endif
+}
+
+static void IOOUTCALL fdc_o0(FDC *f, REG8 value) {
+}
+
+static REG8 IOINPCALL fdc_i0ff8(FDC *f) {
 
 	REG8	ret;
 
-	/* TRACEOUT(("fdc inp %.4x", port)); */
-
-	if ((port & (~7)) != 0x0ff8) {
-		return(0xff);
+	/* ステータス */
+	ret = f->s.busy;
+	if (ret) {
+		return(ret);
 	}
-	switch(port & 7) {
-		case 0:										/* ステータス */
-			ret = fdc.s.busy;
-			if (ret) {
-				return(ret);
-			}
 #if 1
-			if (fdc.s.bufdir >= FDCDIR_IN) {		/* YsII */
-				fdc.s.curtime++;
-				if (fdc.s.curtime >= 8) {
-					fdc.s.curtime = 0;
-					fdc.s.stat |= FDDSTAT_LOSTDATA;
-					fdc.s.bufpos++;
-					if (fdc.s.bufpos >= fdc.s.bufsize) {
-						fdcenddata(&fdc);
-					}
-				}
+	if (f->s.bufdir >= FDCDIR_IN) {		/* YsII */
+		f->s.curtime++;
+		if (f->s.curtime >= 8) {
+			f->s.curtime = 0;
+			f->s.stat |= FDDSTAT_LOSTDATA;
+			f->s.bufpos++;
+			if (f->s.bufpos >= f->s.bufsize) {
+				fdcenddata(f);
 			}
+		}
+	}
 #endif
-			ret = getstat(&fdc);
+	ret = getstat(f);
 #if 1
-			if (!(ret & 0x02)) {
-				dmac_sendready(FALSE);
-			}
+	if (!(ret & 0x02)) {
+		dmac_sendready(FALSE);
+	}
 #endif
-			/* TRACEOUT(("ret->%.2x", ret)); */
-			return(ret);
+	/* TRACEOUT(("ret->%.2x", ret)); */
+	return(ret);
+}
 
-		case 1:									/* トラック */
-TRACEOUT(("fdc inp %.4x,%.2x", port, fdc.s.creg));
-			return(fdc.s.creg);
+static REG8 IOINPCALL fdc_i0ff9(FDC *f) {
 
-		case 2:									/* セクタ */
-TRACEOUT(("fdc inp %.4x,%.2x", port, fdc.s.rreg));
-			return(fdc.s.rreg);
+	/* トラック */
+	TRACEOUT(("fdc inp %.4x,%.2x", 0x0ff9, f->s.creg));
+	return(f->s.creg);
+}
 
-		case 3:									/* データ */
-			if (fdc.s.motor) {
-				if (fdc.s.bufdir == FDCDIR_IN) {
-					fdc.s.curtime = 0;
+static REG8 IOINPCALL fdc_i0ffa(FDC *f) {
+
+	/* セクタ */
+	TRACEOUT(("fdc inp %.4x,%.2x", 0x0ffa, f->s.rreg));
+	return(f->s.rreg);
+}
+
+static REG8 IOINPCALL fdc_i0ffb(FDC *f) {
+
+	/* データ */
+	if (f->s.motor) {
+		if (f->s.bufdir == FDCDIR_IN) {
+			f->s.curtime = 0;
 #if !defined(CONST_DISKIMAGE)
-					fdc.s.data = fdc.s.buffer[fdc.s.bufpos];
+			f->s.data = f->s.buffer[f->s.bufpos];
 #else
-					fdc.s.data = fdc.e.buffer[fdc.s.bufpos];
+			f->s.data = f->e.buffer[f->s.bufpos];
 #endif
-					if (!fdc.s.busy) {
-						fdc.s.bufpos++;
-						if (fdc.s.bufpos >= fdc.s.bufsize) {
-							fdcenddata(&fdc);
-						}
-					}
-					/* TRACEOUT(("read %.2x - %.2x [%.4x]", fdc.s.bufpos, fdc.s.data, Z80_PC)); */
+			if (!f->s.busy) {
+				f->s.bufpos++;
+				if (f->s.bufpos >= f->s.bufsize) {
+					fdcenddata(f);
 				}
 			}
-			return(fdc.s.data);
-
-		case 4:									/* FM */
-		case 5:									/* MFM */
-			return(0x00);
-
-		case 6:									/* 1.6M */
-			fdc.s.media = DISKTYPE_2HD;
-			break;
-
-		case 7:									/* 500K/1M */
-			fdc.s.media = DISKTYPE_2D;
-			break;
+			/* TRACEOUT(("read %.2x - %.2x [%.4x]", f->s.bufpos, f->s.data, Z80_PC)); */
+		}
 	}
+	return(f->s.data);
+}
+
+static REG8 IOINPCALL fdc_i0ffc(FDC *f) {
+
+	/* FM */
+	return(0x00);
+}
+
+static REG8 IOINPCALL fdc_i0ffd(FDC *f) {
+
+	/* MFM */
+	return(0x00);
+}
+
+static REG8 IOINPCALL fdc_i0ffe(FDC *f) {
+
+	/* 1.6M */
+	f->s.media = DISKTYPE_2HD;
 	return(0xff);
+}
+
+static REG8 IOINPCALL fdc_i0fff(FDC *f) {
+
+	/* 500K/1M */
+	f->s.media = DISKTYPE_2D;
+	return(0xff);
+}
+
+
+/* IO */
+
+typedef void (IOINPCALL * FNFDCOUT)(FDC *f, REG8 value);
+static const FNFDCOUT s_fnOut[] =
+{
+	fdc_o0ff8,	fdc_o0ff9,	fdc_o0ffa,	fdc_o0ffb,
+	fdc_o0ffc,	fdc_o0,		fdc_o0,		fdc_o0,
+};
+
+typedef REG8 (IOINPCALL * FNFDCINP)(FDC *f);
+static const FNFDCINP s_fnInp[] =
+{
+	fdc_i0ff8,	fdc_i0ff9,	fdc_i0ffa,	fdc_i0ffb,
+	fdc_i0ffc,	fdc_i0ffd,	fdc_i0ffe,	fdc_i0fff,
+};
+
+void IOINPCALL fdc_o(UINT port, REG8 value)
+{
+	if ((port & (~7)) != 0x0ff8)
+	{
+		return;
+	}
+
+	/* TRACEOUT(("fdc out %.4x,%.2x", port, value)); */
+	(s_fnOut[port & 7])(&fdc, value);
+}
+
+REG8 IOINPCALL fdc_i(UINT uPort)
+{
+	if ((uPort & (~7)) != 0x0ff8)
+	{
+		return 0xff;
+	}
+
+	/* TRACEOUT(("fdc inp %.4x", port)); */
+	return (s_fnInp[uPort & 7])(&fdc);
 }
 
 

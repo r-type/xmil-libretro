@@ -59,7 +59,7 @@ void z80dmap(void) {
 		addr = cnt1->w.addr;
 		if (flag1 & 8) {
 			dat = iocore_inp(addr);
-			TRACEOUT(("dma r %.4x - %.2x", addr, dat));
+			/* TRACEOUT(("dma r %.4x - %.2x", addr, dat)); */
 		}
 		else {
 			dat = z80mem_read8(addr);
@@ -81,7 +81,7 @@ void z80dmap(void) {
 			}
 			else {
 				z80mem_write8(addr, dat);
-				TRACEOUT(("dma w %.4x - %.2x", addr, dat));
+				/* TRACEOUT(("dma w %.4x - %.2x", addr, dat)); */
 			}
 		}
 

@@ -42,9 +42,12 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 #if !defined(DISABLE_SOUND)
 							22050, 500,
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-							0, 64,
+							64,
 #endif
 							64, 0, 80,
+#endif
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+							0,
 #endif
 							0, 0, 0, 0};
 
@@ -250,6 +253,7 @@ static	UINT	iocounter = 0;
 		UINT	pccnt3;
 		UINT	lastpc;
 #endif
+
 
 void pccore_exec(BRESULT draw) {
 
