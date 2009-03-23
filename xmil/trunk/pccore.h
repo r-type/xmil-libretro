@@ -13,12 +13,14 @@ typedef struct {
 	UINT16	samplingrate;
 	UINT16	delayms;
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	UINT8	SOUND_SW;
 	UINT8	vol_fm;
 #endif
 	UINT8	vol_ssg;
 	UINT8	MOTOR;
 	UINT8	MOTORVOL;
+#endif
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	UINT8	SOUND_SW;
 #endif
 
 	UINT8	MOUSE_SW;

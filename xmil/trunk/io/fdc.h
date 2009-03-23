@@ -72,17 +72,16 @@ typedef struct {
 #endif
 } FDCSTAT;
 
-#if defined(CONST_DISKIMAGE)
 typedef struct {
+	UINT8	diskstat[4];
+#if defined(CONST_DISKIMAGE)
 	UINT8	*buffer;
-} FDCEXT;
 #endif
+} FDCEXT;
 
 typedef struct {
 	FDCSTAT	s;
-#if defined(CONST_DISKIMAGE)
 	FDCEXT	e;
-#endif
 } FDC;
 
 
