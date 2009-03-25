@@ -9,7 +9,7 @@
 
 static void touch()
 {
-	static uint16 s_wLastButtons = (uint16)-1;
+	static uint16 s_wLastButtons = static_cast<uint16>(-1);
 
 	touchPosition pos;
 	ZeroMemory(&pos, sizeof(pos));
@@ -17,8 +17,14 @@ static void touch()
 	uint16 wButtons = REG_KEYXY;
 	if (!((wButtons ^ s_wLastButtons) & (1 << 6)))
 	{
+#if (LIBNDS_VERSION >= 0x010302)
+		touchReadXY(&pos);
+		const bool bRel = ((pos.rawx == 0) || (pos.rawy == 0));
+#else	// (LIBNDS_VERSION >= 0x010302)
 		pos = touchReadXY();
-		if ((pos.x == 0) || (pos.y == 0))
+		const bool bRel = ((pos.x == 0) || (pos.y == 0));
+#endif	// (LIBNDS_VERSION >= 0x010302)
+		if (bRel)
 		{
 			wButtons |= (1 << 6);
 			s_wLastButtons = wButtons;
@@ -30,13 +36,19 @@ static void touch()
 		wButtons |= (1 << 6);
 	}
 
-	IPC->touchX = pos.x;
-	IPC->touchY = pos.y;
-	IPC->touchXpx = pos.px;
-	IPC->touchYpx = pos.py;
-	IPC->touchZ1 = pos.z1;
-	IPC->touchZ2 = pos.z2;
-	IPC->buttons = wButtons;
+	TransferRegion volatile* pIpc = getIPC();
+#if (LIBNDS_VERSION >= 0x010302)
+	pIpc->touchX = pos.rawx;
+	pIpc->touchY = pos.rawy;
+#else	// (LIBNDS_VERSION >= 0x010302)
+	pIpc->touchX = pos.x;
+	pIpc->touchY = pos.y;
+#endif	// (LIBNDS_VERSION >= 0x010302)
+	pIpc->touchXpx = pos.px;
+	pIpc->touchYpx = pos.py;
+	pIpc->touchZ1 = pos.z1;
+	pIpc->touchZ2 = pos.z2;
+	pIpc->buttons = wButtons;
 }
 
 
@@ -44,10 +56,11 @@ static void VblankHandler()
 {
 	touch();
 
-	const uint16 wButtons = IPC->buttons;
+	const TransferRegion volatile* pcIpc = getIPC();
+	const uint16 wButtons = pcIpc->buttons;
 	if (!(wButtons & (1 << 6)))
 	{
-		softkbd7_down(IPC->touchXpx, IPC->touchYpx);
+		softkbd7_down(pcIpc->touchXpx, pcIpc->touchYpx);
 	}
 	else
 	{
@@ -63,7 +76,11 @@ int nds7main()
 	readUserSettings();
 
 	//enable sound
+#if (LIBNDS_VERSION >= 0x010302)
+	powerOn(PM_SOUND_AMP);
+#else	//  (LIBNDS_VERSION >= 0x010302)
 	powerON(POWER_SOUND);
+#endif	// (LIBNDS_VERSION >= 0x010302)
 	writePowerManagement(PM_CONTROL_REG, (readPowerManagement(PM_CONTROL_REG) & (~PM_SOUND_MUTE)) | PM_SOUND_AMP);
 	SOUND_CR = SOUND_ENABLE | SOUND_VOL(0x7F);
 
