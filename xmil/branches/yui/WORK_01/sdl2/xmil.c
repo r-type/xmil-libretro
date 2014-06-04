@@ -3,12 +3,10 @@
 #include "xmil.h"
 #include "dosio.h"
 #include "fontmng.h"
-#include "inputmng.h"
 #include "scrnmng.h"
 #include "soundmng.h"
 #include "sysmng.h"
 #include "taskmng.h"
-#include "sdlkbd.h"
 #include "ini.h"
 #include "pccore.h"
 #include "iocore.h"
@@ -131,8 +129,7 @@ int xmil_main(int argc, char *argv[]) {
 	if (fontmng_init() != SUCCESS) {
 		goto np2main_err2;
 	}
-	sdlkbd_initialize();
-	inputmng_init();
+
 //	keystat_initialize();
 
 	if (sysmenu_create() != SUCCESS) {

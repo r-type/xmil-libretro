@@ -1,5 +1,9 @@
+/**
+ *	@file	sdlkbd.h
+ *	@brief	Interface of the keyboard
+ */
 
-void sdlkbd_initialize(void);
-void sdlkbd_keydown(UINT key);
-void sdlkbd_keyup(UINT key);
+#pragma once
 
+void sdlkbd_keydown(SDL_Keycode code);
+void sdlkbd_keyup(SDL_Keycode code);
