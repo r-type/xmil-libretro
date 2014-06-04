@@ -1,0 +1,269 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// “ú–{Œê resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON    DISCARDABLE     "Icons\\Vinered.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDM_MAIN MENU DISCARDABLE 
+BEGIN
+    POPUP "&Emulate"
+    BEGIN
+        MENUITEM "&IPL Reset",                  IDM_IPLRESET
+        MENUITEM "&NMI Reset",                  IDM_NMIRESET
+        MENUITEM SEPARATOR
+        MENUITEM "Configure...",                IDM_CONFIG
+        MENUITEM "NewDisk...",                  IDM_NEWDISK
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDM_EXIT
+    END
+    POPUP "FDD-&0"
+    BEGIN
+        MENUITEM "&Open...",                    IDM_FDD0OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Eject",                      IDM_FDD0EJECT
+    END
+    POPUP "FDD-&1"
+    BEGIN
+        MENUITEM "&Open...",                    IDM_FDD1OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Eject",                      IDM_FDD1EJECT
+    END
+    POPUP "&IPL-ROM"
+    BEGIN
+        MENUITEM "&X1",                         IDM_X1ROM
+        MENUITEM "&turbo",                      IDM_TURBO
+        MENUITEM "turbo&Z",                     IDM_TURBOZ
+    END
+    POPUP "&DIP-SW"
+    BEGIN
+        MENUITEM "boot 2D",                     IDM_BOOT2D
+        MENUITEM "boot 2HD",                    IDM_BOOT2HD
+        MENUITEM SEPARATOR
+        MENUITEM "&HIGH RESO.",                 IDM_HIGHRES
+        MENUITEM "&Standard",                   IDM_LOWRES
+    END
+    POPUP "&Screen"
+    BEGIN
+        MENUITEM "&Window",                     IDM_WINDOW
+        MENUITEM "&FullScreen",                 IDM_FULLSCREEN
+        MENUITEM SEPARATOR
+        MENUITEM "Width 80",                    IDM_WIDTH80
+        MENUITEM "Width 40",                    IDM_WIDTH40
+        MENUITEM SEPARATOR
+        MENUITEM "DispVsync",                   IDM_DISPSYNC
+        MENUITEM "Raster",                      IDM_RASTER, GRAYED
+        MENUITEM "&No Wait",                    IDM_NOWAIT
+        MENUITEM SEPARATOR
+        MENUITEM "&Auto frame",                 IDM_AUTOFPS
+        MENUITEM "F&ull frame",                 IDM_60FPS
+        MENUITEM "1/&2 frame",                  IDM_30FPS
+        MENUITEM "1/&3 frame",                  IDM_20FPS
+        MENUITEM "1/&4 frame",                  IDM_15FPS
+    END
+    POPUP "&Device"
+    BEGIN
+        MENUITEM "&Keyboard",                   IDM_KEY
+        MENUITEM "JoyKey-&1",                   IDM_JOY1
+        MENUITEM "Joykey-&2",                   IDM_JOY2
+        MENUITEM SEPARATOR
+        MENUITEM "&FM Board",                   IDM_FMBOARD
+        MENUITEM "&Joystick",                   IDM_JOYSTICK
+        MENUITEM "&MOUSE",                      IDM_MOUSE
+        MENUITEM SEPARATOR
+        MENUITEM "SeekSound",                   IDM_SEEKSND
+    END
+    POPUP "&Other"
+    BEGIN
+        MENUITEM "&BMP Save",                   IDM_BMPSAVE
+        MENUITEM "&OPM LOG",                    IDM_OPMLOG
+        MENUITEM "&Clock Disp",                 IDM_DISPCLOCK
+        MENUITEM "&Frame Disp",                 IDM_DISPFRAME
+        MENUITEM "Joy Re&verse",                IDM_JOYX
+        MENUITEM "Joy &Rapid",                  IDM_RAPID
+        MENUITEM "&Z80 Save",                   IDM_Z80SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&About...",                   IDM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CONFIG DIALOG DISCARDABLE  0, 0, 194, 126
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Configure"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    GROUPBOX        "Sound",IDC_STATIC,8,8,128,60
+    LTEXT           "Sapling Rate",IDC_STATIC,16,22,38,8
+    COMBOBOX        IDC_SAMPLERATE,62,20,50,64,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Hz",IDC_STATIC,116,22,8,8
+    LTEXT           "Buffer",IDC_STATIC,16,37,19,8
+    EDITTEXT        IDC_SNDBUFFER,70,35,30,12
+    LTEXT           "ms",IDC_STATIC,116,37,10,8
+    LTEXT           "Seek Volume",IDC_STATIC,16,52,38,8
+    EDITTEXT        IDC_SEEKVOL,80,50,20,12
+    GROUPBOX        "Screen",IDC_STATIC,8,72,180,48
+    CONTROL         "Use skipline revisions",IDC_SKIPLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,16,86,81,10
+    LTEXT           "Ratio",IDC_STATIC,28,101,16,8
+    CONTROL         "Slider1",IDC_SKIPLIGHT,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,52,101,96,10
+    RTEXT           "",IDC_LIGHTSTR,152,100,16,10,SS_SUNKEN
+    DEFPUSHBUTTON   "&OK",IDOK,144,12,44,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,30,44,14
+END
+
+IDD_NEWDISK DIALOG DISCARDABLE  0, 0, 180, 44
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Create New FD image"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    LTEXT           "Disk Label:",IDC_STATIC,8,10,32,8
+    EDITTEXT        IDC_DISKLABEL,50,8,64,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "Disk Type:",IDC_STATIC,8,28,32,8
+    CONTROL         "2D",IDC_MAKE2D,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
+                    WS_TABSTOP,52,27,24,10
+    CONTROL         "2HD",IDC_MAKE2HD,"Button",BS_AUTORADIOBUTTON,82,27,29,
+                    10
+    DEFPUSHBUTTON   "&OK",IDOK,130,7,44,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,130,24,44,14
+END
+
+IDD_ABOUT DIALOG DISCARDABLE  0, 0, 194, 36
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About..."
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    ICON            IDI_ICON1,IDC_STATIC,8,8,20,21
+    LTEXT           "",IDC_XMILVER,36,16,102,8
+    DEFPUSHBUTTON   "&OK",IDOK,148,4,40,14,WS_GROUP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_HAND                CURSOR  DISCARDABLE     "Icons\\Cursor1.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_CONFIG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 188
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 158
+    END
+
+    IDD_NEWDISK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 174
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 38
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        RIGHTMARGIN, 152
+        TOPMARGIN, 2
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+XMILBMP                 BITMAP  DISCARDABLE     "Icons\\Xmil.bmp"
+OPMSOUND                BITMAP  DISCARDABLE     "Icons\\Opmsound.bmp"
+ZILOG                   BITMAP  DISCARDABLE     "Icons\\zilog.bmp"
+TURBOZ                  BITMAP  DISCARDABLE     "Icons\\turboz.bmp"
+
+#endif    // “ú–{Œê resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

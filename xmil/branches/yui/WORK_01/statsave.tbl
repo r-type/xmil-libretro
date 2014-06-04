@@ -1,0 +1,65 @@
+
+#define		XMILSTATUS_VERSION		0002
+
+static const NP2FHDR np2flagdef = {
+						"X millennium",
+						"create by xmil",
+						XMILSTATUS_VERSION};
+
+#if 0
+static const ENUMTBL evtnum[] = {
+			{PROCID('m','a','i','n'), NEVENT_FRAMES},
+			{PROCID('r','t','c',' '), NEVENT_RTC},
+			{PROCID('f','d','c',' '), NEVENT_FDC},
+			{PROCID('c','t','c','o'), NEVENT_CTC0},
+			{PROCID('c','t','c','1'), NEVENT_CTC1},
+			{PROCID('c','t','c','2'), NEVENT_CTC2},
+			{PROCID('s','c','p','u'), NEVENT_SUBCPU}};
+#endif
+
+static const PROCTBL evtproc[] = {
+#if !defined(MAINFRAMES_OLD)
+			{PROCID('e','m','n','f'), (INTPTR)neitem_mainframes},
+#else
+			{PROCID('e','s','c','0'), (INTPTR)neitem_disp},
+			{PROCID('e','s','c','1'), (INTPTR)neitem_vsync},
+#endif
+			{PROCID('e','r','t','c'), (INTPTR)neitem_rtc},
+			{PROCID('e','f','d','c'), (INTPTR)neitem_fdcbusy},
+			{PROCID('e','c','t','c'), (INTPTR)neitem_ctc},
+			{PROCID('e','s','c','p'), (INTPTR)neitem_scpu}};
+
+
+static const SFENTRY xmiltbl[] = {
+	{"PCCORE",		0,	STATFLAG_BIN,	&pccore,		sizeof(pccore)},
+
+	{"Z80CORE",		0,	STATFLAG_BIN,	&z80core.s,		sizeof(z80core.s)},
+	{"MAIN",		0,	STATFLAG_BIN,	mainmem,		sizeof(mainmem)},
+	{"BIOS",		0,	STATFLAG_BIN,	biosmem,		sizeof(biosmem)},
+#if defined(SUPPORT_BANKMEM)
+	{"BANK",		0,	STATFLAG_BIN,	bankmem,		sizeof(bankmem)},
+#endif
+	{"GRAM",		0,	STATFLAG_BIN,	gram,			sizeof(gram)},
+	{"TRAM",		0,	STATFLAG_BIN,	tram,			sizeof(tram)},
+	{"IOCORE",		0,	STATFLAG_BIN,	&iocore.s,		sizeof(iocore.s)},
+	{"CGROM",		0,	STATFLAG_BIN,	&cgrom,			sizeof(cgrom)},
+	{"CMT",			0,	STATFLAG_BIN,	&cmt,			sizeof(cmt)},
+	{"CRTC_S",		0,	STATFLAG_BIN,	&crtc.s,		sizeof(crtc.s)},
+#if defined(SUPPORT_TURBOZ)
+	{"CRTC_P",		0,	STATFLAG_BIN,	&crtc.p,		sizeof(crtc.p)},
+#endif
+	{"CTCOPM",		0,	STATFLAG_BIN,	&ctc.ch[0].s,	sizeof(ctc.ch[0].s)},
+	{"CTC1",		0,	STATFLAG_BIN,	&ctc.ch[1].s,	sizeof(ctc.ch[1].s)},
+	{"CTC2",		0,	STATFLAG_BIN,	&ctc.ch[2].s,	sizeof(ctc.ch[2].s)},
+	{"DMAC",		0,	STATFLAG_BIN,	&dma,			sizeof(dma)},
+	{"FDC",			0,	STATFLAG_BIN,	&fdc.s,			sizeof(fdc.s)},
+	{"PCG",			0,	STATFLAG_BIN,	&pcg,			sizeof(pcg)},
+	{"PPI",			0,	STATFLAG_BIN,	&ppi,			sizeof(ppi)},
+	{"SIO",			0,	STATFLAG_BIN,	&sio,			sizeof(sio)},
+	{"SNDBOARD",	0,	STATFLAG_BIN,	&sndboard,		sizeof(sndboard)},
+	{"SUBCPU",		0,	STATFLAG_BIN,	&subcpu.s,		sizeof(subcpu.s)},
+	{"CALENDAR",	0,	STATFLAG_BIN,	&cal,			sizeof(cal)},
+	{"NEVENT",		0,	STATFLAG_EVT,	&nevent,		sizeof(nevent)},
+	{"DISK",		0,	STATFLAG_DISK,	NULL,			0},
+	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
+

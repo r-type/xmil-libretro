@@ -1,0 +1,48 @@
+
+section .bss
+
+	global	_mainmem
+	global	_gram
+	global	_tram
+	global	_pcg
+	global	_font_ank
+	global	_z80core
+	global	_dma
+	global	_z80flag
+	global	_iocore
+	global	_ppi
+	global	_crtc
+	global	_nds9psg
+	global	_subcpu
+	global	_ctc
+	global	_cgrom
+	global	_fdc
+	global	_vramupd
+
+				align	4
+_mainmem		resb	0x10000
+_gram			resb	0xc000
+_tram			resd	0x800
+_pcg			resb	0x1800
+_font_ank		resb	0x800
+_gram2			resb	0xc000
+
+
+				align	4
+_z80core		resb	0x40
+_dma			resb	0x40
+_z80flag		resb	0x300
+_iocore			resb	0x214
+_ppi			resb	0x4
+_crtc			resb	0x48
+_nds9psg		resb	0x18
+				resb	0x08
+_subcpu			resb	0x4c
+				resb	4
+_ctc			resb	0xe4
+_cgrom			resb	0xc
+_fdc			resb	0x40
+_vramupd		resb	0x800
+
+ends
+
