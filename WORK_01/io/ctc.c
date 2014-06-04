@@ -1,8 +1,9 @@
 
+#include	"compiler.h"
+
 /* #define CTCCOUNTER */
 #define CTCFAST
 
-#include	"compiler.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
