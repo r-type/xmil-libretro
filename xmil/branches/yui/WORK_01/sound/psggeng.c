@@ -13,7 +13,7 @@ void SOUNDCALL psggen_getpcm(PSGGEN psg, SINT32 *pcm, UINT count) {
 	SINT32	*p;
 	SINT32	noisevol;
 	UINT8	mixer;
-	UINT	noisetbl = 0;
+	UINT	noisetbl;
 	PSGTONE	*tone;
 	PSGTONE	*toneterm;
 	SINT32	samp;
@@ -41,14 +41,14 @@ void SOUNDCALL psggen_getpcm(PSGGEN psg, SINT32 *pcm, UINT count) {
 			r--;
 			noisevol = 0;
 			mixer = psg->mixer;
+			noisetbl = 0;
 			if (mixer & 0x38) {
 				for (i=0; i<(1 << PSGADDEDBIT); i++) {
 					if (psg->noise.count > psg->noise.freq) {
-						psg->noise.base = rand_get() & (1 << (1 << PSGADDEDBIT));
+						psg->noise.lfsr = (psg->noise.lfsr >> 1) ^ ((psg->noise.lfsr & 1) * 0x12000);
 					}
 					psg->noise.count -= psg->noise.freq;
-					noisetbl += psg->noise.base;
-					noisetbl >>= 1;
+					noisetbl |= (psg->noise.lfsr & 1) << i;
 				}
 			}
 			tone = psg->tone;

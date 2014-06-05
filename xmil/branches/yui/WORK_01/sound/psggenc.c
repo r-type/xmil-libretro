@@ -35,7 +35,7 @@ void psggen_initialize(UINT rate) {
 
 	UINT	i;
 
-	ZeroMemory(&psggencfg, sizeof(psggencfg));
+	memset(&psggencfg, 0, sizeof(psggencfg));
 	psggencfg.rate = rate;
 	for (i=0; i<16; i++) {
 		psggencfg.voltbl[i] = (0x0c00 * psgvolrate[i]) >> 16;
@@ -64,10 +64,11 @@ void psggen_reset(PSGGEN psg) {
 
 	UINT	i;
 
-	ZeroMemory(psg, sizeof(_PSGGEN));
+	memset(psg, 0, sizeof(*psg));
 	for (i=0; i<3; i++) {
 		psg->tone[i].pvol = psggencfg.volume + 0;
 	}
+	psg->noise.lfsr = 1;
 	for (i=0; i<sizeof(psggen_deftbl); i++) {
 		psggen_setreg(psg, (REG8)i, psggen_deftbl[i]);
 	}
