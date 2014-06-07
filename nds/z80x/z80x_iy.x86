@@ -1,0 +1,354 @@
+
+%include '../z80x/z80x.inc'
+%include '../z80x/z80x.mcr'
+
+section .text
+
+	global	_opcode_fd2
+;	extern	@_iycb_proc@0
+
+	global	opcode_fd
+	extern	iycb_proc
+	extern	memrd8_ecx_al
+	extern	memrd8_ecx_dl
+	extern	memwr8_ecx_dl
+	extern	memrd16_ecx_ax
+	extern	memwr16_ecx_dx
+	extern	_ZSPtable
+	extern	_z80inc_flag
+	extern	_z80dec_flag
+
+
+R_Z80IYL	equ		reg8_t.iyl
+R_Z80IYH	equ		reg8_t.iyh
+
+
+%macro	GETIY		0
+			GETPCAL
+			cbw
+			add		ax, [edi + R_Z80IY]
+%endmacro
+
+%macro	GETXIY		0
+			GETPCAL
+			cbw
+			add		ax, [edi + R_Z80IY]
+			movzx	ecx, ax
+			call	memrd8_ecx_al
+%endmacro
+
+%macro	XIY2R		1
+			GETXIY
+			mov		[edi + %1], al
+			ret
+%endmacro
+
+%macro	R2XIY		1
+			GETIY
+			movzx	ecx, ax
+			mov		dl, [edi + %1]
+			jmp		memwr8_ecx_dl
+%endmacro
+
+
+				align	16
+and_iyl:		ANDR8	R_Z80IYL
+				align	16
+and_iyh:		ANDR8	R_Z80IYH
+				align	16
+or_iyl:			ORR8	R_Z80IYL
+				align	16
+or_iyh:			ORR8	R_Z80IYH
+				align	16
+xor_iyl:		XORR8	R_Z80IYL
+				align	16
+xor_iyh:		XORR8	R_Z80IYH
+				align	16
+cp_iyl:			CPR8	R_Z80IYL
+				align	16
+cp_iyh:			CPR8	R_Z80IYH			; !!
+
+
+				align	16
+inc_iyl:		INCR8	R_Z80IYL
+				align	16
+inc_iyh:		INCR8	R_Z80IYH
+				align	16
+dec_iyl:		DECR8	R_Z80IYL
+				align	16
+dec_iyh:		DECR8	R_Z80IYH
+
+
+				align	16
+add_a_iyl:		ADDR8	R_Z80IYL
+				align	16
+add_a_iyh:		ADDR8	R_Z80IYH
+				align	16
+adc_a_iyl:		ADCR8	R_Z80IYL
+				align	16
+adc_a_iyh:		ADCR8	R_Z80IYH
+				align	16
+sub_iyl:		SUBR8	R_Z80IYL
+				align	16
+sub_iyh:		SUBR8	R_Z80IYH
+				align	16
+sbc_a_iyl:		SBCR8	R_Z80IYL
+				align	16
+sbc_a_iyh:		SBCR8	R_Z80IYH
+
+
+				align	16
+ld_a_iyl:		LDR8	R_Z80A, R_Z80IYL
+				align	16
+ld_b_iyl:		LDR8	R_Z80B, R_Z80IYL
+				align	16
+ld_c_iyl:		LDR8	R_Z80C, R_Z80IYL
+				align	16
+ld_d_iyl:		LDR8	R_Z80D, R_Z80IYL
+				align	16
+ld_e_iyl:		LDR8	R_Z80E, R_Z80IYL
+				align	16
+ld_iyl_a:		LDR8	R_Z80IYL, R_Z80A
+				align	16
+ld_iyl_b:		LDR8	R_Z80IYL, R_Z80B
+				align	16
+ld_iyl_c:		LDR8	R_Z80IYL, R_Z80C
+				align	16
+ld_iyl_d:		LDR8	R_Z80IYL, R_Z80D
+				align	16
+ld_iyl_e:		LDR8	R_Z80IYL, R_Z80E
+				align	16
+ld_iyl_iyh:		LDR8	R_Z80IYL, R_Z80IYH
+				align	16
+ld_iyl_byte:	LDI8	R_Z80IYL
+
+
+				align	16
+ld_a_iyh:		LDR8	R_Z80A, R_Z80IYH
+				align	16
+ld_b_iyh:		LDR8	R_Z80B, R_Z80IYH
+				align	16
+ld_c_iyh:		LDR8	R_Z80C, R_Z80IYH
+				align	16
+ld_d_iyh:		LDR8	R_Z80D, R_Z80IYH
+				align	16
+ld_e_iyh:		LDR8	R_Z80E, R_Z80IYH
+				align	16
+ld_iyh_a:		LDR8	R_Z80IYH, R_Z80A
+				align	16
+ld_iyh_b:		LDR8	R_Z80IYH, R_Z80B
+				align	16
+ld_iyh_c:		LDR8	R_Z80IYH, R_Z80C
+				align	16
+ld_iyh_d:		LDR8	R_Z80IYH, R_Z80D
+				align	16
+ld_iyh_e:		LDR8	R_Z80IYH, R_Z80E
+				align	16
+ld_iyh_iyl:		LDR8	R_Z80IYH, R_Z80IYL
+				align	16
+ld_iyh_byte:	LDI8	R_Z80IYH
+
+
+				align	16
+and_xiy:		GETXIY
+				MCRAND8
+				align	16
+or_xiy:			GETXIY
+				MCROR8
+				align	16
+xor_xiy:		GETXIY
+				MCRXOR8
+				align	16
+cp_xiy:			GETXIY
+				MCRCP8
+
+
+				align	16
+inc_xiy:		GETIY
+				movzx	ecx, ax
+				INCM8
+				align	16
+dec_xiy:		GETIY
+				movzx	ecx, ax
+				DECM8
+
+
+				align	16
+add_a_xiy:		GETXIY
+				MCRADD8
+				align	16
+adc_a_xiy:		GETXIY
+				MCRADC8
+				align	16
+sub_xiy:		GETXIY
+				MCRSUB8
+				align	16
+sbc_a_xiy:		GETXIY
+				MCRSBC8
+
+
+				align	16
+add_iy_bc:		ADDR16	R_Z80IY, R_Z80BC
+				align	16
+add_iy_de:		ADDR16	R_Z80IY, R_Z80DE
+				align	16
+add_iy_iy:		ADDR16d	R_Z80IY
+				align	16
+add_iy_sp:		ADDR16	R_Z80IY, R_Z80SP
+
+
+				align	16
+ld_a_xiy:		XIY2R	R_Z80A
+				align	16
+ld_b_xiy:		XIY2R	R_Z80B
+				align	16
+ld_c_xiy:		XIY2R	R_Z80C
+				align	16
+ld_d_xiy:		XIY2R	R_Z80D
+				align	16
+ld_e_xiy:		XIY2R	R_Z80E
+				align	16
+ld_l_xiy:		XIY2R	R_Z80L
+				align	16
+ld_h_xiy:		XIY2R	R_Z80H
+				align	16
+ld_xiy_a:		R2XIY	R_Z80A
+				align	16
+ld_xiy_b:		R2XIY	R_Z80B
+				align	16
+ld_xiy_c:		R2XIY	R_Z80C
+				align	16
+ld_xiy_d:		R2XIY	R_Z80D
+				align	16
+ld_xiy_e:		R2XIY	R_Z80E
+				align	16
+ld_xiy_l:		R2XIY	R_Z80L
+				align	16
+ld_xiy_h:		R2XIY	R_Z80H
+
+
+				align	16
+ld_xiy_byte:	GETIY
+				movzx	eax, ax
+				push	eax
+				GETPCDL
+				pop		ecx
+				jmp		memwr8_ecx_dl
+
+
+				align	16
+push_iy:		PUSH16	R_Z80IY
+				align	16
+pop_iy:			POP16	R_Z80IY
+				align	16
+inc_iy:			INCR16	R_Z80IY
+				align	16
+dec_iy:			DECR16	R_Z80IY
+				align	16
+ex_xsp_iy:		EXXSP	R_Z80IY
+				align	16
+ld_xword_iy:	LDx_W	R_Z80IY
+				align	16
+ld_iy_xword:	LDW_x	R_Z80IY
+				align	16
+ld_iy_word:		LDW_w	R_Z80IY
+				align	16
+ld_sp_iy:		LDR16	R_Z80SP, R_Z80IY
+				align	16
+jp_iy:			LDR16	R_Z80PC, R_Z80IY
+
+
+				align	16
+ld_nop:			ret
+
+				align	16
+no_op:			dec		word [edi + R_Z80PC]
+				ret
+
+
+section .rdata
+
+				align	16
+_opcode_fd2:
+opcode_fd	dd	no_op,		no_op,		no_op,		no_op			; 00
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	no_op,		add_iy_bc,	no_op,		no_op
+			dd	no_op,		no_op,		no_op,		no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; 10
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	no_op,		add_iy_de,	no_op,		no_op
+			dd	no_op,		no_op,		no_op,		no_op
+
+			dd	no_op,		ld_iy_word,	ld_xword_iy,inc_iy			; 20
+			dd	inc_iyh,	dec_iyh,	ld_iyh_byte,no_op
+			dd	no_op,		add_iy_iy,	ld_iy_xword,dec_iy
+			dd	inc_iyl,	dec_iyl,	ld_iyl_byte,no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; 30
+			dd	inc_xiy,	dec_xiy,	ld_xiy_byte,no_op
+			dd	no_op,		add_iy_sp,	no_op,		no_op
+			dd	no_op,		no_op,		no_op,		no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; 40
+			dd	ld_b_iyh,	ld_b_iyl,	ld_b_xiy,	no_op
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	ld_c_iyh,	ld_c_iyl,	ld_c_xiy,	no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; 50
+			dd	ld_d_iyh,	ld_d_iyl,	ld_d_xiy,	no_op
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	ld_e_iyh,	ld_e_iyl,	ld_e_xiy,	no_op
+
+			dd	ld_iyh_b,	ld_iyh_c,	ld_iyh_d,	ld_iyh_e		; 60
+			dd	ld_nop,		ld_iyh_iyl,	ld_h_xiy,	ld_iyh_a
+			dd	ld_iyl_b,	ld_iyl_c,	ld_iyl_d,	ld_iyl_e
+			dd	ld_iyl_iyh,	ld_nop,		ld_l_xiy,	ld_iyl_a
+
+			dd	ld_xiy_b,	ld_xiy_c,	ld_xiy_d,	ld_xiy_e		; 70
+			dd	ld_xiy_h,	ld_xiy_l,	no_op,		ld_xiy_a
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	ld_a_iyh,	ld_a_iyl,	ld_a_xiy,	no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; 80
+			dd	add_a_iyh,	add_a_iyl,	add_a_xiy,	no_op
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	adc_a_iyh,	adc_a_iyl,	adc_a_xiy,	no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; 90
+			dd	sub_iyh,	sub_iyl,	sub_xiy,	no_op
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	sbc_a_iyh,	sbc_a_iyl,	sbc_a_xiy,	no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; a0
+			dd	and_iyh,	and_iyl,	and_xiy,	no_op
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	xor_iyh,	xor_iyl,	xor_xiy,	no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; b0
+			dd	or_iyh,		or_iyl,		or_xiy,		no_op
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	cp_iyh,		cp_iyl,		cp_xiy,		no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; c0
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	no_op,		no_op,		no_op,		iycb_proc
+			dd	no_op,		no_op,		no_op,		no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; d0
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	no_op,		no_op,		no_op,		no_op
+
+			dd	no_op,		pop_iy,		no_op,		ex_xsp_iy		; e0
+			dd	no_op,		push_iy,	no_op,		no_op
+			dd	no_op,		jp_iy,		no_op,		no_op
+			dd	no_op,		no_op,		no_op,		no_op
+
+			dd	no_op,		no_op,		no_op,		no_op			; f0
+			dd	no_op,		no_op,		no_op,		no_op
+			dd	no_op,		ld_sp_iy,	no_op,		no_op
+			dd	no_op,		no_op,		no_op,		no_op
+
+	ends
+

@@ -1,0 +1,633 @@
+
+%include '../z80x/z80x.inc'
+%include '../z80x/z80x.mcr'
+
+section .text
+
+	global	_opcode_ed2
+
+	global	opcode_ed
+	extern	memrd8_ecx_al
+	extern	memrd8_ecx_dl
+	extern	memwr8_ecx_dl
+	extern	memrd16_ecx_ax
+	extern	memwr16_ecx_dx
+	extern	@iocore_out@8
+	extern	@iocore_inp@4
+	extern	_ZSPtable
+	extern	memfetch
+	extern	_cycles_main
+	extern	opcode_main
+	extern	_ievent_eoi
+
+
+				align	16
+im_0:			mov		byte [edi + R_Z80IM], 0
+				ret
+
+				align	16
+im_1:			mov		byte [edi + R_Z80IM], 1
+				ret
+
+				align	16
+im_2:			mov		byte [edi + R_Z80IM], 2
+				ret
+
+
+				align	16
+_retn:			and		byte [edi + R_Z80IFF], ~(1 << IFF_NMI)
+				MRET
+
+				align	16
+_reti:			call	_ievent_eoi
+				MRET
+
+				align	16
+adc_hl_bc:		ADCR16	R_Z80BC
+				align	16
+adc_hl_de:		ADCR16	R_Z80DE
+				align	16
+adc_hl_sp:		ADCR16	R_Z80SP
+
+				align	16
+adc_hl_hl:		mov		ah, [edi + R_Z80F]
+				mov		dx, [edi + R_Z80HL]
+				mov		bx, dx
+				sahf
+				adc		dx, bx
+				lahf
+				mov		[edi + R_Z80HL], dx
+				and		ah, (S_FLAG | Z_FLAG | C_FLAG)
+				xor		bh, dh
+				jns		short .nov
+				or		ah, V_FLAG
+.nov:			and		dh, H_FLAG
+				or		ah, dh
+				mov		[edi + R_Z80F], ah
+				ret
+
+
+				align	16
+sbc_hl_bc:		SBCR16	R_Z80BC
+				align	16
+sbc_hl_de:		SBCR16	R_Z80DE
+				align	16
+sbc_hl_sp:		SBCR16	R_Z80SP
+
+				align	16
+sbc_hl_hl:		test	byte [edi + R_Z80F], C_FLAG
+				jne		short .c
+				mov		word [edi + R_Z80HL], 0
+				mov		byte [edi + R_Z80F], (Z_FLAG | N_FLAG)
+				ret
+.c:				mov		word [edi + R_Z80HL], 0xffff
+				mov		byte [edi + R_Z80F], (S_FLAG | H_FLAG | N_FLAG | C_FLAG)
+				ret
+
+				align	16
+_neg:			mov		al, [edi + R_Z80A]
+				mov		dl, al
+				neg		al
+				lahf
+				and		ah, (Z_FLAG | S_FLAG | C_FLAG)
+				or		ah, N_FLAG
+				mov		dh, dl
+				xor		dh, al
+				and		dh, H_FLAG
+				or		ah, dh
+				and		dl, al
+				rol		dl, 3
+				and		dl, V_FLAG
+				or		ah, dl
+				mov		[edi + R_Z80F], ah
+				mov		[edi + R_Z80A], al
+				ret
+
+
+				align	16
+ld_xword_bc:	LDx_W	R_Z80BC
+				align	16
+ld_xword_de:	LDx_W	R_Z80DE
+				align	16
+ld_xword_hl:	LDx_W	R_Z80HL
+				align	16
+ld_xword_sp:	LDx_W	R_Z80SP
+
+
+				align	16
+ld_bc_xword:	LDW_x	R_Z80BC
+				align	16
+ld_de_xword:	LDW_x	R_Z80DE
+				align	16
+ld_hl_xword:	LDW_x	R_Z80HL
+				align	16
+ld_sp_xword:	LDW_x	R_Z80SP
+
+
+				align	16
+ld_a_i:			mov		al, [edi + R_Z80I]
+				or		al, al
+				lahf
+				and		ah, (Z_FLAG | S_FLAG)
+				test	byte [edi + R_Z80IFF], (1 << IFF_IFLAG)
+				jne		short .nov
+				or		ah, V_FLAG
+.nov:			xchg	al, ah
+				and		word [edi + R_Z80AF], C_FLAG
+				or		[edi + R_Z80AF], ax
+				ret
+
+				align	16
+ld_i_a:			LDR8	R_Z80I, R_Z80A
+
+				align	16
+ld_a_r:			mov		al, [edi + R_Z80R]
+				mov		ah, [edi + R_Z80R2]
+				and		ax, 807fh
+				or		al, ah
+				lahf
+				and		ah, (Z_FLAG | S_FLAG)
+				test	byte [edi + R_Z80IFF], (1 << IFF_IFLAG)
+				jne		short .nov
+				or		ah, V_FLAG
+.nov:			xchg	al, ah
+				and		word [edi + R_Z80AF], C_FLAG
+				or		[edi + R_Z80AF], ax
+				ret
+
+				align	16
+ld_r_a:			mov		al, [edi + R_Z80A]
+				mov		[edi + R_Z80R], al
+				mov		[edi + R_Z80R2], al
+				ret
+
+
+				align	16
+_rld:			movzx	ecx, word [edi + R_Z80HL]
+				call	memrd8_ecx_al
+				mov		bx, [edi + R_Z80AF]
+				mov		dl, bh
+				mov		dh, bh
+				shl		ax, 4
+				and		dx, 0f00fh
+				or		dx, ax
+				xor		eax, eax
+				mov		al, dh
+				and		bl, C_FLAG
+				or		bl, [_ZSPtable + eax]
+				mov		bh, dh
+				mov		[edi + R_Z80AF], bx
+				jmp		memwr8_ecx_dl
+
+				align	16
+_rrd:			movzx	ecx, word [edi + R_Z80HL]
+				call	memrd8_ecx_al
+				mov		ah, al
+				mov		bx, [edi + R_Z80AF]
+				mov		dl, bh
+				mov		dh, bh
+				and		dx, 0f00fh
+				and		ax, 00ff0h
+				or		dx, ax
+				ror		dl, 4
+				xor		eax, eax
+				mov		al, dh
+				and		bl, C_FLAG
+				or		bl, [_ZSPtable + eax]
+				mov		bh, dh
+				mov		[edi + R_Z80AF], bx
+				jmp		memwr8_ecx_dl
+
+
+				align	16
+in_a_c:			Z80IN	R_Z80A
+				align	16
+in_b_c:			Z80IN	R_Z80B
+				align	16
+in_c_c:			Z80IN	R_Z80C
+				align	16
+in_d_c:			Z80IN	R_Z80D
+				align	16
+in_e_c:			Z80IN	R_Z80E
+				align	16
+in_l_c:			Z80IN	R_Z80L
+				align	16
+in_h_c:			Z80IN	R_Z80H
+
+				align	16
+in_0_c:			movzx	ecx, word [edi + R_Z80BC]
+				call	@iocore_inp@4
+				movzx	edx, al
+				mov		al, [edi + R_Z80F]
+				and		al, C_FLAG
+				or		al, [_ZSPtable + edx]
+				mov		[edi + R_Z80F], al
+				ret
+
+
+				align	16
+out_c_a:		Z80OUT	R_Z80A
+				align	16
+out_c_b:		Z80OUT	R_Z80B
+				align	16
+out_c_c:		Z80OUT	R_Z80C
+				align	16
+out_c_d:		Z80OUT	R_Z80D
+				align	16
+out_c_e:		Z80OUT	R_Z80E
+				align	16
+out_c_l:		Z80OUT	R_Z80L
+				align	16
+out_c_h:		Z80OUT	R_Z80H
+
+				align	16
+out_c_0:		movzx	ecx, word [edi + R_Z80BC]
+				xor		edx, edx
+				jmp		@iocore_out@8
+
+
+				align	16
+_ind:			movzx	ecx, word [edi + R_Z80BC]
+				call	@iocore_inp@4
+				mov		dl, al
+				movzx	ecx, word [edi + R_Z80HL]
+				dec		word [edi + R_Z80HL]
+				dec		byte [edi + R_Z80B]
+				lahf
+				and		ah, Z_FLAG
+				or		ah, N_FLAG
+				mov		[edi + R_Z80F], ah
+				jmp		memwr8_ecx_dl
+
+				align	16
+_indr:			movzx	ecx, word [edi + R_Z80BC]
+				call	@iocore_inp@4
+				mov		dl, al
+				movzx	ecx, word [edi + R_Z80HL]
+				dec		word [edi + R_Z80HL]
+				dec		byte [edi + R_Z80B]
+				je		short .b_zero
+				mov		byte [edi + R_Z80F], N_FLAG
+				Z80WORK	byte 5
+				sub		word [edi + R_Z80PC], byte 2
+				jmp		memwr8_ecx_dl
+.b_zero:		mov		byte [edi + R_Z80F], (N_FLAG | Z_FLAG)
+				jmp		memwr8_ecx_dl
+
+				align	16
+_ini:			movzx	ecx, word [edi + R_Z80BC]
+				call	@iocore_inp@4
+				mov		dl, al
+				movzx	ecx, word [edi + R_Z80HL]
+				inc		word [edi + R_Z80HL]
+				dec		byte [edi + R_Z80B]
+				lahf
+				and		ah, Z_FLAG
+				or		ah, N_FLAG
+				mov		[edi + R_Z80F], ah
+				jmp		memwr8_ecx_dl
+
+				align	16
+_inir:			movzx	ecx, word [edi + R_Z80BC]
+				call	@iocore_inp@4
+				mov		dl, al
+				movzx	ecx, word [edi + R_Z80HL]
+				inc		word [edi + R_Z80HL]
+				dec		byte [edi + R_Z80B]
+				je		short .b_zero
+				mov		byte [edi + R_Z80F], N_FLAG
+				Z80WORK	byte 5
+				sub		word [edi + R_Z80PC], byte 2
+				jmp		memwr8_ecx_dl
+.b_zero:		mov		byte [edi + R_Z80F], (N_FLAG | Z_FLAG)
+				jmp		memwr8_ecx_dl
+
+
+				align	16
+_outd:			movzx	ecx, word [edi + R_Z80HL]
+				dec		word [edi + R_Z80HL]
+				call	memrd8_ecx_dl
+				mov		cx, [edi + R_Z80BC]
+				dec		ch
+				movzx	ecx, cx
+				call	@iocore_out@8
+				dec		byte [edi + R_Z80B]
+				lahf
+				and		ah, Z_FLAG
+				or		ah, N_FLAG			; !!!
+				mov		[edi + R_Z80F], ah
+				ret
+
+				align	16
+_otdr:			movzx	ecx, word [edi + R_Z80HL]
+				dec		word [edi + R_Z80HL]
+				call	memrd8_ecx_dl
+				mov		cx, [edi + R_Z80BC]
+				dec		ch
+				movzx	ecx, cx
+				call	@iocore_out@8
+				dec		byte [edi + R_Z80B]
+				je		short .b_zero
+				Z80WORK	byte 5
+				sub		word [edi + R_Z80PC], byte 2
+				mov		byte [edi + R_Z80F], N_FLAG
+				ret
+.b_zero:		mov		byte [edi + R_Z80F], (N_FLAG | Z_FLAG)
+				ret
+
+				align	16
+_outi:			movzx	ecx, word [edi + R_Z80HL]
+				inc		word [edi + R_Z80HL]
+				call	memrd8_ecx_dl
+				mov		cx, [edi + R_Z80BC]
+				dec		ch
+				movzx	ecx, cx
+				call	@iocore_out@8
+				dec		byte [edi + R_Z80B]
+				lahf
+				and		ah, Z_FLAG
+				or		ah, N_FLAG
+				mov		[edi + R_Z80F], ah
+				ret
+
+				align	16
+_otir:			movzx	ecx, word [edi +R_Z80HL]
+				inc		word [edi + R_Z80HL]
+				call	memrd8_ecx_dl
+				mov		cx, [edi + R_Z80BC]
+				dec		ch
+				movzx	ecx, cx
+				call	@iocore_out@8
+				dec		byte [edi + R_Z80B]
+				je		short .b_zero
+				Z80WORK	byte 5
+				sub		word [edi + R_Z80PC], byte 2
+				mov		byte [edi + R_Z80F], N_FLAG
+				ret
+.b_zero:		mov		byte [edi + R_Z80F], (N_FLAG | Z_FLAG)
+				ret
+
+
+				align	16
+_ldd:			movzx	ecx, word [edi + R_Z80HL]
+				call	memrd8_ecx_dl
+				movzx	ecx, word [edi + R_Z80DE]
+				dec		word [edi + R_Z80DE]
+				dec		word [edi + R_Z80HL]
+				and		byte [edi + R_Z80F], 0e9h
+				dec		word [edi + R_Z80BC]
+				je		short .zero
+				or		byte [edi + R_Z80F], V_FLAG
+.zero:			jmp		memwr8_ecx_dl
+
+				align	16
+_lddr:			movzx	ecx, word [edi + R_Z80HL]
+				call	memrd8_ecx_dl
+				movzx	ecx, word [edi + R_Z80DE]
+				dec		word [edi + R_Z80DE]
+				dec		word [edi + R_Z80HL]
+				and		byte [edi + R_Z80F], 0e9h
+				dec		word [edi + R_Z80BC]
+				je		short .zero
+				or		byte [edi + R_Z80F], V_FLAG
+				Z80WORK	byte 5
+				sub		word [edi + R_Z80PC], byte 2
+.zero:			jmp		memwr8_ecx_dl
+
+				align	16
+_ldi:			movzx	ecx, word [edi + R_Z80HL]
+				call	memrd8_ecx_dl
+				movzx	ecx, word [edi + R_Z80DE]
+				inc		word [edi + R_Z80DE]
+				inc		word [edi + R_Z80HL]
+				and		byte [edi + R_Z80F], 0e9h
+				dec		word [edi + R_Z80BC]
+				je		short .zero
+				or		byte [edi + R_Z80F], V_FLAG
+.zero:			jmp		memwr8_ecx_dl
+
+				align	16
+_ldir:			movzx	ecx, word [edi + R_Z80HL]
+				call	memrd8_ecx_dl
+				movzx	ecx, word [edi + R_Z80DE]
+				inc		word [edi + R_Z80DE]
+				inc		word [edi + R_Z80HL]
+				and		byte [edi + R_Z80F], 0e9h
+				dec		word [edi + R_Z80BC]
+				je		short .zero
+				or		byte [edi + R_Z80F], V_FLAG
+				Z80WORK	byte 5
+				sub		word [edi + R_Z80PC], byte 2
+.zero:			jmp		memwr8_ecx_dl
+
+
+				align	16
+_cpd:			movzx	ecx, word [edi + R_Z80HL]
+				dec		word [edi + R_Z80HL]
+				call	memrd8_ecx_al
+				mov		dx, [edi + R_Z80AF]
+				and		dl, C_FLAG
+				mov		ch, dh
+				sub		dh, al
+				lahf
+				xor		al, dh
+				xor		al, ch
+				and		ax, (((Z_FLAG | S_FLAG) << 8) | H_FLAG)
+				or		al, ah
+				or		al, dl
+				dec		word [edi + R_Z80BC]
+				je		short .bc_zero
+				or		al, (N_FLAG | V_FLAG)
+				mov		byte [edi + R_Z80F], al
+				ret
+.bc_zero:		or		al, N_FLAG
+				mov		byte [edi + R_Z80F], al
+				ret
+
+				align	16
+_cpdr:			movzx	ecx, word [edi + R_Z80HL]
+				dec		word [edi + R_Z80HL]
+				call	memrd8_ecx_al
+				mov		dx, [edi + R_Z80AF]
+				and		dl, C_FLAG
+				mov		ch, dh
+				sub		dh, al
+				je		short .z
+				lahf
+				xor		al, dh
+				xor		al, ch
+				and		ax, (((Z_FLAG | S_FLAG) << 8) | H_FLAG)
+				or		al, ah
+				or		al, dl
+				dec		word [edi + R_Z80BC]
+				je		short .bc_zero
+				Z80WORK	byte 5
+				sub		word [edi + R_Z80PC], byte 2
+				or		al, (N_FLAG | V_FLAG)
+				mov		[edi + R_Z80F], al
+				ret
+.z:				lahf
+				xor		al, dh
+				xor		al, ch
+				and		ax, (((Z_FLAG | S_FLAG) << 8) | H_FLAG)
+				or		al, ah
+				or		al, dl
+				dec		word [edi + R_Z80BC]
+				je		short .bc_zero
+				or		al, (N_FLAG | V_FLAG)
+				mov		[edi + R_Z80F], al
+				ret
+.bc_zero:		or		al, N_FLAG
+				mov		[edi + R_Z80F], al
+				ret
+
+				align	16
+_cpi:			movzx	ecx, word [edi + R_Z80HL]
+				inc		word [edi + R_Z80HL]
+				call	memrd8_ecx_al
+				mov		dx, [edi + R_Z80AF]
+				and		dl, C_FLAG
+				mov		ch, dh
+				sub		dh, al
+				lahf
+				xor		al, dh
+				xor		al, ch
+				and		ax, (((Z_FLAG | S_FLAG) << 8) | H_FLAG)
+				or		al, ah
+				or		al, dl
+				dec		word [edi + R_Z80BC]
+				je		short .bc_zero
+				or		al, (N_FLAG | V_FLAG)
+				mov		[edi + R_Z80F], al
+				ret
+.bc_zero:		or		al, N_FLAG
+				mov		[edi + R_Z80F], al
+				ret
+
+				align	16
+_cpir:			movzx	ecx, word [edi + R_Z80HL]
+				inc		word [edi + R_Z80HL]
+				call	memrd8_ecx_al
+				mov		dx, [edi + R_Z80AF]
+				and		dl, C_FLAG
+				mov		ch, dh
+				sub		dh, al
+				je		short .z
+				lahf
+				xor		al, dh
+				xor		al, ch
+				and		ax, (((Z_FLAG | S_FLAG) << 8) | H_FLAG)
+				or		al, ah
+				or		al, dl
+				dec		word [edi + R_Z80BC]
+				je		short .bc_zero
+				Z80WORK	byte 5
+				sub		word [edi + R_Z80PC], byte 2
+				or		al, (N_FLAG | V_FLAG)
+				mov		[edi + R_Z80F], al
+				ret
+.z:				lahf
+				xor		al, dh
+				xor		al, ch
+				and		ax, (((Z_FLAG | S_FLAG) << 8) | H_FLAG)
+				or		al, ah
+				or		al, dl
+				dec		word [edi + R_Z80BC]
+				je		short .bc_zero
+				or		al, (N_FLAG | V_FLAG)
+				mov		[edi + R_Z80F], al
+				ret
+.bc_zero:		or		al, N_FLAG
+				mov		[edi + R_Z80F], al
+				ret
+
+				align	16
+ld_nop:			ret
+
+
+section .rdata
+
+				align	16
+_opcode_ed2:
+opcode_ed	dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; 00
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; 10
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; 20
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; 30
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	in_b_c,		out_c_b,	sbc_hl_bc,	ld_xword_bc		; 40
+			dd	_neg,		_retn,		im_0,		ld_i_a
+			dd	in_c_c,		out_c_c,	adc_hl_bc,	ld_bc_xword
+			dd	_neg,		_reti,		im_0,		ld_r_a
+
+			dd	in_d_c,		out_c_d,	sbc_hl_de,	ld_xword_de		; 50
+			dd	_neg,		_retn,		im_1,		ld_a_i
+			dd	in_e_c,		out_c_e,	adc_hl_de,	ld_de_xword
+			dd	_neg,		_reti,		im_2,		ld_a_r
+
+			dd	in_h_c,		out_c_h,	sbc_hl_hl,	ld_xword_hl		; 60
+			dd	_neg,		_retn,		im_0,		_rrd
+			dd	in_l_c,		out_c_l,	adc_hl_hl,	ld_hl_xword
+			dd	_neg,		_reti,		im_0,		_rld
+
+			dd	in_0_c,		out_c_0,	sbc_hl_sp,	ld_xword_sp		; 70
+			dd	_neg,		_retn,		im_1,		ld_nop
+			dd	in_a_c,		out_c_a,	adc_hl_sp,	ld_sp_xword
+			dd	_neg,		_reti,		im_2,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; 80
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; 90
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	_ldi,		_cpi,		_ini,		_outi			; a0
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	_ldd,		_cpd,		_ind,		_outd
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	_ldir,		_cpir,		_inir,		_otir			; b0
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	_lddr,		_cpdr,		_indr,		_otdr
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; c0
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; d0
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; e0
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; f0
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
+
+	ends
+

@@ -1,0 +1,12 @@
+{
+	FilesToRename = {
+		"PRC-Tools.h" = "ÇPROJECTNAMEÈ.h";
+		"PRC-Tools.c" = "ÇPROJECTNAMEÈ.c";
+		"PRC-Tools.rcp" = "ÇPROJECTNAMEÈ.rcp";
+		"PRC-ToolsIcon.bmp" = "ÇPROJECTNAMEÈIcon.bmp";
+	};
+	FilesToMacroExpand = (
+		"Makefile","ÇPROJECTNAMEÈ.c","ÇPROJECTNAMEÈ.h","ÇPROJECTNAMEÈ.rcp"
+	);
+	Description = "Builds PalmOS Applications with PRC-Tools (http://www.zenonez.com/prctoolsx/)";
+}
