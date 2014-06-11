@@ -89,15 +89,6 @@ enum {
 #define	OEMNULLSTR				OEMTEXT("")
 #endif
 
-
-#ifndef STRLITERAL
-#ifdef UNICODE
-#define	STRLITERAL(string)		_T(string)
-#else
-#define	STRLITERAL(string)		(string)
-#endif
-#endif
-
 #if !defined(RGB16)
 #define	RGB16		UINT16
 #endif

@@ -411,7 +411,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	}
 	if (scrnmng_create(hWnd, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT)
 																!= SUCCESS) {
-		MessageBox(hWnd, STRLITERAL("Couldn't create DirectDraw Object"),
+		MessageBox(hWnd, TEXT("Couldn't create DirectDraw Object"),
 									szAppCaption, MB_OK | MB_ICONSTOP);
 		DestroyWindow(hWnd);
 		goto np2main_err2;
