@@ -3,6 +3,7 @@
 #include "xmil.h"
 #include "dosio.h"
 #include "fontmng.h"
+#include "joymng.h"
 #include "scrnmng.h"
 #include "soundmng.h"
 #include "sysmng.h"
@@ -145,6 +146,7 @@ int xmil_main(int argc, char *argv[]) {
 	sysmng_initialize();
 	taskmng_initialize();
 	pccore_initialize();
+	joymng_initialize();
 //	S98_init();
 
 	scrndraw_redraw();

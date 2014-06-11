@@ -1,10 +1,11 @@
-#include	"compiler.h"
-#include	"inputmng.h"
-#include	"taskmng.h"
-#include	"sdlkbd.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
-#include	"sysmenu.h"
+#include "compiler.h"
+#include "inputmng.h"
+#include "taskmng.h"
+#include "sdlkbd.h"
+#include "joymng.h"
+#include "vramhdl.h"
+#include "menubase.h"
+#include "sysmenu.h"
 
 
 	BOOL	task_avail;
@@ -101,6 +102,18 @@ void taskmng_rol(void) {
 
 		case SDL_KEYUP:
 			sdlkbd_keyup(e.key.keysym.sym);
+			break;
+
+		case SDL_JOYAXISMOTION:
+			joymng_axismotion(&e);
+			break;
+
+		case SDL_JOYBUTTONDOWN:
+			joymng_buttondown(&e);
+			break;
+
+		case SDL_JOYBUTTONUP:
+			joymng_buttonup(&e);
 			break;
 
 		case SDL_QUIT:
