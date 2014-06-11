@@ -53,8 +53,8 @@ void menuvram_base(VRAMHDL vram);
 VRAMHDL menuvram_create(int width, int height, UINT bpp);
 void menuvram_caption(VRAMHDL vram, const RECT_T *rect,
 										UINT16 icon, const OEMCHAR *caption);
-void menuvram_minimizebtn(VRAMHDL vram, const RECT_T *rect, BRESULT focus);
-void menuvram_closebtn(VRAMHDL vram, const RECT_T *rect, BRESULT focus);
+void menuvram_minimizebtn(VRAMHDL vram, const RECT_T *rect, BOOL focus);
+void menuvram_closebtn(VRAMHDL vram, const RECT_T *rect, BOOL focus);
 
 #ifdef __cplusplus
 }

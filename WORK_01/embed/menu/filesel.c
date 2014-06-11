@@ -1,6 +1,5 @@
 #include	"compiler.h"
 #include	"strres.h"
-// #include	"codecnv.h"
 #include	"dosio.h"
 #include	"soundmng.h"
 #include	"pccore.h"
@@ -96,7 +95,7 @@ const OEMCHAR	*ext;
 } FSELPRM;
 
 typedef struct {
-	BRESULT		result;
+	BOOL		result;
 	LISTARRAY	flist;
 	FLIST		fbase;
 const OEMCHAR	*filter;
@@ -135,7 +134,7 @@ static BRESULT fappend(LISTARRAY flist, FLINFO *fli) {
 		return(FAILURE);
 	}
 	fl->isdir = (fli->attr & 0x10)?1:0;
-	file_cpyname(fl->name, fli->path, sizeof(fl->name));
+	file_cpyname(fl->name, fli->path, NELEMENTS(fl->name));
 	st = &filesel.fbase;
 	while(1) {
 		cur = *st;
@@ -156,7 +155,7 @@ static BRESULT fappend(LISTARRAY flist, FLINFO *fli) {
 	return(SUCCESS);
 }
 
-static BRESULT checkext(const OEMCHAR *path, const OEMCHAR *ext) {
+static BOOL checkext(const OEMCHAR *path, const OEMCHAR *ext) {
 
 const OEMCHAR	*p;
 
@@ -178,7 +177,7 @@ static void dlgsetlist(void) {
 	LISTARRAY	flist;
 	FLISTH		flh;
 	FLINFO		fli;
-	BRESULT		append;
+	BOOL		append;
 	FLIST		fl;
 	ITEMEXPRM	prm;
 
@@ -220,7 +219,7 @@ static void dlgsetlist(void) {
 
 static void dlginit(void) {
 
-	menudlg_appends(res_fs, sizeof(res_fs)/sizeof(MENUPRM));
+	menudlg_appends(res_fs, NELEMENTS(res_fs));
 	menudlg_seticon(DID_PARENT, MICON_FOLDERPARENT);
 	menudlg_settext(DID_FILE, file_getname(filesel.path));
 	menudlg_settext(DID_FILTER, filesel.filter);
@@ -229,7 +228,7 @@ static void dlginit(void) {
 	dlgsetlist();
 }
 
-static BRESULT dlgupdate(void) {
+static BOOL dlgupdate(void) {
 
 	FLIST	fl;
 
@@ -237,8 +236,8 @@ static BRESULT dlgupdate(void) {
 	if (fl == NULL) {
 		return(FALSE);
 	}
-	file_setseparator(filesel.path, sizeof(filesel.path));
-	file_catname(filesel.path, fl->name, sizeof(filesel.path));
+	file_setseparator(filesel.path, NELEMENTS(filesel.path));
+	file_catname(filesel.path, fl->name, NELEMENTS(filesel.path));
 	if (fl->isdir) {
 		dlgsetlist();
 		menudlg_settext(DID_FILE, NULL);
@@ -310,7 +309,7 @@ static int dlgcmd(int msg, MENUID id, long param) {
 	return(0);
 }
 
-static BRESULT selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
+static BOOL selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
 														const OEMCHAR *def) {
 
 const OEMCHAR	*title;
@@ -318,11 +317,11 @@ const OEMCHAR	*title;
 	soundmng_stop();
 	ZeroMemory(&filesel, sizeof(filesel));
 	if ((def) && (def[0])) {
-		file_cpyname(filesel.path, def, sizeof(filesel.path));
+		file_cpyname(filesel.path, def, NELEMENTS(filesel.path));
 	}
 	else {
 		file_cpyname(filesel.path, file_getcd(str_null),
-														sizeof(filesel.path));
+													NELEMENTS(filesel.path));
 		file_cutname(filesel.path);
 	}
 	title = NULL;
@@ -357,7 +356,7 @@ void filesel_fdd(REG8 drv) {
 	OEMCHAR	path[MAX_PATH];
 
 	if (drv < 4) {
-		if (selectfile(&fddprm, path, sizeof(path), fddfile_diskname(drv))) {
+		if (selectfile(&fddprm, path, NELEMENTS(path), fddfile_diskname(drv))) {
 			diskdrv_setfdd(drv, path, 0);
 		}
 	}
