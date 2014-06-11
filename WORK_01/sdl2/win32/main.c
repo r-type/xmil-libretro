@@ -4,7 +4,8 @@
  */
 
 #include "compiler.h"
-#include "xmil.h"
+#include "..\xmil.h"
+#include "..\fontmng.h"
 
 #pragma comment(lib, "SDL2.lib")
 #pragma comment(lib, "SDL2main.lib")
@@ -21,5 +22,12 @@
  */
 int main(int argc, char *argv[])
 {
+	UINT nLength;
+	TCHAR szFont[MAX_PATH];
+
+	nLength = GetWindowsDirectory(szFont, SDL_arraysize(szFont));
+	lstrcpy(szFont + nLength, TEXT("\\Fonts\\msgothic.ttc"));
+	fontmng_setdeffontname(szFont);
+
 	return xmil_main(argc, argv);
 }
