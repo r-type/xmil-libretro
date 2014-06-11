@@ -76,7 +76,7 @@ static const MSYSITEM s_root[] = {
 
 // ---- regist
 
-static BRESULT seaempty(void *vpItem, void *vpArg) {
+static BOOL seaempty(void *vpItem, void *vpArg) {
 
 	if (((MENUHDL)vpItem)->flag & MENU_DELETED) {
 		return(TRUE);
@@ -881,7 +881,7 @@ static void focusmove(MENUSYS *sys, int depth, int dir) {
 	}
 }
 
-static void focusenter(MENUSYS *sys, int depth, BRESULT exec) {
+static void focusenter(MENUSYS *sys, int depth, BOOL exec) {
 
 	MENUHDL	menu;
 	MSYSWND	wnd;
@@ -962,7 +962,7 @@ typedef struct {
 	MENUID		id;
 } ITEMSEA;
 
-static BRESULT _itemsea(void *vpItem, void *vpArg) {
+static BOOL _itemsea(void *vpItem, void *vpArg) {
 
 	if (((MENUHDL)vpItem)->id == ((ITEMSEA *)vpArg)->id) {
 		((ITEMSEA *)vpArg)->ret = (MENUHDL)vpItem;

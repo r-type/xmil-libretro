@@ -38,7 +38,7 @@ static void dlginit(void) {
 
 	OEMCHAR	work[128];
 
-	menudlg_appends(res_about, sizeof(res_about)/sizeof(MENUPRM));
+	menudlg_appends(res_about, NELEMENTS(res_about));
 	milstr_ncpy(work, str_xmil, NELEMENTS(work));
 	milstr_ncat(work, str_space, NELEMENTS(work));
 	milstr_ncat(work, xmilversion, NELEMENTS(work));
