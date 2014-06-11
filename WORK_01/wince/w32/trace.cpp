@@ -46,15 +46,15 @@ enum {
 	IDM_TRACECL
 };
 
-static const TCHAR ProgTitle[] = STRLITERAL("console");
-static const TCHAR ClassName[] = STRLITERAL("TRACE-console");
-static const TCHAR ClassEdit[] = STRLITERAL("EDIT");
-static const TCHAR viewfont[] = STRLITERAL(VIEW_TEXT);
-static const TCHAR trace1[] = STRLITERAL("TRACE");
-static const TCHAR trace2[] = STRLITERAL("VERBOSE");
-static const TCHAR traceen[] = STRLITERAL("Enable");
-static const TCHAR tracefh[] = STRLITERAL("File out");
-static const TCHAR tracecl[] = STRLITERAL("Clear");
+static const TCHAR ProgTitle[] = TEXT("console");
+static const TCHAR ClassName[] = TEXT("TRACE-console");
+static const TCHAR ClassEdit[] = TEXT("EDIT");
+static const TCHAR viewfont[] = TEXT(VIEW_TEXT);
+static const TCHAR trace1[] = TEXT("TRACE");
+static const TCHAR trace2[] = TEXT("VERBOSE");
+static const TCHAR traceen[] = TEXT("Enable");
+static const TCHAR tracefh[] = TEXT("File out");
+static const TCHAR tracecl[] = TEXT("Clear");
 static const char crlf[] = "\r\n";
 
 static	TRACEWIN	tracewin;

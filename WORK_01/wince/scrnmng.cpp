@@ -46,7 +46,7 @@ static	SCRNSURF	scrnsurf;
 static	UINT8		gx_disable = 1;
 extern	GXKeyList	gx_keylist;
 
-static const TCHAR	errmsg[] = STRLITERAL("Error");
+static const TCHAR	errmsg[] = TEXT("Error");
 
 
 typedef struct {
@@ -195,18 +195,18 @@ BRESULT scrnmng_create(HWND hWnd, int width, int height) {
 		return(FAILURE);
 	}
 	if (GXOpenDisplay(hWnd, GX_FULLSCREEN) == 0) {
-		MessageBox(hWnd, STRLITERAL("Couldn't GAPI Object"),
+		MessageBox(hWnd, TEXT("Couldn't GAPI Object"),
 											errmsg, MB_OK | MB_ICONSTOP);
 		return(FAILURE);
 	}
 	gx_dp = GXGETDISPLAYPROPERTIES();
 	if (gx_dp.cBPP != 16) {
-		MessageBox(hWnd, STRLITERAL("Only 16bit color support..."),
+		MessageBox(hWnd, TEXT("Only 16bit color support..."),
 											errmsg, MB_OK | MB_ICONSTOP);
 		return(FAILURE);
 	}
 	if (!(gx_dp.ffFormat & kfDirect565)) {
-		MessageBox(hWnd, STRLITERAL("Only 16bit(565) support..."),
+		MessageBox(hWnd, TEXT("Only 16bit(565) support..."),
 											errmsg, MB_OK | MB_ICONSTOP);
 		return(FAILURE);
 	}
@@ -220,7 +220,7 @@ BRESULT scrnmng_create(HWND hWnd, int width, int height) {
 		scrnmng.rotate = TRUE;
 	}
 	else {
-		wsprintf(msg, STRLITERAL("Required %dx%d..."), width, height);
+		wsprintf(msg, TEXT("Required %dx%d..."), width, height);
 		MessageBox(hWnd, msg, errmsg, MB_OK | MB_ICONSTOP);
 		return(FAILURE);
 	}
