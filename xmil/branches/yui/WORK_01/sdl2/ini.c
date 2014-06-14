@@ -1,12 +1,12 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"profile.h"
-#include	"dosio.h"
-#include	"xmil.h"
-#include	"ini.h"
-#include	"pccore.h"
+#include "compiler.h"
+#include "strres.h"
+#include "profile.h"
+#include "dosio.h"
+#include "xmil.h"
+#include "ini.h"
+#include "pccore.h"
 
-static const char ini_title[] = "NekoProjectII";
+static const char ini_title[] = "Xmillennium";
 static const char inifile[] = "xmil.cfg";
 
 enum
@@ -45,14 +45,14 @@ void initload(void) {
 
 	char	path[MAX_PATH];
 
-	milstr_ncpy(path, file_getcd(inifile), sizeof(path));
-	profile_iniread(path, ini_title, iniitem, NELEMENTS(iniitem), NULL);
+	milstr_ncpy(path, file_getcd(inifile), SDL_arraysize(path));
+	profile_iniread(path, ini_title, iniitem, SDL_arraysize(iniitem), NULL);
 }
 
 void initsave(void) {
 
 	char	path[MAX_PATH];
 
-	milstr_ncpy(path, file_getcd(inifile), sizeof(path));
-	profile_iniwrite(path, ini_title, iniitem, NELEMENTS(iniitem), NULL);
+	milstr_ncpy(path, file_getcd(inifile), SDL_arraysize(path));
+	profile_iniwrite(path, ini_title, iniitem, SDL_arraysize(iniitem), NULL);
 }
