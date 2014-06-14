@@ -230,9 +230,7 @@ int xmil_main(int argc, char *argv[]) {
 	x1f_close();
 	soundmng_deinitialize();
 
-	if (sys_updates	& (SYS_UPDATECFG | SYS_UPDATEOSCFG)) {
-		initsave();
-	}
+	sysmng_deinitialize();
 
 	scrnmng_destroy();
 	sysmenu_destroy();
