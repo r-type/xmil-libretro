@@ -41,9 +41,13 @@ static void dlginit(void) {
 	menudlg_appends(res_about, NELEMENTS(res_about));
 	milstr_ncpy(work, str_xmil, NELEMENTS(work));
 	milstr_ncat(work, str_space, NELEMENTS(work));
+
+#if defined(_WIN32_WCE) && defined(XMILVER_WINCE)
+	milstr_ncat(work, OEMTEXT(XMILVER_WINCE), NELEMENTS(work));
+#elif defined(SDL_REVISION) && defined(XMILVER_SDL)
+	milstr_ncat(work, OEMTEXT(XMILVER_WINCE), NELEMENTS(work));
+#else
 	milstr_ncat(work, xmilversion, NELEMENTS(work));
-#if defined(XMILVER_WINCE)
-	milstr_ncat(work, XMILVER_WINCE, NELEMENTS(work));
 #endif
 	menudlg_settext(DID_VER, work);
 }
