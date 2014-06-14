@@ -26,7 +26,7 @@ typedef struct {
 	int		height;
 } SCRNSTAT;
 
-static const char app_name[] = "Neko Project II";
+static const char app_name[] = "X millennium";
 
 static	SCRNMNG		scrnmng;
 static	SCRNSTAT	scrnstat;
