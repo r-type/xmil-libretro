@@ -19,7 +19,7 @@ FILEH file_open(const char *path) {
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
 	char	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
+	codecnv_utf8tosjis(sjis, SDL_arraysize(sjis), path, (UINT)-1);
 	return(fopen(sjis, "rb+"));
 #else
 	return(fopen(path, "rb+"));
@@ -30,7 +30,7 @@ FILEH file_open_rb(const char *path) {
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
 	char	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
+	codecnv_utf8tosjis(sjis, SDL_arraysize(sjis), path, (UINT)-1);
 	return(fopen(sjis, "rb"));
 #else
 	return(fopen(path, "rb"));
@@ -41,7 +41,7 @@ FILEH file_create(const char *path) {
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
 	char	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
+	codecnv_utf8tosjis(sjis, SDL_arraysize(sjis), path, (UINT)-1);
 	return(fopen(sjis, "wb+"));
 #else
 	return(fopen(path, "wb+"));
@@ -87,7 +87,7 @@ struct stat	sb;
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
 	char	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
+	codecnv_utf8tosjis(sjis, SDL_arraysize(sjis), path, (UINT)-1);
 	if (stat(sjis, &sb) == 0)
 #else
 	if (stat(path, &sb) == 0)
@@ -168,44 +168,44 @@ short file_dircreate(const char *path) {
 /* カレントファイル操作 */
 void file_setcd(const char *exepath) {
 
-	file_cpyname(curpath, exepath, sizeof(curpath));
+	file_cpyname(curpath, exepath, SDL_arraysize(curpath));
 	curfilep = file_getname(curpath);
 	*curfilep = '\0';
 }
 
 char *file_getcd(const char *path) {
 
-	file_cpyname(curfilep, path, sizeof(curpath) - (curfilep - curpath));
+	file_cpyname(curfilep, path, SDL_arraysize(curpath) - (curfilep - curpath));
 	return(curpath);
 }
 
 FILEH file_open_c(const char *path) {
 
-	file_cpyname(curfilep, path, sizeof(curpath) - (curfilep - curpath));
+	file_cpyname(curfilep, path, SDL_arraysize(curpath) - (curfilep - curpath));
 	return(file_open(curpath));
 }
 
 FILEH file_open_rb_c(const char *path) {
 
-	file_cpyname(curfilep, path, sizeof(curpath) - (curfilep - curpath));
+	file_cpyname(curfilep, path, SDL_arraysize(curpath) - (curfilep - curpath));
 	return(file_open_rb(curpath));
 }
 
 FILEH file_create_c(const char *path) {
 
-	file_cpyname(curfilep, path, sizeof(curpath) - (curfilep - curpath));
+	file_cpyname(curfilep, path, SDL_arraysize(curpath) - (curfilep - curpath));
 	return(file_create(curpath));
 }
 
 short file_delete_c(const char *path) {
 
-	file_cpyname(curfilep, path, sizeof(curpath) - (curfilep - curpath));
+	file_cpyname(curfilep, path, SDL_arraysize(curpath) - (curfilep - curpath));
 	return(file_delete(curpath));
 }
 
 short file_attr_c(const char *path) {
 
-	file_cpyname(curfilep, path, sizeof(curpath) - (curfilep - curpath));
+	file_cpyname(curfilep, path, SDL_arraysize(curpath) - (curfilep - curpath));
 	return(file_attr(curpath));
 }
 
@@ -247,10 +247,10 @@ static BOOL setflist(WIN32_FIND_DATA *w32fd, FLINFO *fli) {
 		fli->caps |= FLICAPS_DATE | FLICAPS_TIME;
 	}
 #if defined(OSLANG_UTF8)
-	codecnv_sjistoutf8(fli->path, sizeof(fli->path),
+	codecnv_sjistoutf8(fli->path, SDL_arraysize(fli->path),
 												w32fd->cFileName, (UINT)-1);
 #else
-	file_cpyname(fli->path, w32fd->cFileName, sizeof(fli->path));
+	file_cpyname(fli->path, w32fd->cFileName, SDL_arraysize(fli->path));
 #endif
 	return(SUCCESS);
 }
@@ -261,9 +261,9 @@ FLISTH file_list1st(const char *dir, FLINFO *fli) {
 	HANDLE			hdl;
 	WIN32_FIND_DATA	w32fd;
 
-	file_cpyname(path, dir, sizeof(path));
-	file_setseparator(path, sizeof(path));
-	file_catname(path, "*.*", sizeof(path));
+	file_cpyname(path, dir, SDL_arraysize(path));
+	file_setseparator(path, SDL_arraysize(path));
+	file_catname(path, "*.*", SDL_arraysize(path));
 	hdl = FindFirstFile(path, &w32fd);
 	if (hdl != INVALID_HANDLE_VALUE) {
 		do {
@@ -334,7 +334,7 @@ struct stat		sb;
 				fli->caps |= FLICAPS_DATE | FLICAPS_TIME;
 			}
 		}
-		milstr_ncpy(fli->path, de->d_name, sizeof(fli->path));
+		milstr_ncpy(fli->path, de->d_name, SDL_arraysize(fli->path));
 	}
 	return(SUCCESS);
 }
