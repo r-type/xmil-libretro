@@ -1,7 +1,6 @@
 #include	"compiler.h"
 #include	<prsht.h>
 #include	"resource.h"
-#include	"winloc.h"
 #include	"extclass.h"
 
 
