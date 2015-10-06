@@ -896,6 +896,26 @@ SOURCE=.\ext\romeo\juliet.h
 SOURCE=.\ext\romeo\romeo.h
 # End Source File
 # End Group
+# Begin Group "realchip"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\realchip\scci.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\realchip\SCCIDefines.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\realchip\scciwrap.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\realchip\scciwrap.h
+# End Source File
+# End Group
 # End Group
 # Begin Group "misc"
 
