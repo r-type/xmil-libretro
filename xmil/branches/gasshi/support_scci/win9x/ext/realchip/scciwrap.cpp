@@ -21,7 +21,7 @@ BOOL	scciwrap::initialize(){
 		return FALSE;
 	}
 	// load scci
-	m_hScci = ::LoadLibrary((LPCSTR)"scci");
+	m_hScci = ::LoadLibrary(TEXT("scci"));
 	if(m_hScci == NULL){
 		m_hScci = NULL;
 		return FALSE;
