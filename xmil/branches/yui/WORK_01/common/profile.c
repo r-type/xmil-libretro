@@ -1,154 +1,302 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"profile.h"
-#if defined(OSLANG_UCS2)
-#include	"ucscnv.h"
+/**
+ * @file	profile.c
+ * @brief	Implementation of the profiler
+ */
+
+#include "compiler.h"
+#include "strres.h"
+#include "profile.h"
+#include "dosio.h"
+#include "textfile.h"
+#if defined(SUPPORT_TEXTCNV)
+#include "codecnv/textcnv.h"
 #endif
 
+/**
+ * End of line style
+ */
+static const OEMCHAR s_eol[] =
+{
+#if defined(OSLINEBREAK_CR) || defined(OSLINEBREAK_CRLF)
+	'\r',
+#endif
+#if defined(OSLINEBREAK_LF) || defined(OSLINEBREAK_CRLF)
+	'\n',
+#endif
+};
 
-typedef struct {
-	UINT	applen;
-	UINT	keylen;
-	UINT	pos;
-	UINT	size;
-	UINT	apphit;
-const char	*data;
-	UINT	datasize;
-} PFPOS;
+/**
+ * Trims space
+ * @param[in] lpString The pointer to a string
+ * @param[in, out] pcchString The size, in characters
+ * @return The start of the string
+ */
+static OEMCHAR* TrimSpace(const OEMCHAR *lpString, UINT *pcchString)
+{
+	UINT cchString;
 
-
-static const UINT8 utf8header[3] = {0xef, 0xbb, 0xbf};
-
-static BRESULT keycmp(const char *str, const char *cmp) {
-
-	int		s;
-	int		c;
-
-	do {
-		c = *cmp++;
-		if (c == 0) {
-			return(SUCCESS);
-		}
-		if ((c >= 'a') && (c <= 'z')) {
-			c -= 0x20;
-		}
-		s = *str++;
-		if ((s >= 'a') && (s <= 'z')) {
-			s -= 0x20;
-		}
-	} while(s == c);
-	return(FAILURE);
+	cchString = *pcchString;
+	while ((cchString > 0) && (lpString[0] == ' '))
+	{
+		lpString++;
+		cchString--;
+	}
+	while ((cchString > 0) && (lpString[cchString - 1] == ' '))
+	{
+		cchString--;
+	}
+	*pcchString = cchString;
+	return (OEMCHAR *)lpString;
 }
 
-static char *delspace(const char *buf, UINT *len) {
+/**
+ * Parses line
+ * @param[in] lpString The pointer to a string
+ * @param[in,out] lpcchString The pointer to a length
+ * @param[out] lppData The pointer to data
+ * @param[out] lpcchData The pointer to data-length
+ * @return The start of the string
+ */
+static OEMCHAR *ParseLine(const OEMCHAR *lpString, UINT *lpcchString, OEMCHAR **lppData, UINT *lpcchData)
+{
+	UINT cchString;
+	UINT nIndex;
+	const OEMCHAR *lpData = NULL;
+	UINT cchData = 0;
 
-	UINT	l;
+	cchString = *lpcchString;
+	lpString = TrimSpace(lpString, &cchString);
 
-	if ((buf != NULL) && (len != NULL)) {
-		l = *len;
-		while((l) && (buf[0] == ' ')) {
-			l--;
-			buf++;
-		}
-		while((l) && (buf[l - 1] == ' ')) {
-			l--;
-		}
-		*len = l;
+	if ((cchString >= 2) && (lpString[0] == '[') && (lpString[cchString - 1] == ']'))
+	{
+		lpString++;
+		cchString -= 2;
 	}
-	return((char *)buf);
+	else
+	{
+		for (nIndex = 0; nIndex < cchString; nIndex++)
+		{
+			if (lpString[nIndex] == '=')
+			{
+				break;
+			}
+		}
+		if (nIndex >= cchString)
+		{
+			return NULL;
+		}
+		lpData = lpString + (nIndex + 1);
+		cchData = cchString - (nIndex + 1);
+		cchString = nIndex;
+	}
+
+	lpString = TrimSpace(lpString, &cchString);
+	lpData = TrimSpace(lpData, &cchData);
+	if ((cchData >= 2) && (lpData[0] == '\"') && (lpData[cchData - 1] == '\"'))
+	{
+		lpData++;
+		cchData -= 2;
+		lpData = TrimSpace(lpData, &cchData);
+	}
+
+	*lpcchString = cchString;
+	if (lppData)
+	{
+		*lppData = (OEMCHAR*)lpData;
+	}
+	if (lpcchData)
+	{
+		*lpcchData = cchData;
+	}
+	return (OEMCHAR*)lpString;
 }
 
-static BRESULT seakey(PFILEH hdl, PFPOS *pfp,
-										const char *app, const char *key) {
+/**
+ * Retrieves a string from the specified section in an initialization file
+ * @param[in] lpFileName The name of the initialization file
+ * @param[in] lpParam An application-defined value to be passed to the callback function.
+ * @param[in] lpFunc A pointer to an application-defined callback function
+ * @retval SUCCESS If the function succeeds
+ * @retval FAILIURE If the function fails
+ */
+BRESULT profile_enum(const OEMCHAR *lpFileName, void *lpParam, PROFILEENUMPROC lpFunc)
+{
+	TEXTFILEH fh;
+	BRESULT r;
+	OEMCHAR szAppName[256];
+	OEMCHAR szBuffer[512];
+	UINT cchBuffer;
+	OEMCHAR *lpKeyName;
+	OEMCHAR *lpString;
+	UINT cchString;
 
-	PFPOS	ret;
-	UINT	pos;
+	if (lpFunc == NULL)
+	{
+		return SUCCESS;
+	}
+	fh = textfile_open(lpFileName, 0x800);
+	if (fh == NULL)
+	{
+		return SUCCESS;
+	}
+
+	r = SUCCESS;
+	szAppName[0] = '\0';
+	while (textfile_read(fh, szBuffer, NELEMENTS(szBuffer)) == SUCCESS)
+	{
+		cchBuffer = (UINT)OEMSTRLEN(szBuffer);
+		lpKeyName = ParseLine(szBuffer, &cchBuffer, &lpString, &cchString);
+		if (lpKeyName)
+		{
+			lpKeyName[cchBuffer] = '\0';
+			if (lpString == NULL)
+			{
+				milstr_ncpy(szAppName, lpKeyName, NELEMENTS(szAppName));
+			}
+			else
+			{
+				lpString[cchString] = '\0';
+				r = (*lpFunc)(lpParam, szAppName, lpKeyName, lpString);
+				if (r != SUCCESS)
+				{
+					break;
+				}
+			}
+		}
+	}
+	textfile_close(fh);
+	return r;
+}
+
+
+/* profiler */
+
+/**
+ * @brief the structure of profiler's handle
+ */
+struct tagProfileHandle
+{
+	OEMCHAR	*buffer;
+	UINT	buffers;
 	UINT	size;
-	char	*buf;
-	UINT	len;
-	UINT	cnt;
+	UINT8	hdr[4];
+	UINT	hdrsize;
+	UINT	flag;
+	OEMCHAR	path[MAX_PATH];
+};
+typedef struct tagProfileHandle _PFILEH;	/*!< defines handle */
 
-	if ((hdl == NULL) || (app == NULL) || (key == NULL)) {
-		return(FAILURE);
+/**
+ * @brief
+ */
+struct tagProfilePos
+{
+	UINT cchAppName;
+	UINT cchKeyName;
+	UINT		pos;
+	UINT		size;
+	UINT		apphit;
+	const OEMCHAR *lpString;
+	UINT cchString;
+};
+typedef struct tagProfilePos	PFPOS;		/*!< defines the structure of position */
+
+#define	PFBUFSIZE	(1 << 8)
+
+static BRESULT SearchKey(PFILEH hdl, PFPOS *pfp, const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName)
+{
+	PFPOS ret;
+	const OEMCHAR *lpProfile;
+	UINT cchProfile;
+	UINT nIndex;
+	UINT nSize;
+	UINT cchLeft;
+	const OEMCHAR *lpLeft;
+	OEMCHAR *lpRight;
+	UINT cchRight;
+
+	if ((hdl == NULL) || (lpAppName == NULL) || (lpKeyName == NULL))
+	{
+		return FAILURE;
 	}
-	ZeroMemory(&ret, sizeof(ret));
-	ret.applen = (UINT)STRLEN(app);
-	ret.keylen = (UINT)STRLEN(key);
-	if ((ret.applen == 0) || (ret.keylen == 0)) {
-		return(FAILURE);
+	memset(&ret, 0, sizeof(ret));
+	ret.cchAppName = (UINT)OEMSTRLEN(lpAppName);
+	ret.cchKeyName = (UINT)OEMSTRLEN(lpKeyName);
+	if ((ret.cchAppName == 0) || (ret.cchKeyName == 0))
+	{
+		return FAILURE;
 	}
 
-	pos = 0;
-	size = hdl->size;
-	while(size) {
-		buf = hdl->buffer + pos;
-		len = 0;
-		cnt = 0;
-		do {
-			if (buf[len] == '\r') {
-				if (((len + 1) < size) && (buf[len + 1] == '\n')) {
-					cnt = 2;
+	lpProfile = hdl->buffer;
+	cchProfile = hdl->size;
+	while (cchProfile > 0)
+	{
+		nIndex = 0;
+		while ((nIndex < cchProfile) && (lpProfile[nIndex] != '\r') && (lpProfile[nIndex] != '\n'))
+		{
+			nIndex++;
+		}
+		lpLeft = lpProfile;
+		cchLeft = nIndex;
+
+		nSize = nIndex;
+		if ((nSize < cchProfile) && (lpProfile[nSize] == '\r'))
+		{
+			nSize++;
+		}
+		if ((nSize < cchProfile) && (lpProfile[nSize] == '\n'))
+		{
+			nSize++;
+		}
+
+		lpLeft = ParseLine(lpLeft, &cchLeft, &lpRight, &cchRight);
+		if (lpLeft)
+		{
+			if (lpRight == NULL)
+			{
+				if (ret.apphit)
+				{
+					break;
 				}
-				else {
-					cnt = 1;
+				if ((cchLeft == ret.cchAppName) && (!milstr_memcmp(lpLeft, lpAppName)))
+				{
+					ret.apphit = 1;
 				}
-				break;
 			}
-			if (buf[len] == '\n') {
-				cnt = 1;
+			else if ((ret.apphit) && (cchLeft == ret.cchKeyName) && (!milstr_memcmp(lpLeft, lpKeyName)))
+			{
+				ret.pos = (UINT)(lpProfile - hdl->buffer);
+				ret.size = nSize;
+
+				ret.lpString = lpRight;
+				ret.cchString = cchRight;
 				break;
-			}
-			len++;
-		} while(len < size);
-		cnt += len;
-		buf = delspace(buf, &len);
-		if ((len >= 2) && (buf[0] == '[') && (buf[len - 1] == ']')) {
-			if (ret.apphit) {
-				break;
-			}
-			buf++;
-			len -= 2;
-			buf = delspace(buf, &len);
-			if ((len == ret.applen) && (keycmp(buf, app) == SUCCESS)) {
-				ret.apphit = 1;
 			}
 		}
-		else if ((ret.apphit) && (len > ret.keylen) &&
-				(keycmp(buf, key) == SUCCESS)) {
-			buf += ret.keylen;
-			len -= ret.keylen;
-			buf = delspace(buf, &len);
-			if ((len) && (buf[0] == '=')) {
-				buf++;
-				len--;
-				buf = delspace(buf, &len);
-				ret.pos = pos;
-				ret.size = cnt;
-				ret.data = buf;
-				ret.datasize = len;
-				break;
-			}
-		}
-		if (len) {
-			ret.pos = pos + cnt;
+
+		lpProfile += nSize;
+		cchProfile -= nSize;
+
+		if (nIndex)
+		{
+			ret.pos = (UINT)(lpProfile - hdl->buffer);
 			ret.size = 0;
 		}
-		pos += cnt;
-		size -= cnt;
 	}
-	if (pfp) {
+	if (pfp)
+	{
 		*pfp = ret;
 	}
-	return(SUCCESS);
+	return SUCCESS;
 }
 
 static BRESULT replace(PFILEH hdl, UINT pos, UINT size1, UINT size2) {
 
 	UINT	cnt;
 	UINT	size;
-	char	*p;
-	char	*q;
+	UINT	newsize;
+	OEMCHAR	*p;
+	OEMCHAR	*q;
 
 	size1 += pos;
 	size2 += pos;
@@ -157,11 +305,21 @@ static BRESULT replace(PFILEH hdl, UINT pos, UINT size1, UINT size2) {
 	}
 	cnt = hdl->size - size1;
 	if (size1 < size2) {
-		size = size2 - size1;
-		if ((hdl->size + size) > hdl->buffers) {
-			return(FAILURE);
+		size = hdl->size + size2 - size1;
+		if (size > hdl->buffers) {
+			newsize = (size & (~(PFBUFSIZE - 1))) + PFBUFSIZE;
+			p = (OEMCHAR *)_MALLOC(newsize * sizeof(OEMCHAR), "profile");
+			if (p == NULL) {
+				return(FAILURE);
+			}
+			if (hdl->buffer) {
+				CopyMemory(p, hdl->buffer, hdl->buffers * sizeof(OEMCHAR));
+				_MFREE(hdl->buffer);
+			}
+			hdl->buffer = p;
+			hdl->buffers = newsize;
 		}
-		hdl->size += size;
+		hdl->size = size;
 		if (cnt) {
 			p = hdl->buffer + size1;
 			q = hdl->buffer + size2;
@@ -185,180 +343,432 @@ static BRESULT replace(PFILEH hdl, UINT pos, UINT size1, UINT size2) {
 	return(SUCCESS);
 }
 
-PFILEH profile_open(const OEMCHAR *filename, UINT flag) {
+static PFILEH registfile(FILEH fh) {
 
-	FILEH	fh;
-	UINT	filesize;
+	UINT	rsize;
+#if defined(SUPPORT_TEXTCNV)
+	TCINF	inf;
+#endif
+	UINT	hdrsize;
+	UINT	width;
+	UINT8	hdr[4];
 	UINT	size;
+	UINT	newsize;
+	void	*buf;
+#if defined(SUPPORT_TEXTCNV)
+	void	*buf2;
+#endif
 	PFILEH	ret;
-	char	*ptr;
 
-	if (filename == NULL) {
-		goto pfore_err1;
+	rsize = file_read(fh, hdr, sizeof(hdr));
+#if defined(SUPPORT_TEXTCNV)
+	if (textcnv_getinfo(&inf, hdr, rsize) == 0) {
+		goto rf_err1;
 	}
-	fh = file_open(filename);
-	filesize = 0;
-	if (fh != FILEH_INVALID) {
-		filesize = file_getsize(fh);
+	if (!(inf.caps & TEXTCNV_READ)) {
+		goto rf_err1;
 	}
-	else if (flag & PFILEH_READONLY) {
-		goto pfore_err1;
+	if ((inf.width != 1) && (inf.width != 2)) {
+		goto rf_err1;
 	}
-	else {
-#if defined(OSLANG_UTF8) || defined(OSLANG_UCS2)
-		flag |= PFILEH_UTF8;
+	hdrsize = inf.hdrsize;
+	width = inf.width;
+#else
+	hdrsize = 0;
+	width = 1;
+	if ((rsize >= 3) &&
+		(hdr[0] == 0xef) && (hdr[1] == 0xbb) && (hdr[2] == 0xbf)) {
+		// UTF-8
+		hdrsize = 3;
+	}
+	else if ((rsize >= 2) && (hdr[0] == 0xff) && (hdr[1] == 0xfe)) {
+		// UCSLE
+		hdrsize = 2;
+		width = 2;
+#if defined(BYTESEX_BIG)
+		goto rf_err1;
 #endif
 	}
-	size = filesize + 0x2000;
-	ret = (PFILEH)_MALLOC(sizeof(_PFILEH) + size, filename);
-	if (ret == NULL) {
-		goto pfore_err2;
+	else if ((rsize >= 2) && (hdr[0] == 0xfe) && (hdr[1] == 0xff)) {
+		// UCS2BE
+		hdrsize = 2;
+		width = 2;
+#if defined(BYTESEX_LITTLE)
+		goto rf_err1;
+#endif
 	}
-	if (fh != FILEH_INVALID) {
-		if (file_read(fh, ret + 1, filesize) != filesize) {
-			goto pfore_err3;
+	if (width != sizeof(OEMCHAR)) {
+		goto rf_err1;
+	}
+#endif
+
+	size = file_getsize(fh);
+	if (size < hdrsize) {
+		goto rf_err1;
+	}
+	if (file_seek(fh, (long)hdrsize, FSEEK_SET) != (long)hdrsize) {
+		goto rf_err1;
+	}
+	size = (size - hdrsize) / width;
+	newsize = (size & (~(PFBUFSIZE - 1))) + PFBUFSIZE;
+	buf = _MALLOC(newsize * width, "profile");
+	if (buf == NULL) {
+		goto rf_err1;
+	}
+	rsize = file_read(fh, buf, newsize * width) / width;
+#if defined(SUPPORT_TEXTCNV)
+	if (inf.xendian) {
+		textcnv_swapendian16(buf, rsize);
+	}
+	if (inf.tooem) {
+		size = (inf.tooem)(NULL, 0, buf, rsize);
+		newsize = (size & (~(PFBUFSIZE - 1))) + PFBUFSIZE;
+		buf2 = _MALLOC(newsize * sizeof(OEMCHAR), "profile tmp");
+		if (buf2 == NULL) {
+			goto rf_err2;
 		}
-		file_close(fh);
+		(inf.tooem)((OEMCHAR *)buf2, size, buf, rsize);
+		_MFREE(buf);
+		buf = buf2;
+		rsize = size;
 	}
-	ptr = (char *)(ret + 1);
-	if ((filesize >= 3) && (!memcmp(ptr, utf8header, 3))) {
-		ptr += 3;
-		size -= 3;
-		filesize -= 3;
-		flag |= PFILEH_UTF8;
+#endif	// defined(SUPPORT_TEXTCNV)
+
+	ret = (PFILEH)_MALLOC(sizeof(_PFILEH), "profile");
+	if (ret == NULL) {
+		goto rf_err2;
 	}
-	ret->buffer = ptr;
-	ret->buffers = size;
-	ret->size = filesize;
-	ret->flag = flag;
-	file_cpyname(ret->path, filename, NELEMENTS(ret->path));
+	ZeroMemory(ret, sizeof(_PFILEH));
+	ret->buffer = (OEMCHAR *)buf;
+	ret->buffers = newsize;
+	ret->size = rsize;
+	if (hdrsize) {
+		CopyMemory(ret->hdr, hdr, hdrsize);
+	}
+	ret->hdrsize = hdrsize;
 	return(ret);
 
-pfore_err3:
-	_MFREE(ret);
+rf_err2:
+	_MFREE(buf);
 
-pfore_err2:
-	if (fh != FILEH_INVALID) {
-		file_close(fh);
-	}
-
-pfore_err1:
+rf_err1:
 	return(NULL);
 }
 
-void profile_close(PFILEH hdl) {
+static PFILEH registnew(void)
+{
+	PFILEH ret;
+	const UINT8 *lpHeader;
+	UINT cchHeader;
 
+	ret = (PFILEH)_MALLOC(sizeof(*ret), "profile");
+	if (ret != NULL)
+	{
+		memset(ret, 0, sizeof(*ret));
+
+#if defined(OSLANG_UTF8)
+		lpHeader = str_utf8;
+		cchHeader = sizeof(str_utf8);
+#elif defined(OSLANG_UCS2) 
+		lpHeader = (UINT8 *)str_ucs2;
+		cchHeader = sizeof(str_ucs2);
+#else
+		lpHeader = NULL;
+		cchHeader = 0;
+#endif
+		if (cchHeader)
+		{
+			memcpy(ret->hdr, lpHeader, cchHeader);
+		}
+		ret->hdrsize = cchHeader;
+	}
+	return ret;
+}
+
+/**
+ * Opens profiler
+ * @param[in] lpFileName The name of the initialization file
+ * @param[in] nFlags The flag of opening
+ * @return The handle
+ */
+PFILEH profile_open(const OEMCHAR *lpFileName, UINT nFlags)
+{
+	PFILEH ret;
+	FILEH fh;
+
+	ret = NULL;
+	if (lpFileName != NULL)
+	{
+		fh = file_open_rb(lpFileName);
+		if (fh != FILEH_INVALID)
+		{
+			ret = registfile(fh);
+			file_close(fh);
+		}
+		else if (nFlags & PFILEH_READONLY)
+		{
+		}
+		else
+		{
+			ret = registnew();
+		}
+	}
+	if (ret)
+	{
+		ret->flag = nFlags;
+		file_cpyname(ret->path, lpFileName, NELEMENTS(ret->path));
+	}
+	return ret;
+}
+
+/**
+ * Close
+ * @param[in] hdl The handle of profiler
+ */
+void profile_close(PFILEH hdl)
+{
+	void	*buf;
+	UINT	bufsize;
+#if defined(SUPPORT_TEXTCNV)
+	TCINF	inf;
+	void	*buf2;
+	UINT	buf2size;
+#endif
+	UINT	hdrsize;
+	UINT	width;
 	FILEH	fh;
 
-	if (hdl) {
-		if (hdl->flag & PFILEH_MODIFY) {
-			fh = file_create(hdl->path);
-			if (fh != FILEH_INVALID) {
-				if (hdl->flag & PFILEH_UTF8) {
-					file_write(fh, utf8header, 3);
+	if (hdl == NULL) {
+		return;
+	}
+	buf = hdl->buffer;
+	bufsize = hdl->size;
+	if (hdl->flag & PFILEH_MODIFY) {
+#if defined(SUPPORT_TEXTCNV)
+		if (textcnv_getinfo(&inf, hdl->hdr, hdl->hdrsize) == 0) {
+			goto wf_err1;
+		}
+		if (!(inf.caps & TEXTCNV_WRITE)) {
+			goto wf_err1;
+		}
+		if ((inf.width != 1) && (inf.width != 2)) {
+			goto wf_err1;
+		}
+		if (inf.fromoem) {
+			buf2size = (inf.fromoem)(NULL, 0, (const OEMCHAR *)buf, bufsize);
+			buf2 = _MALLOC(buf2size * inf.width, "profile tmp");
+			if (buf2 == NULL) {
+				goto wf_err1;
+			}
+			(inf.fromoem)(buf2, buf2size, (const OEMCHAR *)buf, bufsize);
+			_MFREE(buf);
+			buf = buf2;
+			bufsize = buf2size;
+		}
+		if (inf.xendian) {
+			textcnv_swapendian16(buf, bufsize);
+		}
+		hdrsize = inf.hdrsize;
+		width = inf.width;
+#else	// defined(SUPPORT_TEXTCNV)
+		hdrsize = hdl->hdrsize;
+		width = sizeof(OEMCHAR);
+#endif	// defined(SUPPORT_TEXTCNV)
+		fh = file_create(hdl->path);
+		if (fh == FILEH_INVALID) {
+			goto wf_err1;
+		}
+		if (hdrsize) {
+			file_write(fh, hdl->hdr, hdrsize);
+		}
+		file_write(fh, buf, bufsize * width);
+		file_close(fh);
+	}
+
+wf_err1:
+	if (buf) {
+		_MFREE(buf);
+	}
+	_MFREE(hdl);
+}
+
+/**
+ * Retrieves the names of all sections in an initialization file.
+ * @param[out] lpBuffer A pointer to a buffer that receives the section names
+ * @param[in] cchBuffer The size of the buffer pointed to by the lpBuffer parameter, in characters.
+ * @param[in] hdl The handle of profiler
+ * @return The return value specifies the number of characters copied to the specified buffer
+ */
+UINT profile_getsectionnames(OEMCHAR *lpBuffer, UINT cchBuffer, PFILEH hdl)
+{
+	UINT cchWritten = 0;
+	const OEMCHAR* lpProfile;
+	UINT cchProfile;
+	UINT nIndex;
+	OEMCHAR *lpKeyName;
+	UINT cchKeyName;
+	OEMCHAR *lpData;
+	UINT cchRemain;
+
+	if ((hdl == NULL) || (cchBuffer <= 1))
+	{
+		return 0;
+	}
+	lpProfile = hdl->buffer;
+	cchProfile = hdl->size;
+
+	cchBuffer--;
+
+	while (cchProfile > 0)
+	{
+		nIndex = 0;
+		while ((nIndex < cchProfile) && (lpProfile[nIndex] != '\r') && (lpProfile[nIndex] != '\n'))
+		{
+			nIndex++;
+		}
+
+		cchKeyName = nIndex;
+		lpKeyName = ParseLine(lpProfile, &cchKeyName, &lpData, NULL);
+		if ((lpKeyName != NULL) && (lpData == NULL))
+		{
+			if (lpBuffer)
+			{
+				cchRemain = cchBuffer - cchWritten;
+				if (cchRemain >= (cchKeyName + 1))
+				{
+					memcpy(lpBuffer + cchWritten, lpKeyName, cchKeyName * sizeof(*lpBuffer));
+					cchWritten += cchKeyName;
+					lpBuffer[cchWritten] = '\0';
+					cchWritten++;
 				}
-				file_write(fh, hdl->buffer, hdl->size);
-				file_close(fh);
 			}
 		}
-		_MFREE(hdl);
-	}
-}
 
-BRESULT profile_read(const char *app, const char *key, const OEMCHAR *def,
-										OEMCHAR *ret, UINT size, PFILEH hdl) {
+		lpProfile += nIndex;
+		cchProfile -= nIndex;
 
-	PFPOS	pfp;
-
-	if ((seakey(hdl, &pfp, app, key) != SUCCESS) || (pfp.data == NULL)) {
-		if (def == NULL) {
-			def = str_null;
+		if ((cchProfile >= 2) && (lpProfile[0] == '\r') && (lpProfile[1] == '\n'))
+		{
+			lpProfile++;
+			cchProfile--;
 		}
-		milstr_ncpy(ret, def, size);
-		return(FAILURE);
-	}
-	else {
-#if defined(OSLANG_UCS2)
-		ucscnv_utf8toucs2(ret, size, pfp.data, pfp.datasize);
-#else
-		size = min(size, pfp.datasize + 1);
-		milstr_ncpy(ret, pfp.data, size);
-#endif
-		return(SUCCESS);
-	}
-}
-
-BRESULT profile_write(const char *app, const char *key,
-											const OEMCHAR *data, PFILEH hdl) {
-
-	PFPOS	pfp;
-	UINT	newsize;
-	UINT	datalen;
-	char	*buf;
-
-	if ((hdl == NULL) || (hdl->flag & PFILEH_READONLY) ||
-		(data == NULL) || (seakey(hdl, &pfp, app, key) != SUCCESS)) {
-		return(FAILURE);
-	}
-	if (!pfp.apphit) {
-		newsize = pfp.applen + 2;
-#if defined(OSLINEBREAK_CR) || defined(OSLINEBREAK_CRLF)
-		newsize++;
-#endif
-#if defined(OSLINEBREAK_LF) || defined(OSLINEBREAK_CRLF)
-		newsize++;
-#endif
-		if (replace(hdl, pfp.pos, 0, newsize) != SUCCESS) {
-			return(FAILURE);
+		if (cchProfile > 0)
+		{
+			lpProfile++;
+			cchProfile--;
 		}
-		buf = hdl->buffer + pfp.pos;
-		*buf++ = '[';
-		CopyMemory(buf, app, pfp.applen);
-		buf += pfp.applen;
-		*buf++ = ']';
-#if defined(OSLINEBREAK_CR) || defined(OSLINEBREAK_CRLF)
-		*buf++ = '\r';
-#endif
-#if defined(OSLINEBREAK_LF) || defined(OSLINEBREAK_CRLF)
-		*buf++ = '\n';
-#endif
-		pfp.pos += newsize;
 	}
-#if defined(OSLANG_UCS2)
-	datalen = ucscnv_ucs2toutf8(NULL, (UINT)-1, data, (UINT)-1);
-#else
-	datalen = (UINT)STRLEN(data);
-#endif
-	newsize = pfp.keylen + 1 + datalen;
-#if defined(OSLINEBREAK_CR) || defined(OSLINEBREAK_CRLF)
-	newsize++;
-#endif
-#if defined(OSLINEBREAK_LF) || defined(OSLINEBREAK_CRLF)
-	newsize++;
-#endif
-	if (replace(hdl, pfp.pos, pfp.size, newsize) != SUCCESS) {
-		return(FAILURE);
+
+	if (lpBuffer)
+	{
+		lpBuffer[cchWritten] = '\0';
 	}
-	buf = hdl->buffer + pfp.pos;
-	CopyMemory(buf, key, pfp.keylen);
-	buf += pfp.keylen;
-	*buf++ = '=';
-#if defined(OSLANG_UCS2)
-	ucscnv_ucs2toutf8(buf, datalen + 1, data, (UINT)-1);
-#else
-	CopyMemory(buf, data, datalen);
-#endif
-	buf += datalen;
-#if defined(OSLINEBREAK_CR) || defined(OSLINEBREAK_CRLF)
-	*buf++ = '\r';
-#endif
-#if defined(OSLINEBREAK_LF) || defined(OSLINEBREAK_CRLF)
-	*buf++ = '\n';
-#endif
-	return(SUCCESS);
+	return cchWritten;
 }
 
-static void bitmapset(UINT8 *ptr, UINT pos, BRESULT set) {
+/**
+ * Retrieves a string from the specified section in an initialization file
+ * @param[in] lpAppName The name of the section containing the key name
+ * @param[in] lpKeyName The name of the key whose associated string is to be retrieved
+ * @param[in] lpDefault A default string
+ * @param[out]lpReturnedString A pointer to the buffer that receives the retrieved string
+ * @param[in] nSize The size of the buffer pointed to by the lpReturnedString parameter, in characters
+ * @param[in] hdl The handle of profiler
+ * @retval SUCCESS If the function succeeds
+ * @retval FAILIURE If the function fails
+ */
+BRESULT profile_read(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, const OEMCHAR *lpDefault, OEMCHAR *lpReturnedString, UINT nSize, PFILEH hdl)
+{
+	PFPOS pfp;
+	if ((SearchKey(hdl, &pfp, lpAppName, lpKeyName) != SUCCESS) || (pfp.lpString == NULL))
+	{
+		if (lpDefault == NULL)
+		{
+			lpDefault = str_null;
+		}
+		milstr_ncpy(lpReturnedString, lpDefault, nSize);
+		return FAILURE;
+	}
+	else
+	{
+		nSize = min(nSize, pfp.cchString + 1);
+		milstr_ncpy(lpReturnedString, pfp.lpString, nSize);
+		return SUCCESS;
+	}
+}
+
+/**
+ * Copies a string into the specified section of an initialization file.
+ * @param[in] lpAppName The name of the section to which the string will be copied
+ * @param[in] lpKeyName The name of the key to be associated with a string
+ * @param[in] lpString A null-terminated string to be written to the file
+ * @param[in] hdl The handle of profiler
+ * @retval SUCCESS If the function succeeds
+ * @retval FAILIURE If the function fails
+ */
+BRESULT profile_write(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, const OEMCHAR *lpString, PFILEH hdl)
+{
+	PFPOS pfp;
+	UINT cchWrite;
+	UINT cchString;
+	OEMCHAR *lpBuffer;
+
+	if ((hdl == NULL) || (hdl->flag & PFILEH_READONLY) || (lpString == NULL) || (SearchKey(hdl, &pfp, lpAppName, lpKeyName) != SUCCESS))
+	{
+		return FAILURE;
+	}
+
+	if (pfp.pos != 0)
+	{
+		lpBuffer = hdl->buffer + pfp.pos;
+		if ((lpBuffer[-1] != '\r') && (lpBuffer[-1] != '\n'))
+		{
+			if (replace(hdl, pfp.pos, 0, NELEMENTS(s_eol)) != SUCCESS)
+			{
+				return FAILURE;
+			}
+			memcpy(lpBuffer, s_eol, sizeof(s_eol));
+			pfp.pos += NELEMENTS(s_eol);
+		}
+	}
+
+	if (!pfp.apphit)
+	{
+		cchWrite = pfp.cchAppName + 2 + NELEMENTS(s_eol);
+		if (replace(hdl, pfp.pos, 0, cchWrite) != SUCCESS)
+		{
+			return FAILURE;
+		}
+		lpBuffer = hdl->buffer + pfp.pos;
+		*lpBuffer++ = '[';
+		memcpy(lpBuffer, lpAppName, pfp.cchAppName * sizeof(OEMCHAR));
+		lpBuffer += pfp.cchAppName;
+		*lpBuffer++ = ']';
+		memcpy(lpBuffer, s_eol, sizeof(s_eol));
+		pfp.pos += cchWrite;
+	}
+
+	cchString = (UINT)OEMSTRLEN(lpString);
+	cchWrite = pfp.cchKeyName + 1 + cchString + NELEMENTS(s_eol);
+	if (replace(hdl, pfp.pos, pfp.size, cchWrite) != SUCCESS)
+	{
+		return FAILURE;
+	}
+	lpBuffer = hdl->buffer + pfp.pos;
+	memcpy(lpBuffer, lpKeyName, pfp.cchKeyName * sizeof(OEMCHAR));
+	lpBuffer += pfp.cchKeyName;
+	*lpBuffer++ = '=';
+	memcpy(lpBuffer, lpString, cchString * sizeof(OEMCHAR));
+	lpBuffer += cchString;
+	memcpy(lpBuffer, s_eol, sizeof(s_eol));
+
+	return SUCCESS;
+}
+
+
+// ----
+
+static void bitmapset(UINT8 *ptr, UINT pos, BOOL set) {
 
 	UINT8	bit;
 
@@ -372,7 +782,7 @@ static void bitmapset(UINT8 *ptr, UINT pos, BRESULT set) {
 	}
 }
 
-static BRESULT bitmapget(const UINT8 *ptr, UINT pos) {
+static BOOL bitmapget(const UINT8 *ptr, UINT pos) {
 
 	return((ptr[pos >> 3] >> (pos & 7)) & 1);
 }
@@ -381,7 +791,7 @@ static void binset(UINT8 *bin, UINT binlen, const OEMCHAR *src) {
 
 	UINT	i;
 	UINT8	val;
-	BRESULT	set;
+	BOOL	set;
 	OEMCHAR	c;
 
 	for (i=0; i<binlen; i++) {
@@ -417,7 +827,7 @@ static void binset(UINT8 *bin, UINT binlen, const OEMCHAR *src) {
 	}
 }
 
-static void binget(OEMCHAR *work, UINT size, const UINT8 *bin, UINT binlen) {
+static void binget(OEMCHAR *work, int size, const UINT8 *bin, UINT binlen) {
 
 	UINT	i;
 	OEMCHAR	tmp[8];
@@ -432,7 +842,7 @@ static void binget(OEMCHAR *work, UINT size, const UINT8 *bin, UINT binlen) {
 	}
 }
 
-void profile_iniread(const OEMCHAR *path, const char *app,
+void profile_iniread(const OEMCHAR *path, const OEMCHAR *app,
 								const PFTBL *tbl, UINT count, PFREAD cb) {
 
 	PFILEH	pfh;
@@ -447,11 +857,11 @@ const PFTBL	*pterm;
 	p = tbl;
 	pterm = tbl + count;
 	while(p < pterm) {
-		if (profile_read(app, p->item, NULL, work, NELEMENTS(work), pfh)
+		if (profile_read(app, p->item, NULL, work, sizeof(work), pfh)
 																== SUCCESS) {
-			switch(p->itemtype & PFITYPE_MASK) {
+			switch(p->itemtype & PFTYPE_MASK) {
 				case PFTYPE_STR:
-					milstr_ncpy((OEMCHAR*)p->value, work, p->arg);
+					milstr_ncpy((OEMCHAR *)p->value, work, p->arg);
 					break;
 
 				case PFTYPE_BOOL:
@@ -460,7 +870,7 @@ const PFTBL	*pterm;
 
 				case PFTYPE_BITMAP:
 					bitmapset((UINT8 *)p->value, p->arg,
-								(BRESULT)((!milstr_cmp(work, str_true))?1:0));
+									(!milstr_cmp(work, str_true))?TRUE:FALSE);
 					break;
 
 				case PFTYPE_BIN:
@@ -506,7 +916,7 @@ const PFTBL	*pterm;
 	profile_close(pfh);
 }
 
-void profile_iniwrite(const OEMCHAR *path, const char *app,
+void profile_iniwrite(const OEMCHAR *path, const OEMCHAR *app,
 								const PFTBL *tbl, UINT count, PFWRITE cb) {
 
 	PFILEH		pfh;
@@ -525,7 +935,7 @@ const OEMCHAR	*set;
 		if (!(p->itemtype & PFFLAG_RO)) {
 			work[0] = '\0';
 			set = work;
-			switch(p->itemtype & PFITYPE_MASK) {
+			switch(p->itemtype & PFTYPE_MASK) {
 				case PFTYPE_STR:
 					set = (OEMCHAR *)p->value;
 					break;
@@ -581,7 +991,7 @@ const OEMCHAR	*set;
 
 				default:
 					if (cb != NULL) {
-						set = (*cb)(p, work, sizeof(work));
+						set = (*cb)(p, work, NELEMENTS(work));
 					}
 					else {
 						set = NULL;

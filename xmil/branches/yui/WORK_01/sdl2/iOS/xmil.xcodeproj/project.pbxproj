@@ -27,7 +27,6 @@
 		BA6D1624193D5CC1006EC729 /* resize.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D152B193D5CC1006EC729 /* resize.c */; };
 		BA6D1625193D5CC1006EC729 /* strres.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D152D193D5CC1006EC729 /* strres.c */; };
 		BA6D1626193D5CC1006EC729 /* textfile.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D152F193D5CC1006EC729 /* textfile.c */; };
-		BA6D1627193D5CC1006EC729 /* ucscnv.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D1531193D5CC1006EC729 /* ucscnv.c */; };
 		BA6D1628193D5CC1006EC729 /* wavefile.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D1533193D5CC1006EC729 /* wavefile.c */; };
 		BA6D1629193D5CC1006EC729 /* debugsub.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D1536193D5CC1006EC729 /* debugsub.c */; };
 		BA6D162A193D5CC1006EC729 /* dlgabout.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D153A193D5CC1006EC729 /* dlgabout.c */; };
@@ -222,8 +221,6 @@
 		BA6D152E193D5CC1006EC729 /* strres.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = strres.h; sourceTree = "<group>"; };
 		BA6D152F193D5CC1006EC729 /* textfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = textfile.c; sourceTree = "<group>"; };
 		BA6D1530193D5CC1006EC729 /* textfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = textfile.h; sourceTree = "<group>"; };
-		BA6D1531193D5CC1006EC729 /* ucscnv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ucscnv.c; sourceTree = "<group>"; };
-		BA6D1532193D5CC1006EC729 /* ucscnv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ucscnv.h; sourceTree = "<group>"; };
 		BA6D1533193D5CC1006EC729 /* wavefile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wavefile.c; sourceTree = "<group>"; };
 		BA6D1534193D5CC1006EC729 /* wavefile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavefile.h; sourceTree = "<group>"; };
 		BA6D1535193D5CC1006EC729 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
@@ -627,8 +624,6 @@
 				BA6D152E193D5CC1006EC729 /* strres.h */,
 				BA6D152F193D5CC1006EC729 /* textfile.c */,
 				BA6D1530193D5CC1006EC729 /* textfile.h */,
-				BA6D1531193D5CC1006EC729 /* ucscnv.c */,
-				BA6D1532193D5CC1006EC729 /* ucscnv.h */,
 				BA6D1533193D5CC1006EC729 /* wavefile.c */,
 				BA6D1534193D5CC1006EC729 /* wavefile.h */,
 			);
@@ -990,7 +985,6 @@
 				BA6D167F193D5CC1006EC729 /* psggeng.c in Sources */,
 				BA6D162A193D5CC1006EC729 /* dlgabout.c in Sources */,
 				BA6D163D193D5CC1006EC729 /* fdd_mtr.c in Sources */,
-				BA6D1627193D5CC1006EC729 /* ucscnv.c in Sources */,
 				BA6D1690193D5CC1006EC729 /* scrndraw.c in Sources */,
 				BA6D161C193D5CC1006EC729 /* utf8ucs2.c in Sources */,
 				BA6D1652193D5CC1006EC729 /* ppi.c in Sources */,

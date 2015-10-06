@@ -250,10 +250,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\ucscnv.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\common\wavefile.c"
 					>
 				</File>
@@ -773,10 +769,6 @@
 				</File>
 				<File
 					RelativePath="..\..\common\textfile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\common\ucscnv.h"
 					>
 				</File>
 				<File
