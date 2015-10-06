@@ -6,6 +6,7 @@
 #include	"vramhdl.h"
 #include	"menubase.h"
 #include	"menustr.h"
+#include "dlgcfg.h"
 #include	"sysmenu.res"
 #if !defined(SIZE_QVGA)
 #include	"palettes.h"
