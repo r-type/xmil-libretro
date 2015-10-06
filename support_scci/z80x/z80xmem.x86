@@ -1,0 +1,108 @@
+
+%include '../z80x/z80x.inc'
+
+section .bss
+
+	extern	_z80core
+	extern	_mainmem
+
+
+section .text
+
+	global	@z80mem_read8@4
+	global	@z80mem_write8@8
+
+	global	lea_ecx_ecx
+	global	memfetch
+	global	memrd8_ecx_al
+	global	memrd8_ecx_dl
+	global	memwr8_ecx_dl
+	global	memrd16_ecx_ax
+	global	memwr16_ecx_dx
+
+
+				align	16
+lea_ecx_ecx:	cmp		ecx, 8000h
+				jc		short .low
+				add		ecx, _mainmem
+				ret
+.low:			add		ecx, [_z80core + z80core_t.memread]
+				ret
+
+
+				align	16
+memfetch:		cmp		ecx, 8000h
+				jc		short .low
+				movzx	eax, byte [_mainmem + ecx]
+				ret
+.low:			mov		edx, [_z80core + z80core_t.memread]
+				movzx	eax, byte [edx + ecx]
+				ret
+
+				align	16
+@z80mem_read8@4:
+memrd8_ecx_al:	cmp		ecx, 8000h
+				jc		short .low
+				mov		al, [_mainmem + ecx]
+				ret
+.low:			mov		edx, [_z80core + z80core_t.memread]
+				mov		al, [edx + ecx]
+				ret
+
+				align	16
+memrd8_ecx_dl:	cmp		ecx, 8000h
+				jc		short .low
+				mov		dl, [_mainmem + ecx]
+				ret
+.low:			mov		edx, [_z80core + z80core_t.memread]
+				mov		dl, [edx + ecx]
+				ret
+
+				align	16
+@z80mem_write8@8:
+memwr8_ecx_dl:	cmp		ecx, 8000h
+				jc		short .low
+				mov		[_mainmem + ecx], dl
+				ret
+.low:			mov		eax, [_z80core + z80core_t.memwrite]
+				mov		[eax + ecx], dl
+				ret
+
+				align	16
+memrd16_ecx_ax:	cmp		cx, 0xffff
+				jo		short .a7fff
+				js		short .a8000
+				je		short .affff
+				mov		eax, [_z80core + z80core_t.memread]
+				mov		ax, [eax + ecx]
+				ret
+.a7fff:			mov		eax, [_z80core + z80core_t.memread]
+				mov		al, [eax + ecx]
+				mov		ah, [_mainmem + ecx + 1]
+				ret
+.a8000:			mov		ax, [_mainmem + ecx]
+				ret
+.affff:			mov		eax, [_z80core + z80core_t.memread]
+				mov		ah, [eax]
+				mov		al, [_mainmem + ecx]
+				ret
+
+				align	16
+memwr16_ecx_dx:	cmp		cx, 0xffff
+				jo		short .a7fff
+				js		short .a8000
+				je		short .affff
+				mov		eax, [_z80core + z80core_t.memwrite]
+				mov		[eax + ecx], dx
+				ret
+.a7fff:			mov		eax, [_z80core + z80core_t.memwrite]
+				mov		[_mainmem + ecx + 1], dh
+				mov		[eax + ecx], dl
+				ret
+.a8000:			mov		[_mainmem + ecx], dx
+				ret
+.affff:			mov		eax, [_z80core + z80core_t.memwrite]
+				mov		[_mainmem + ecx], dl
+				mov		[eax], dh
+				ret
+
