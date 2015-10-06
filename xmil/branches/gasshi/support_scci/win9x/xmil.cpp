@@ -31,7 +31,7 @@
 #include	"diskdrv.h"
 #include	"fdd_ini.h"
 #include	"x1f.h"
-
+#include	"ext\realchip\scciwrap.h"
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
@@ -888,6 +888,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 		soundmng_pcmvolume(SOUND_PCMSEEK1, xmilcfg.MOTORVOL);
 	}
 
+	scciwrap::initialize();
+
 	sysmng_initialize();
 	joymng_initialize();
 
@@ -991,6 +993,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	pccore_deinitialize();
 
 	soundmng_deinitialize();
+
+	scciwrap::uninitialize();
 
 	juliet_YM2151Reset();
 	juliet_YMF288Reset();
