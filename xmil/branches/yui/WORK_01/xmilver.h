@@ -6,6 +6,5 @@
 /* #define	XMILVER_MACOS9	*/
 /* #define	XMILVER_MACOSX	*/
 /* #define	XMILVER_X11		*/
-/* #define	XMILVER_WINCE	*/
 /* #define	XMILVER_SDL		*/
 

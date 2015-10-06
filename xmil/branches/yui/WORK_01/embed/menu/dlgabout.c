@@ -42,9 +42,7 @@ static void dlginit(void) {
 	milstr_ncpy(work, str_xmil, NELEMENTS(work));
 	milstr_ncat(work, str_space, NELEMENTS(work));
 
-#if defined(_WIN32_WCE) && defined(XMILVER_WINCE)
-	milstr_ncat(work, OEMTEXT(XMILVER_WINCE), NELEMENTS(work));
-#elif defined(SDL_REVISION) && defined(XMILVER_SDL)
+#if defined(SDL_REVISION) && defined(XMILVER_SDL)
 	milstr_ncat(work, OEMTEXT(XMILVER_SDL), NELEMENTS(work));
 #else
 	milstr_ncat(work, xmilversion, NELEMENTS(work));
