@@ -1,13 +1,19 @@
+/**
+ * @file	compiler.h
+ * @brief	include file for standard system include files,
+ *			or project specific include files that are used frequently,
+ *			but are changed infrequently
+ */
 
 #define	_WIN32_IE	0x0200
 
-#include	<windows.h>
-#include	<tchar.h>
-#include	<stdio.h>
-#include	<stddef.h>
-#include	<setjmp.h>
+#include <windows.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <setjmp.h>
 #if defined(TRACE)
-#include	<assert.h>
+#include <assert.h>
 #endif
 
 #define	BYTESEX_LITTLE
@@ -60,18 +66,22 @@ typedef signed __int64		SINT64;
 
 #define	BRESULT				UINT8
 #define	OEMCHAR				TCHAR
-#define	OEMTEXT(string)		_T(string)
+#define	OEMTEXT(string)		TEXT(string)
 #define	OEMSPRINTF			wsprintf
 #define	OEMSTRLEN			lstrlen
 
-#include	"common.h"
-#include	"milstr.h"
-#include	"_memory.h"
-#include	"trace.h"
-#include	"rect.h"
+#include "common.h"
+#include "milstr.h"
+#include "_memory.h"
+#include "rect.h"
+#include "trace.h"
+#include "misc\tickcounter.h"
 
+#ifdef __cplusplus
+#include "misc\vc6macros.h"
+#endif	/* __cplusplus */
 
-#define	GETTICK()			GetTickCount()
+#define	GETTICK				GetTickCounter
 #if defined(TRACE)
 #define	__ASSERT(s)			assert(s)
 #else
