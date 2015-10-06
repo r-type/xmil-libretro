@@ -7,6 +7,7 @@
 #include	"sndctrl.h"
 #include	"x1f.h"
 #include	"romeo\juliet.h"
+#include	"realchip\scciwrap.h"
 
 static	BOOL	romeo_exist;
 
@@ -25,10 +26,16 @@ void IOOUTCALL opm_o(UINT port, REG8 dat) {
 		sndboard.opmdat[reg] = dat;
 		x1f_opm(reg, dat);
 #if !defined(DISABLE_SOUND)
-		if (romeo_exist) {
+		if (romeo_exist)
+		{
 			juliet_YM2151W(reg, dat);
 		}
-		else {
+		else if (scciwrap::isOpm())
+		{
+			scciwrap::setOpmReg(reg, dat);
+		}
+		else
+		{
 			opmgen_setreg(reg, dat);
 		}
 #endif
@@ -71,10 +78,16 @@ void IOOUTCALL sndboard_psgdat(UINT port, REG8 dat) {
 		sndboard.psgdat[reg] = dat;
 		x1f_psg(reg, dat);
 #if !defined(DISABLE_SOUND)
-		if (romeo_exist) {
+		if (romeo_exist)
+		{
 			juliet_YMF288A(reg, dat);
 		}
-		else {
+		else if (scciwrap::isPsg())
+		{
+			scciwrap::setPsgReg(reg, dat);
+		}
+		else
+		{
 			psggen_setreg(&psggen, reg, dat);
 		}
 #endif
@@ -120,7 +133,8 @@ void sndboard_update(void) {
 
 	UINT	i;
 
-	if (romeo_exist) {
+	if (romeo_exist)
+	{
 		for (i=0; i<14; i++) {
 			juliet_YMF288A((REG8)i, sndboard.psgdat[i]);
 		}
@@ -130,13 +144,36 @@ void sndboard_update(void) {
 		}
 #endif
 	}
-	else {
-		for (i=0; i<14; i++) {
-			psggen_setreg(&psggen, (REG8)i, sndboard.psgdat[i]);
+	else
+	{
+		if (scciwrap::isPsg())
+		{
+			for (i = 0; i < 14; i++)
+			{
+				scciwrap::setPsgReg((REG8)i, sndboard.psgdat[i]);
+			}
+		}
+		else
+		{
+			for (i = 0; i < 14; i++)
+			{
+				psggen_setreg(&psggen, (REG8)i, sndboard.psgdat[i]);
+			}
 		}
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-		for (i=0x20; i<0x100; i++) {
-			opmgen_setreg((REG8)i, sndboard.opmdat[i]);
+		if (scciwrap::isOpm())
+		{
+			for (i = 0x20; i < 0x100; i++)
+			{
+				scciwrap::setOpmReg((REG8)i, sndboard.opmdat[i]);
+			}
+		}
+		else
+		{
+			for (i = 0x20; i < 0x100; i++)
+			{
+				opmgen_setreg((REG8)i, sndboard.opmdat[i]);
+			}
 		}
 #endif
 	}
@@ -148,12 +185,25 @@ void sndboard_reset(void) {
 	ZeroMemory(&sndboard, sizeof(sndboard));
 	CopyMemory(sndboard.psgdat, psggen_deftbl, sizeof(psggen_deftbl));
 	romeo_exist = juliet_YM2151IsEnable();
-	if (romeo_exist) {
+	if (romeo_exist)
+	{
 		juliet_YM2151Reset();
 		juliet_YMF288Reset();
 	}
-	else {
-		sndctrl_reset();
+	else
+	{
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+		if (!scciwrap::isOpm())
+		{
+			opmgen_reset();
+			sound_streamregist(&opmgen, (SOUNDCB)opmgen_getpcm);
+		}
+#endif
+		if (!scciwrap::isPsg())
+		{
+			psggen_reset(&psggen);
+			sound_streamregist(&psggen, (SOUNDCB)psggen_getpcm);
+		}
 	}
 }
 
