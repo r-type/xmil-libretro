@@ -881,6 +881,22 @@ SOURCE=.\ext\romeo\romeo.h
 # End Source File
 # End Group
 # End Group
+# Begin Group "misc"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\misc\tickcounter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\tickcounter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\vc6macros.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\DCLOCK.CPP
