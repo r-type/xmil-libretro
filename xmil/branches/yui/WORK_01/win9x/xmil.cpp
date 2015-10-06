@@ -15,7 +15,7 @@
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
-#include	"juliet.h"
+#include	"ext\romeo\juliet.h"
 #include	"extclass.h"
 #include	"dialog.h"
 #include	"z80core.h"
