@@ -143,5 +143,3 @@ _z80x_step:		push	ebx
 				pop		ebx
 				jmp		_z80dmap
 
-	ends
-
