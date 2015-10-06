@@ -185,8 +185,9 @@ static void set_algorithm(OPMCH *ch, REG8 value) {
 		ch->feedback = 0;
 	}
 
-	switch((value >> 6) & 3) {
+	switch ((value >> 6) & 3) {
 		case 0:
+		default:
 			outd = &opmgen.feedback4;
 			break;
 

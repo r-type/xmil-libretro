@@ -120,7 +120,9 @@ static BRESULT updateblink(void) {
 
 typedef void (*MAKEFN)(void);
 
+#if defined(SUPPORT_TURBOZ)
 static void width_dummy(void) { }
+#endif	/* defined(SUPPORT_TURBOZ) */
 
 static const UINT8 screendraw[] = {
 				MAKESCRN_320x200S,	MAKESCRN_320x400,
