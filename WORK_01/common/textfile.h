@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 TEXTFILEH textfile_open(const OEMCHAR *filename, UINT buffersize);
-BOOL textfile_read(TEXTFILEH fh, char *buffer, UINT size);
+BRESULT textfile_read(TEXTFILEH fh, char *buffer, UINT size);
 void textfile_close(TEXTFILEH fh);
 
 #ifdef __cplusplus
