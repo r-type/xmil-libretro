@@ -1,13 +1,17 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"xmilver.h"
-#include	"pccore.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
-#include	"menustr.h"
-#include "dlgabout.h"
-#include	"sysmenu.res"
+/**
+ * @file	dlgabout.c
+ * @brief	Implementation of the about dialog
+ */
 
+#include "compiler.h"
+#include "dlgabout.h"
+#include "../menubase/menudlg.h"
+#include "../menubase/menures.h"
+#include "../menubase/menuicon.h"
+#include "strres.h"
+#include "xmilver.h"
+#include "pccore.h"
+#include "sysmenu.res"
 
 enum {
 	DID_ICON	= DID_USER,
