@@ -64,12 +64,13 @@ static	TRACECFG	tracecfg;
 
 static const char	np2trace[] = "np2trace.ini";
 static const char	inititle[] = "TRACE";
-static const INITBL	initbl[4] = {
-			{"posx",	INITYPE_SINT32,	&tracecfg.posx,		0},
-			{"posy",	INITYPE_SINT32,	&tracecfg.posy,		0},
-			{"width",	INITYPE_SINT32,	&tracecfg.width,	0},
-			{"height",	INITYPE_SINT32,	&tracecfg.height,	0}};
-
+static const PFTBL initbl[4] =
+{
+	PFVAL("posx",	PFTYPE_SINT32,	&tracecfg.posx),
+	PFVAL("posy",	PFTYPE_SINT32,	&tracecfg.posy),
+	PFVAL("width",	PFTYPE_SINT32,	&tracecfg.width),
+	PFVAL("height",	PFTYPE_SINT32,	&tracecfg.height)
+};
 static void View_ScrollToBottom(HWND hWnd) {
 
 	int		MinPos;
