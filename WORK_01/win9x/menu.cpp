@@ -1,72 +1,147 @@
-#include	"compiler.h"
-#include	"resource.h"
-#include	"xmil.h"
-#include	"dosio.h"
-#include	"scrnmng.h"
-#include	"sysmng.h"
-#include	"extclass.h"
-#include	"pccore.h"
-#include	"ini.h"
-#include	"menu.h"
-#include	"palettes.h"
-#include	"makescrn.h"
-#include	"fdd_mtr.h"
-#include	"fdd_ini.h"
+/**
+ * @file	menu.cpp
+ * @brief	メニューの動作の定義を行います
+ */
 
+#include "compiler.h"
+#include "resource.h"
+#include "menu.h"
+#include "xmil.h"
+#include "dosio.h"
+#include "ini.h"
+#include "scrnmng.h"
+#include "sysmng.h"
+#include "extclass.h"
+#include "misc\tstring.h"
+#include "misc\WndProc.h"
+#include "pccore.h"
+#include "palettes.h"
+#include "makescrn.h"
+#include "fdd_mtr.h"
+#include "fdd_ini.h"
 
-#define	MFCHECK(a) ((a)?MF_CHECKED:MF_UNCHECKED)
-
-typedef struct {
-	UINT16	id;
-	UINT16	str;
-} MENUITEMS;
-
-
-static void insertresmenu(HMENU menu, UINT pos, UINT flag,
-													UINT item, UINT str) {
-
-	OEMCHAR	tmp[128];
-
-	if (LoadString(hInst, str, tmp, NELEMENTS(tmp))) {
-		InsertMenu(menu, pos, flag, item, tmp);
+bool menu_searchmenu(HMENU hMenu, UINT uID, HMENU *phmenuRet, int *pnPos)
+{
+	int nCount = GetMenuItemCount(hMenu);
+	for (int i = 0; i < nCount; i++)
+	{
+		MENUITEMINFO mii;
+		ZeroMemory(&mii, sizeof(mii));
+		mii.cbSize = sizeof(mii);
+		mii.fMask = MIIM_ID | MIIM_SUBMENU;
+		if (GetMenuItemInfo(hMenu, i, TRUE, &mii))
+		{
+			if (mii.wID == uID)
+			{
+				if (phmenuRet)
+				{
+					*phmenuRet = hMenu;
+				}
+				if (pnPos)
+				{
+					*pnPos = i;
+				}
+				return true;
+			}
+			else if ((mii.hSubMenu) && (menu_searchmenu(mii.hSubMenu, uID, phmenuRet, pnPos)))
+			{
+				return true;
+			}
+		}
 	}
+	return false;
 }
 
-static void insertresmenus(HMENU menu, UINT pos,
-									const MENUITEMS *item, UINT items) {
-
-const MENUITEMS *iterm;
-
-	iterm = item + items;
-	while(item < iterm) {
-		if (item->id) {
-			insertresmenu(menu, pos, MF_BYPOSITION | MF_STRING,
-													item->id, item->str);
-		}
-		else {
-			InsertMenu(menu, pos, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
-		}
-		item++;
-		pos++;
+// これってAPIあるのか？
+int menu_addmenu(HMENU hMenu, int nPos, HMENU hmenuAdd, bool bSeparator)
+{
+	if (nPos < 0)
+	{
+		nPos = GetMenuItemCount(hMenu);
 	}
+	int nCount = GetMenuItemCount(hmenuAdd);
+	int nAdded = 0;
+	for (int i = 0; i < nCount; i++)
+	{
+		MENUITEMINFO mii;
+		ZeroMemory(&mii, sizeof(mii));
+
+		TCHAR szString[128];
+		mii.cbSize = sizeof(mii);
+		mii.fMask = MIIM_TYPE | MIIM_STATE | MIIM_ID | MIIM_SUBMENU | MIIM_DATA;
+		mii.dwTypeData = szString;
+		mii.cch = _countof(szString);
+		if (GetMenuItemInfo(hmenuAdd, i, TRUE, &mii))
+		{
+			if (mii.hSubMenu)
+			{
+				HMENU hmenuSub = CreatePopupMenu();
+				(void)menu_addmenu(hmenuSub, 0, mii.hSubMenu);
+				mii.hSubMenu = hmenuSub;
+			}
+			if (bSeparator)
+			{
+				bSeparator = false;
+				InsertMenu(hMenu, nPos + nAdded, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
+				nAdded++;
+			}
+			InsertMenuItem(hMenu, nPos + nAdded, TRUE, &mii);
+			nAdded++;
+		}
+	}
+	return nAdded;
+}
+
+int menu_addmenures(HMENU hMenu, int nPos, UINT uID, bool bSeparator)
+{
+	int nCount = 0;
+
+	HMENU hmenuAdd = LoadMenu(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(uID));
+	if (hmenuAdd)
+	{
+		nCount = menu_addmenu(hMenu, nPos, hmenuAdd, bSeparator);
+		DestroyMenu(hmenuAdd);
+	}
+	return nCount;
+}
+
+int menu_addmenubyid(HMENU hMenu, UINT uByID, UINT uID)
+{
+	int nCount = 0;
+
+	HMENU hmenuSub;
+	int nSubPos;
+	if (menu_searchmenu(hMenu, uByID, &hmenuSub, &nSubPos))
+	{
+		nCount = menu_addmenures(hmenuSub, nSubPos + 1, uID);
+	}
+	return nCount;
+}
+
+BOOL menu_insertmenures(HMENU hMenu, int nPosition, UINT uFlags, UINT_PTR uIDNewItem, UINT uID)
+{
+	std::tstring rString(LoadTString(uID));
+
+	BOOL bResult = FALSE;
+	if (!rString.empty())
+	{
+		bResult = InsertMenu(hMenu, nPosition, uFlags, uIDNewItem, rString.c_str());
+	}
+	return bResult;
+}
+
+int menu_addmenubar(HMENU popup, HMENU menubar)
+{
+	return menu_addmenu(popup, 0, menubar);
 }
 
 
 // ----
 
-static const MENUITEMS smenuitem[] = {
-			{IDM_SCREENCENTER,	IDS_SCREENCENTER},
-			{IDM_SNAPENABLE,	IDS_SNAPENABLE},
-			{IDM_BACKGROUND,	IDS_BACKGROUND},
-			{IDM_BGSOUND,		IDS_BGSOUND},
-			{0,					0}};
-
-void sysmenu_initialize(void) {
-
-	HMENU	hMenu;
-
-	hMenu = GetSystemMenu(hWndMain, FALSE);
-	insertresmenus(hMenu, 0, smenuitem, NELEMENTS(smenuitem));
+void sysmenu_initialize()
+{
+	HMENU hMenu = GetSystemMenu(hWndMain, FALSE);
+	menu_addmenures(hMenu, 0, IDR_SYS);
 }
 
 void sysmenu_setwinsnap(UINT8 value) {
@@ -105,113 +180,39 @@ void sysmenu_setbgsound(UINT8 value) {
 
 // ----
 
-typedef struct {
-	UINT16		title;
-	UINT16		items;
-const MENUITEMS	*item;
-} SUBMENUI;
+void menu_initialize()
+{
+	HMENU hMenu = GetMenu(hWndMain);
 
-static const MENUITEMS fddsitem[4][3] = {
-		{	{IDM_FDD0OPEN,		IDS_OPEN},
-			{0,					0},
-			{IDM_FDD0EJECT,		IDS_EJECT}},
-		{	{IDM_FDD1OPEN,		IDS_OPEN},
-			{0,					0},
-			{IDM_FDD1EJECT,		IDS_EJECT}},
-		{	{IDM_FDD2OPEN,		IDS_OPEN},
-			{0,					0},
-			{IDM_FDD2EJECT,		IDS_EJECT}},
-		{	{IDM_FDD3OPEN,		IDS_OPEN},
-			{0,					0},
-			{IDM_FDD3EJECT,		IDS_EJECT}}};
-
-static const SUBMENUI fddmenu[4] = {
-					{IDS_FDD0, 3, fddsitem[0]},
-					{IDS_FDD1, 3, fddsitem[1]},
-					{IDS_FDD2, 3, fddsitem[2]},
-					{IDS_FDD3, 3, fddsitem[3]}};
-
-static const MENUITEMS dbgsitem[4] = {
-			{IDM_WIDTH40,		IDS_WIDTH40},
-			{IDM_WIDTH80,		IDS_WIDTH80},
-			{0,					0},
-			{IDM_Z80SAVE,		IDS_Z80SAVE}};
-
-static const SUBMENUI dbgmenu = {IDS_DEBUG, 4, dbgsitem};
-
-
-static void insertsubmenu(HMENU hMenu, UINT pos, const SUBMENUI *sm) {
-
-	HMENU	hSubMenu;
-
-	hSubMenu = CreatePopupMenu();
-	insertresmenus(hSubMenu, 0, sm->item, sm->items);
-	insertresmenu(hMenu, pos, MF_BYPOSITION | MF_POPUP,
-											(UINT)hSubMenu, sm->title);
-}
-
-#if defined(SUPPORT_STATSAVE)
-static const OEMCHAR xmenu_stat[] = OEMTEXT("S&tat");
-static const OEMCHAR xmenu_statsave[] = OEMTEXT("Save %u");
-static const OEMCHAR xmenu_statload[] = OEMTEXT("Load %u");
-
-static void addstatsavemenu(HMENU hMenu, UINT pos) {
-
-	HMENU	hSubMenu;
-	UINT	i;
-	OEMCHAR	buf[16];
-
-	hSubMenu = CreatePopupMenu();
-	for (i=0; i<SUPPORT_STATSAVE; i++) {
-		OEMSPRINTF(buf, xmenu_statsave, i);
-		AppendMenu(hSubMenu, MF_STRING, IDM_FLAGSAVE + i, buf);
-	}
-	AppendMenu(hSubMenu, MF_MENUBARBREAK, 0, NULL);
-	for (i=0; i<SUPPORT_STATSAVE; i++) {
-		OEMSPRINTF(buf, xmenu_statload, i);
-		AppendMenu(hSubMenu, MF_STRING, IDM_FLAGLOAD + i, buf);
-	}
-	InsertMenu(hMenu, pos, MF_BYPOSITION | MF_POPUP,
-											(UINT32)hSubMenu, xmenu_stat);
-}
-#endif
-
-void menu_initialize(void) {
-
-	HMENU	hMenu;
-#if defined(SUPPORT_WAVEREC) || defined(SUPPORT_TURBOZ)
-	HMENU	hSubMenu;
-#endif
-	UINT	i;
-
-	hMenu = GetMenu(hWndMain);
 #if defined(SUPPORT_WAVEREC)
-	hSubMenu = GetSubMenu(hMenu, 5);
-	insertresmenu(hSubMenu, 2, MF_BYPOSITION | MF_STRING,
-												IDM_WAVEREC, IDS_WAVEREC);
+	menu_addmenubyid(hMenu, IDM_OPMLOG, IDR_WAVEREC);
 #endif
 
-	if (xmiloscfg.Z80SAVE) {
-		insertsubmenu(hMenu, 5, &dbgmenu);
+	if (xmiloscfg.Z80SAVE)
+	{
+		menu_addmenures(hMenu, 5, IDR_DEBUG);
 	}
 
 #if defined(SUPPORT_TURBOZ)
-	hSubMenu = GetSubMenu(hMenu, 1);
-	insertresmenu(hSubMenu, 2, MF_BYPOSITION | MF_STRING,
-												IDM_TURBOZ, IDS_TURBOZ);
+	menu_addmenubyid(hMenu, IDM_TURBO, IDR_TURBOZ);
 #endif
 
-	for (i=4; i--;) {
-		if (xmilcfg.fddequip & (1 << i)) {
-			insertsubmenu(hMenu, 1, fddmenu + i);
+	int nPos = 1;
+#if defined(SUPPORT_STATSAVE)
+	if (xmiloscfg.statsave)
+	{
+		nPos += menu_addmenures(hMenu, nPos, IDR_STAT);
+	}
+#endif
+
+	for (UINT i = 0; i < 4; i++)
+	{
+		if (xmilcfg.fddequip & (1 << i))
+		{
+			nPos += menu_addmenures(hMenu, nPos, IDR_FDD0MENU + i);
 		}
 	}
 
-#if defined(SUPPORT_STATSAVE)
-	if (xmiloscfg.statsave) {
-		addstatsavemenu(hMenu, 1);
-	}
-#endif
 }
 
 void menu_disablewindow(void) {
