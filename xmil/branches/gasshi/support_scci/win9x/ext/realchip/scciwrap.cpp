@@ -1,8 +1,11 @@
+#include	"compiler.h"
 #include	"scciwrap.h"
+#include	"scci.h"
+#include	"SCCIDefines.h"
 
 SoundChip*	scciwrap::m_pOpm = NULL;
 SoundChip*	scciwrap::m_pPsg = NULL;
-HINSTANCE	scciwrap::m_hScci = NULL;
+HMODULE		scciwrap::m_hScci = NULL;
 SoundInterfaceManager *scciwrap::m_pManager = NULL;
 
 // コンストラクタ
@@ -15,7 +18,6 @@ scciwrap::~scciwrap(){
 
 // 初期化
 BOOL	scciwrap::initialize(){
-	SCCIFUNC getSoundInterfaceManager = NULL;
 	// 多重呼び出しチェック
 	if(m_pManager != NULL || m_hScci != NULL){
 		return FALSE;
@@ -23,11 +25,10 @@ BOOL	scciwrap::initialize(){
 	// load scci
 	m_hScci = ::LoadLibrary(TEXT("scci"));
 	if(m_hScci == NULL){
-		m_hScci = NULL;
 		return FALSE;
 	}
 	// マネージャーを取得する
-	getSoundInterfaceManager = (SCCIFUNC)(::GetProcAddress(m_hScci, "getSoundInterfaceManager"));
+	SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(::GetProcAddress(m_hScci, "getSoundInterfaceManager"));
 	// マネージャーが取得できない場合は戻る
 	if(getSoundInterfaceManager == NULL){
 		::FreeLibrary(m_hScci);
@@ -35,7 +36,7 @@ BOOL	scciwrap::initialize(){
 		return FALSE;
 	}
 	// マネージャーを取得する
-	m_pManager = getSoundInterfaceManager();
+	m_pManager = (*getSoundInterfaceManager)();
 	if(m_pManager == NULL){
 		::FreeLibrary(m_hScci);
 		m_hScci = NULL;

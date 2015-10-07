@@ -1,12 +1,13 @@
 #pragma once
-#include "scci.h"
-#include "SCCIDefines.h"
+
+class	SoundInterfaceManager;
+class	SoundChip;
 
 class	scciwrap{
 private:
 	static	SoundChip *m_pOpm;
 	static	SoundChip *m_pPsg;
-	static	HINSTANCE	m_hScci;
+	static	HMODULE m_hScci;
 	static	SoundInterfaceManager *m_pManager;
 public:
 	// コンストラクタ
