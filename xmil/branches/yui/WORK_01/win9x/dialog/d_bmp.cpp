@@ -37,11 +37,11 @@ const OEMCHAR	*ext;
 	bmpui.ext = str_bmp;
 	bmpui.filter = bmpui_filter[ss->type];
 	bmpui.defindex = 1;
-	file_cpyname(path, bmpfilefolder, sizeof(path));
+	file_cpyname(path, bmpfilefolder, _countof(path));
 	file_cutname(path);
-	file_catname(path, bmpui_file, sizeof(path));
-	if (dlgs_selectwritenum(hWnd, &bmpui, path, sizeof(path))) {
-		file_cpyname(bmpfilefolder, path, sizeof(bmpfilefolder));
+	file_catname(path, bmpui_file, _countof(path));
+	if (dlgs_selectwritenum(hWnd, &bmpui, path, _countof(path))) {
+		file_cpyname(bmpfilefolder, path, _countof(bmpfilefolder));
 		sysmng_update(SYS_UPDATEOSCFG);
 		ext = file_getext(path);
 		if ((ss->type <= SCRNSAVE_8BIT) &&

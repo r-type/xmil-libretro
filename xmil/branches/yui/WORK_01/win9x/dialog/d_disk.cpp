@@ -32,7 +32,7 @@ const OEMCHAR	*p;
 	if ((p == NULL) || (p[0] == '\0')) {
 		p = fddfolder;
 	}
-	file_cpyname(path, p, sizeof(path));
+	file_cpyname(path, p, _countof(path));
 	if (dlgs_selectfile(hWnd, &fddui, path, NELEMENTS(path), &readonly)) {
 		file_cpyname(fddfolder, path, NELEMENTS(fddfolder));
 		sysmng_update(SYS_UPDATEOSCFG);
