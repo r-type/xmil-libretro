@@ -120,7 +120,7 @@ void ini_read(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount
 			case PFTYPE_BOOL:
 				GetPrivateProfileString(lpTitle, p->item,
 									(*(static_cast<const UINT8*>(p->value))) ? str_true : str_false,
-									szWork, NELEMENTS(szWork), lpPath);
+									szWork, _countof(szWork), lpPath);
 				*(static_cast<UINT8*>(p->value)) = (!milstr_cmp(szWork, str_true)) ? 1 : 0;
 				break;
 
