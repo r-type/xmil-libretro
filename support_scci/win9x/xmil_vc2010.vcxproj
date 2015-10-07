@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9D43A12A-BDDB-41D1-A2A8-0AC22EF85E39}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>xmil_vc2010</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28February 2006%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28February 2006%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\dialog;..\;..\common;..\z80c;..\io;..\vram;..\sound;..\font;..\fdd</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\dialog;..\;..\common;..\z80c;..\io;..\vram;..\sound;..\font;..\fdd</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\calendar.c" />
+    <ClCompile Include="..\codecnv\eucsjis.c" />
+    <ClCompile Include="..\codecnv\eucucs2.c" />
+    <ClCompile Include="..\codecnv\sjiseuc.c" />
+    <ClCompile Include="..\codecnv\sjisucs2.c" />
+    <ClCompile Include="..\codecnv\tcswap16.c" />
+    <ClCompile Include="..\codecnv\tcswap32.c" />
+    <ClCompile Include="..\codecnv\textcnv.c" />
+    <ClCompile Include="..\codecnv\ucs2sjis.c" />
+    <ClCompile Include="..\codecnv\ucs2utf8.c" />
+    <ClCompile Include="..\codecnv\utf8ucs2.c" />
+    <ClCompile Include="..\common\bmpdata.c" />
+    <ClCompile Include="..\common\milstr.c" />
+    <ClCompile Include="..\common\parts.c" />
+    <ClCompile Include="..\common\profile.c" />
+    <ClCompile Include="..\common\rect.c" />
+    <ClCompile Include="..\common\resize.c" />
+    <ClCompile Include="..\common\strres.c" />
+    <ClCompile Include="..\common\textfile.c" />
+    <ClCompile Include="..\common\wavefile.c" />
+    <ClCompile Include="..\common\_memory.c" />
+    <ClCompile Include="..\debugsub.c" />
+    <ClCompile Include="..\fdd\diskdrv.c" />
+    <ClCompile Include="..\fdd\fddfile.c" />
+    <ClCompile Include="..\fdd\fdd_2d.c" />
+    <ClCompile Include="..\fdd\fdd_d88.c" />
+    <ClCompile Include="..\fdd\fdd_ini.c" />
+    <ClCompile Include="..\fdd\fdd_mtr.c" />
+    <ClCompile Include="..\fdd\newdisk.c" />
+    <ClCompile Include="..\font\font.c" />
+    <ClCompile Include="..\font\fontdata.c" />
+    <ClCompile Include="..\font\fontmake.c" />
+    <ClCompile Include="..\font\fontx1.c" />
+    <ClCompile Include="..\generic\cmndraw.c" />
+    <ClCompile Include="..\ievent.c" />
+    <ClCompile Include="..\io\cgrom.c" />
+    <ClCompile Include="..\io\cmt.c" />
+    <ClCompile Include="..\io\crtc.c" />
+    <ClCompile Include="..\io\ctc.c" />
+    <ClCompile Include="..\io\dipsw.c" />
+    <ClCompile Include="..\io\dmac.c" />
+    <ClCompile Include="..\io\fdc.c" />
+    <ClCompile Include="..\io\iocore.c" />
+    <ClCompile Include="..\io\memio.c" />
+    <ClCompile Include="..\io\pcg.c" />
+    <ClCompile Include="..\io\ppi.c" />
+    <ClCompile Include="..\io\sio.c" />
+    <ClCompile Include="..\io\subcpu.c" />
+    <ClCompile Include="..\io\vramio.c" />
+    <ClCompile Include="..\keystat.c" />
+    <ClCompile Include="..\nevent.c" />
+    <ClCompile Include="..\pccore.c" />
+    <ClCompile Include="..\sound\opmgenc.c" />
+    <ClCompile Include="..\sound\opmgeng.c" />
+    <ClCompile Include="..\sound\psggenc.c" />
+    <ClCompile Include="..\sound\psggeng.c" />
+    <ClCompile Include="..\sound\sndcsec.c" />
+    <ClCompile Include="..\sound\sndctrl.c" />
+    <ClCompile Include="..\sound\sound.c" />
+    <ClCompile Include="..\sound\x1f.c" />
+    <ClCompile Include="..\statsave.c" />
+    <ClCompile Include="..\timing.c" />
+    <ClCompile Include="..\vram\make15.c" />
+    <ClCompile Include="..\vram\make24.c" />
+    <ClCompile Include="..\vram\makeatr.c" />
+    <ClCompile Include="..\vram\makechr.c" />
+    <ClCompile Include="..\vram\makemix.c" />
+    <ClCompile Include="..\vram\makescrn.c" />
+    <ClCompile Include="..\vram\makesub.c" />
+    <ClCompile Include="..\vram\maketxth.c" />
+    <ClCompile Include="..\vram\maketxtl.c" />
+    <ClCompile Include="..\vram\palettes.c" />
+    <ClCompile Include="..\vram\scrndraw.c" />
+    <ClCompile Include="..\vram\scrnsave.c" />
+    <ClCompile Include="..\vram\sdraw.c" />
+    <ClCompile Include="..\vram\sdrawq16.c" />
+    <ClCompile Include="..\vram\vram.c" />
+    <ClCompile Include="..\z80c\z80c.c" />
+    <ClCompile Include="..\z80c\z80c_cb.c" />
+    <ClCompile Include="..\z80c\z80c_ix.c" />
+    <ClCompile Include="..\z80c\z80c_iy.c" />
+    <ClCompile Include="..\z80c\z80c_mn.c" />
+    <ClCompile Include="..\z80c\z80c_sb.c" />
+    <ClCompile Include="..\z80c\z80dmap.c" />
+    <ClCompile Include="..\z80c\z80mem.c" />
+    <ClCompile Include="dialog\dialogs.cpp" />
+    <ClCompile Include="dialog\d_about.cpp" />
+    <ClCompile Include="dialog\d_bmp.cpp" />
+    <ClCompile Include="dialog\d_cfg.cpp" />
+    <ClCompile Include="dialog\d_disk.cpp" />
+    <ClCompile Include="dialog\d_sound.cpp" />
+    <ClCompile Include="dialog\extclass.cpp" />
+    <ClCompile Include="dosio.cpp" />
+    <ClCompile Include="ext\realchip\scciwrap.cpp" />
+    <ClCompile Include="ext\romeo\juliet.cpp" />
+    <ClCompile Include="ext\sndboard.cpp" />
+    <ClCompile Include="fontmng.cpp" />
+    <ClCompile Include="ini.cpp" />
+    <ClCompile Include="joymng.cpp" />
+    <ClCompile Include="menu.cpp" />
+    <ClCompile Include="misc\tickcounter.cpp" />
+    <ClCompile Include="misc\wndloc.cpp" />
+    <ClCompile Include="mousemng.cpp" />
+    <ClCompile Include="oemtext.cpp" />
+    <ClCompile Include="scrnmng.cpp" />
+    <ClCompile Include="soundmng.cpp" />
+    <ClCompile Include="sysmng.cpp" />
+    <ClCompile Include="timemng.cpp" />
+    <ClCompile Include="trace.cpp" />
+    <ClCompile Include="winkbd.cpp" />
+    <ClCompile Include="xmil.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\calendar.h" />
+    <ClInclude Include="..\codecnv\codecnv.h" />
+    <ClInclude Include="..\codecnv\textcnv.h" />
+    <ClInclude Include="..\common.h" />
+    <ClInclude Include="..\common\bmpdata.h" />
+    <ClInclude Include="..\common\milstr.h" />
+    <ClInclude Include="..\common\parts.h" />
+    <ClInclude Include="..\common\profile.h" />
+    <ClInclude Include="..\common\rect.h" />
+    <ClInclude Include="..\common\resize.h" />
+    <ClInclude Include="..\common\strres.h" />
+    <ClInclude Include="..\common\textfile.h" />
+    <ClInclude Include="..\common\wavefile.h" />
+    <ClInclude Include="..\common\_memory.h" />
+    <ClInclude Include="..\debugsub.h" />
+    <ClInclude Include="..\fdd\d88head.h" />
+    <ClInclude Include="..\fdd\diskdrv.h" />
+    <ClInclude Include="..\fdd\fddfile.h" />
+    <ClInclude Include="..\fdd\fdd_2d.h" />
+    <ClInclude Include="..\fdd\fdd_d88.h" />
+    <ClInclude Include="..\fdd\fdd_ini.h" />
+    <ClInclude Include="..\fdd\fdd_mtr.h" />
+    <ClInclude Include="..\fdd\newdisk.h" />
+    <ClInclude Include="..\font\font.h" />
+    <ClInclude Include="..\font\fontdata.h" />
+    <ClInclude Include="..\font\fontmake.h" />
+    <ClInclude Include="..\generic\cmndraw.h" />
+    <ClInclude Include="..\ievent.h" />
+    <ClInclude Include="..\io\cgrom.h" />
+    <ClInclude Include="..\io\cmt.h" />
+    <ClInclude Include="..\io\crtc.h" />
+    <ClInclude Include="..\io\ctc.h" />
+    <ClInclude Include="..\io\dipsw.h" />
+    <ClInclude Include="..\io\dmac.h" />
+    <ClInclude Include="..\io\fdc.h" />
+    <ClInclude Include="..\io\iocore.h" />
+    <ClInclude Include="..\io\memio.h" />
+    <ClInclude Include="..\io\pcg.h" />
+    <ClInclude Include="..\io\ppi.h" />
+    <ClInclude Include="..\io\sio.h" />
+    <ClInclude Include="..\io\sndboard.h" />
+    <ClInclude Include="..\io\subcpu.h" />
+    <ClInclude Include="..\io\vramio.h" />
+    <ClInclude Include="..\keystat.h" />
+    <ClInclude Include="..\nevent.h" />
+    <ClInclude Include="..\pccore.h" />
+    <ClInclude Include="..\sound\opmgen.h" />
+    <ClInclude Include="..\sound\psggen.h" />
+    <ClInclude Include="..\sound\sndcsec.h" />
+    <ClInclude Include="..\sound\sndctrl.h" />
+    <ClInclude Include="..\sound\sound.h" />
+    <ClInclude Include="..\sound\x1f.h" />
+    <ClInclude Include="..\statsave.h" />
+    <ClInclude Include="..\timing.h" />
+    <ClInclude Include="..\vram\makescrn.h" />
+    <ClInclude Include="..\vram\makesub.h" />
+    <ClInclude Include="..\vram\palettes.h" />
+    <ClInclude Include="..\vram\scrndraw.h" />
+    <ClInclude Include="..\vram\scrnsave.h" />
+    <ClInclude Include="..\vram\sdraw.h" />
+    <ClInclude Include="..\vram\vram.h" />
+    <ClInclude Include="..\xmilver.h" />
+    <ClInclude Include="..\z80c\z80c.h" />
+    <ClInclude Include="..\z80c\z80core.h" />
+    <ClInclude Include="..\z80c\z80dmap.h" />
+    <ClInclude Include="..\z80c\z80mem.h" />
+    <ClInclude Include="compiler.h" />
+    <ClInclude Include="dialog\dialog.h" />
+    <ClInclude Include="dialog\dialogs.h" />
+    <ClInclude Include="dialog\extclass.h" />
+    <ClInclude Include="dosio.h" />
+    <ClInclude Include="ext\realchip\scci.h" />
+    <ClInclude Include="ext\realchip\SCCIDefines.h" />
+    <ClInclude Include="ext\realchip\scciwrap.h" />
+    <ClInclude Include="ext\romeo\juliet.h" />
+    <ClInclude Include="ext\romeo\romeo.h" />
+    <ClInclude Include="fontmng.h" />
+    <ClInclude Include="ini.h" />
+    <ClInclude Include="joymng.h" />
+    <ClInclude Include="menu.h" />
+    <ClInclude Include="misc\tickcounter.h" />
+    <ClInclude Include="misc\vc6macros.h" />
+    <ClInclude Include="misc\wndloc.h" />
+    <ClInclude Include="mousemng.h" />
+    <ClInclude Include="oemtext.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="scrnmng.h" />
+    <ClInclude Include="soundmng.h" />
+    <ClInclude Include="sysmng.h" />
+    <ClInclude Include="timemng.h" />
+    <ClInclude Include="trace.h" />
+    <ClInclude Include="winkbd.h" />
+    <ClInclude Include="xmil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="xmil.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

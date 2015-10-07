@@ -10,7 +10,6 @@
 #include	"scrnmng.h"
 #include	"soundmng.h"
 #include	"sysmng.h"
-#include	"dclock.h"
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
@@ -32,6 +31,9 @@
 #include	"fdd_ini.h"
 #include	"x1f.h"
 #include	"ext\realchip\scciwrap.h"
+#if defined(SUPPORT_DCLOCK)
+#include "dclock.h"
+#endif
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
@@ -660,7 +662,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					POINT p;
 					if ((GetCursorPos(&p)) && (p.y >= 466)) {
 						xmiloscfg.clockx++;
+#if defined(SUPPORT_DCLOCK)
 						dclock_reset();
+#endif	/* defined(SUPPORT_DCLOCK) */
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
@@ -681,7 +685,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					if ((GetCursorPos(&p)) && (p.y >= 466) &&
 												(xmiloscfg.clockx)) {
 						xmiloscfg.clockfnt++;
+#if defined(SUPPORT_DCLOCK)
 						dclock_reset();
+#endif	/* defined(SUPPORT_DCLOCK) */
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
@@ -779,7 +785,9 @@ static void exec1frame(void) {
 	joymng_sync();
 	mousemng_sync();
 	pccore_exec(framecnt == 0);
+#if defined(SUPPORT_DCLOCK)
 	dclock_callback();
+#endif	/* defined(SUPPORT_DCLOCK) */
 	framecnt++;
 }
 

@@ -1,0 +1,731 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\codecnv">
+      <UniqueIdentifier>{63cbd0c8-4c04-4869-bc2e-417b7416989f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\common">
+      <UniqueIdentifier>{f7d9222c-e849-40a9-b9d6-1979cfd980bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\fdd">
+      <UniqueIdentifier>{15e83b1a-e42a-4b19-bc8e-0c3ac8e31b69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\generic">
+      <UniqueIdentifier>{4ee31eeb-fd38-49a4-ab13-ada582fbc180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\io">
+      <UniqueIdentifier>{235d5bed-348e-47df-9685-2caa5d1c38d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\sound">
+      <UniqueIdentifier>{5ec7b3e6-76f4-4a19-8157-0b041c5306ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\vram">
+      <UniqueIdentifier>{5c1f3ed3-74cc-4869-9246-4c8703b62f20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\win9x">
+      <UniqueIdentifier>{10b82712-fb16-4563-933f-18e6007f79f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\z80c">
+      <UniqueIdentifier>{a4513ec7-c636-4165-873e-863e6e45d715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\codecnv">
+      <UniqueIdentifier>{d5d4b9d7-07d7-4cdd-9cb8-94c41a5ebceb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\z80c">
+      <UniqueIdentifier>{b5abc7c7-2560-41e2-82c6-6d63d869b98a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\vram">
+      <UniqueIdentifier>{a6049dc3-bda1-4102-b89b-3e4acb3da99e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\sound">
+      <UniqueIdentifier>{518c0d63-c3b0-4db0-a9be-55d5d2b18fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\win9x">
+      <UniqueIdentifier>{fb977668-e0c3-42db-a275-4d625fca8a14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\io">
+      <UniqueIdentifier>{e0dc6c97-e6d4-49cd-858c-70a88440949b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\generic">
+      <UniqueIdentifier>{34bc5266-d9a9-470d-aaf3-e8863621dba0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\fdd">
+      <UniqueIdentifier>{d9349486-04e4-4037-9875-fc1bd708f511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\common">
+      <UniqueIdentifier>{3b3c1a31-da26-459b-ae1d-545440b06025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\win9x\ext">
+      <UniqueIdentifier>{a7886787-ee53-4d4a-bfef-850e12a1ba58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\win9x\dialog">
+      <UniqueIdentifier>{dcefc3ff-aa14-4096-9564-aed2b5b5377e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\win9x\dialog">
+      <UniqueIdentifier>{4f745d24-7802-4aa5-b423-81c9fafe44c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\win9x\ext">
+      <UniqueIdentifier>{3660749b-c761-4af1-bd23-46fd88279623}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\win9x\ext\romeo">
+      <UniqueIdentifier>{399b8acf-7b44-46ec-9afa-8727c0c056a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\win9x\ext\realchip">
+      <UniqueIdentifier>{a98199a5-0be8-4032-b302-70efac46a5b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\win9x\ext\realchip">
+      <UniqueIdentifier>{48fa0a0d-bcff-48ff-8065-dfb741c1a1bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\win9x\ext\romeo">
+      <UniqueIdentifier>{a3f55b09-dc28-41c1-8900-d095a8df33cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\win9x\misc">
+      <UniqueIdentifier>{099c9288-4059-4957-9086-41db3cedb308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\win9x\misc">
+      <UniqueIdentifier>{e81f6b53-2c57-4bfa-b671-b4f301ac4195}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\font">
+      <UniqueIdentifier>{3b363670-364c-46ed-b133-0defab76f47b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\font">
+      <UniqueIdentifier>{c041a97e-d42d-430e-85a8-ce3d492634bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\calendar.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\debugsub.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ievent.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\keystat.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nevent.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pccore.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\statsave.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\timing.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\eucsjis.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\eucucs2.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\sjiseuc.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\sjisucs2.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\tcswap16.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\tcswap32.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\textcnv.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs2sjis.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs2utf8.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\utf8ucs2.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\z80c\z80c.c">
+      <Filter>ソース ファイル\z80c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\z80c\z80c_cb.c">
+      <Filter>ソース ファイル\z80c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\z80c\z80c_ix.c">
+      <Filter>ソース ファイル\z80c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\z80c\z80c_iy.c">
+      <Filter>ソース ファイル\z80c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\z80c\z80c_mn.c">
+      <Filter>ソース ファイル\z80c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\z80c\z80c_sb.c">
+      <Filter>ソース ファイル\z80c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\z80c\z80dmap.c">
+      <Filter>ソース ファイル\z80c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\z80c\z80mem.c">
+      <Filter>ソース ファイル\z80c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\make15.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\make24.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\makeatr.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\makechr.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\makemix.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\makescrn.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\makesub.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\maketxth.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\maketxtl.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\palettes.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\scrndraw.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\scrnsave.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\sdraw.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\sdrawq16.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vram\vram.c">
+      <Filter>ソース ファイル\vram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\opmgenc.c">
+      <Filter>ソース ファイル\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\opmgeng.c">
+      <Filter>ソース ファイル\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\psggenc.c">
+      <Filter>ソース ファイル\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\psggeng.c">
+      <Filter>ソース ファイル\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\sndcsec.c">
+      <Filter>ソース ファイル\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\sndctrl.c">
+      <Filter>ソース ファイル\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\sound.c">
+      <Filter>ソース ファイル\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\x1f.c">
+      <Filter>ソース ファイル\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="dosio.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="fontmng.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="ini.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="joymng.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="menu.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="mousemng.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="oemtext.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="scrnmng.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="soundmng.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="sysmng.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="timemng.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="trace.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="winkbd.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="xmil.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\cgrom.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\cmt.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\crtc.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\ctc.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\dipsw.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\dmac.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\fdc.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\iocore.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\memio.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\pcg.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\ppi.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\sio.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\subcpu.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\vramio.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\generic\cmndraw.c">
+      <Filter>ソース ファイル\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fdd\diskdrv.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fdd\fdd_2d.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fdd\fdd_d88.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fdd\fdd_ini.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fdd\fdd_mtr.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fdd\fddfile.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fdd\newdisk.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\_memory.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\bmpdata.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\milstr.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\parts.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\profile.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\rect.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\resize.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\strres.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\textfile.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\wavefile.c">
+      <Filter>ソース ファイル\common</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\d_about.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\d_bmp.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\d_cfg.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\d_disk.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\d_sound.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\dialogs.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\extclass.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ext\realchip\scciwrap.cpp">
+      <Filter>ソース ファイル\win9x\ext\realchip</Filter>
+    </ClCompile>
+    <ClCompile Include="ext\romeo\juliet.cpp">
+      <Filter>ソース ファイル\win9x\ext\romeo</Filter>
+    </ClCompile>
+    <ClCompile Include="misc\tickcounter.cpp">
+      <Filter>ソース ファイル\win9x\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="misc\wndloc.cpp">
+      <Filter>ソース ファイル\win9x\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="ext\sndboard.cpp">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\font\font.c">
+      <Filter>ソース ファイル\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\font\fontdata.c">
+      <Filter>ソース ファイル\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\font\fontmake.c">
+      <Filter>ソース ファイル\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\font\fontx1.c">
+      <Filter>ソース ファイル\font</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\calendar.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\debugsub.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ievent.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\keystat.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nevent.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pccore.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\statsave.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\timing.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xmilver.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\codecnv\codecnv.h">
+      <Filter>ヘッダー ファイル\codecnv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\codecnv\textcnv.h">
+      <Filter>ヘッダー ファイル\codecnv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\z80c\z80dmap.h">
+      <Filter>ヘッダー ファイル\z80c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\z80c\z80mem.h">
+      <Filter>ヘッダー ファイル\z80c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\z80c\z80core.h">
+      <Filter>ヘッダー ファイル\z80c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\z80c\z80c.h">
+      <Filter>ヘッダー ファイル\z80c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vram\vram.h">
+      <Filter>ヘッダー ファイル\vram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vram\sdraw.h">
+      <Filter>ヘッダー ファイル\vram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vram\scrnsave.h">
+      <Filter>ヘッダー ファイル\vram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vram\scrndraw.h">
+      <Filter>ヘッダー ファイル\vram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vram\palettes.h">
+      <Filter>ヘッダー ファイル\vram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vram\makesub.h">
+      <Filter>ヘッダー ファイル\vram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vram\makescrn.h">
+      <Filter>ヘッダー ファイル\vram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\opmgen.h">
+      <Filter>ヘッダー ファイル\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\psggen.h">
+      <Filter>ヘッダー ファイル\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\sndcsec.h">
+      <Filter>ヘッダー ファイル\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\sndctrl.h">
+      <Filter>ヘッダー ファイル\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\sound.h">
+      <Filter>ヘッダー ファイル\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\x1f.h">
+      <Filter>ヘッダー ファイル\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="dosio.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="compiler.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="ini.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="fontmng.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="joymng.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="menu.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="mousemng.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="oemtext.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="scrnmng.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="soundmng.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="sysmng.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="timemng.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="trace.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="winkbd.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="xmil.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\vramio.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\subcpu.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\sndboard.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\sio.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\ppi.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\pcg.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\memio.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\iocore.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\fdc.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\dmac.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\dipsw.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\ctc.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\crtc.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\cmt.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\cgrom.h">
+      <Filter>ヘッダー ファイル\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\d88head.h">
+      <Filter>ヘッダー ファイル\fdd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\diskdrv.h">
+      <Filter>ヘッダー ファイル\fdd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\fdd_2d.h">
+      <Filter>ヘッダー ファイル\fdd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\fdd_d88.h">
+      <Filter>ヘッダー ファイル\fdd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\fdd_ini.h">
+      <Filter>ヘッダー ファイル\fdd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\fdd_mtr.h">
+      <Filter>ヘッダー ファイル\fdd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\fddfile.h">
+      <Filter>ヘッダー ファイル\fdd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\newdisk.h">
+      <Filter>ヘッダー ファイル\fdd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\generic\cmndraw.h">
+      <Filter>ヘッダー ファイル\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\wavefile.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\textfile.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\strres.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\resize.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\rect.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\profile.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\parts.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\milstr.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\bmpdata.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\_memory.h">
+      <Filter>ヘッダー ファイル\common</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\dialog.h">
+      <Filter>ヘッダー ファイル\win9x\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\dialogs.h">
+      <Filter>ヘッダー ファイル\win9x\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\extclass.h">
+      <Filter>ヘッダー ファイル\win9x\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ext\realchip\scciwrap.h">
+      <Filter>ヘッダー ファイル\win9x\ext\realchip</Filter>
+    </ClInclude>
+    <ClInclude Include="ext\realchip\SCCIDefines.h">
+      <Filter>ヘッダー ファイル\win9x\ext\realchip</Filter>
+    </ClInclude>
+    <ClInclude Include="ext\realchip\scci.h">
+      <Filter>ヘッダー ファイル\win9x\ext\realchip</Filter>
+    </ClInclude>
+    <ClInclude Include="ext\romeo\romeo.h">
+      <Filter>ヘッダー ファイル\win9x\ext\romeo</Filter>
+    </ClInclude>
+    <ClInclude Include="ext\romeo\juliet.h">
+      <Filter>ヘッダー ファイル\win9x\ext\romeo</Filter>
+    </ClInclude>
+    <ClInclude Include="misc\wndloc.h">
+      <Filter>ヘッダー ファイル\win9x\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="misc\vc6macros.h">
+      <Filter>ヘッダー ファイル\win9x\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="misc\tickcounter.h">
+      <Filter>ヘッダー ファイル\win9x\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\font\font.h">
+      <Filter>ヘッダー ファイル\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\font\fontdata.h">
+      <Filter>ヘッダー ファイル\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\font\fontmake.h">
+      <Filter>ヘッダー ファイル\font</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="xmil.rc">
+      <Filter>リソース ファイル</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
