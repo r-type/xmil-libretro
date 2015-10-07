@@ -537,7 +537,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				int			height;
 				HBRUSH		hbrush;
 
-				hinst = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
+				hinst = reinterpret_cast<HINSTANCE>(GetWindowLong(hWnd, GWLP_HINSTANCE));
 				GetClientRect(hWnd, &rect);
 				width = rect.right - rect.left;
 				height = rect.bottom - rect.top;
@@ -1004,6 +1004,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 
 	TRACETERM();
 
-	return(msg.wParam);
+	return static_cast<int>(msg.wParam);
 }
 
