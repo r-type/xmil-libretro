@@ -15,9 +15,10 @@
 #include	"menu.h"
 #include	"ini.h"
 #include	"ext\romeo\juliet.h"
-#include	"extclass.h"
-#include	"misc\wndloc.h"
 #include	"dialog.h"
+#include	"extclass.h"
+#include "misc\wndloc.h"
+#include "misc\WndProc.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -789,6 +790,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	HWND		hWnd;
 	WNDCLASS	wc;
 	MSG			msg;
+
+	CWndProc::Initialize(hInstance);
 
 	GetModuleFileName(NULL, modulefile, sizeof(modulefile));
 	dosio_init();
