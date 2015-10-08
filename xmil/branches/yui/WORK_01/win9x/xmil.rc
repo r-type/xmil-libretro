@@ -224,6 +224,17 @@ BEGIN
     MENUITEM "&Wave Record...",             IDM_WAVEREC
 END
 
+IDR_TRACE MENU DISCARDABLE 
+BEGIN
+    MENUITEM "TRACE",                       IDM_TRACE_TRACE
+    MENUITEM "VERBOSE",                     IDM_TRACE_VERBOSE
+    MENUITEM SEPARATOR
+    MENUITEM "Enable",                      IDM_TRACE_ENABLE
+    MENUITEM "File out",                    IDM_TRACE_FILEOUT
+    MENUITEM "Clear",                       IDM_TRACE_CLEAR
+    MENUITEM SEPARATOR
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

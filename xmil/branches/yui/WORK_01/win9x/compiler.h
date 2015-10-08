@@ -74,8 +74,8 @@ typedef signed __int64		SINT64;
 #include "milstr.h"
 #include "_memory.h"
 #include "rect.h"
-#include "trace.h"
 #include "misc\tickcounter.h"
+#include "misc\trace.h"
 
 #ifdef __cplusplus
 #include "misc\vc6macros.h"
