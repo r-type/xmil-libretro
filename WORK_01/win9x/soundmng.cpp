@@ -7,6 +7,7 @@
 #include	"soundmng.h"
 #include	"sound.h"
 
+#pragma comment(lib, "dsound.lib")
 
 #if 1
 #define	DSBUFFERDESC_SIZE	20			// DirectX3 Structsize
