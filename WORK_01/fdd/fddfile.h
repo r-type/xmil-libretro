@@ -105,8 +105,8 @@ extern	_FDDFILE	fddfile[MAX_FDDFILE];
 void fddfile_initialize(void);
 
 const OEMCHAR *fddfile_diskname(REG8 drv);
-BRESULT fddfile_diskready(REG8 drv);
-BRESULT fddfile_diskprotect(REG8 drv);
+BOOL fddfile_diskready(REG8 drv);
+BOOL fddfile_diskprotect(REG8 drv);
 
 BRESULT fddfile_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro);
 void fddfile_eject(REG8 drv);

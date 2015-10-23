@@ -169,7 +169,7 @@ void nevent_setbyms(UINT id, SINT32 ms, NEVENTCB proc, NEVENTPOSITION absolute) 
 	nevent_set(id, clock, proc, absolute);
 }
 
-BRESULT nevent_iswork(UINT id) {
+BOOL nevent_iswork(UINT id) {
 
 	NEVENTITEM	item;
 

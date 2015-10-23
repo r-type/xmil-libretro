@@ -4,7 +4,7 @@
 #include	"fdd_ini.h"
 
 
-BRESULT is_d8ufile(const OEMCHAR *fname) {
+BOOL is_d8ufile(const OEMCHAR *fname) {
 
 	(void)fname;
 	return(FALSE);
