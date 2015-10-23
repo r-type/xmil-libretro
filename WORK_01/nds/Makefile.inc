@@ -251,7 +251,7 @@ $(OBJ)/dipsw.o:		$(IO)/dipsw.c $(HEADERS) $(PCCORES) $(IOCORES)
 
 $(OBJ)/dmac.o:		$(IO)/dmac.c $(HEADERS) $(Z80CORES) $(PCCORES) \
 					$(IOCORES) $(BASE)/nevent.h $(BASE)/ievent.h
-	$(CC) $(COPT9) -c $< -o $@ -Wa,
+	$(CC) $(COPT9) -c $< -o $@
 #	$(CC) $(COPT9) -Wa,-alh -c $< -o $@
 
 $(OBJ)/fdc.o:		$(PATCH)/fdc.c $(HEADERS) $(Z80CORES) $(PCCORES) $(IOCORES) \
@@ -495,6 +495,9 @@ clean:
 	$(RM) $(NDS9OBJ)
 	$(RM) $(NDS9ELF)
 	$(RM) $(NDS9ARM)
+	$(RM) $(NDS7OBJ)
+	$(RM) $(NDS7ELF)
+	$(RM) $(NDS7ARM)
 	$(RM) $(NDSBIN)
 	$(RM) $(NDSROM)
 
