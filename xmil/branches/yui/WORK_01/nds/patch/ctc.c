@@ -198,11 +198,11 @@ void neitem_ctc(UINT uId)
 	}
 }
 
-BRESULT ieitem_ctc(UINT uId)
+BOOL ieitem_ctc(UINT uId)
 {
 	CTCCH	*pCh;
 	REG8	cIntr;
-	BRESULT	r;
+	BOOL	r;
 	UINT	i;
 	REG8	cBit;
 

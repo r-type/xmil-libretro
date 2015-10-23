@@ -87,7 +87,7 @@ static void font_cnvx1t2x1(void) {
 }
 
 
-REG8 font_load(const OEMCHAR *filename, BRESULT force) {
+REG8 font_load(const OEMCHAR *filename, BOOL force) {
 
 	OEMCHAR	fname[MAX_PATH];
 	REG8	type;

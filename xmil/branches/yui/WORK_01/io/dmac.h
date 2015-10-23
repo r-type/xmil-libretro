@@ -186,8 +186,8 @@ typedef struct {
 extern "C" {
 #endif
 
-void dmac_sendready(BRESULT ready);
-BRESULT ieitem_dmac(UINT id);
+void dmac_sendready(BOOL ready);
+BOOL ieitem_dmac(UINT id);
 
 void IOOUTCALL dmac_o(UINT port, REG8 dat);
 REG8 IOINPCALL dmac_i(UINT port);

@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 void neitem_scpu(UINT id);
-BRESULT ieitem_scpu(UINT id);
+BOOL ieitem_scpu(UINT id);
 void subcpu_sendkey(void);
 
 void IOOUTCALL subcpu_o(UINT port, REG8 dat);

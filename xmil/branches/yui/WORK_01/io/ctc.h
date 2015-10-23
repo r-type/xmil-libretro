@@ -40,7 +40,7 @@ extern "C" {
 #endif
 
 void neitem_ctc(UINT id);
-BRESULT ieitem_ctc(UINT id);
+BOOL ieitem_ctc(UINT id);
 void ieeoi_ctc(UINT id);
 
 void IOOUTCALL ctc_o(UINT port, REG8 dat);

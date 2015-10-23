@@ -33,7 +33,7 @@ void neitem_scpu(UINT id) {
 	}
 }
 
-BRESULT ieitem_scpu(UINT id) {
+BOOL ieitem_scpu(UINT id) {
 
 	UINT	key;
 	UINT8	keydata;
