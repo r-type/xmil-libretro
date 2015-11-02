@@ -636,7 +636,7 @@ SOURCE=..\IO\SIO.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\ext\sndboard.cpp
+SOURCE=..\IO\SNDBOARD.C
 # End Source File
 # Begin Source File
 
@@ -712,6 +712,14 @@ SOURCE=..\VRAM\VRAM.C
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\sound\opm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\opm.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\SOUND\OPMGENC.C
 # End Source File
 # Begin Source File
@@ -768,6 +776,14 @@ InputName=OPMGENG
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psg.h
 # End Source File
 # Begin Source File
 

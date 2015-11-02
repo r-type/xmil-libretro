@@ -56,10 +56,13 @@ static const SFENTRY xmiltbl[] = {
 	{"PCG",			0,	STATFLAG_BIN,	&pcg,			sizeof(pcg)},
 	{"PPI",			0,	STATFLAG_BIN,	&ppi,			sizeof(ppi)},
 	{"SIO",			0,	STATFLAG_BIN,	&sio,			sizeof(sio)},
-	{"SNDBOARD",	0,	STATFLAG_BIN,	&sndboard,		sizeof(sndboard)},
 	{"SUBCPU",		0,	STATFLAG_BIN,	&subcpu.s,		sizeof(subcpu.s)},
 	{"CALENDAR",	0,	STATFLAG_BIN,	&cal,			sizeof(cal)},
 	{"NEVENT",		0,	STATFLAG_EVT,	&nevent,		sizeof(nevent)},
 	{"DISK",		0,	STATFLAG_DISK,	NULL,			0},
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	{"OPM",			0,	STATFLAG_BIN,	&g_opm.s,		sizeof(g_opm.s)},
+	{"PSG",			0,	STATFLAG_BIN,	&g_psg.s,		sizeof(g_psg.s)},
+#endif
 	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
 
