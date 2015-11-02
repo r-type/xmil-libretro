@@ -62,7 +62,7 @@ static const SFENTRY xmiltbl[] = {
 	{"DISK",		0,	STATFLAG_DISK,	NULL,			0},
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	{"OPM",			0,	STATFLAG_BIN,	&g_opm.s,		sizeof(g_opm.s)},
-	{"PSG",			0,	STATFLAG_BIN,	&g_psg.s,		sizeof(g_psg.s)},
 #endif
+	{"PSG",			0,	STATFLAG_BIN,	&g_psg.s,		sizeof(g_psg.s)},
 	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
 
