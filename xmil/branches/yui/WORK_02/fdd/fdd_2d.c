@@ -26,7 +26,7 @@ static REG8 fdd2d_read(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
 	UINT	rsize;
 	FILEH	fh;
 	long	pos;
-	BRESULT	b;
+	BOOL	b;
 
 	if ((media != fdd->inf.xdf.media) || (track >= fdd->inf.xdf.tracks) ||
 		(sc == 0) || (sc > fdd->inf.xdf.sectors)) {
@@ -61,7 +61,7 @@ static REG8 fdd2d_write(FDDFILE fdd, REG8 media, UINT track, REG8 sc,
 	UINT	secsize;
 	FILEH	fh;
 	long	pos;
-	BRESULT	b;
+	BOOL	b;
 
 	if ((media != fdd->inf.xdf.media) || (track >= fdd->inf.xdf.tracks) ||
 		(sc == 0) || (sc > fdd->inf.xdf.sectors)) {

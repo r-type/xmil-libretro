@@ -1,6 +1,8 @@
 
 #include <nds.h>
+#ifdef ARM9
 #include <nds/registers_alt.h>
+#endif
 
 extern unsigned char	__ipc[0x8000];
 

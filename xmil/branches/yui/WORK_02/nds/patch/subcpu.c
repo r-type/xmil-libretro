@@ -36,7 +36,7 @@ void neitem_scpu(UINT uId)
 	}
 }
 
-BRESULT ieitem_scpu(UINT uId)
+BOOL ieitem_scpu(UINT uId)
 {
 	UINT	uKey;
 	REG8	cKeyData;

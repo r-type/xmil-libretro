@@ -26,7 +26,7 @@ static REG8 iswork(const DMAC *d) {
 	return(1);
 }
 
-void dmac_sendready(BRESULT ready) {
+void dmac_sendready(BOOL ready) {
 
 	DMAC	*d;
 	REG8	working;
@@ -58,7 +58,7 @@ void dmac_sendready(BRESULT ready) {
 }
 
 
-BRESULT ieitem_dmac(UINT id) {
+BOOL ieitem_dmac(UINT id) {
 
 	DMAC	*d;
 	REG8	vect;

@@ -37,6 +37,7 @@ typedef	unsigned int		UINT32;
 #define	LOW16(a)	((UINT16)(a))
 #define	HIGH16(a)	(((UINT32)(a)) >> 16)
 
+#define BOOL				char
 #define FALSE				0
 #define TRUE				1
 
@@ -93,4 +94,4 @@ typedef	unsigned int		UINT32;
 #define	MEMOPTIMIZE			100
 #define LONG_CALL			__attribute__((long_call))
 
-#define LIBNDS_VERSION		0x010302
+// #define LIBNDS_VERSION		0x010302

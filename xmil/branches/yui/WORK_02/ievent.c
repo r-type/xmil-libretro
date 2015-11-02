@@ -9,9 +9,9 @@
 /* ここでデイジーチェイン */
 
 
-typedef BRESULT (*IEVENTFN)(UINT id);
+typedef BOOL (*IEVENTFN)(UINT id);
 
-static BRESULT dummy(UINT id) {
+static BOOL dummy(UINT id) {
 
 	(void)id;
 	return(FALSE);

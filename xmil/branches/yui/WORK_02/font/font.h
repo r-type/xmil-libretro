@@ -12,7 +12,7 @@ extern	UINT8	font_knjx1[0x20000];
 extern	UINT8	font_knjx1t[0x40000];
 
 UINT8 *font_adrsx1t(UINT jis);
-REG8 font_load(const OEMCHAR *filename, BRESULT force);
+REG8 font_load(const OEMCHAR *filename, BOOL force);
 
 #ifdef __cplusplus
 }

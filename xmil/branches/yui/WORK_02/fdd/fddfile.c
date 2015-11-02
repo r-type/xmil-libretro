@@ -96,7 +96,7 @@ const OEMCHAR *fddfile_diskname(REG8 drv) {
 	return(fddfile[drv].fname);
 }
 
-BRESULT fddfile_diskready(REG8 drv) {
+BOOL fddfile_diskready(REG8 drv) {
 
 	if ((drv >= MAX_FDDFILE) || (fddfile[drv].type == DISKTYPE_NOTREADY)) {
 		return(FALSE);
@@ -104,7 +104,7 @@ BRESULT fddfile_diskready(REG8 drv) {
 	return(TRUE);
 }
 
-BRESULT fddfile_diskprotect(REG8 drv) {
+BOOL fddfile_diskprotect(REG8 drv) {
 
 	if ((drv >= MAX_FDDFILE) || (!fddfile[drv].protect)) {
 		return(FALSE);
