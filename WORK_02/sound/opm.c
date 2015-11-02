@@ -36,7 +36,7 @@ void opm_reset(POPM opm, REG8 cCaps)
 {
 	memset(&opm->s, 0, sizeof(opm->s));
 	opm->s.cCaps = cCaps;
-	memset(&opm->s.reg + 0x20, 0xff, 0xe0);
+	memset(&opm->s.reg[0x20], 0xff, 0xe0);
 
 	opmgen_reset(&opm->opmgen);
 }
