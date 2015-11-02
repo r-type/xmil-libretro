@@ -160,6 +160,14 @@ IExternalChip* CScciIf::GetInterface(IExternalChip::ChipType nChipType, UINT nCl
 			case IExternalChip::kY8950:
 				iSoundChipType = SC_TYPE_Y8950;
 				break;
+
+			case IExternalChip::kAY8910:
+				iSoundChipType = SC_TYPE_AY8910;
+				break;
+
+			case IExternalChip::kYM2151:
+				iSoundChipType = SC_TYPE_YM2151;
+				break;
 		}
 
 		SoundChip* pSoundChip = m_pManager->getSoundChip(iSoundChipType, nClock);
@@ -260,6 +268,12 @@ IExternalChip::ChipType CScciIf::Chip::GetChipType()
 
 		case SC_TYPE_Y8950:
 			return IExternalChip::kY8950;
+
+		case SC_TYPE_AY8910:
+			return IExternalChip::kAY8910;
+
+		case SC_TYPE_YM2151:
+			return IExternalChip::kYM2151;
 	}
 	return IExternalChip::kNone;
 }

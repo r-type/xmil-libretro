@@ -39,31 +39,44 @@ private:
 	typedef VOID (WINAPI * FnOut8)(ULONG ulAddress, UCHAR ucParam);				//!< outp 関数定義
 	typedef VOID (WINAPI * FnOut32)(ULONG ulAddress, ULONG ulParam);			//!< outpd 関数定義
 	typedef UCHAR (WINAPI * FnIn8)(ULONG ulAddress);							//!< inp 関数定義
+	typedef ULONG (WINAPI * FnIn32)(ULONG ulAddress);							//!< inpd 関数定義
 
 	HMODULE m_hModule;			//!< モジュール
 	FnRead32 m_fnRead32;		//!< コンフィグレーション読み取り関数
 	FnOut8 m_fnOut8;			//!< outp 関数
 	FnOut32 m_fnOut32;			//!< outpd 関数
 	FnIn8 m_fnIn8;				//!< inp 関数
+	FnIn32 m_fnIn32;			//!< inpd 関数
 	ULONG m_ulAddress;			//!< ROMEO ベース アドレス
 	UCHAR m_ucIrq;				//!< ROMEO IRQ
+	bool m_bHasYM2151;			//!< 2151 フラグ
+	UINT m_nSnoopCount;			//!< スプール カウンタ
 	CGuard m_pciGuard;			/*!< The guard of PCI */
 	CGuard m_queGuard;			/*!< The guard of que */
 	size_t m_nQueIndex;			/*!< The position in que */
 	size_t m_nQueCount;			/*!< The count in que */
-	UINT m_que[0x400];			/*!< que */
+	UINT32 m_que[0x400];		/*!< que */
 
 	ULONG SearchRomeo() const;
-	void Write288(UINT nAddr, UINT8 cData);
+
+	/**
+	 * チップ ID
+	 */
+	enum ChipId
+	{
+		kYMF288		= 0,		/*!< YMF288 */
+		kYM2151					/*!< YM2151 */
+	};
+	void Write(ChipId nChipId, UINT nAddr, UINT8 cData);
 
 	/**
 	 * @brief チップ クラス
 	 */
-	class Chip288 : public IExternalChip
+	class Chip : public IExternalChip
 	{
 		public:
-			Chip288(CJuliet* pJuliet);
-			virtual ~Chip288();
+			Chip(CJuliet* pJuliet, ChipId nChipId);
+			virtual ~Chip();
 			virtual ChipType GetChipType();
 			virtual void Reset();
 			virtual void WriteRegister(UINT nAddr, UINT8 cData);
@@ -71,11 +84,13 @@ private:
 
 		private:
 			CJuliet* m_pJuliet;			//!< 親インスタンス
+			ChipId m_nChipId;			//!< チップ ID
 	};
 	IExternalChip* m_pChip288;		//!< YMF288 インスタンス
+	IExternalChip* m_pChip2151;		//!< YM2151 インスタンス
 
 	void Detach(IExternalChip* pChip);
-	friend class Chip288;
+	friend class Chip;
 };
 
 /**
