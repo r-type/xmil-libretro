@@ -1,3 +1,11 @@
+/**
+ * @file	omngen.h
+ * @brief	Interface of the OPM generator
+ */
+
+#pragma once
+
+#include "sound.h"
 
 #define	OPM_CLOCK		4000000L			/* X1 & X68000 OPM 4MHz */
 #define	OPMCH_MAX		8

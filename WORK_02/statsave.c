@@ -15,6 +15,7 @@
 #include	"palettes.h"
 #include	"makescrn.h"
 #include	"sound.h"
+#include "sndctrl.h"
 #include	"fddfile.h"
 
 #if defined(MACOS)

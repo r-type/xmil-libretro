@@ -73,7 +73,6 @@ extern	FDC			fdc;
 extern	PCG			pcg;
 extern	PPI			ppi;
 extern	SIO			sio;
-extern	SNDBOARD	sndboard;
 extern	SUBCPU		subcpu;
 
 

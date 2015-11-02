@@ -1,22 +1,13 @@
+/**
+ * @file	sndboard.h
+ * @brief	Interface of the sound boards
+ */
 
-typedef struct {
-	UINT8	psgreg;
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	UINT8	opmreg;
-#else
-	UINT8	_protected_opmreg;
-#endif
-	UINT8	rapids;
-	UINT8	padding;
-	UINT8	psgdat[0x10];
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	UINT8	opmdat[0x100];
-#endif
-} SNDBOARD;
-
+#pragma once
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #if !defined(DISABLE_SOUND)
