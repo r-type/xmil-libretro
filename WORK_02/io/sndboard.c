@@ -105,8 +105,25 @@ REG8 IOINPCALL sndboard_psgsta(UINT port)
 	}
 }
 
-/* reset */
+void sndboard_initialize(void)
+{
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	opm_construct(&g_opm);
+#endif
+	psg_construct(&g_psg);
+}
 
+void sndboard_deinitialize(void)
+{
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	opm_destruct(&g_opm);
+#endif
+	psg_destruct(&g_psg);
+}
+
+/**
+ * reset
+ */
 void sndboard_reset(void)
 {
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
@@ -120,7 +137,6 @@ void sndboard_reset(void)
 	psg_bind(&g_psg);
 }
 
-#if !defined(DISABLE_SOUND)
 void sndboard_update(void)
 {
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
@@ -128,4 +144,3 @@ void sndboard_update(void)
 #endif
 	psg_restore(&g_psg);
 }
-#endif

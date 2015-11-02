@@ -69,10 +69,13 @@ void pccore_initialize(void) {
 	crtc_initialize();
 	pcg_initialize();
 	ppi_initialize();
+
+	sndboard_initialize();
 }
 
 void pccore_deinitialize(void) {
 
+	sndboard_deinitialize();
 	sndctrl_deinitialize();
 
 	fddfile_eject(0);
