@@ -36,6 +36,7 @@ void opm_reset(POPM opm, REG8 cCaps)
 {
 	memset(&opm->s, 0, sizeof(opm->s));
 	opm->s.cCaps = cCaps;
+	memset(&opm->s.reg, 0xff, sizeof(opm->s.reg));
 
 	opmgen_reset(&opm->opmgen);
 }
@@ -49,8 +50,12 @@ void opm_restore(POPM opm)
 	UINT i;
 
 	// FM
-	for (i = 0x20; i < 0x100; i++)
+	for (i = 0; i < 0x100; i++)
 	{
+		if (i == 8)
+		{
+			continue;
+		}
 		writeRegister(opm, (REG8)i, opm->s.reg[i]);
 	}
 }
@@ -101,6 +106,10 @@ static void writeRegister(POPM opm, REG8 nAddress, REG8 cData)
 
 	if (cCaps & OPM_HAS_OPM)
 	{
+		if ((nAddress < 0x20) && ((0x0b178102 & ((1 << nAddress))) == 0))
+		{
+			return;
+		}
 		opmgen_setreg(&opm->opmgen, nAddress, cData);
 	}
 }
