@@ -227,11 +227,11 @@ void neitem_ctc(UINT id) {
 	}
 }
 
-BRESULT ieitem_ctc(UINT id) {
+BOOL ieitem_ctc(UINT id) {
 
 	CTCCH	*ch;
 	REG8	intr;
-	BRESULT	r;
+	BOOL	r;
 	UINT	i;
 	REG8	bit;
 

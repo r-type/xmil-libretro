@@ -462,7 +462,7 @@ BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname) {
 
 	short	attr;
 	FILEH	fh;
-	BRESULT	r;
+	BOOL	r;
 	UINT8	ptr[D88_TRACKMAX][4];
 	UINT	i;
 

@@ -502,7 +502,7 @@ static REG8 crccmd(FDC *f) {
 
 static void fdcenddata(FDC *f) {
 
-	BRESULT	r;
+	BOOL	r;
 	REG8	stat;
 
 	r = FALSE;

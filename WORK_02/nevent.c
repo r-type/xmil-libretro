@@ -1,11 +1,14 @@
-#include	"compiler.h"
-#include	"z80core.h"
-#include	"pccore.h"
-#include	"nevent.h"
+/**
+ * @file	nevent.c
+ * @brief	Implementation of the event
+ */
 
+#include "compiler.h"
+#include "nevent.h"
+#include "z80core.h"
+#include "pccore.h"
 
 	_NEVENT		nevent;
-
 
 void nevent_allreset(void) {
 
@@ -88,7 +91,7 @@ void nevent_reset(UINT id) {
 	}
 }
 
-void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, BRESULT absolute) {
+void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION absolute) {
 
 	SINT32		clock;
 	NEVENTITEM	item;
@@ -154,7 +157,7 @@ void nevent_repeat(UINT id) {
 	nevent_set(id, item->baseclock, item->proc, NEVENT_RELATIVE);
 }
 
-void nevent_setbyms(UINT id, SINT32 ms, NEVENTCB proc, BRESULT absolute) {
+void nevent_setbyms(UINT id, SINT32 ms, NEVENTCB proc, NEVENTPOSITION absolute) {
 
 	SINT32	clock;
 
@@ -166,7 +169,7 @@ void nevent_setbyms(UINT id, SINT32 ms, NEVENTCB proc, BRESULT absolute) {
 	nevent_set(id, clock, proc, absolute);
 }
 
-BRESULT nevent_iswork(UINT id) {
+BOOL nevent_iswork(UINT id) {
 
 	NEVENTITEM	item;
 

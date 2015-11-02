@@ -30,7 +30,7 @@ static void flashupdatetmp(void) {
 	UINT	x;
 	UINT	r;
 	UINT	posr;
-	BRESULT	y2;
+	BOOL	y2;
 	REG16	atr;
 	REG16	udtbase;
 	REG16	udt;
@@ -89,7 +89,7 @@ static void flashupdatetmp(void) {
 	} while(--y);
 }
 
-static BRESULT updateblink(void) {
+static BOOL updateblink(void) {
 
 	UINT	pos;
 	REG8	update;

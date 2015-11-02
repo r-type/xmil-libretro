@@ -65,7 +65,7 @@ const JISPAIR	*tblterm;
 	return(jis);
 }
 
-static BRESULT isx1jis(UINT jis) {
+static BOOL isx1jis(UINT jis) {
 
 const UINT8	*p;
 	UINT	tmp;
