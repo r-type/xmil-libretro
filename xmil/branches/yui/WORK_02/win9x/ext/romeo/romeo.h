@@ -41,6 +41,7 @@ enum
 {
 	ROMEO_YM2151ADDR		= 0x0000,	/*!< YM2151 アドレス */
 	ROMEO_YM2151DATA		= 0x0004,	/*!< YM2151 データ */
+	ROMEO_SNOOPCTRL			= 0x0010,	/*!< スプール カウンタ */
 	ROMEO_CMDQUEUE			= 0x0018,	/*!< コマンド キュー */
 	ROMEO_YM2151CTRL		= 0x001c,	/*!< YM2151 コントロール */
 	ROMEO_YMF288ADDR1		= 0x0100,	/*!< YMF288 アドレス */

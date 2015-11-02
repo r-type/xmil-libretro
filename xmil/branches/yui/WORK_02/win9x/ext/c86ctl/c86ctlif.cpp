@@ -150,17 +150,21 @@ IExternalChip* C86CtlIf::GetInterface(IExternalChip::ChipType nChipType, UINT nC
 				if (pGimic->getModuleInfo(&info) == C86CTL_ERR_NONE)
 				{
 					IExternalChip::ChipType nRealChipType = IExternalChip::kNone;
-					if (!memcmp(info.Devname, "GMC-OPN3L", 9))
+					if (!memcmp(info.Devname, "GMC-OPL3", 8))
+					{
+						nRealChipType = IExternalChip::kYMF262;
+					}
+					else if (!memcmp(info.Devname, "GMC-OPM", 7))
+					{
+						nRealChipType = IExternalChip::kYM2151;
+					}
+					else if (!memcmp(info.Devname, "GMC-OPN3L", 9))
 					{
 						nRealChipType = IExternalChip::kYMF288;
 					}
 					else if (!memcmp(info.Devname, "GMC-OPNA", 8))
 					{
 						nRealChipType = IExternalChip::kYM2608;
-					}
-					else if (!memcmp(info.Devname, "GMC-OPL3", 8))
-					{
-						nRealChipType = IExternalChip::kYMF262;
 					}
 					if (nChipType == nRealChipType)
 					{

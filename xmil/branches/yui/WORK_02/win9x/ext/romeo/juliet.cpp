@@ -26,11 +26,15 @@ CJuliet::CJuliet()
 	, m_fnOut8(NULL)
 	, m_fnOut32(NULL)
 	, m_fnIn8(NULL)
+	, m_fnIn32(NULL)
 	, m_ulAddress(0)
 	, m_ucIrq(0)
+	, m_bHasYM2151(false)
+	, m_nSnoopCount(0)
 	, m_nQueIndex(0)
 	, m_nQueCount(0)
 	, m_pChip288(NULL)
+	, m_pChip2151(NULL)
 {
 }
 
@@ -66,6 +70,7 @@ bool CJuliet::Initialize()
 		{"_MemWriteChar",		offsetof(CJuliet, m_fnOut8)},
 		{"_MemWriteLong",		offsetof(CJuliet, m_fnOut32)},
 		{"_MemReadChar",		offsetof(CJuliet, m_fnIn8)},
+		{"_MemReadLong",		offsetof(CJuliet, m_fnIn32)},
 	};
 
 	for (size_t i = 0; i < _countof(s_dllProc); i++)
@@ -112,6 +117,10 @@ void CJuliet::Deinitialize()
 	{
 		delete m_pChip288;
 	}
+	if (m_pChip2151)
+	{
+		delete m_pChip2151;
+	}
 
 	if (m_hModule)
 	{
@@ -121,6 +130,7 @@ void CJuliet::Deinitialize()
 		m_fnOut8 = NULL;
 		m_fnOut32 = NULL;
 		m_fnIn8 = NULL;
+		m_fnIn32 = NULL;
 		m_ulAddress = 0;
 		m_ucIrq = 0;
 	}
@@ -164,11 +174,28 @@ void CJuliet::Reset()
 	m_pciGuard.Enter();
 	if (m_fnOut32 != NULL)
 	{
+		// YMF288 リセット
 		(*m_fnOut32)(m_ulAddress + ROMEO_YMF288CTRL, 0x00);
 		::Sleep(150);
 
 		(*m_fnOut32)(m_ulAddress + ROMEO_YMF288CTRL, 0x80);
 		::Sleep(150);
+
+		// YM2151 リセット
+		(*m_fnOut32)(m_ulAddress + ROMEO_YM2151CTRL, 0x80);
+		::Sleep(10);					// 44.1kHz x 192 clk = 4.35ms 以上ないと、DACのリセットかからない
+		UINT8 cFlag = (m_fnIn8)(m_ulAddress + ROMEO_YM2151DATA) + 1;
+		(*m_fnOut32)(m_ulAddress + ROMEO_YM2151CTRL, 0x80);
+		::Sleep(10);					// リセット解除後、一応安定するまでちょっと待つ
+		cFlag |= (*m_fnIn8)(m_ulAddress + ROMEO_YM2151DATA);
+		if (!cFlag)						// cFlag != 0 だと OPM チップがない
+		{
+			m_bHasYM2151 = true;
+
+			// Busy検出用にSnoopカウンタを使う
+			(*m_fnOut32)(m_ulAddress + ROMEO_SNOOPCTRL, 0x80000000U);
+			m_nSnoopCount = 0xffffffff;
+		}
 	}
 	m_pciGuard.Leave();
 }
@@ -192,8 +219,14 @@ IExternalChip* CJuliet::GetInterface(IExternalChip::ChipType nChipType, UINT nCl
 
 		if ((nChipType == IExternalChip::kYMF288) && (m_pChip288 == NULL))
 		{
-			m_pChip288 = new Chip288(this);
+			m_pChip288 = new Chip(this, kYMF288);
 			return m_pChip288;
+		}
+
+		if ((nChipType == IExternalChip::kYM2151) && (m_bHasYM2151) && (m_pChip2151 == NULL))
+		{
+			m_pChip2151 = new Chip(this, kYM2151);
+			return m_pChip2151;
 		}
 	} while (false /*CONSTCOND*/);
 
@@ -215,14 +248,19 @@ void CJuliet::Detach(IExternalChip* pChip)
 	{
 		m_pChip288 = NULL;
 	}
+	else if (m_pChip2151 == pChip)
+	{
+		m_pChip2151 = NULL;
+	}
 }
 
 /**
  * Write
+ * @param[in] nChipId The id of chips
  * @param[in] nAddr The address of registers
  * @param[in] cData The data
  */
-void CJuliet::Write288(UINT nAddr, UINT8 cData)
+void CJuliet::Write(ChipId nChipId, UINT nAddr, UINT8 cData)
 {
 	m_queGuard.Enter();
 	while (m_nQueCount >= _countof(m_que))
@@ -232,7 +270,7 @@ void CJuliet::Write288(UINT nAddr, UINT8 cData)
 		m_queGuard.Enter();
 	}
 
-	m_que[(m_nQueIndex + m_nQueCount) % _countof(m_que)] = ((nAddr & 0x1ff) << 8) | cData;
+	m_que[(m_nQueIndex + m_nQueCount) % _countof(m_que)] = (nChipId << 24) | ((nAddr & 0x1ff) << 8) | cData;
 	m_nQueCount++;
 
 	m_queGuard.Leave();
@@ -260,17 +298,37 @@ bool CJuliet::Task()
 			m_queGuard.Leave();
 
 			m_pciGuard.Enter();
-			while (((*m_fnIn8)(m_ulAddress + ROMEO_YMF288ADDR1) & 0x80) != 0)
+			if (static_cast<ChipId>(nData >> 24) == kYMF288)
 			{
-				::Sleep(0);
-			}
-			(*m_fnOut8)(m_ulAddress + ((nData & 0x10000) ? ROMEO_YMF288ADDR2 : ROMEO_YMF288ADDR1), static_cast<UINT8>(nData >> 8));
+				while (((*m_fnIn8)(m_ulAddress + ROMEO_YMF288ADDR1) & 0x80) != 0)
+				{
+					::Sleep(0);
+				}
+				(*m_fnOut8)(m_ulAddress + ((nData & 0x10000) ? ROMEO_YMF288ADDR2 : ROMEO_YMF288ADDR1), static_cast<UINT8>(nData >> 8));
 
-			while (((*m_fnIn8)(m_ulAddress + ROMEO_YMF288ADDR1) & 0x80) != 0)
-			{
-				::Sleep(0);
+				while (((*m_fnIn8)(m_ulAddress + ROMEO_YMF288ADDR1) & 0x80) != 0)
+				{
+					::Sleep(0);
+				}
+				(*m_fnOut8)(m_ulAddress + ((nData & 0x10000) ? ROMEO_YMF288DATA2 : ROMEO_YMF288DATA1), static_cast<UINT8>(nData));
 			}
-			(*m_fnOut8)(m_ulAddress + ((nData & 0x10000) ? ROMEO_YMF288DATA2 : ROMEO_YMF288DATA1), static_cast<UINT8>(nData));
+			else
+			{
+				while (m_nSnoopCount == (*m_fnIn32)(m_ulAddress + ROMEO_SNOOPCTRL))
+				{
+					::Sleep(0);
+				}
+				m_nSnoopCount = (*m_fnIn32)(m_ulAddress + ROMEO_SNOOPCTRL);
+
+				// カウンタ増えた時点ではまだBusyの可能性があるので、OPMのBusyも見張る
+				while ((*m_fnIn8)(m_ulAddress + ROMEO_YM2151DATA) & 0x80)
+				{
+					::Sleep(0);
+				}
+				(*m_fnOut8)(m_ulAddress + ROMEO_YM2151ADDR, static_cast<UINT8>(nData >> 8));
+				(*m_fnIn8)(m_ulAddress + ROMEO_YM2151DATA);
+				(*m_fnOut8)(m_ulAddress + ROMEO_YM2151DATA, static_cast<UINT8>(nData));
+			}
 			m_pciGuard.Leave();
 
 			m_queGuard.Enter();
@@ -286,18 +344,19 @@ bool CJuliet::Task()
 
 /**
  * コンストラクタ
- * @param[in] pScciIf 親インスタンス
- * @param[in] pChip チップ インスタンス
+ * @param[in] pJuliet 親インスタンス
+ * @param[in] nChipId チップ ID
  */
-CJuliet::Chip288::Chip288(CJuliet* pJuliet)
+CJuliet::Chip::Chip(CJuliet* pJuliet, ChipId nChipId)
 	: m_pJuliet(pJuliet)
+	, m_nChipId(nChipId)
 {
 }
 
 /**
  * デストラクタ
  */
-CJuliet::Chip288::~Chip288()
+CJuliet::Chip::~Chip()
 {
 	m_pJuliet->Detach(this);
 }
@@ -306,15 +365,15 @@ CJuliet::Chip288::~Chip288()
  * Get chip type
  * @return The type of the chip
  */
-IExternalChip::ChipType CJuliet::Chip288::GetChipType()
+IExternalChip::ChipType CJuliet::Chip::GetChipType()
 {
-	return IExternalChip::kYMF288;
+	return (m_nChipId == kYMF288) ? IExternalChip::kYMF288 : IExternalChip::kYM2151;
 }
 
 /**
  * リセット
  */
-void CJuliet::Chip288::Reset()
+void CJuliet::Chip::Reset()
 {
 }
 
@@ -323,9 +382,9 @@ void CJuliet::Chip288::Reset()
  * @param[in] nAddr アドレス
  * @param[in] cData データ
  */
-void CJuliet::Chip288::WriteRegister(UINT nAddr, UINT8 cData)
+void CJuliet::Chip::WriteRegister(UINT nAddr, UINT8 cData)
 {
-	m_pJuliet->Write288(nAddr, cData);
+	m_pJuliet->Write(m_nChipId, nAddr, cData);
 }
 
 /**
@@ -334,7 +393,7 @@ void CJuliet::Chip288::WriteRegister(UINT nAddr, UINT8 cData)
  * @param[in] nParameter パラメータ
  * @return リザルト
  */
-INTPTR CJuliet::Chip288::Message(UINT nMessage, INTPTR nParameter)
+INTPTR CJuliet::Chip::Message(UINT nMessage, INTPTR nParameter)
 {
 	return 0;
 }
