@@ -272,7 +272,7 @@ void juliet_YM2151W(UINT8 addr, UINT8 data) {
 		}
 		else if ((addr & 0xf8) == 0x20) {				// algorithm
 			ch = addr & 7;
-			mask = opmask[ch];
+			mask = opmask[data & 7];
 			if (romeo.ym2151.op[ch] != mask) {
 				romeo.ym2151.op[ch] = mask;
 				YM2151setvolume((UINT8)ch, YM2151vol);
