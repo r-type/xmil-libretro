@@ -61,13 +61,6 @@ typedef	signed int			SINT32;
 #define SOUND_CRITICAL
 #define	SOUNDRESERVE	100
 
-#define	SUPPORT_CRT15KHZ
-#define	SUPPORT_HOSTDRV
-#define	SUPPORT_SWSEEKSND
-#define	SUPPORT_SASI
-#define	SUPPORT_SCSI
-
-// #define SUPPORT_ARC
-// #define SUPPORT_ZLIB
+#define	SUPPORT_OPM
 
 #define	SCREEN_BPP		16

@@ -9,8 +9,7 @@ extern "C" {
 #endif
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-extern	OPMCH		opmch[OPMCH_MAX];
-extern	_OPMGEN		opmgen;
+extern	_OPMGEN		g_opmgen;
 #endif
 extern	_PSGGEN		psggen;
 

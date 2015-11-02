@@ -29,7 +29,7 @@ void IOOUTCALL opm_o(UINT port, REG8 dat) {
 			juliet_YM2151W(reg, dat);
 		}
 		else {
-			opmgen_setreg(reg, dat);
+			opmgen_setreg(&g_opmgen, reg, dat);
 		}
 #endif
 	}
@@ -136,7 +136,7 @@ void sndboard_update(void) {
 		}
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 		for (i=0x20; i<0x100; i++) {
-			opmgen_setreg((REG8)i, sndboard.opmdat[i]);
+			opmgen_setreg(&g_opmgen, (REG8)i, sndboard.opmdat[i]);
 		}
 #endif
 	}
