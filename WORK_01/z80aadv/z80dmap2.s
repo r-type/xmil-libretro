@@ -3,10 +3,17 @@
 	.include	"../z80aadv/z80a.inc"
 	.include	"../z80aadv/z80dma.inc"
 
+	.global	z80dmap
 	.global	z80dmap2
 	.extern	iocore_inp
 	.extern	fastioout
 	.extern	ievent_setbit
+
+	.section	.text
+	.code	32
+	.align	0
+
+z80dmap:		mov		pc, lr
 
 	.section	.iwram.text
 	.code	32
