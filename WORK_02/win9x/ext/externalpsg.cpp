@@ -38,6 +38,7 @@ IExternalChip::ChipType CExternalPsg::GetChipType()
  */
 void CExternalPsg::Reset()
 {
+	m_cPsgMix = 0x3f;
 	m_pChip->Reset();
 }
 

@@ -42,6 +42,16 @@ CExternalOpna::~CExternalOpna()
 }
 
 /**
+ * 音源リセット
+ */
+void CExternalOpna::Reset()
+{
+	memset(m_cAlgorithm, 0, sizeof(m_cAlgorithm));
+	memset(m_cTtl, 0x7f, sizeof(m_cTtl));
+	CExternalPsg::Reset();
+}
+
+/**
  * レジスタ書き込み
  * @param[in] nAddr アドレス
  * @param[in] cData データ
