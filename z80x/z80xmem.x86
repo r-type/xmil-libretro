@@ -106,5 +106,3 @@ memwr16_ecx_dx:	cmp		cx, 0xffff
 				mov		[eax], dh
 				ret
 
-	ends
-

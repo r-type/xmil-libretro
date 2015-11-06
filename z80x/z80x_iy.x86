@@ -350,5 +350,3 @@ opcode_fd	dd	no_op,		no_op,		no_op,		no_op			; 00
 			dd	no_op,		ld_sp_iy,	no_op,		no_op
 			dd	no_op,		no_op,		no_op,		no_op
 
-	ends
-

@@ -161,5 +161,3 @@ iycb_proc:		GETPCAX
 				push	dword cb_memory
 				jmp		lea_ecx_ecx
 
-	ends
-
