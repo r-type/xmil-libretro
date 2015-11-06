@@ -53,14 +53,16 @@ void CExternalOpna::Reset()
 
 /**
  * レジスタ書き込み
+ * @param[in] timestamp タイムスタンプ
  * @param[in] nAddr アドレス
  * @param[in] cData データ
  */
-void CExternalOpna::WriteRegister(UINT nAddr, UINT8 cData)
+void CExternalOpna::WriteRegisterEvent(ExternalChipTimestamp timestamp, UINT nAddr, UINT8 cData)
 {
 	if (nAddr < 0x10)
 	{
-		CExternalPsg::WriteRegister(nAddr, cData);
+		CExternalPsg::WriteRegisterEvent(timestamp, nAddr, cData);
+
 	}
 	else
 	{
@@ -74,7 +76,7 @@ void CExternalOpna::WriteRegister(UINT nAddr, UINT8 cData)
 			// algorithm
 			m_cAlgorithm[((nAddr & 0x100) >> 6) + (nAddr & 3)] = cData;
 		}
-		WriteRegisterInner(nAddr, cData);
+		CExternalChipEvent::WriteRegisterEvent(timestamp, nAddr, cData);
 	}
 }
 
@@ -82,16 +84,15 @@ void CExternalOpna::WriteRegister(UINT nAddr, UINT8 cData)
  * ミュート
  * @param[in] bMute ミュート
  */
-void CExternalOpna::Mute(bool bMute) const
+void CExternalOpna::Mute(bool bMute)
 {
-	CExternalPsg::Mute(bMute);
-
 	const int nVolume = (bMute) ? -127 : 0;
 	for (UINT ch = 0; ch < 3; ch++)
 	{
 		SetVolume(ch + 0, nVolume);
 		SetVolume(ch + 4, nVolume);
 	}
+	CExternalPsg::Mute(bMute);
 }
 
 /**
@@ -99,7 +100,7 @@ void CExternalOpna::Mute(bool bMute) const
  * @param[in] nChannel チャンネル
  * @param[in] nVolume ヴォリューム値
  */
-void CExternalOpna::SetVolume(UINT nChannel, int nVolume) const
+void CExternalOpna::SetVolume(UINT nChannel, int nVolume)
 {
 	const UINT nBaseReg = (nChannel & 4) ? 0x140 : 0x40;
 
@@ -122,7 +123,7 @@ void CExternalOpna::SetVolume(UINT nChannel, int nVolume) const
 			{
 				nTtl = 0x7f;
 			}
-			WriteRegisterInner(nBaseReg + nOffset, static_cast<UINT8>(nTtl));
+			CExternalChipEvent::WriteRegisterEvent(0, nBaseReg + nOffset, static_cast<UINT8>(nTtl));
 		}
 		nOffset += 4;
 		cMask >>= 1;

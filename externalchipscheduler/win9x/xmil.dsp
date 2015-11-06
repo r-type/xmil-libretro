@@ -958,11 +958,35 @@ SOURCE=.\ext\externalchip.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ext\externalchipevent.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchipevent.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ext\externalchipmanager.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\ext\externalchipmanager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchipscheduler.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchipscheduler.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchiptimestamp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchiptimestamp.h
 # End Source File
 # Begin Source File
 
