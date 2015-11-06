@@ -18,6 +18,7 @@ public:
 	bool HasPsg() const;
 	bool HasRhythm() const;
 	bool HasADPCM() const;
+	virtual void Reset();
 	virtual void WriteRegister(UINT nAddr, UINT8 cData);
 
 protected:
