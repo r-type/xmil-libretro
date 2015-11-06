@@ -1,0 +1,462 @@
+
+section .text
+
+	extern	_fontycnt
+	extern	_x2left
+	extern	_x2right
+
+
+; ---- 16ライン ANK キャラクタ
+;		esi = font face pointer
+;		edi = dest
+;		ecx = loop count (text height)
+
+				align	4							; ノーマル
+txt16_nor:		xor		ebx, ebx					; カウンタは戻る
+.lp:			inc		edi
+				mov		al, [esi + ebx]
+				mov		ah, [esi + ebx + 1]
+				add		ebx, 2
+				mov		[edi-1], al
+				mov		[edi-1+64], ah
+				and		ebx, byte 15
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 横倍角左
+txt16_x2left:	xor		ebx, ebx					; カウンタは戻る
+.lp:			inc		edi
+				movzx	eax, byte [esi + ebx]
+				mov		al, [_x2left + eax]
+				mov		[edi-1], al
+				movzx	eax, byte [esi + ebx + 1]
+				add		ebx, byte 2
+				mov		al, [_x2left + eax]
+				and		ebx, byte 15
+				mov		[edi+63], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 横倍角右
+txt16_x2right:	xor		ebx, ebx					; カウンタは戻る
+.lp:			inc		edi
+				movzx	eax, byte [esi + ebx]
+				mov		al, [_x2right + eax]
+				mov		[edi-1], al
+				movzx	eax, byte [esi + ebx + 1]
+				add		ebx, byte 2
+				mov		al, [_x2right + eax]
+				and		ebx, byte 15
+				mov		[edi+63], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 縦倍角上
+txt16_Yx2:		movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+.lp:			inc		edi
+				mov		al, [esi + ebx]
+				inc		ebx
+				mov		[edi-1], al
+				mov		[edi-1+64], al
+				and		ebx, byte 15
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; ４倍角左
+txt16_x4left:	movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+.lp:			inc		edi
+				movzx	eax, byte [esi + ebx]
+				inc		ebx
+				mov		al, [_x2left + eax]
+				and		ebx, byte 15
+				mov		[edi-1], al
+				mov		[edi-1+64], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; ４倍角右
+txt16_x4right:	movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+.lp:			inc		edi
+				movzx	eax, byte [esi + ebx]
+				inc		ebx
+				mov		al, [_x2right + eax]
+				and		ebx, byte 15
+				mov		[edi-1], al
+				mov		[edi-1+64], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 右４ドット
+txt16_right4dot:xor		ebx, ebx					; カウンタは戻る
+.lp:			inc		edi
+				mov		al, [esi + ebx]
+				mov		ah, [esi + ebx + 1]
+				add		ebx, byte 2
+				shl		al, 4
+				shl		ah, 4
+				and		ebx, byte 15
+				mov		[edi], al
+				mov		[edi+64], ah
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 潰れ右４ドット
+txt16_right4half:
+				movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				or		ebx, ebx
+				je		short .lp
+				mov		al, [esi + ebx]				; 最初の１回だけ…
+				xor		ebx, ebx
+				jmp		short .faceout
+.lp:			mov		al, [esi + ebx]
+				add		ebx, byte 2
+.faceout:		shl		al, 4
+				and		ebx, byte 15
+				mov		[edi], al
+				mov		[edi+64], al
+				inc		edi
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 右４ドット縦倍角上
+txt16_right4x2:	movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+.lp:			inc		edi
+				mov		al, [esi + ebx]
+				add		ebx, byte 2
+				shl		al, 4
+				and		ebx, byte 15
+				mov		[edi-1], al
+				mov		[edi-1+64], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 潰して縦倍角
+txt16_halfx2:	movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				or		ebx, ebx
+				je		short .lp
+				mov		al, [esi + ebx]				; 最初の１回だけ
+				xor		ebx, ebx
+				jmp		short .faceout
+.lp:			mov		al, [esi + ebx]
+				add		ebx, byte 2
+.faceout:		mov		[edi], al
+				mov		[edi+64], al
+				and		ebx, byte 15
+				inc		edi
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 潰して４倍角左
+txt16_halfx4left:
+				movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				or		ebx, ebx
+				je		short .lp
+				movzx	eax, byte [esi + ebx]		; 最初の１回
+				xor		ebx, ebx
+				jmp		short .faceout
+.lp:			movzx	eax, byte [esi + ebx]
+				add		ebx, byte 2
+.faceout:		mov		al, [_x2left + eax]
+				and		ebx, byte 15
+				mov		[edi], al
+				mov		[edi+64], al
+				inc		edi
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 潰して４倍角右
+txt16_halfx4right:
+				movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				or		ebx, ebx
+				je		short .lp
+				movzx	eax, byte [esi + ebx]		; 最初の１回
+				xor		ebx, ebx
+				jmp		short .faceout
+.lp:			movzx	eax, byte [esi + ebx]
+				add		ebx, byte 2
+.faceout:		mov		al, [_x2right + eax]
+				and		ebx, byte 15
+				mov		[edi], al
+				mov		[edi+64], al
+				inc		edi
+				dec		ecx
+				jne		short .lp
+				ret
+
+
+; ---- 8ライン PCG キャラクタx2
+;		esi = font face pointer
+;		edi = dest
+;		ecx = loop count (text height)
+
+				align	4							; ノーマル
+pcg8x2_nor:		xor		ebx, ebx					; カウンタは戻る
+.lp:			inc		edi
+				mov		al, [esi + ebx]
+				inc		ebx
+				mov		[edi-1], al
+				mov		[edi-1+64], al
+				and		ebx, byte 7
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 横倍角左
+pcg8x2_x2left:	xor		ebx, ebx					; カウンタは戻る
+.lp:			inc		edi
+				movzx	eax, byte [esi + ebx]
+				inc		ebx
+				mov		al, [_x2left + eax]
+				and		ebx, byte 7
+				mov		[edi-1], al
+				mov		[edi-1+64], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 横倍角右
+pcg8x2_x2right:	xor		ebx, ebx					; カウンタは戻る
+.lp:			inc		edi
+				movzx	eax, byte [esi + ebx]
+				inc		ebx
+				mov		al, [_x2right + eax]
+				and		ebx, byte 7
+				mov		[edi-1], al
+				mov		[edi-1+64], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 縦倍角上
+pcg8x2_Yx2:		movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				shr		ecx, 1
+				shr		ebx, 1
+.lp:			inc		edi
+				mov		al, [esi + ebx]
+				inc		ebx
+				mov		[edi-1], al
+				mov		[edi-1+64], ax
+				and		ebx, byte 7
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; ４倍角左
+pcg8x2_x4left:	movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				shr		ecx, 1
+				shr		ebx, 1
+.lp:			add		edi, byte 2
+				movzx	eax, byte [esi + ebx]
+				inc		ebx
+				mov		al, [_x2left + eax]
+				and		ebx, byte 7
+				mov		[edi-2], al
+				mov		[edi-1], al
+				mov		[edi-2+64], al
+				mov		[edi-1+64], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; ４倍角右
+pcg8x2_x4right:	movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				shr		ecx, 1
+				shr		ebx, 1
+.lp:			add		edi, byte 2
+				movzx	eax, byte [esi + ebx]
+				inc		ebx
+				mov		al, [_x2right + eax]
+				and		ebx, byte 7
+				mov		[edi-2], al
+				mov		[edi-1], al
+				mov		[edi-2+64], al
+				mov		[edi-1+64], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 右４ドット
+pcg8x2_right4dot:
+				xor		ebx, ebx					; カウンタは戻る
+.lp:			inc		edi
+				mov		al, [esi + ebx]
+				inc		ebx
+				shl		al, 4
+				and		ebx, byte 7
+				mov		[edi], al
+				mov		[edi+64], al
+				inc		edi
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 潰れ右４ドット
+pcg8x2_right4half:
+				movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				shr		ecx, 1
+				shr		ebx, 1
+				je		short .lp
+				mov		al, [esi + ebx]				; 最初の１回だけ…
+				xor		ebx, ebx
+				jmp		short .faceout
+.lp:			mov		al, [esi + ebx]
+				add		ebx, byte 2
+.faceout:		shl		al, 4
+				and		ebx, byte 7
+				mov		[edi], al
+				mov		[edi+1], al
+				mov		[edi+64], al
+				mov		[edi+64+1], al
+				add		edi, byte 2
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 右４ドット縦倍角上
+pcg8x2_right4x2:movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				shr		ecx, 1
+				shr		ebx, 1
+.lp:			add		edi, byte 2
+				mov		al, [esi + ebx]
+				inc		ebx
+				shl		al, 4
+				and		ebx, byte 7
+				mov		[edi-2], al
+				mov		[edi-1], al
+				mov		[edi-2+64], al
+				mov		[edi-1+64], al
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 潰して縦倍角
+pcg8x2_halfx2:	movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				shr		ecx, 1
+				shr		ebx, 1
+				je		short .lp
+				mov		al, [esi + ebx]				; 最初の１回だけ
+				xor		ebx, ebx
+				jmp		short .faceout
+.lp:			mov		al, [esi + ebx]
+				add		ebx, byte 2
+.faceout:		mov		[edi], al
+				mov		[edi+1], al
+				mov		[edi+64], al
+				mov		[edi+64+1], al
+				and		ebx, byte 7
+				add		edi, byte 2
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 潰して４倍角左
+pcg8x2_halfx4left:
+				movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				shr		ecx, 1
+				shr		ebx, 1
+				je		short .lp
+				movzx	eax, byte [esi + ebx]		; 最初の１回
+				xor		ebx, ebx
+				jmp		short .faceout
+.lp:			movzx	eax, byte [esi + ebx]
+				add		ebx, byte 2
+.faceout:		mov		al, [_x2left + eax]
+				and		ebx, byte 7
+				mov		[edi], al
+				mov		[edi+1], al
+				mov		[edi+64], al
+				mov		[edi+64+1], al
+				add		edi, byte 2
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4							; 潰して４倍角右
+pcg8x2_halfx4right:
+				movzx	ebx, byte [_fontycnt]		; カウンタレジューム
+				shr		ecx, 1
+				shr		ebx, 1
+				je		short .lp
+				movzx	eax, byte [esi + ebx]		; 最初の１回
+				xor		ebx, ebx
+				jmp		short .faceout
+
+.lp:			movzx	eax, byte [esi + ebx]
+				add		ebx, byte 2
+.faceout:		mov		al, [_x2right + eax]
+				and		ebx, byte 7
+				mov		[edi], al
+				mov		[edi+1], al
+				mov		[edi+64], al
+				mov		[edi+64+1], al
+				add		edi, byte 2
+				dec		ecx
+				jne		short .lp
+				ret
+
+				align	4
+draw_nop:		ret
+
+
+; ----
+
+section .rdata
+
+	global	_txtbeffects16
+	global	_pcgbeffectsx2
+
+				align	16
+_txtbeffects16	dd	txt16_nor					; ノーマル
+				dd	txt16_halfx2				; 潰して縦倍角
+				dd	txt16_right4dot				; 右４ドット
+				dd	txt16_right4half			; 潰れ右４ドット
+
+				dd	txt16_Yx2					; 縦倍角
+				dd	draw_nop					; ありえない
+				dd	txt16_right4x2				; 右４ドット縦倍角
+				dd	draw_nop					; ありえない
+
+				dd	txt16_x2left				; 横倍角左
+				dd	txt16_halfx4left			; 潰して４倍角左
+				dd	txt16_x2right				; 横倍角右
+				dd	txt16_halfx4right			; 潰して４倍角右
+
+				dd	txt16_x4left				; ４倍角左
+				dd	draw_nop					; ありえない
+				dd	txt16_x4right				; ４倍角右
+				dd	draw_nop					; ありえない
+
+
+_pcgbeffectsx2	dd	pcg8x2_nor					; ノーマル
+				dd	pcg8x2_halfx2				; 潰して縦倍角
+				dd	pcg8x2_right4dot			; 右４ドット
+				dd	pcg8x2_right4half			; 潰れ右４ドット
+
+				dd	pcg8x2_Yx2					; 縦倍角
+				dd	draw_nop					; ありえない
+				dd	pcg8x2_right4x2				; 右４ドット縦倍角
+				dd	draw_nop					; ありえない
+
+				dd	pcg8x2_x2left				; 横倍角左
+				dd	pcg8x2_halfx4left			; 潰して４倍角左
+				dd	pcg8x2_x2right				; 横倍角右
+				dd	pcg8x2_halfx4right			; 潰して４倍角右
+
+				dd	pcg8x2_x4left				; ４倍角左
+				dd	draw_nop					; ありえない
+				dd	pcg8x2_x4right				; ４倍角右
+				dd	draw_nop					; ありえない
+
+	ends
+
