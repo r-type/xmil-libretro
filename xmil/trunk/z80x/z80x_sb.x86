@@ -629,5 +629,3 @@ opcode_ed	dd	ld_nop,		ld_nop,		ld_nop,		ld_nop			; 00
 			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
 			dd	ld_nop,		ld_nop,		ld_nop,		ld_nop
 
-	ends
-

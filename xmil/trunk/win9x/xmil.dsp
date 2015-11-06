@@ -193,7 +193,7 @@ InputPath=..\Z80X\Z80X_CB.X86
 InputName=Z80X_CB
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -205,7 +205,7 @@ InputPath=..\Z80X\Z80X_CB.X86
 InputName=Z80X_CB
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -217,7 +217,7 @@ InputPath=..\Z80X\Z80X_CB.X86
 InputName=Z80X_CB
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -229,7 +229,7 @@ InputPath=..\Z80X\Z80X_CB.X86
 InputName=Z80X_CB
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -248,7 +248,7 @@ InputPath=..\Z80X\Z80X_IF.X86
 InputName=Z80X_IF
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -260,7 +260,7 @@ InputPath=..\Z80X\Z80X_IF.X86
 InputName=Z80X_IF
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -272,7 +272,7 @@ InputPath=..\Z80X\Z80X_IF.X86
 InputName=Z80X_IF
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -284,7 +284,7 @@ InputPath=..\Z80X\Z80X_IF.X86
 InputName=Z80X_IF
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -303,7 +303,7 @@ InputPath=..\Z80X\Z80X_IX.X86
 InputName=Z80X_IX
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -315,7 +315,7 @@ InputPath=..\Z80X\Z80X_IX.X86
 InputName=Z80X_IX
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -327,7 +327,7 @@ InputPath=..\Z80X\Z80X_IX.X86
 InputName=Z80X_IX
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -339,7 +339,7 @@ InputPath=..\Z80X\Z80X_IX.X86
 InputName=Z80X_IX
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -358,7 +358,7 @@ InputPath=..\Z80X\Z80X_IY.X86
 InputName=Z80X_IY
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -370,7 +370,7 @@ InputPath=..\Z80X\Z80X_IY.X86
 InputName=Z80X_IY
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -382,7 +382,7 @@ InputPath=..\Z80X\Z80X_IY.X86
 InputName=Z80X_IY
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -394,7 +394,7 @@ InputPath=..\Z80X\Z80X_IY.X86
 InputName=Z80X_IY
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -413,7 +413,7 @@ InputPath=..\Z80X\Z80X_MN.X86
 InputName=Z80X_MN
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -425,7 +425,7 @@ InputPath=..\Z80X\Z80X_MN.X86
 InputName=Z80X_MN
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -437,7 +437,7 @@ InputPath=..\Z80X\Z80X_MN.X86
 InputName=Z80X_MN
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -449,7 +449,7 @@ InputPath=..\Z80X\Z80X_MN.X86
 InputName=Z80X_MN
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -468,7 +468,7 @@ InputPath=..\Z80X\Z80X_SB.X86
 InputName=Z80X_SB
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -480,7 +480,7 @@ InputPath=..\Z80X\Z80X_SB.X86
 InputName=Z80X_SB
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -492,7 +492,7 @@ InputPath=..\Z80X\Z80X_SB.X86
 InputName=Z80X_SB
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -504,7 +504,7 @@ InputPath=..\Z80X\Z80X_SB.X86
 InputName=Z80X_SB
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -523,7 +523,7 @@ InputPath=..\Z80X\Z80XMEM.X86
 InputName=Z80XMEM
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -535,7 +535,7 @@ InputPath=..\Z80X\Z80XMEM.X86
 InputName=Z80XMEM
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -547,7 +547,7 @@ InputPath=..\Z80X\Z80XMEM.X86
 InputName=Z80XMEM
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -559,7 +559,7 @@ InputPath=..\Z80X\Z80XMEM.X86
 InputName=Z80XMEM
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -710,7 +710,7 @@ InputPath=.\x86\OPMGENG.X86
 InputName=OPMGENG
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -722,7 +722,7 @@ InputPath=.\x86\OPMGENG.X86
 InputName=OPMGENG
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -734,7 +734,7 @@ InputPath=.\x86\OPMGENG.X86
 InputName=OPMGENG
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -746,7 +746,7 @@ InputPath=.\x86\OPMGENG.X86
 InputName=OPMGENG
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -877,7 +877,7 @@ InputPath=.\DCLOCKD.X86
 InputName=DCLOCKD
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -889,7 +889,7 @@ InputPath=.\DCLOCKD.X86
 InputName=DCLOCKD
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -901,7 +901,7 @@ InputPath=.\DCLOCKD.X86
 InputName=DCLOCKD
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 
@@ -913,7 +913,7 @@ InputPath=.\DCLOCKD.X86
 InputName=DCLOCKD
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
 
 # End Custom Build
 

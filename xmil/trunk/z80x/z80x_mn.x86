@@ -852,6 +852,3 @@ opcode_main	dd	ld_nop,		ld_bc_word,	ld_xbc_a,	inc_bc			; 00
 			dd	ret_m,		ld_sp_hl,	jp_m,		_ei
 			dd	call_m,		_fd,		cp_byte,	rst_38
 
-
-	ends
-

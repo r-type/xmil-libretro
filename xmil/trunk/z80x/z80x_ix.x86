@@ -350,5 +350,3 @@ opcode_dd	dd	no_op,		no_op,		no_op,		no_op			; 00
 			dd	no_op,		ld_sp_ix,	no_op,		no_op
 			dd	no_op,		no_op,		no_op,		no_op
 
-	ends
-
