@@ -19,7 +19,7 @@ public:
 	bool HasRhythm() const;
 	bool HasADPCM() const;
 	virtual void Reset();
-	virtual void WriteRegister(UINT nAddr, UINT8 cData);
+	virtual void WriteRegisterEvent(ExternalChipTimestamp timestamp, UINT nAddr, UINT8 cData);
 
 protected:
 	bool m_bHasPsg;						//!< PSG
@@ -28,8 +28,8 @@ protected:
 	UINT8 m_cAlgorithm[8];				//!< アルゴリズム テーブル
 	UINT8 m_cTtl[8 * 4];				//!< TTL テーブル
 
-	virtual void Mute(bool bMute) const;
-	void SetVolume(UINT nChannel, int nVolume) const;
+	virtual void Mute(bool bMute);
+	void SetVolume(UINT nChannel, int nVolume);
 };
 
 /**

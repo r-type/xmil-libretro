@@ -33,6 +33,7 @@
 #if defined(SUPPORT_DCLOCK)
 #include "dclock.h"
 #endif
+#include "ext\externalchiptimestamp.h"
 
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
@@ -785,6 +786,7 @@ static void exec1frame(void) {
 	joymng_sync();
 	mousemng_sync();
 	pccore_exec(framecnt == 0);
+	CExternalChipTimestamp::GetInstance()->Sync();
 #if defined(SUPPORT_DCLOCK)
 	dclock_callback();
 #endif	/* defined(SUPPORT_DCLOCK) */
@@ -897,6 +899,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 
 	sysmng_initialize();
 	joymng_initialize();
+
+	CExternalChipTimestamp::GetInstance()->Reset();
 
 	pccore_initialize();
 	pccore_reset();

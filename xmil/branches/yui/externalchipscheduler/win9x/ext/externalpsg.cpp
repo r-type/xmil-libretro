@@ -11,7 +11,7 @@
  * @param[in] pChip チップ
  */
 CExternalPsg::CExternalPsg(IExternalChip* pChip)
-	: m_pChip(pChip)
+	: CExternalChipEvent(pChip)
 	, m_cPsgMix(0x3f)
 {
 }
@@ -21,16 +21,6 @@ CExternalPsg::CExternalPsg(IExternalChip* pChip)
  */
 CExternalPsg::~CExternalPsg()
 {
-	delete m_pChip;
-}
-
-/**
- * チップ タイプを得る
- * @return チップ タイプ
- */
-IExternalChip::ChipType CExternalPsg::GetChipType()
-{
-	return m_pChip->GetChipType();
 }
 
 /**
@@ -39,15 +29,16 @@ IExternalChip::ChipType CExternalPsg::GetChipType()
 void CExternalPsg::Reset()
 {
 	m_cPsgMix = 0x3f;
-	m_pChip->Reset();
+	CExternalChipEvent::Reset();
 }
 
 /**
  * レジスタ書き込み
+ * @param[in] timestamp タイムスタンプ
  * @param[in] nAddr アドレス
  * @param[in] cData データ
  */
-void CExternalPsg::WriteRegister(UINT nAddr, UINT8 cData)
+void CExternalPsg::WriteRegisterEvent(ExternalChipTimestamp timestamp, UINT nAddr, UINT8 cData)
 {
 	if (nAddr < 0x0e)
 	{
@@ -56,7 +47,7 @@ void CExternalPsg::WriteRegister(UINT nAddr, UINT8 cData)
 			// psg mix
 			m_cPsgMix = cData;
 		}
-		WriteRegisterInner(nAddr, cData);
+		CExternalChipEvent::WriteRegisterEvent(timestamp, nAddr, cData);
 	}
 }
 
@@ -81,17 +72,7 @@ INTPTR CExternalPsg::Message(UINT nMessage, INTPTR nParameter)
  * ミュート
  * @param[in] bMute ミュート
  */
-void CExternalPsg::Mute(bool bMute) const
+void CExternalPsg::Mute(bool bMute)
 {
-	WriteRegisterInner(0x07, (bMute) ? 0x3f : m_cPsgMix);
-}
-
-/**
- * レジスタ書き込み(内部)
- * @param[in] nAddr アドレス
- * @param[in] cData データ
- */
-void CExternalPsg::WriteRegisterInner(UINT nAddr, UINT8 cData) const
-{
-	m_pChip->WriteRegister(nAddr, cData);
+	CExternalChipEvent::WriteRegisterEvent(0, 0x07, (bMute) ? 0x3f : m_cPsgMix);
 }

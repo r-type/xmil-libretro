@@ -8,6 +8,7 @@
 #include "sound/sound.h"
 #include "sound/x1f.h"
 #include "externalchipmanager.h"
+#include "externalchiptimestamp.h"
 #include "externalpsg.h"
 
 static void writeRegister(PPSG psg, REG8 nAddress, REG8 cData);
@@ -64,10 +65,15 @@ void psg_reset(PPSG psg, REG8 cCaps)
  */
 void psg_restore(PPSG psg)
 {
-	REG8 i;
+	CExternalPsg* pExt = reinterpret_cast<CExternalPsg*>(psg->userdata);
+	if (pExt)
+	{
+		CExternalChipTimestamp::GetInstance()->Reset();
+		pExt->Reset();
+	}
 
 	// PSG
-	for (i = 0; i < 14; i++)
+	for (REG8 i = 0; i < 14; i++)
 	{
 		writeRegister(psg, i, psg->s.reg[i]);
 	}
@@ -86,10 +92,6 @@ void psg_bind(PPSG psg)
 	{
 		pExt = static_cast<CExternalPsg*>(CExternalChipManager::GetInstance()->GetInterface(IExternalChip::kAY8910, 4000000));
 		psg->userdata = reinterpret_cast<INTPTR>(pExt);
-	}
-	if (pExt)
-	{
-		pExt->Reset();
 	}
 	psg_restore(psg);
 
@@ -157,7 +159,7 @@ static void writeRegister(PPSG psg, REG8 nAddress, REG8 cData)
 		}
 		else
 		{
-			pExt->WriteRegister(nAddress, cData);
+			pExt->WriteRegisterEvent(CExternalChipTimestamp::GetInstance()->Get(), nAddress, cData);
 		}
 	}
 }
