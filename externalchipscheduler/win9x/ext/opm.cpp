@@ -8,6 +8,7 @@
 #include "sound/sound.h"
 #include "sound/x1f.h"
 #include "externalchipmanager.h"
+#include "externalchiptimestamp.h"
 #include "externalopm.h"
 
 static void writeRegister(POPM opm, REG8 nAddress, REG8 cData);
@@ -62,10 +63,15 @@ void opm_reset(POPM opm, REG8 cCaps)
  */
 void opm_restore(POPM opm)
 {
-	UINT i;
+	CExternalOpm* pExt = reinterpret_cast<CExternalOpm*>(opm->userdata);
+	if (pExt)
+	{
+		CExternalChipTimestamp::GetInstance()->Reset();
+		pExt->Reset();
+	}
 
 	// FM
-	for (i = 0; i < 0x100; i++)
+	for (UINT i = 0; i < 0x100; i++)
 	{
 		if (i == 8)
 		{
@@ -88,10 +94,6 @@ void opm_bind(POPM opm)
 	{
 		pExt = static_cast<CExternalOpm*>(CExternalChipManager::GetInstance()->GetInterface(IExternalChip::kYM2151, 4000000));
 		opm->userdata = reinterpret_cast<INTPTR>(pExt);
-	}
-	if (pExt)
-	{
-		pExt->Reset();
 	}
 	opm_restore(opm);
 
@@ -147,7 +149,7 @@ static void writeRegister(POPM opm, REG8 nAddress, REG8 cData)
 		}
 		else
 		{
-			pExt->WriteRegister(nAddress, cData);
+			pExt->WriteRegisterEvent(CExternalChipTimestamp::GetInstance()->Get(), nAddress, cData);
 		}
 	}
 }
