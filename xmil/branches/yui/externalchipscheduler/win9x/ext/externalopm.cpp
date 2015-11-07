@@ -39,6 +39,8 @@ IExternalChip::ChipType CExternalOpm::GetChipType()
  */
 void CExternalOpm::Reset()
 {
+	memset(m_cAlgorithm, 0, sizeof(m_cAlgorithm));
+	memset(m_cTtl, 0x7f, sizeof(m_cTtl));
 	m_pChip->Reset();
 }
 
