@@ -11,7 +11,7 @@
  * @param[in] pChip チップ
  */
 CExternalOpm::CExternalOpm(IExternalChip* pChip)
-	: m_pChip(pChip)
+	: CExternalChipEvent(pChip)
 {
 	memset(m_cAlgorithm, 0, sizeof(m_cAlgorithm));
 	memset(m_cTtl, 0x7f, sizeof(m_cTtl));
@@ -22,16 +22,6 @@ CExternalOpm::CExternalOpm(IExternalChip* pChip)
  */
 CExternalOpm::~CExternalOpm()
 {
-	delete m_pChip;
-}
-
-/**
- * チップ タイプを得る
- * @return チップ タイプ
- */
-IExternalChip::ChipType CExternalOpm::GetChipType()
-{
-	return m_pChip->GetChipType();
 }
 
 /**
@@ -41,15 +31,16 @@ void CExternalOpm::Reset()
 {
 	memset(m_cAlgorithm, 0, sizeof(m_cAlgorithm));
 	memset(m_cTtl, 0x7f, sizeof(m_cTtl));
-	m_pChip->Reset();
+	CExternalChipEvent::Reset();
 }
 
 /**
  * レジスタ書き込み
+ * @param[in] timestamp タイムスタンプ
  * @param[in] nAddr アドレス
  * @param[in] cData データ
  */
-void CExternalOpm::WriteRegister(UINT nAddr, UINT8 cData)
+void CExternalOpm::WriteRegisterEvent(ExternalChipTimestamp timestamp, UINT nAddr, UINT8 cData)
 {
 	if ((nAddr & 0xe0) == 0x60)					// ttl
 	{
@@ -59,7 +50,7 @@ void CExternalOpm::WriteRegister(UINT nAddr, UINT8 cData)
 	{
 		m_cAlgorithm[nAddr & 7] = cData;
 	}
-	WriteRegisterInner(nAddr, cData);
+	CExternalChipEvent::WriteRegisterEvent(timestamp, nAddr, cData);
 }
 
 /**
@@ -83,7 +74,7 @@ INTPTR CExternalOpm::Message(UINT nMessage, INTPTR nParameter)
  * ミュート
  * @param[in] bMute ミュート
  */
-void CExternalOpm::Mute(bool bMute) const
+void CExternalOpm::Mute(bool bMute)
 {
 	const int nVolume = (bMute) ? -127 : 0;
 	for (UINT ch = 0; ch < 8; ch++)
@@ -93,21 +84,11 @@ void CExternalOpm::Mute(bool bMute) const
 }
 
 /**
- * レジスタ書き込み(内部)
- * @param[in] nAddr アドレス
- * @param[in] cData データ
- */
-void CExternalOpm::WriteRegisterInner(UINT nAddr, UINT8 cData) const
-{
-	m_pChip->WriteRegister(nAddr, cData);
-}
-
-/**
  * ヴォリューム設定
  * @param[in] nChannel チャンネル
  * @param[in] nVolume ヴォリューム値
  */
-void CExternalOpm::SetVolume(UINT nChannel, int nVolume) const
+void CExternalOpm::SetVolume(UINT nChannel, int nVolume)
 {
 	//! アルゴリズム スロット マスク
 	static const UINT8 s_opmask[] = {0x08, 0x08, 0x08, 0x08, 0x0c, 0x0e, 0x0e, 0x0f};
@@ -127,7 +108,7 @@ void CExternalOpm::SetVolume(UINT nChannel, int nVolume) const
 			{
 				nTtl = 0x7f;
 			}
-			WriteRegisterInner(0x60 + nOffset, static_cast<UINT8>(nTtl));
+			CExternalChipEvent::WriteRegisterEvent(0, 0x60 + nOffset, static_cast<UINT8>(nTtl));
 		}
 		nOffset += 8;
 		cMask >>= 1;
