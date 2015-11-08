@@ -171,8 +171,23 @@ void CJuliet::Reset()
 	m_nQueCount = 0;
 	m_queGuard.Leave();
 
+	ResetChip(kYMF288);
+	ResetChip(kYM2151);
+}
+
+/**
+ * チップ リセット
+ * @param[in] nChipId The id of chips
+ */
+void CJuliet::ResetChip(ChipId nChipId)
+{
+	if (!IsEnabled())
+	{
+		return;
+	}
+
 	m_pciGuard.Enter();
-	if (m_fnOut32 != NULL)
+	if (nChipId == kYMF288)
 	{
 		// YMF288 リセット
 		(*m_fnOut32)(m_ulAddress + ROMEO_YMF288CTRL, 0x00);
@@ -180,6 +195,10 @@ void CJuliet::Reset()
 
 		(*m_fnOut32)(m_ulAddress + ROMEO_YMF288CTRL, 0x80);
 		::Sleep(150);
+	}
+	else
+	{
+		m_bHasYM2151 = false;
 
 		// YM2151 リセット
 		(*m_fnOut32)(m_ulAddress + ROMEO_YM2151CTRL, 0x00);
@@ -375,6 +394,7 @@ IExternalChip::ChipType CJuliet::Chip::GetChipType()
  */
 void CJuliet::Chip::Reset()
 {
+	m_pJuliet->ResetChip(m_nChipId);
 }
 
 /**
