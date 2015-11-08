@@ -182,7 +182,7 @@ void CJuliet::Reset()
 		::Sleep(150);
 
 		// YM2151 リセット
-		(*m_fnOut32)(m_ulAddress + ROMEO_YM2151CTRL, 0x80);
+		(*m_fnOut32)(m_ulAddress + ROMEO_YM2151CTRL, 0x00);
 		::Sleep(10);					// 44.1kHz x 192 clk = 4.35ms 以上ないと、DACのリセットかからない
 		UINT8 cFlag = (m_fnIn8)(m_ulAddress + ROMEO_YM2151DATA) + 1;
 		(*m_fnOut32)(m_ulAddress + ROMEO_YM2151CTRL, 0x80);
