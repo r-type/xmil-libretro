@@ -735,7 +735,7 @@ SOURCE=.\x86\opmgeng.x86
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xreljp
 InputPath=.\x86\opmgeng.x86
-InputName=OPMGENG
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -747,7 +747,7 @@ InputName=OPMGENG
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xrelworld
 InputPath=.\x86\opmgeng.x86
-InputName=OPMGENG
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -759,7 +759,7 @@ InputName=OPMGENG
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xtrc
 InputPath=.\x86\opmgeng.x86
-InputName=OPMGENG
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -771,7 +771,7 @@ InputName=OPMGENG
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xdbg
 InputPath=.\x86\opmgeng.x86
-InputName=OPMGENG
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -791,11 +791,15 @@ SOURCE=..\sound\psg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\PSGGENC.C
+SOURCE=..\sound\psggen.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\PSGGENG.C
+SOURCE=..\sound\psggenc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggeng.c
 # End Source File
 # Begin Source File
 
