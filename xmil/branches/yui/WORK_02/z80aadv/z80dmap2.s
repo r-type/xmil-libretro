@@ -3,19 +3,35 @@
 	.include	"../z80aadv/z80a.inc"
 	.include	"../z80aadv/z80dma.inc"
 
+	.global	z80dmap
 	.global	z80dmap2
 	.extern	iocore_inp
 	.extern	fastioout
 	.extern	ievent_setbit
 
-	.section	.iwram.text
-	.code	32
-	.align	0
-
 rDMA		.req	r4
 rDMACA		.req	r8
 rDMACB		.req	r9
 
+	.section	.text
+	.code	32
+	.align	0
+
+z80dmap:		stmdb	sp!, {r4 - r11, lr}
+				mov		r4, #Z80CORE
+				mov		r5, #MAINMEM
+				add		r2, r4, #_CPU_REMCLOCK
+				ldr		r1, 00f
+				ldmia	r2, {r6 - r10}
+				mov		lr, pc
+				bx		r1
+				ldmia	sp!, {r4 - r11, pc}
+
+00:				.word	z80dmap2
+
+	.section	.iwram.text
+	.code	32
+	.align	0
 
 z80dmap2:		ldr		r11, [rDMA, #(Z80CORE2DMA + DMA_FLAG)]
 				tst		r11, #DMAF_WORKING
