@@ -1,21 +1,16 @@
-#include	"compiler.h"
-#include	"z80core.h"
-#include	"pccore.h"
-#include	"advpsg.h"
+/**
+ * @file	advpsg.c
+ * @brief	Implementation of the PSG generator
+ */
 
+#include "compiler.h"
+#include "advpsg.h"
+#include "z80core.h"
+#include "pccore.h"
 
 // #define	PSG0_DISABLE
 // #define	PSG1_DISABLE
 // #define	PSG2_DISABLE
-
-
-enum {
-	PSGENV_INC			= 15,
-	PSGENV_ONESHOT		= 16,
-	PSGENV_LASTON		= 32,
-	PSGENV_ONECYCLE		= 64
-};
-
 
 // エンベロープパターン
 static const UINT8 psgenv_pat[16] = {
@@ -326,10 +321,6 @@ void advpsg_setreg(ADVPSG psg, REG8 reg, REG8 value) {
 	}
 }
 
-REG8 psggen_getreg(ADVPSG psg, REG8 reg) {
-
-	return(((UINT8 *)&psg->reg)[reg & 15]);
-}
 
 
 // ----
