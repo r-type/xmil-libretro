@@ -38,7 +38,7 @@ void sysmng_workclockreset(void) {
 	workclock.draws = drawtime;				// drawcount;
 }
 
-BRESULT sysmng_workclockrenewal(void) {
+BOOL sysmng_workclockrenewal(void) {
 
 	SINT32	tick;
 

@@ -44,7 +44,7 @@ void sysmng_scrnwidth(REG8 mode);
 // ---- ‚ ‚Æ‚ÍOSˆË‘¶•”
 
 void sysmng_workclockreset(void);
-BRESULT sysmng_workclockrenewal(void);
+BOOL sysmng_workclockrenewal(void);
 void sysmng_updatecaption(REG8 flag);
 
 #ifdef __cplusplus
