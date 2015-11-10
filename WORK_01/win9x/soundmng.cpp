@@ -135,7 +135,7 @@ void soundmng_destroy(void) {
 	}
 }
 
-static void streamenable(BRESULT play) {
+static void streamenable(BOOL play) {
 
 	if (pDSData3) {
 		if (play) {
@@ -258,7 +258,7 @@ void soundmng_pcmload(UINT num, const OEMCHAR *filename, UINT type) {
 
 	FILEH				fh;
 	RIFF_HEADER			riff;
-	BRESULT				head;
+	BOOL				head;
 	WAVE_HEADER			whead;
 	UINT				size;
 	WAVE_INFOS			info;

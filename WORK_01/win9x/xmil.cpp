@@ -58,7 +58,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 		OEMCHAR		fddfolder[MAX_PATH];
 		OEMCHAR		bmpfilefolder[MAX_PATH];
 
-static	BRESULT		xmilstopemulate = FALSE;
+static	BOOL		xmilstopemulate = FALSE;
 		UINT8		xmilopening = 1;
 
 static	CWndLoc		s_wndloc;
@@ -163,7 +163,7 @@ static void flagdelete(const OEMCHAR *ext) {
 	file_delete(path);
 }
 
-static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BRESULT force) {
+static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force) {
 
 	int		ret;
 	int		id;

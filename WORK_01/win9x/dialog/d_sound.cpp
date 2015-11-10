@@ -17,7 +17,7 @@ static const FILESEL x1fui = {x1fui_title, x1fui_ext, x1fui_filter, 1};
 
 void dialog_x1f(HWND hWnd) {
 
-	BRESULT	check;
+	BOOL	check;
 	OEMCHAR	path[MAX_PATH];
 
 	x1f_close();
