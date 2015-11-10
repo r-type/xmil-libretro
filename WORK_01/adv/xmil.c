@@ -168,7 +168,7 @@ static void exec1frame(XMILMAIN *xmm) {
 
 	joymng_setflags();
 	advpsg_sync(&advpsg);
-	pccore_exec((BRESULT)(xmm->framecnt == 0));
+	pccore_exec(xmm->framecnt == 0);
 	xmm->framecnt++;
 }
 
