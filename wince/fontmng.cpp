@@ -36,8 +36,8 @@ typedef struct {
 } _FNTMNG, *FNTMNG;
 
 
-static const TCHAR deffontface[] = STRLITERAL("‚l‚r ƒSƒVƒbƒN");
-static const TCHAR deffontface2[] = STRLITERAL("‚l‚r ‚oƒSƒVƒbƒN");
+static const TCHAR deffontface[] = TEXT("‚l‚r ƒSƒVƒbƒN");
+static const TCHAR deffontface2[] = TEXT("‚l‚r ‚oƒSƒVƒbƒN");
 
 #ifndef _WIN32_WCE
 #define	TEXTALPHABASE	(FDAT_DEPTH * 0x60 / 256)
