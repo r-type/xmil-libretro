@@ -48,7 +48,10 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 #if defined(SUPPORT_STATSAVE)
 							1,
 #endif
-							0, 0, 0xffffff, 0xffbf6a};
+#if defined(SUPPORT_DCLOCK)
+							0, 0, 0xffffff, 0xffbf6a,
+#endif	// defined(SUPPORT_DCLOCK)
+						};
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium ‚Ë‚±‚¿‚ã`‚ñ");
 		HWND		hWndMain;
@@ -659,16 +662,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_LBUTTONUP:
 			if (!mousemng_buttonevent(MOUSEMNG_LEFTUP)) {
+#if defined(SUPPORT_DCLOCK)
 				if (scrnmng_isfullscreen()) {
 					POINT p;
 					if ((GetCursorPos(&p)) && (p.y >= 466)) {
 						xmiloscfg.clockx++;
-#if defined(SUPPORT_DCLOCK)
 						dclock_reset();
-#endif	/* defined(SUPPORT_DCLOCK) */
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
+#endif	/* defined(SUPPORT_DCLOCK) */
 				return(DefWindowProc(hWnd, msg, wParam, lParam));
 			}
 			break;
@@ -681,17 +684,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_RBUTTONUP:
 			if (!mousemng_buttonevent(MOUSEMNG_RIGHTUP)) {
+#if defined(SUPPORT_DCLOCK)
 				if (scrnmng_isfullscreen()) {
 					POINT p;
 					if ((GetCursorPos(&p)) && (p.y >= 466) &&
 												(xmiloscfg.clockx)) {
 						xmiloscfg.clockfnt++;
-#if defined(SUPPORT_DCLOCK)
 						dclock_reset();
-#endif	/* defined(SUPPORT_DCLOCK) */
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
+#endif	/* defined(SUPPORT_DCLOCK) */
 				return(DefWindowProc(hWnd, msg, wParam, lParam));
 			}
 			break;
