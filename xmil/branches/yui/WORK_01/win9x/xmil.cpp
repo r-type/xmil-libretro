@@ -756,7 +756,9 @@ static	UINT	framemax = 1;
 static void framereset(UINT cnt) {
 
 	framecnt = 0;
+#if defined(SUPPORT_DCLOCK)
 	scrnmng_dispclock();
+#endif	/* defined(SUPPORT_DCLOCK) */
 //	kdispwin_draw((BYTE)cnt);
 //	skbdwin_process();
 //	mdbgwin_process();

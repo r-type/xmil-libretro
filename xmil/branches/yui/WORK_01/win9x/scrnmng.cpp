@@ -755,10 +755,12 @@ void scrnmng_update(void) {
 
 // -------------------------------------------------------------------- clock
 
-void scrnmng_dispclock(void)
-{
 #if defined(SUPPORT_DCLOCK)
 
+static const RECT rectclk = {0, 0, DCLOCK_X, DCLOCK_Y};
+
+void scrnmng_dispclock(void)
+{
 	DDSURFACEDESC	dest;
 
 	if ((ddraw.clocksurf) &&
@@ -776,7 +778,6 @@ void scrnmng_dispclock(void)
 			ddraw.clocksurf->Unlock(NULL);
 		}
 
-		static const RECT rectclk = {0, 0, DCLOCK_X, DCLOCK_Y};
 		if (ddraw.primsurf->BltFast(640 - DCLOCK_X - 4,
 									ddraw.height - DCLOCK_Y,
 									ddraw.clocksurf, (RECT *)&rectclk,
@@ -786,6 +787,6 @@ void scrnmng_dispclock(void)
 		}
 		dclock_cntdown(xmiloscfg.DRAW_SKIP);
 	}
-#endif	/* defined(SUPPORT_DCLOCK) */
 }
+#endif	/* defined(SUPPORT_DCLOCK) */
 
