@@ -1,4 +1,6 @@
 
+#include "nevent.h"
+
 typedef struct {
 	UINT8	timer[8][6];
 	UINT8	work[4];
@@ -30,7 +32,7 @@ typedef struct {
 extern "C" {
 #endif
 
-void neitem_scpu(UINT id);
+void neitem_scpu(NEVENTID id);
 BOOL ieitem_scpu(UINT id);
 void subcpu_sendkey(void);
 

@@ -180,7 +180,7 @@ static void ctcnextevent(CTCCH *pCh)
 	nevent_set(NEVENT_CTC0 + pCh->s.num, uEvent, neitem_ctc, NEVENT_ABSOLUTE);
 }
 
-void neitem_ctc(UINT uId)
+void neitem_ctc(NEVENTID uId)
 {
 	CTCCH	*pCh;
 	REG8	cIntr;
