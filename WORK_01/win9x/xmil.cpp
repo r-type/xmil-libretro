@@ -32,8 +32,8 @@
 #include	"fdd_ini.h"
 #include	"x1f.h"
 #if defined(SUPPORT_DCLOCK)
-#include "dclock.h"
-#endif
+#include "subwnd/dclock.h"
+#endif	// defined(SUPPORT_DCLOCK)
 
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
@@ -667,7 +667,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					POINT p;
 					if ((GetCursorPos(&p)) && (p.y >= 466)) {
 						xmiloscfg.clockx++;
-						dclock_reset();
+						DispClock::GetInstance()->Reset();
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
@@ -690,7 +690,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					if ((GetCursorPos(&p)) && (p.y >= 466) &&
 												(xmiloscfg.clockx)) {
 						xmiloscfg.clockfnt++;
-						dclock_reset();
+						DispClock::GetInstance()->Reset();
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
@@ -792,7 +792,7 @@ static void exec1frame(void) {
 	mousemng_sync();
 	pccore_exec(framecnt == 0);
 #if defined(SUPPORT_DCLOCK)
-	dclock_callback();
+	DispClock::GetInstance()->Update();
 #endif	/* defined(SUPPORT_DCLOCK) */
 	framecnt++;
 }
