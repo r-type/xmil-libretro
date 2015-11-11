@@ -6,8 +6,7 @@
 #define	font_knjx1		__extromimage.knjx1
 #define	font_knjx1t		__extromimage.knjx1t
 
-#define font_load(p, f)		(SUCCESS)
-
+#define font_load(p, f)		do { } while(0)
 
 #ifdef __cplusplus
 extern "C" {
