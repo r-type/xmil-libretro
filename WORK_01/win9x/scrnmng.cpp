@@ -16,7 +16,7 @@
 #include	"makescrn.h"
 #if defined(SUPPORT_DCLOCK)
 #include "dclock.h"
-#endif
+#endif	// defined(SUPPORT_DCLOCK)
 
 #pragma comment(lib, "ddraw.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -28,7 +28,7 @@ typedef struct {
 	LPDIRECTDRAWSURFACE	backsurf;
 #if defined(SUPPORT_DCLOCK)
 	LPDIRECTDRAWSURFACE	clocksurf;
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 	LPDIRECTDRAWCLIPPER	clipper;
 	LPDIRECTDRAWPALETTE	palette;
 	UINT				scrnmode;
@@ -238,7 +238,7 @@ static void clearoutfullscreen(void) {
 	clearoutofrect(&ddraw.scrn, &base);
 #if defined(SUPPORT_DCLOCK)
 	dclock_redraw();
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 }
 
 static void paletteinit(void) {
@@ -259,7 +259,7 @@ static void paletteinit(void) {
 		ddraw.pal[i + START_PALORG].peGreen = dclockpal.pal32[i].p.g;
 		ddraw.pal[i + START_PALORG].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 	pal_reset();
 	ddraw.ddraw2->CreatePalette(DDPCAPS_8BIT, ddraw.pal, &ddraw.palette, 0);
 	ddraw.primsurf->SetPalette(ddraw.palette);
@@ -369,7 +369,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 	if (mode & SCRNMODE_FULLSCREEN) {
 #if defined(SUPPORT_DCLOCK)
 		dclock_init();
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 		ddraw2->SetCooperativeLevel(hWndMain,
 										DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
 		height = 480;
@@ -432,7 +432,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 			ddraw.clocksurf = NULL;
 		}
 		dclock_reset();
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 	}
 	else {
 		ddraw2->SetCooperativeLevel(hWndMain, DDSCL_NORMAL);
@@ -505,7 +505,7 @@ void scrnmng_destroy(void) {					// ddraws_TermDirectDraw
 		ddraw.clocksurf->Release();
 		ddraw.clocksurf = NULL;
 	}
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 	if (ddraw.backsurf) {
 		ddraw.backsurf->Release();
 		ddraw.backsurf = NULL;
@@ -788,5 +788,5 @@ void scrnmng_dispclock(void)
 		dclock_cntdown(xmiloscfg.DRAW_SKIP);
 	}
 }
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 
