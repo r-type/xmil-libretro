@@ -65,12 +65,12 @@ void nevent_progress(void) {
 	while(wi < witem) {
 		item = *wi++;
 		if (item->proc != NULL) {
-			item->proc((UINT)(item - nevent.item));
+			item->proc((NEVENTID)(item - nevent.item));
 		}
 	}
 }
 
-void nevent_reset(UINT id) {
+void nevent_reset(NEVENTID id) {
 
 	NEVENTITEM	item;
 	NEVENTITEM	*back;
@@ -91,7 +91,7 @@ void nevent_reset(UINT id) {
 	}
 }
 
-void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION absolute) {
+void nevent_set(NEVENTID id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION absolute) {
 
 	SINT32		clock;
 	NEVENTITEM	item;
@@ -149,7 +149,7 @@ void nevent_set(UINT id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION absolu
 	}
 }
 
-void nevent_repeat(UINT id) {
+void nevent_repeat(NEVENTID id) {
 
 	NEVENTITEM	item;
 
@@ -157,7 +157,7 @@ void nevent_repeat(UINT id) {
 	nevent_set(id, item->baseclock, item->proc, NEVENT_RELATIVE);
 }
 
-void nevent_setbyms(UINT id, SINT32 ms, NEVENTCB proc, NEVENTPOSITION absolute) {
+void nevent_setbyms(NEVENTID id, SINT32 ms, NEVENTCB proc, NEVENTPOSITION absolute) {
 
 	SINT32	clock;
 
@@ -169,7 +169,7 @@ void nevent_setbyms(UINT id, SINT32 ms, NEVENTCB proc, NEVENTPOSITION absolute) 
 	nevent_set(id, clock, proc, absolute);
 }
 
-BOOL nevent_iswork(UINT id) {
+BOOL nevent_iswork(NEVENTID id) {
 
 	NEVENTITEM	item;
 
@@ -182,7 +182,7 @@ BOOL nevent_iswork(UINT id) {
 	}
 }
 
-SINT32 nevent_getwork(UINT id) {
+SINT32 nevent_getwork(NEVENTID id) {
 
 	NEVENTITEM	item;
 
@@ -196,7 +196,7 @@ SINT32 nevent_getwork(UINT id) {
 	}
 }
 
-SINT32 nevent_getremain(UINT id) {
+SINT32 nevent_getremain(NEVENTID id) {
 
 	NEVENTITEM	item;
 

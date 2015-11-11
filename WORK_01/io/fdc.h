@@ -1,4 +1,6 @@
 
+#include "nevent.h"
+
 /* #define SUPPORT_MOTORRISEUP */
 
 enum {
@@ -89,7 +91,7 @@ typedef struct {
 extern "C" {
 #endif
 
-void neitem_fdcbusy(UINT id);
+void neitem_fdcbusy(NEVENTID id);
 #if defined(SUPPORT_MOTORRISEUP)
 void fdc_callback(void);
 #else
