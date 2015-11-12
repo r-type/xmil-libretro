@@ -59,3 +59,7 @@ extern void z80c_iycb(void);
 #define R_Z80R2		z80core.s.r2
 #define	R_Z80IFF	z80core.s.iff
 
+#define	R_Z80REQIRQ		z80core.s.reqirq
+
+#define	R_Z80REMCLOCK	z80core.s.remainclock
+#define	R_Z80BASECLOCK	z80core.s.baseclock

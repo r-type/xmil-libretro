@@ -9,7 +9,7 @@
 #include "calendar.h"
 
 
-void neitem_scpu(UINT uId)
+void neitem_scpu(NEVENTID uId)
 {
 	BRESULT	bIntr;
 

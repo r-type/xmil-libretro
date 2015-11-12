@@ -57,7 +57,7 @@ static void cfgupdate(HWND hWnd) {
 	OEMCHAR	work[32];
 	UINT16	wval;
 	UINT8	bval;
-	BRESULT	renewalflg;
+	BOOL	renewalflg;
 
 	updateflag = 0;
 

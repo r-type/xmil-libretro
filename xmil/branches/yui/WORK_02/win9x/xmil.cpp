@@ -31,8 +31,8 @@
 #include	"fdd_ini.h"
 #include	"x1f.h"
 #if defined(SUPPORT_DCLOCK)
-#include "dclock.h"
-#endif
+#include "subwnd/dclock.h"
+#endif	// defined(SUPPORT_DCLOCK)
 
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
@@ -47,7 +47,10 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 #if defined(SUPPORT_STATSAVE)
 							1,
 #endif
-							0, 0, 0xffffff, 0xffbf6a};
+#if defined(SUPPORT_DCLOCK)
+							0, 0, 0xffffff, 0xffbf6a,
+#endif	// defined(SUPPORT_DCLOCK)
+						};
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium ‚Ë‚±‚¿‚ã`‚ñ");
 		HWND		hWndMain;
@@ -57,7 +60,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 		OEMCHAR		fddfolder[MAX_PATH];
 		OEMCHAR		bmpfilefolder[MAX_PATH];
 
-static	BRESULT		xmilstopemulate = FALSE;
+static	BOOL		xmilstopemulate = FALSE;
 		UINT8		xmilopening = 1;
 
 static	CWndLoc		s_wndloc;
@@ -162,7 +165,7 @@ static void flagdelete(const OEMCHAR *ext) {
 	file_delete(path);
 }
 
-static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BRESULT force) {
+static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force) {
 
 	int		ret;
 	int		id;
@@ -658,16 +661,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_LBUTTONUP:
 			if (!mousemng_buttonevent(MOUSEMNG_LEFTUP)) {
+#if defined(SUPPORT_DCLOCK)
 				if (scrnmng_isfullscreen()) {
 					POINT p;
 					if ((GetCursorPos(&p)) && (p.y >= 466)) {
 						xmiloscfg.clockx++;
-#if defined(SUPPORT_DCLOCK)
-						dclock_reset();
-#endif	/* defined(SUPPORT_DCLOCK) */
+						DispClock::GetInstance()->Reset();
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
+#endif	/* defined(SUPPORT_DCLOCK) */
 				return(DefWindowProc(hWnd, msg, wParam, lParam));
 			}
 			break;
@@ -680,17 +683,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_RBUTTONUP:
 			if (!mousemng_buttonevent(MOUSEMNG_RIGHTUP)) {
+#if defined(SUPPORT_DCLOCK)
 				if (scrnmng_isfullscreen()) {
 					POINT p;
 					if ((GetCursorPos(&p)) && (p.y >= 466) &&
 												(xmiloscfg.clockx)) {
 						xmiloscfg.clockfnt++;
-#if defined(SUPPORT_DCLOCK)
-						dclock_reset();
-#endif	/* defined(SUPPORT_DCLOCK) */
+						DispClock::GetInstance()->Reset();
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
+#endif	/* defined(SUPPORT_DCLOCK) */
 				return(DefWindowProc(hWnd, msg, wParam, lParam));
 			}
 			break;
@@ -755,7 +758,9 @@ static	UINT	framemax = 1;
 static void framereset(UINT cnt) {
 
 	framecnt = 0;
+#if defined(SUPPORT_DCLOCK)
 	scrnmng_dispclock();
+#endif	/* defined(SUPPORT_DCLOCK) */
 //	kdispwin_draw((BYTE)cnt);
 //	skbdwin_process();
 //	mdbgwin_process();
@@ -786,7 +791,7 @@ static void exec1frame(void) {
 	mousemng_sync();
 	pccore_exec(framecnt == 0);
 #if defined(SUPPORT_DCLOCK)
-	dclock_callback();
+	DispClock::GetInstance()->Update();
 #endif	/* defined(SUPPORT_DCLOCK) */
 	framecnt++;
 }

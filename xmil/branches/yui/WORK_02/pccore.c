@@ -85,7 +85,7 @@ void pccore_deinitialize(void) {
 }
 
 #if 0
-void neitem_dummy(UINT id) {
+void neitem_dummy(NEVENTID id) {
 
 	nevent_repeat(id);
 }
@@ -186,7 +186,7 @@ void iptrace_out(void) {
 
 
 #if !defined(MAINFRAMES_OLD)
-void neitem_mainframes(UINT id) {
+void neitem_mainframes(NEVENTID id) {
 
 	SINT32	clock;
 	REG8	ppib;
@@ -223,7 +223,7 @@ void neitem_mainframes(UINT id) {
 							next - clock, neitem_mainframes, NEVENT_ABSOLUTE);
 }
 #else
-void neitem_disp(UINT id) {
+void neitem_disp(NEVENTID id) {
 
 	corestat.vsync = 1;
 	if (xmilcfg.DISPSYNC & 1) {
@@ -232,7 +232,7 @@ void neitem_disp(UINT id) {
 	nevent_set(id, corestat.syncclock, neitem_vsync, NEVENT_RELATIVE);
 }
 
-void neitem_vsync(UINT id) {
+void neitem_vsync(NEVENTID id) {
 
 	corestat.vsync = 2;
 	(void)id;
@@ -258,7 +258,7 @@ static	UINT	iocounter = 0;
 #endif
 
 
-void pccore_exec(BRESULT draw) {
+void pccore_exec(BOOL draw) {
 
 	SINT32	frameclock;
 #if defined(MAINFRAMES_OLD)

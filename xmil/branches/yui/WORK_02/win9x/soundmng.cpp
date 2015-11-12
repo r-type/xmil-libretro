@@ -259,7 +259,7 @@ void soundmng_pcmload(UINT num, const OEMCHAR *filename, UINT type) {
 
 	FILEH				fh;
 	RIFF_HEADER			riff;
-	BRESULT				head;
+	BOOL				head;
 	WAVE_HEADER			whead;
 	UINT				size;
 	WAVE_INFOS			info;
@@ -366,7 +366,7 @@ void soundmng_pcmvolume(UINT num, int volume) {
 	}
 }
 
-BRESULT soundmng_pcmplay(UINT num, BRESULT loop) {
+BRESULT soundmng_pcmplay(UINT num, BOOL loop) {
 
 	LPDIRECTSOUNDBUFFER	dsbuf;
 
