@@ -7,7 +7,7 @@
 
 // ---- file select
 
-BRESULT dlgs_selectfile(HWND hWnd, const FILESEL *item,
+BOOL dlgs_selectfile(HWND hWnd, const FILESEL *item,
 										OEMCHAR *path, UINT size, int *ro) {
 
 	OPENFILENAME	ofn;
@@ -34,7 +34,7 @@ BRESULT dlgs_selectfile(HWND hWnd, const FILESEL *item,
 	return(TRUE);
 }
 
-BRESULT dlgs_selectwritefile(HWND hWnd, const FILESEL *item,
+BOOL dlgs_selectwritefile(HWND hWnd, const FILESEL *item,
 										OEMCHAR *path, UINT size) {
 
 	OPENFILENAME	ofn;
@@ -58,14 +58,14 @@ BRESULT dlgs_selectwritefile(HWND hWnd, const FILESEL *item,
 	return(TRUE);
 }
 
-BRESULT dlgs_selectwritenum(HWND hWnd, const FILESEL *item,
+BOOL dlgs_selectwritenum(HWND hWnd, const FILESEL *item,
 											OEMCHAR *path, UINT size) {
 
 	OEMCHAR	*file;
 	OEMCHAR	*p;
 	OEMCHAR	*q;
 	UINT	i;
-	BRESULT	r;
+	BOOL	r;
 
 	if ((item == NULL) || (path == NULL) || (size == 0)) {
 		return(FALSE);

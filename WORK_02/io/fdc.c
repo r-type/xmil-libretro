@@ -219,7 +219,7 @@ wtd_err:
 
 /* ---- */
 
-void neitem_fdcbusy(UINT id) {
+void neitem_fdcbusy(NEVENTID id) {
 
 	fdc.s.busy = 0;
 	if (fdc.s.bufdir) {

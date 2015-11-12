@@ -38,7 +38,7 @@
 	}
 
 #define	MCR_RETN {														\
-		Z80_IFF &= ~(1 << IFF_NMI);										\
+		R_Z80IFF &= ~(1 << IFF_NMI);									\
 		MCR_RET															\
 	}
 
@@ -76,7 +76,7 @@
 		R_Z80A = R_Z80I;												\
 		R_Z80F &= C_FLAG;												\
 		R_Z80F |= z80szc_flag[R_Z80I];									\
-		if (!(Z80_IFF & (1 << IFF_IFLAG))) {							\
+		if (!(R_Z80IFF & (1 << IFF_IFLAG))) {							\
 			R_Z80F |= V_FLAG;											\
 		}																\
 	}
@@ -85,7 +85,7 @@
 		R_Z80A = (R_Z80R & 0x7f) | (R_Z80R2 & 0x80);					\
 		R_Z80F &= C_FLAG;												\
 		R_Z80F |= z80szc_flag[R_Z80A];									\
-		if (!(Z80_IFF & (1 << IFF_IFLAG))) {							\
+		if (!(R_Z80IFF & (1 << IFF_IFLAG))) {							\
 			R_Z80F |= V_FLAG;											\
 		}																\
 	}

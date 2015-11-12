@@ -20,10 +20,12 @@ typedef struct {
 	UINT8	statsave;
 #endif
 
+#if defined(SUPPORT_DCLOCK)
 	UINT8	clockx;
 	UINT8	clockfnt;
 	UINT32	clockcolor1;
 	UINT32	clockcolor2;
+#endif	// defined(SUPPORT_DCLOCK)
 } XMILOSCFG;
 
 

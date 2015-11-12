@@ -81,10 +81,10 @@ void extclass_wmdestroy(HWND hWnd) {
 	}
 }
 
-void extclass_enablemenu(HWND hWnd, BRESULT enable) {
+void extclass_enablemenu(HWND hWnd, BOOL enable) {
 
 	HMENU	hmenu;
-	BRESULT	draw;
+	BOOL	draw;
 
 	hmenu = (HMENU)GetWindowLong(hWnd, EXTGWL_HMENU);
 	draw = FALSE;
