@@ -5,6 +5,7 @@
 #include	"vramhdl.h"
 #include	"menubase.h"
 #include	"menustr.h"
+#include "dlgabout.h"
 #include	"sysmenu.res"
 
 
