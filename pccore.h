@@ -74,7 +74,7 @@ void neitem_vsync(UINT id);
 void pccore_initialize(void);
 void pccore_reset(void);
 void pccore_deinitialize(void);
-void pccore_exec(BRESULT draw);
+void pccore_exec(BOOL draw);
 
 #ifdef __cplusplus
 }

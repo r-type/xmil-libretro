@@ -12,7 +12,7 @@ void width80x25_200l(void) {								// 80x25 200line
 
 	UINT	fontcy;
 	UINT	pos;
-	BRESULT	newline;
+	BOOL	newline;
 	UINT8	*dst;
 	UINT	y;
 	UINT8	*lp;
@@ -78,7 +78,7 @@ void width80x12_200l(void) {								// 80x12 200line
 
 	UINT	fontcy;
 	UINT	pos;
-	BRESULT	newline;
+	BOOL	newline;
 	UINT8	*dst;
 	UINT	y;
 	UINT8	*lp;
@@ -149,7 +149,7 @@ void width80x20l(void) {
 
 	UINT	fontcy;
 	UINT	pos;
-	BRESULT	newline;
+	BOOL	newline;
 	UINT8	*dst;
 	UINT	y;
 	UINT8	*lp;
@@ -208,7 +208,7 @@ void width80x10l(void) {
 
 	UINT	fontcy;
 	UINT	pos;
-	BRESULT	newline;
+	BOOL	newline;
 	UINT8	*dst;
 	UINT	y;
 	UINT8	*lp;

@@ -63,7 +63,7 @@ static const SCPUTBL scputbl[0x20] = {
 
 void neitem_scpu(UINT id) {
 
-	BRESULT	intr;
+	BOOL	intr;
 
 	intr = FALSE;
 	/* こうすると同時押しが判定できないのでキーバッファを持つべし */
@@ -85,7 +85,7 @@ void neitem_scpu(UINT id) {
 	}
 }
 
-BRESULT ieitem_scpu(UINT id) {
+BOOL ieitem_scpu(UINT id) {
 
 	UINT	key;
 	UINT8	keydata;

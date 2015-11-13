@@ -255,7 +255,7 @@ static	UINT	iocounter = 0;
 #endif
 
 
-void pccore_exec(BRESULT draw) {
+void pccore_exec(BOOL draw) {
 
 	SINT32	frameclock;
 #if defined(MAINFRAMES_OLD)

@@ -64,7 +64,7 @@ void nevent_setbyms(UINT id, SINT32 ms, NEVENTCB proc, BRESULT absolute);
 void nevent_reset(UINT id);
 
 /* イベントの動作状態取得 */
-BRESULT nevent_iswork(UINT id);
+BOOL nevent_iswork(UINT id);
 
 /* 実行したクロック数の取得 */
 SINT32 nevent_getwork(UINT id);
