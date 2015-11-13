@@ -166,10 +166,10 @@ static void ctcnextevent(CTCCH *ch) {
 #else
 	event = minclock(ch) * pccore.multiple;
 #endif
-	nevent_set(NEVENT_CTC0 + ch->s.num, event, neitem_ctc, NEVENT_ABSOLUTE);
+	nevent_set((NEVENTID)(NEVENT_CTC0 + ch->s.num), event, neitem_ctc, NEVENT_ABSOLUTE);
 }
 
-void neitem_ctc(UINT id) {
+void neitem_ctc(NEVENTID id) {
 
 	CTCCH	*ch;
 	REG8	intr;
