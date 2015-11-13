@@ -62,7 +62,7 @@ void nevent_progress(void) {
 	while(wi < witem) {
 		item = *wi++;
 		if (item->proc != NULL) {
-			item->proc(item - nevent.item);
+			item->proc((UINT)(item - nevent.item));
 		}
 	}
 }

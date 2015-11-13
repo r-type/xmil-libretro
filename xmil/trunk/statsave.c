@@ -356,7 +356,7 @@ static UINT32 evt2id(NEVENTITEM next) {
 		return((UINT32)-1);
 	}
 	else {
-		return(next - nevent.item);
+		return((UINT32)(next - nevent.item));
 	}
 }
 

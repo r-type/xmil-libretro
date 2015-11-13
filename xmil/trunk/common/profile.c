@@ -73,8 +73,8 @@ static BRESULT seakey(PFILEH hdl, PFPOS *pfp,
 		return(FAILURE);
 	}
 	ZeroMemory(&ret, sizeof(ret));
-	ret.applen = STRLEN(app);
-	ret.keylen = STRLEN(key);
+	ret.applen = (UINT)STRLEN(app);
+	ret.keylen = (UINT)STRLEN(key);
 	if ((ret.applen == 0) || (ret.keylen == 0)) {
 		return(FAILURE);
 	}
@@ -327,7 +327,7 @@ BRESULT profile_write(const char *app, const char *key,
 #if defined(OSLANG_UCS2)
 	datalen = ucscnv_ucs2toutf8(NULL, (UINT)-1, data, (UINT)-1);
 #else
-	datalen = STRLEN(data);
+	datalen = (UINT)STRLEN(data);
 #endif
 	newsize = pfp.keylen + 1 + datalen;
 #if defined(OSLINEBREAK_CR) || defined(OSLINEBREAK_CRLF)
@@ -451,7 +451,7 @@ const PFTBL	*pterm;
 																== SUCCESS) {
 			switch(p->itemtype & PFITYPE_MASK) {
 				case PFTYPE_STR:
-					milstr_ncpy(p->value, work, p->arg);
+					milstr_ncpy((OEMCHAR*)p->value, work, p->arg);
 					break;
 
 				case PFTYPE_BOOL:
