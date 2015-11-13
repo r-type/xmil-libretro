@@ -1,4 +1,6 @@
 
+#include "nevent.h"
+
 enum {
 	CTC_OPM			= 0,
 	CTC_TURBO1		= 1,
@@ -39,7 +41,7 @@ typedef struct {
 extern "C" {
 #endif
 
-void neitem_ctc(UINT id);
+void neitem_ctc(NEVENTID id);
 BOOL ieitem_ctc(UINT id);
 void ieeoi_ctc(UINT id);
 

@@ -1,4 +1,6 @@
 
+#include "nevent.h"
+
 typedef struct {
 	_SYSTIME	dt;
 	UINT		steps;
@@ -12,7 +14,7 @@ extern "C" {
 extern	_CALENDAR	cal;
 
 
-void neitem_rtc(UINT id);
+void neitem_rtc(NEVENTID id);
 
 void calendar_getdate(UINT8 *bcd);
 void calendar_setdate(const UINT8 *bcd);

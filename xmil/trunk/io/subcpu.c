@@ -61,7 +61,7 @@ static const SCPUTBL scputbl[0x20] = {
 
 /* ---- */
 
-void neitem_scpu(UINT id) {
+void neitem_scpu(NEVENTID id) {
 
 	BOOL	intr;
 
