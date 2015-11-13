@@ -98,7 +98,7 @@ static void cfgupdate(HWND hWnd) {
 	}
 	if (xmilcfg.skiplight != wval) {
 		xmilcfg.skiplight = wval;
-		renewalflg = 1;
+		renewalflg = TRUE;
 	}
 	if (renewalflg) {
 		pal_reset();
