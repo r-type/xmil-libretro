@@ -74,7 +74,7 @@ static	_ROMEO	romeo;
 static	SINT8	YM2151vol = -12;
 
 
-BRESULT juliet_load(void) {
+BOOL juliet_load(void) {
 
 	int				i;
 const DLLPROCESS	*dp;
@@ -231,14 +231,14 @@ void juliet_YM2151Reset(void) {
 	}
 }
 
-BRESULT juliet_YM2151IsEnable(void) {
+BOOL juliet_YM2151IsEnable(void) {
 
 	return((romeo.avail & ROMEO_YM2151) != 0);
 }
 
-BRESULT juliet_YM2151IsBusy(void) {
+BOOL juliet_YM2151IsBusy(void) {
 
-	BRESULT	ret;
+	BOOL	ret;
 
 	ret = FALSE;
 	if (romeo.avail & ROMEO_YM2151) {
@@ -282,7 +282,7 @@ void juliet_YM2151W(UINT8 addr, UINT8 data) {
 	}
 }
 
-void juliet_YM2151Enable(BRESULT enable) {
+void juliet_YM2151Enable(BOOL enable) {
 
 	UINT8	ch;
 	int		vol;
@@ -350,12 +350,12 @@ void juliet_YMF288Reset(void) {
 	}
 }
 
-BRESULT juliet_YMF288IsEnable(void) {
+BOOL juliet_YMF288IsEnable(void) {
 
 	return((romeo.avail & ROMEO_YMF288) != 0);
 }
 
-BRESULT juliet_YMF288IsBusy(void) {
+BOOL juliet_YMF288IsBusy(void) {
 
 	return((!(romeo.avail & ROMEO_YMF288)) ||
 			((romeo.in8(romeo.addr + ROMEO_YMF288ADDR1) & 0x80) != 0));
@@ -390,7 +390,7 @@ void juliet_YMF288B(UINT8 addr, UINT8 data) {
 	}
 }
 
-void juliet_YMF288Enable(BRESULT enable) {
+void juliet_YMF288Enable(BOOL enable) {
 
 	UINT8	ch;
 	int		vol;

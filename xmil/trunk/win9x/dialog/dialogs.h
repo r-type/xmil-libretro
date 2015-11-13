@@ -31,11 +31,11 @@ const OEMCHAR	*filter;
 			dlgs_setlistuint32((a), (b), (c), NELEMENTS((c)))
 
 
-BRESULT dlgs_selectfile(HWND hWnd, const FILESEL *item,
+BOOL dlgs_selectfile(HWND hWnd, const FILESEL *item,
 										OEMCHAR *path, UINT size, int *ro);
-BRESULT dlgs_selectwritefile(HWND hWnd, const FILESEL *item,
+BOOL dlgs_selectwritefile(HWND hWnd, const FILESEL *item,
 										OEMCHAR *path, UINT size);
-BRESULT dlgs_selectwritenum(HWND hWnd, const FILESEL *item,
+BOOL dlgs_selectwritenum(HWND hWnd, const FILESEL *item,
 										OEMCHAR *path, UINT size);
 
 // void dlgs_setliststr(HWND hWnd, WORD res, const char **item, UINT items);

@@ -34,7 +34,7 @@ typedef struct {
 	UINT8				r16b;
 	UINT8				l16r;
 	UINT8				l16g;
-	BRESULT				menudisp;
+	BOOL				menudisp;
 	int					menusize;
 	RECT				scrn;
 	RECT				rect;
@@ -120,7 +120,7 @@ static void setwindowsize(HWND hWnd, int width, int height) {
 	}
 }
 
-static void renewalclientsize(BRESULT winloc) {
+static void renewalclientsize(BOOL winloc) {
 
 	int		width;
 	int		height;
@@ -518,7 +518,7 @@ void scrnmng_destroy(void) {					// ddraws_TermDirectDraw
 
 BRESULT scrnmng_changescreen(REG8 newmode) {
 
-	BRESULT	renewal;
+	BOOL	renewal;
 	REG8	change;
 	BRESULT	r;
 
@@ -577,7 +577,7 @@ RGB16 scrnmng_makepal16(RGB32 pal32) {
 
 void scrnmng_fullscrnmenu(int y) {
 
-	BRESULT	menudisp;
+	BOOL	menudisp;
 
 	if (scrnmng.flag & SCRNFLAG_FULLSCREEN) {
 		menudisp = ((y >= 0) && (y < ddraw.menusize))?TRUE:FALSE;

@@ -57,7 +57,7 @@ static void cfgupdate(HWND hWnd) {
 	OEMCHAR	work[32];
 	UINT16	wval;
 	UINT8	bval;
-	BRESULT	renewalflg;
+	BOOL	renewalflg;
 
 	updateflag = 0;
 
@@ -98,7 +98,7 @@ static void cfgupdate(HWND hWnd) {
 	}
 	if (xmilcfg.skiplight != wval) {
 		xmilcfg.skiplight = wval;
-		renewalflg = 1;
+		renewalflg = TRUE;
 	}
 	if (renewalflg) {
 		pal_reset();

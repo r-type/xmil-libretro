@@ -84,7 +84,7 @@ UINT __stdcall file_write(FILEH handle, const void *data, UINT length) {
 BRESULT __stdcall file_close(FILEH handle) {
 
 	CloseHandle(handle);
-	return(0);
+	return(SUCCESS);
 }
 
 UINT __stdcall file_getsize(FILEH handle) {
