@@ -18,7 +18,7 @@ void soundmng_play(void);
 void soundmng_stop(void);
 void soundmng_sync(void);
 
-BRESULT soundmng_pcmplay(UINT num, BRESULT loop);
+BRESULT soundmng_pcmplay(UINT num, BOOL loop);
 void soundmng_pcmstop(UINT num);
 
 #ifdef __cplusplus

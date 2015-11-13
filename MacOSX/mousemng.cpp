@@ -13,7 +13,7 @@ typedef struct {
 static	MOUSEMNG	mousemng;
 
 
-REG8 mousemng_getstat(SINT16 *x, SINT16 *y, BRESULT clear) {
+REG8 mousemng_getstat(SINT16 *x, SINT16 *y, BOOL clear) {
 
 	*x = mousemng.x;
 	*y = mousemng.y;
