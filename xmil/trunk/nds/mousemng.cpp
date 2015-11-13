@@ -2,7 +2,7 @@
 #include "mousemng.h"
 
 
-REG8 mousemng_getstat(SINT16 *pwX, SINT16 *pwY, BRESULT bClear)
+REG8 mousemng_getstat(SINT16 *pwX, SINT16 *pwY, BOOL bClear)
 {
 	*pwX = 0;
 	*pwY = 0;

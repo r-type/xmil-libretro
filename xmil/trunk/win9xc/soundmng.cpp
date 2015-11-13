@@ -364,7 +364,7 @@ void soundmng_pcmvolume(UINT num, int volume) {
 	}
 }
 
-BRESULT soundmng_pcmplay(UINT num, BRESULT loop) {
+BRESULT soundmng_pcmplay(UINT num, BOOL loop) {
 
 	LPDIRECTSOUNDBUFFER	dsbuf;
 
