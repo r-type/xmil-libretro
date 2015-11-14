@@ -861,6 +861,30 @@ SOURCE=.\DIALOG\DIALOGS.CPP
 SOURCE=.\DIALOG\EXTCLASS.CPP
 # End Source File
 # End Group
+# Begin Group "misc"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\misc\tickcounter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\tickcounter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\vc6macros.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\wndloc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\wndloc.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\DCLOCK.CPP
@@ -971,10 +995,6 @@ SOURCE=.\TRACE.CPP
 # Begin Source File
 
 SOURCE=.\WINKBD.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\WINLOC.CPP
 # End Source File
 # Begin Source File
 

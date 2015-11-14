@@ -10,13 +10,13 @@
 #include	"scrnmng.h"
 #include	"soundmng.h"
 #include	"sysmng.h"
-#include	"winloc.h"
 #include	"dclock.h"
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
 #include	"juliet.h"
 #include	"extclass.h"
+#include	"misc\wndloc.h"
 #include	"dialog.h"
 #include	"z80core.h"
 #include	"pccore.h"
@@ -58,6 +58,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 static	BOOL		xmilstopemulate = FALSE;
 		UINT8		xmilopening = 1;
 
+static	CWndLoc		s_wndloc;
 
 static void wincentering(HWND hWnd) {
 
@@ -592,7 +593,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case WM_ENTERSIZEMOVE:
 			soundmng_disable(SNDPROC_MAIN);
 			mousemng_disable(MOUSEPROC_WINUI);
-			win_movingstart();
+			s_wndloc.Start();
 			break;
 
 		case WM_EXITSIZEMOVE:
@@ -601,8 +602,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 
 		case WM_MOVING:
-			if (xmiloscfg.WINSNAP) {
-				win_movingproc((RECT *)lParam);
+			if (xmiloscfg.WINSNAP)
+			{
+				s_wndloc.Moving(reinterpret_cast<RECT*>(lParam));
 			}
 			break;
 
