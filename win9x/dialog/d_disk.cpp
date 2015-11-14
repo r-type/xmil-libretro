@@ -114,7 +114,7 @@ const OEMCHAR	*ext;
 	if (!dlgs_selectwritefile(hWnd, &newdiskui, path, NELEMENTS(path))) {
 		return;
 	}
-	hinst = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
+	hinst = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
 	ext = file_getext(path);
 	if ((!file_cmpname(ext, str_d88)) || (!file_cmpname(ext, str_88d))) {
 		if (DialogBox(hinst, MAKEINTRESOURCE(IDD_NEWDISK),
