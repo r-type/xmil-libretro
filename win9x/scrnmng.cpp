@@ -16,6 +16,8 @@
 #include	"palettes.h"
 #include	"makescrn.h"
 
+#pragma comment(lib, "ddraw.lib")
+#pragma comment(lib, "dxguid.lib")
 
 typedef struct {
 	LPDIRECTDRAW		ddraw1;
