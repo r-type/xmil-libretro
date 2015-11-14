@@ -38,14 +38,3 @@ extern	OEMCHAR		szProgName[];
 extern	OEMCHAR		modulefile[MAX_PATH];
 extern	OEMCHAR		fddfolder[MAX_PATH];
 extern	OEMCHAR		bmpfilefolder[MAX_PATH];
-
-enum {
-	IDM_SCREENCENTER	= 20000,
-	IDM_SNAPENABLE		= 20001,
-	IDM_BACKGROUND		= 20002,
-	IDM_BGSOUND			= 20003,
-
-	IDM_FLAGSAVE		= 20100,
-	IDM_FLAGLOAD		= 20150
-};
-
