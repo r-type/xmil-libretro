@@ -144,7 +144,7 @@ BRESULT __stdcall file_dircreate(const OEMCHAR *path) {
 											// カレントファイル操作
 void __stdcall file_setcd(const OEMCHAR *exepath) {
 
-	file_cpyname(curpath, exepath, NELEMENTS(curpath));
+	file_cpyname(curpath, exepath, _countof(curpath));
 	curfilep = file_getname(curpath);
 	*curfilep = '\0';
 }
@@ -152,42 +152,42 @@ void __stdcall file_setcd(const OEMCHAR *exepath) {
 OEMCHAR * __stdcall file_getcd(const OEMCHAR *path) {
 
 	*curfilep = '\0';
-	file_catname(curpath, path, NELEMENTS(curpath));
+	file_catname(curpath, path, _countof(curpath));
 	return(curpath);
 }
 
 FILEH __stdcall file_open_c(const OEMCHAR *path) {
 
 	*curfilep = '\0';
-	file_catname(curpath, path, NELEMENTS(curpath));
+	file_catname(curpath, path, _countof(curpath));
 	return(file_open(curpath));
 }
 
 FILEH __stdcall file_open_rb_c(const OEMCHAR *path) {
 
 	*curfilep = '\0';
-	file_catname(curpath, path, NELEMENTS(curpath));
+	file_catname(curpath, path, _countof(curpath));
 	return(file_open_rb(curpath));
 }
 
 FILEH __stdcall file_create_c(const OEMCHAR *path) {
 
 	*curfilep = '\0';
-	file_catname(curpath, path, NELEMENTS(curpath));
+	file_catname(curpath, path, _countof(curpath));
 	return(file_create(curpath));
 }
 
 BRESULT __stdcall file_delete_c(const OEMCHAR *path) {
 
 	*curfilep = '\0';
-	file_catname(curpath, path, NELEMENTS(curpath));
+	file_catname(curpath, path, _countof(curpath));
 	return(file_delete(curpath));
 }
 
 SINT16 __stdcall file_attr_c(const OEMCHAR *path) {
 
 	*curfilep = '\0';
-	file_catname(curpath, path, NELEMENTS(curpath));
+	file_catname(curpath, path, _countof(curpath));
 	return(file_attr(curpath));
 }
 

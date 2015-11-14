@@ -142,7 +142,7 @@ static int flagsave(const OEMCHAR *ext) {
 	OEMCHAR	path[MAX_PATH];
 	int		ret;
 
-	getstatfilename(path, ext, NELEMENTS(path));
+	getstatfilename(path, ext, _countof(path));
 	soundmng_stop();
 	ret = statsave_save(path);
 	if (ret) {
@@ -156,7 +156,7 @@ static void flagdelete(const OEMCHAR *ext) {
 
 	OEMCHAR	path[MAX_PATH];
 
-	getstatfilename(path, ext, NELEMENTS(path));
+	getstatfilename(path, ext, _countof(path));
 	file_delete(path);
 }
 
@@ -168,10 +168,10 @@ static int flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force) {
 	OEMCHAR	buf[1024];
 	OEMCHAR buf2[1024 + 32];
 
-	getstatfilename(path, ext, NELEMENTS(path));
+	getstatfilename(path, ext, _countof(path));
 	winuienter();
 	id = IDYES;
-	ret = statsave_check(path, buf, NELEMENTS(buf));
+	ret = statsave_check(path, buf, _countof(buf));
 	if (ret & (~STATFLAG_DISKCHG)) {
 		MessageBox(hWndMain, str_loaderr, title, MB_OK | MB_ICONSTOP);
 		id = IDNO;
@@ -790,7 +790,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 	WNDCLASS	wc;
 	MSG			msg;
 
-	GetModuleFileName(NULL, modulefile, sizeof(modulefile));
+	GetModuleFileName(NULL, modulefile, _countof(modulefile));
 	dosio_init();
 	file_setcd(modulefile);
 	initload();

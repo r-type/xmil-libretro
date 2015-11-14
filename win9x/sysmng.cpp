@@ -61,39 +61,35 @@ void sysmng_updatecaption(REG8 flag) {
 	if (flag & 1) {
 		title[0] = '\0';
 		if (fddfile_diskready(0)) {
-			milstr_ncat(title, OEMTEXT("  FDD0:"), NELEMENTS(title));
-			milstr_ncat(title, file_getname(fddfile_diskname(0)),
-															NELEMENTS(title));
+			milstr_ncat(title, OEMTEXT("  FDD0:"), _countof(title));
+			milstr_ncat(title, file_getname(fddfile_diskname(0)), _countof(title));
 		}
 		if (fddfile_diskready(1)) {
-			milstr_ncat(title, OEMTEXT("  FDD1:"), NELEMENTS(title));
-			milstr_ncat(title, file_getname(fddfile_diskname(1)),
-															NELEMENTS(title));
+			milstr_ncat(title, OEMTEXT("  FDD1:"), _countof(title));
+			milstr_ncat(title, file_getname(fddfile_diskname(1)), _countof(title));
 		}
 	}
 	if (flag & 2) {
 		clock[0] = '\0';
 		if (xmiloscfg.DISPCLK & 2) {
 			if (workclock.fps) {
-				OEMSPRINTF(clock, OEMTEXT(" - %u.%1uFPS"),
-									workclock.fps / 10, workclock.fps % 10);
+				OEMSPRINTF(clock, OEMTEXT(" - %u.%1uFPS"), workclock.fps / 10, workclock.fps % 10);
 			}
 			else {
-				milstr_ncpy(clock, OEMTEXT(" - 0FPS"), NELEMENTS(clock));
+				milstr_ncpy(clock, OEMTEXT(" - 0FPS"), _countof(clock));
 			}
 		}
 		if (xmiloscfg.DISPCLK & 1) {
-			OEMSPRINTF(work, OEMTEXT(" %u.%03uMHz"),
-								workclock.khz / 1000, workclock.khz % 1000);
+			OEMSPRINTF(work, OEMTEXT(" %u.%03uMHz"), workclock.khz / 1000, workclock.khz % 1000);
 			if (clock[0] == '\0') {
-				milstr_ncpy(clock, OEMTEXT(" -"), NELEMENTS(clock));
+				milstr_ncpy(clock, OEMTEXT(" -"), _countof(clock));
 			}
-			milstr_ncat(clock, work, NELEMENTS(clock));
+			milstr_ncat(clock, work, _countof(clock));
 		}
 	}
-	milstr_ncpy(work, szProgName, NELEMENTS(work));
-	milstr_ncat(work, title, NELEMENTS(work));
-	milstr_ncat(work, clock, NELEMENTS(work));
+	milstr_ncpy(work, szProgName, _countof(work));
+	milstr_ncat(work, title, _countof(work));
+	milstr_ncat(work, clock, _countof(work));
 	SetWindowText(hWndMain, work);
 }
 
