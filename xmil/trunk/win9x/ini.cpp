@@ -211,10 +211,12 @@ static const INITBL iniitem[] = {
 	{"btn_MODE", INITYPE_BOOL,		&xmilcfg.BTN_MODE,		0},
 
 	{"Joystick", INITYPE_BOOL,		&xmiloscfg.JOYSTICK,	0},
+#if defined(SUPPORT_DCLOCK)
 	{"clocknow", INITYPE_UINT8,		&xmiloscfg.clockx,		0},
 	{"clockfnt", INITYPE_UINT8,		&xmiloscfg.clockfnt,	0},
 	{"clock_up", INIROAND_HEX32,	&xmiloscfg.clockcolor1,	0xffffff},
 	{"clock_dn", INIROAND_HEX32,	&xmiloscfg.clockcolor2,	0xffffff},
+#endif	/* defined(SUPPORT_DCLOCK) */
 
 	{"Z80_SAVE", INIRO_BOOL,		&xmiloscfg.Z80SAVE,		0},
 };

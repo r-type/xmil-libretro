@@ -10,7 +10,6 @@
 #include	"scrnmng.h"
 #include	"soundmng.h"
 #include	"sysmng.h"
-#include	"dclock.h"
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
@@ -32,6 +31,9 @@
 #include	"diskdrv.h"
 #include	"fdd_ini.h"
 #include	"x1f.h"
+#if defined(SUPPORT_DCLOCK)
+#include "dclock.h"
+#endif
 
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
@@ -46,7 +48,10 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 #if defined(SUPPORT_STATSAVE)
 							1,
 #endif
-							0, 0, 0xffffff, 0xffbf6a};
+#if defined(SUPPORT_DCLOCK)
+							0, 0, 0xffffff, 0xffbf6a,
+#endif	// defined(SUPPORT_DCLOCK)
+						};
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium ‚Ë‚±‚¿‚ã`‚ñ");
 		HWND		hWndMain;
@@ -653,6 +658,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_LBUTTONUP:
 			if (!mousemng_buttonevent(MOUSEMNG_LEFTUP)) {
+#if defined(SUPPORT_DCLOCK)
 				if (scrnmng_isfullscreen()) {
 					POINT p;
 					if ((GetCursorPos(&p)) && (p.y >= 466)) {
@@ -661,6 +667,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
+#endif	/* defined(SUPPORT_DCLOCK) */
 				return(DefWindowProc(hWnd, msg, wParam, lParam));
 			}
 			break;
@@ -673,6 +680,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_RBUTTONUP:
 			if (!mousemng_buttonevent(MOUSEMNG_RIGHTUP)) {
+#if defined(SUPPORT_DCLOCK)
 				if (scrnmng_isfullscreen()) {
 					POINT p;
 					if ((GetCursorPos(&p)) && (p.y >= 466) &&
@@ -682,6 +690,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						sysmng_update(SYS_UPDATEOSCFG);
 					}
 				}
+#endif	/* defined(SUPPORT_DCLOCK) */
 				return(DefWindowProc(hWnd, msg, wParam, lParam));
 			}
 			break;
@@ -746,7 +755,9 @@ static	UINT	framemax = 1;
 static void framereset(UINT cnt) {
 
 	framecnt = 0;
+#if defined(SUPPORT_DCLOCK)
 	scrnmng_dispclock();
+#endif	/* defined(SUPPORT_DCLOCK) */
 //	kdispwin_draw((BYTE)cnt);
 //	skbdwin_process();
 //	mdbgwin_process();
@@ -776,7 +787,9 @@ static void exec1frame(void) {
 	joymng_sync();
 	mousemng_sync();
 	pccore_exec(framecnt == 0);
+#if defined(SUPPORT_DCLOCK)
 	dclock_callback();
+#endif	/* defined(SUPPORT_DCLOCK) */
 	framecnt++;
 }
 
