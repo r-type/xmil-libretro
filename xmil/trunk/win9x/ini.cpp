@@ -39,7 +39,7 @@ const OEMCHAR	*item;
 			case INITYPE_BOOL:
 				GetPrivateProfileString(title, item,
 									(*((UINT8 *)p->value))?str_true:str_false,
-												work, NELEMENTS(work), path);
+												work, _countof(work), path);
 				*((UINT8 *)p->value) = (!milstr_cmp(work, str_true))?1:0;
 				break;
 
