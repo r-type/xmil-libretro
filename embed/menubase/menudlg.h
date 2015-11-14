@@ -104,7 +104,7 @@ void menudlg_moving(int x, int y, int btn);
 
 void *menudlg_msg(int ctrl, MENUID id, void *arg);
 void menudlg_setpage(MENUID page);
-void menudlg_disppagehidden(MENUID page, BRESULT hidden);
+void menudlg_disppagehidden(MENUID page, BOOL hidden);
 
 #ifdef __cplusplus
 }

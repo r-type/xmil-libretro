@@ -3,7 +3,7 @@
 #include	"vramhdl.h"
 
 
-VRAMHDL vram_create(int width, int height, BRESULT alpha, int bpp) {
+VRAMHDL vram_create(int width, int height, BOOL alpha, int bpp) {
 
 	int		size;
 	int		allocsize;
