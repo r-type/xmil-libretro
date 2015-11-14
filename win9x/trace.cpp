@@ -4,7 +4,7 @@
 #include	"xmil.h"
 #include	"dosio.h"
 #include	"ini.h"
-
+#include "misc\WndProc.h"
 
 #ifdef TRACE
 
@@ -216,7 +216,7 @@ static LRESULT CALLBACK traceproc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 							WS_CHILD | WS_VISIBLE | ES_READONLY | ES_LEFT |
 							ES_MULTILINE | WS_VSCROLL | ES_AUTOVSCROLL,
 							0, 0, rc.right, rc.bottom,
-							hWnd, (HMENU)IDC_VIEW, hInst, NULL);
+							hWnd, (HMENU)IDC_VIEW, CWndProc::GetResourceHandle(), NULL);
 			if (!hView) {
 				break;
 			}
@@ -345,21 +345,19 @@ void trace_init(void) {
 
 	HWND	hwnd;
 
-	if (!hPreI) {
-		WNDCLASS wc;
-		wc.style = CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc = traceproc;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = hInst;
-		wc.hIcon = NULL;
-		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-		wc.lpszMenuName = NULL;
-		wc.lpszClassName = (LPCSTR)ClassName;
-		if (!RegisterClass(&wc)) {
-			return;
-		}
+	WNDCLASS wc;
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = traceproc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = CWndProc::GetInstanceHandle();
+	wc.hIcon = NULL;
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = (LPCSTR)ClassName;
+	if (!RegisterClass(&wc)) {
+		return;
 	}
 
 #if 1
@@ -382,7 +380,7 @@ void trace_init(void) {
 							WS_OVERLAPPEDWINDOW,
 							tracecfg.posx, tracecfg.posy,
 							tracecfg.width, tracecfg.height,
-							NULL, NULL, hInst, NULL);
+							NULL, NULL, CWndProc::GetInstanceHandle(), NULL);
 	tracewin.hwnd = hwnd;
 	if (hwnd == NULL) {
 		return;
