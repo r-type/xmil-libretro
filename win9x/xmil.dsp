@@ -874,7 +874,19 @@ SOURCE=.\misc\tickcounter.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\misc\tstring.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\tstring.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\misc\vc6macros.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\WndBase.h
 # End Source File
 # Begin Source File
 
@@ -883,6 +895,14 @@ SOURCE=.\misc\wndloc.cpp
 # Begin Source File
 
 SOURCE=.\misc\wndloc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\WndProc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\WndProc.h
 # End Source File
 # End Group
 # Begin Source File
