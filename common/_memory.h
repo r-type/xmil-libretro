@@ -26,12 +26,12 @@ void *_memalloc(int size, const char *name);
 void _memfree(void *hdl);
 void _handle_append(void *hdl, const char *name);
 void _handle_remove(void *hdl);
-void _memused(const char *filename);
+void _memused(const OEMCHAR *filename);
 
 #elif defined(MEMCHECK)
 
 extern	BOOL	chgmemory;
-extern	DWORD	usedmemory;
+extern	UINT	usedmemory;
 
 #define	_MEM_INIT()				_meminit()
 #define	_MALLOC(a, b)			_memalloc(a)

@@ -72,12 +72,12 @@ void textfile_close(TEXTFILEH fh) {
 	}
 }
 
-BOOL textfile_read(TEXTFILEH fh, char *buffer, UINT size) {
+BRESULT textfile_read(TEXTFILEH fh, char *buffer, UINT size) {
 
 	char	c = '\0';
 	char	*p;
 	BOOL	crlf;
-	BOOL	ret = FAILURE;
+	BRESULT	ret = FAILURE;
 
 	if ((fh) && (size > 0)) {
 		size--;
