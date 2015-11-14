@@ -15,9 +15,10 @@
 #include	"menu.h"
 #include	"ini.h"
 #include	"juliet.h"
-#include	"extclass.h"
-#include	"misc\wndloc.h"
 #include	"dialog.h"
+#include	"extclass.h"
+#include "misc\wndloc.h"
+#include "misc\WndProc.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -49,14 +50,12 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium ÇÀÇ±ÇøÇ„Å`ÇÒ");
 		HWND		hWndMain;
-		HINSTANCE	hInst;
-		HINSTANCE	hPreI;
 		OEMCHAR		modulefile[MAX_PATH];
 		OEMCHAR		fddfolder[MAX_PATH];
 		OEMCHAR		bmpfilefolder[MAX_PATH];
 
 static	BOOL		xmilstopemulate = FALSE;
-		UINT8		xmilopening = 1;
+static	UINT8		xmilopening = 1;
 
 static	CWndLoc		s_wndloc;
 
@@ -215,8 +214,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_CONFIG:
 			winuienter();
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_CONFIG),
-											hWnd, (DLGPROC)CfgDialogProc);
+			DialogBox(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDD_CONFIG), hWnd, (DLGPROC)CfgDialogProc);
 			winuileave();
 			break;
 
@@ -440,8 +438,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_ABOUT:
 			winuienter();
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUT),
-											hWnd, (DLGPROC)AboutDialogProc);
+			DialogBox(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDD_ABOUT), hWnd, (DLGPROC)AboutDialogProc);
 			winuileave();
 			break;
 
@@ -783,12 +780,14 @@ static void exec1frame(void) {
 	framecnt++;
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 										LPSTR lpszCmdLine, int nCmdShow) {
 
 	HWND		hWnd;
 	WNDCLASS	wc;
 	MSG			msg;
+
+	CWndProc::Initialize(hInstance);
 
 	GetModuleFileName(NULL, modulefile, _countof(modulefile));
 	dosio_init();
@@ -803,13 +802,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInst,
 		return(FALSE);
 	}
 
-	hInst = hInstance;
-	hPreI = hPreInst;
 	TRACEINIT();
 
 //	keystat_initialize();
 
-	if (!hPreInst) {
+	if (!hPrevInst) {
 		wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW;
 		wc.lpfnWndProc = WndProc;
 		wc.cbClsExtra = 0;

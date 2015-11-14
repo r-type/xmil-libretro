@@ -5,6 +5,7 @@
 #include	"scrnmng.h"
 #include	"sysmng.h"
 #include	"extclass.h"
+#include "misc\WndProc.h"
 #include	"pccore.h"
 #include	"ini.h"
 #include	"menu.h"
@@ -27,7 +28,7 @@ static void insertresmenu(HMENU menu, UINT pos, UINT flag,
 
 	OEMCHAR	tmp[128];
 
-	if (LoadString(hInst, str, tmp, NELEMENTS(tmp))) {
+	if (LoadString(CWndProc::GetResourceHandle(), str, tmp, NELEMENTS(tmp))) {
 		InsertMenu(menu, pos, flag, item, tmp);
 	}
 }
