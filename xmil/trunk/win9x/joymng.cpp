@@ -4,6 +4,7 @@
 #include	"joymng.h"
 #include	"menu.h"
 
+#pragma comment(lib, "winmm.lib")
 
 enum {
 	JOY_LEFT_BIT	= 0x04,
