@@ -97,7 +97,7 @@ static void drawctrls(MENUDLG dlg, DLGHDL hdl);
 
 // ----
 
-static BRESULT seaprmempty(void *vpItem, void *vpArg) {
+static BOOL seaprmempty(void *vpItem, void *vpArg) {
 
 	if (((DLGPRM)vpItem)->next == PRMNEXT_EMPTY) {
 		menuicon_unlock(((DLGPRM)vpItem)->icon);
@@ -156,7 +156,7 @@ static DLGPRM ressea(DLGHDL hdl, int pos) {
 	return(NULL);
 }
 
-static BRESULT dsbyid(void *vpItem, void *vpArg) {
+static BOOL dsbyid(void *vpItem, void *vpArg) {
 
 	if (((DLGHDL)vpItem)->id == (MENUID)(unsigned long)vpArg) {
 		return(TRUE);
@@ -541,7 +541,7 @@ static void dlglist_drawitem(DLGHDL hdl, DLGPRM prm, int focus,
 							menucolor[focus?MVC_CURTEXT:MVC_TEXT], &fp, rct);
 }
 
-static BRESULT dlglist_drawsub(DLGHDL hdl, int pos, int focus) {
+static BOOL dlglist_drawsub(DLGHDL hdl, int pos, int focus) {
 
 	DLGPRM	prm;
 	POINT_T	pt;
@@ -672,9 +672,9 @@ static void dlglist_drawbar(DLGHDL hdl) {
 						MVC4(MVC_LIGHT, MVC_DARK, MVC_HILIGHT, MVC_SHADOW));
 }
 
-static BRESULT dlglist_append(MENUDLG dlg, DLGHDL hdl, const void *arg) {
+static BOOL dlglist_append(MENUDLG dlg, DLGHDL hdl, const void *arg) {
 
-	BRESULT	r;
+	BOOL	r;
 	DLGPRM	*sto;
 	int		barsize;
 
@@ -706,7 +706,7 @@ static BRESULT dlglist_append(MENUDLG dlg, DLGHDL hdl, const void *arg) {
 	return(r);
 }
 
-static BRESULT dlglist_setex(MENUDLG dlg, DLGHDL hdl, const ITEMEXPRM *arg) {
+static BOOL dlglist_setex(MENUDLG dlg, DLGHDL hdl, const ITEMEXPRM *arg) {
 
 	DLGPRM	dp;
 	UINT	cnt;
@@ -790,7 +790,7 @@ dlgp_out:
 
 static void dlglist_setval(MENUDLG dlg, DLGHDL hdl, int val) {
 
-	BRESULT	r;
+	BOOL	r;
 
 	if ((unsigned int)val >= (unsigned int)hdl->prmcnt) {
 		val = -1;
@@ -1468,7 +1468,7 @@ const MENURES2	*src;
 	dlg_text(dlg, hdl, &pt, &hdl->rect);
 }
 
-static BRESULT drsv_cb(void *vpItem, void *vpArg) {
+static BOOL drsv_cb(void *vpItem, void *vpArg) {
 
 	DLGHDL	item;
 
@@ -1705,7 +1705,7 @@ static BRESULT _cre(MENUDLG dlg, DLGHDL hdl, const void *arg) {
 	(void)dlg;
 	(void)hdl;
 	(void)arg;
-	return(0);
+	return(SUCCESS);
 }
 
 #if 0		// not used
@@ -1839,7 +1839,7 @@ typedef struct {
 	RECT_T	rect;
 } MDCB2;
 
-static BRESULT dc_cb(void *vpItem, void *vpArg) {
+static BOOL dc_cb(void *vpItem, void *vpArg) {
 
 	DLGHDL	hdl;
 	MDCB2	*mdcb;
@@ -1861,7 +1861,7 @@ dccb_exit:
 }
 
 
-static BRESULT dc_cb2(void *vpItem, void *vpArg) {
+static BOOL dc_cb2(void *vpItem, void *vpArg) {
 
 	MENUDLG	dlg;
 	DLGHDL	hdl;
@@ -1871,7 +1871,7 @@ static BRESULT dc_cb2(void *vpItem, void *vpArg) {
 	if (hdl->flag & MENU_REDRAW) {
 		hdl->flag &= ~MENU_REDRAW;
 		if ((!(hdl->flag & MENU_DISABLE)) &&
-			((unsigned int)hdl->type < (sizeof(dlgpaint)/sizeof(DLGPAINT)))) {
+			((UINT)hdl->type < NELEMENTS(dlgpaint))) {
 			dlgpaint[hdl->type](dlg, hdl);
 			menubase_setrect(dlg->vram, &hdl->rect);
 		}
@@ -1908,7 +1908,7 @@ dcs_end:
 	return;
 }
 
-static void drawlock(BRESULT lock) {
+static void drawlock(BOOL lock) {
 
 	MENUDLG	dlg;
 
@@ -2005,14 +2005,14 @@ mdcre_err:
 }
 
 
-static BRESULT mdds_cb(void *vpItem, void *vpArg) {
+static BOOL mdds_cb(void *vpItem, void *vpArg) {
 
 	vram_destroy(((DLGHDL)vpItem)->vram);
 	(void)vpArg;
 	return(FALSE);
 }
 
-static BRESULT delicon(void *vpItem, void *vpArg) {
+static BOOL delicon(void *vpItem, void *vpArg) {
 
 	menuicon_unlock(((DLGPRM)vpItem)->icon);
 	(void)vpArg;
@@ -2102,7 +2102,7 @@ BRESULT menudlg_append(int type, MENUID id, MENUFLG flg, const void *arg,
 	dhdl.prm = NULL;
 	dhdl.prmcnt = 0;
 	dhdl.val = 0;
-	if (((unsigned int)type >= (sizeof(dlgcre)/sizeof(DLGCRE))) ||
+	if (((UINT)type >= NELEMENTS(dlgcre)) ||
 		(dlgcre[type](dlg, &dhdl, arg))) {
 		goto mda_err;
 	}
@@ -2125,7 +2125,7 @@ typedef struct {
 	DLGHDL	ret;
 } MDCB3;
 
-static BRESULT hps_cb(void *vpItem, void *vpArg) {
+static BOOL hps_cb(void *vpItem, void *vpArg) {
 
 	DLGHDL	hdl;
 	MDCB3	*mdcb;
@@ -2168,8 +2168,7 @@ void menudlg_moving(int x, int y, int btn) {
 				y -= hdl->rect.top;
 				dlg->btn = 1;
 				dlg->lastid = hdl->id;
-				if ((unsigned int)hdl->type <
-									(sizeof(dlgclick)/sizeof(DLGCLICK))) {
+				if ((UINT)hdl->type < NELEMENTS(dlgclick)) {
 					dlgclick[hdl->type](dlg, hdl, x, y);
 				}
 			}
@@ -2181,13 +2180,12 @@ void menudlg_moving(int x, int y, int btn) {
 			focus = rect_in(&hdl->rect, x, y);
 			x -= hdl->rect.left;
 			y -= hdl->rect.top;
-			if ((unsigned int)hdl->type < (sizeof(dlgmov)/sizeof(DLGMOV))) {
+			if ((UINT)hdl->type < NELEMENTS(dlgmov)) {
 				dlgmov[hdl->type](dlg, hdl, x, y, focus);
 			}
 			if (btn == 2) {
 				dlg->btn = 0;
-				if ((unsigned int)hdl->type <
-										(sizeof(dlgrel)/sizeof(DLGREL))) {
+				if ((UINT)hdl->type < NELEMENTS(dlgrel)) {
 					dlgrel[hdl->type](dlg, hdl, focus);
 				}
 			}
@@ -2247,8 +2245,7 @@ void *menudlg_msg(int ctrl, MENUID id, void *arg) {
 
 		case DMSG_SETVAL:
 			ret = (void *)hdl->val;
-			if ((unsigned int)hdl->type <
-									(sizeof(dlgsetval)/sizeof(DLGSETVAL))) {
+			if ((UINT)hdl->type < NELEMENTS(dlgsetval)) {
 				dlgsetval[hdl->type](dlg, hdl, (int)arg);
 			}
 			break;
@@ -2309,8 +2306,7 @@ void *menudlg_msg(int ctrl, MENUID id, void *arg) {
 		case DMSG_ITEMRESET:
 			if ((dlg->btn) && (dlg->lastid == hdl->id)) {
 				dlg->btn = 0;
-				if ((unsigned int)hdl->type <
-											(sizeof(dlgrel)/sizeof(DLGREL))) {
+				if ((UINT)hdl->type < NELEMENTS(dlgrel)) {
 					dlgrel[hdl->type](dlg, hdl, FALSE);
 				}
 			}
@@ -2401,7 +2397,7 @@ typedef struct {
 	MENUFLG	flag;
 } MDCB4;
 
-static BRESULT mddph_cb(void *vpItem, void *vpArg) {
+static BOOL mddph_cb(void *vpItem, void *vpArg) {
 
 	DLGHDL	hdl;
 	MDCB4	*mdcb;
@@ -2415,7 +2411,7 @@ static BRESULT mddph_cb(void *vpItem, void *vpArg) {
 	return(FALSE);
 }
 
-void menudlg_disppagehidden(MENUID page, BRESULT hidden) {
+void menudlg_disppagehidden(MENUID page, BOOL hidden) {
 
 	MENUDLG	dlg;
 	MDCB4	mdcb;

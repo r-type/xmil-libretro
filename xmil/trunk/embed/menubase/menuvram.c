@@ -607,7 +607,7 @@ VRAMHDL menuvram_resload(const MENURES *res, int bpp) {
 
 	VRAMHDL	ret;
 	int		size;
-	BRESULT	alpha;
+	BOOL	alpha;
 
 	alpha = (res->alpha)?TRUE:FALSE;
 	ret = vram_create(res->width, res->height, alpha, bpp);
@@ -916,7 +916,7 @@ mvpt_exit:
 
 
 static void putbtn(VRAMHDL vram, const RECT_T *rect,
-										const MENURES2 *res, BRESULT focus) {
+										const MENURES2 *res, BOOL focus) {
 	RECT_T	rct;
 	POINT_T	pt;
 	UINT	mvc4;
@@ -949,12 +949,12 @@ static void putbtn(VRAMHDL vram, const RECT_T *rect,
 	menuvram_res3put(vram, res, &pt, MVC_TEXT);
 }
 
-void menuvram_minimizebtn(VRAMHDL vram, const RECT_T *rect, BRESULT focus) {
+void menuvram_minimizebtn(VRAMHDL vram, const RECT_T *rect, BOOL focus) {
 
 	putbtn(vram, rect, &menures_minimize, focus);
 }
 
-void menuvram_closebtn(VRAMHDL vram, const RECT_T *rect, BRESULT focus) {
+void menuvram_closebtn(VRAMHDL vram, const RECT_T *rect, BOOL focus) {
 
 	putbtn(vram, rect, &menures_close, focus);
 }

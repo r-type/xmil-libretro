@@ -59,7 +59,7 @@ typedef struct {
 extern "C" {
 #endif
 
-VRAMHDL vram_create(int width, int height, BRESULT alpha, int bpp);
+VRAMHDL vram_create(int width, int height, BOOL alpha, int bpp);
 void vram_destroy(VRAMHDL hdl);
 BRESULT vram_allocalpha(VRAMHDL hdl);
 void vram_zerofill(VRAMHDL hdl, const RECT_T *rect);
