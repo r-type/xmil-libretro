@@ -905,65 +905,18 @@ SOURCE=.\misc\WndProc.cpp
 SOURCE=.\misc\WndProc.h
 # End Source File
 # End Group
+# Begin Group "subwnd"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\DCLOCK.CPP
+SOURCE=.\subwnd\dclock.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DCLOCKD.X86
-
-!IF  "$(CFG)" == "xmil - Win32 Release JP"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xreljp
-InputPath=.\DCLOCKD.X86
-InputName=DCLOCKD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xrelworld
-InputPath=.\DCLOCKD.X86
-InputName=DCLOCKD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xtrc
-InputPath=.\DCLOCKD.X86
-InputName=DCLOCKD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xdbg
-InputPath=.\DCLOCKD.X86
-InputName=DCLOCKD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ENDIF 
-
+SOURCE=.\subwnd\dclock.h
 # End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\DOSIO.CPP
