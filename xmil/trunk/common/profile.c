@@ -581,7 +581,7 @@ const OEMCHAR	*set;
 
 				default:
 					if (cb != NULL) {
-						set = (*cb)(p, work, sizeof(work));
+						set = (*cb)(p, work, NELEMENTS(work));
 					}
 					else {
 						set = NULL;
