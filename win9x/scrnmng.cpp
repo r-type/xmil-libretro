@@ -9,12 +9,14 @@
 #include	"scrnmng.h"
 #include	"soundmng.h"
 #include	"sysmng.h"
-#include	"dclock.h"
 #include	"extclass.h"
 #include	"pccore.h"
 #include	"scrndraw.h"
 #include	"palettes.h"
 #include	"makescrn.h"
+#if defined(SUPPORT_DCLOCK)
+#include "dclock.h"
+#endif	// defined(SUPPORT_DCLOCK)
 
 #pragma comment(lib, "ddraw.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -24,7 +26,9 @@ typedef struct {
 	LPDIRECTDRAW2		ddraw2;
 	LPDIRECTDRAWSURFACE	primsurf;
 	LPDIRECTDRAWSURFACE	backsurf;
+#if defined(SUPPORT_DCLOCK)
 	LPDIRECTDRAWSURFACE	clocksurf;
+#endif	// defined(SUPPORT_DCLOCK)
 	LPDIRECTDRAWCLIPPER	clipper;
 	LPDIRECTDRAWPALETTE	palette;
 	UINT				scrnmode;
@@ -232,7 +236,9 @@ static void clearoutfullscreen(void) {
 	base.right = ddraw.width;			// (+ ddraw.extend)
 	base.bottom = ddraw.height;
 	clearoutofrect(&ddraw.scrn, &base);
+#if defined(SUPPORT_DCLOCK)
 	dclock_redraw();
+#endif	// defined(SUPPORT_DCLOCK)
 }
 
 static void paletteinit(void) {
@@ -246,12 +252,14 @@ static void paletteinit(void) {
 	for (i=0; i<XMILPAL_USE; i++) {
 		ddraw.pal[i + START_PAL].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
+#if defined(SUPPORT_DCLOCK)
 	for (i=0; i<4; i++) {
 		ddraw.pal[i + START_PALORG].peBlue = dclockpal.pal32[i].p.b;
 		ddraw.pal[i + START_PALORG].peRed = dclockpal.pal32[i].p.r;
 		ddraw.pal[i + START_PALORG].peGreen = dclockpal.pal32[i].p.g;
 		ddraw.pal[i + START_PALORG].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
+#endif	// defined(SUPPORT_DCLOCK)
 	pal_reset();
 	ddraw.ddraw2->CreatePalette(DDPCAPS_8BIT, ddraw.pal, &ddraw.palette, 0);
 	ddraw.primsurf->SetPalette(ddraw.palette);
@@ -359,7 +367,9 @@ BRESULT scrnmng_create(UINT8 mode) {
 	ddraw.ddraw2 = ddraw2;
 
 	if (mode & SCRNMODE_FULLSCREEN) {
+#if defined(SUPPORT_DCLOCK)
 		dclock_init();
+#endif	// defined(SUPPORT_DCLOCK)
 		ddraw2->SetCooperativeLevel(hWndMain,
 										DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
 		height = 480;
@@ -400,13 +410,18 @@ BRESULT scrnmng_create(UINT8 mode) {
 		}
 		if (bitcolor == 8) {
 			paletteinit();
-			dclock_init8();
 		}
 		else {
 			make16mask(ddpf.dwBBitMask, ddpf.dwRBitMask, ddpf.dwGBitMask);
-			dclock_init16();
 		}
 
+#if defined(SUPPORT_DCLOCK)
+		if (bitcolor == 8) {
+			dclock_init8();
+		}
+		else {
+			dclock_init16();
+		}
 		ZeroMemory(&ddsd, sizeof(ddsd));
 		ddsd.dwSize = sizeof(ddsd);
 		ddsd.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
@@ -417,6 +432,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 			ddraw.clocksurf = NULL;
 		}
 		dclock_reset();
+#endif	// defined(SUPPORT_DCLOCK)
 	}
 	else {
 		ddraw2->SetCooperativeLevel(hWndMain, DDSCL_NORMAL);
@@ -484,10 +500,12 @@ void scrnmng_destroy(void) {					// ddraws_TermDirectDraw
 	if (scrnmng.flag & SCRNFLAG_FULLSCREEN) {
 		extclass_enablemenu(hWndMain, TRUE);
 	}
+#if defined(SUPPORT_DCLOCK)
 	if (ddraw.clocksurf) {
 		ddraw.clocksurf->Release();
 		ddraw.clocksurf = NULL;
 	}
+#endif	// defined(SUPPORT_DCLOCK)
 	if (ddraw.backsurf) {
 		ddraw.backsurf->Release();
 		ddraw.backsurf = NULL;
@@ -737,10 +755,12 @@ void scrnmng_update(void) {
 
 // -------------------------------------------------------------------- clock
 
+#if defined(SUPPORT_DCLOCK)
+
 static const RECT rectclk = {0, 0, DCLOCK_X, DCLOCK_Y};
 
-void scrnmng_dispclock(void) {
-
+void scrnmng_dispclock(void)
+{
 	DDSURFACEDESC	dest;
 
 	if ((ddraw.clocksurf) &&
@@ -757,6 +777,7 @@ void scrnmng_dispclock(void) {
 			}
 			ddraw.clocksurf->Unlock(NULL);
 		}
+
 		if (ddraw.primsurf->BltFast(640 - DCLOCK_X - 4,
 									ddraw.height - DCLOCK_Y,
 									ddraw.clocksurf, (RECT *)&rectclk,
@@ -767,4 +788,5 @@ void scrnmng_dispclock(void) {
 		dclock_cntdown(xmiloscfg.DRAW_SKIP);
 	}
 }
+#endif	// defined(SUPPORT_DCLOCK)
 
