@@ -167,7 +167,23 @@ SOURCE=..\COMMON\PARTS.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\profile.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\profile.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\COMMON\STRRES.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\textfile.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\textfile.h
 # End Source File
 # End Group
 # Begin Group "cpu"

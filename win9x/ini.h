@@ -1,49 +1,22 @@
+/**
+ *	@file	ini.h
+ *	@brief	設定ファイル アクセスの宣言およびインターフェイスの定義をします
+ */
 
-enum {
-	INITYPE_STR			= 0,
-	INITYPE_BOOL,
-	INITYPE_SINT8,
-	INITYPE_SINT16,
-	INITYPE_SINT32,
-	INITYPE_UINT8,
-	INITYPE_UINT16,
-	INITYPE_UINT32,
-	INITYPE_HEX8,
-	INITYPE_HEX16,
-	INITYPE_HEX32,
-	INITYPE_USER,
-	INITYPE_MASK		= 0xff,
-
-	INIFLAG_RO			= 0x0100,
-	INIFLAG_MAX			= 0x0200,
-	INIFLAG_AND			= 0x0400
-};
-
-typedef struct {
-	char	item[10];
-	UINT16	itemtype;
-	void	*value;
-	UINT32	arg;
-} INITBL;
-
+#include "profile.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void ini_read(const OEMCHAR *path, const OEMCHAR *title,
-											const INITBL *tbl, UINT count);
-void ini_write(const OEMCHAR *path, const OEMCHAR *title,
-											const INITBL *tbl, UINT count);
+void ini_read(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount);
+void ini_write(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount);
 
-
-void initgetfile(OEMCHAR *path, UINT size);
+void initgetfile(LPTSTR lpPath, UINT cchPath);
 void initload(void);
 void initsave(void);
-
-BYTE solveBOOL(LPSTR str);
 
 #ifdef __cplusplus
 }
 #endif
-
