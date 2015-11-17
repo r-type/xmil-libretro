@@ -43,9 +43,6 @@ static void dlginit(void) {
 	milstr_ncpy(work, str_xmil, NELEMENTS(work));
 	milstr_ncat(work, str_space, NELEMENTS(work));
 	milstr_ncat(work, xmilversion, NELEMENTS(work));
-#if defined(XMILVER_WINCE)
-	milstr_ncat(work, XMILVER_WINCE, NELEMENTS(work));
-#endif
 	menudlg_settext(DID_VER, work);
 }
 
