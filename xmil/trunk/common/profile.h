@@ -1,5 +1,44 @@
+/**
+ * @file	profile.h
+ * @brief	Interface of the profiler
+ */
 
-/* Profile Base */
+#if !defined(NP2_PROFILE_H__)
+#define	NP2_PROFILE_H__
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+/**
+ * An application-defined callback function used with the profile_enum
+ */
+typedef BRESULT (*PROFILEENUMPROC)(void *lpParam, const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, const OEMCHAR *lpString);
+
+BRESULT profile_enum(const OEMCHAR *lpFileName, void *lpParam, PROFILEENUMPROC lpFunc);
+
+
+/* profiler */
+
+/**
+ * mode
+ */
+enum
+{
+	PFILEH_READONLY		= 0x0001,		/*!< Readonly */
+	PFILEH_MODIFY		= 0x0002		/*!< Modified */
+};
+
+struct tagProfileHandle;
+typedef struct tagProfileHandle* PFILEH;	/*!< defines handle */
+
+PFILEH profile_open(const OEMCHAR *lpFileName, UINT nFlags);
+void profile_close(PFILEH hdl);
+UINT profile_getsectionnames(OEMCHAR *lpBuffer, UINT cchBuffer, PFILEH hdl);
+BRESULT profile_read(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, const OEMCHAR *lpDefault, OEMCHAR *lpReturnedString, UINT nSize, PFILEH hdl);
+BRESULT profile_write(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, const OEMCHAR *lpString, PFILEH hdl);
+
 
 enum {
 	PFTYPE_STR			= 0,
@@ -15,9 +54,8 @@ enum {
 	PFTYPE_HEX8,
 	PFTYPE_HEX16,
 	PFTYPE_HEX32,
-	PFTYPE_BYTE3,
 	PFTYPE_USER,
-	PFITYPE_MASK		= 0xff,
+	PFTYPE_MASK			= 0xff,
 
 	PFFLAG_RO			= 0x0100,
 	PFFLAG_MAX			= 0x0200,
@@ -25,58 +63,29 @@ enum {
 };
 
 typedef struct {
-	char	item[10];
-	UINT16	itemtype;
+	OEMCHAR	item[12];
+	UINT	itemtype;
 	void	*value;
 	UINT32	arg;
 } PFTBL;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define	PFSTR(k, f, a)		{OEMTEXT(k), f, a, NELEMENTS(a)}
+#define	PFVAL(k, f, a)		{OEMTEXT(k), f, a, 0}
+#define	PFMAX(k, f, a, v)	{OEMTEXT(k), f | PFFLAG_MAX, a, v}
+#define	PFAND(k, f, a, v)	{OEMTEXT(k), f | PFFLAG_AND, a, v}
+#define	PFEXT(k, f, a, v)	{OEMTEXT(k), f, a, v}
 
 typedef void (*PFREAD)(const PFTBL *item, const OEMCHAR *string);
 typedef OEMCHAR *(*PFWRITE)(const PFTBL *item, OEMCHAR *string, UINT size);
 
-void profile_iniread(const OEMCHAR *path, const char *app,
+void profile_iniread(const OEMCHAR *path, const OEMCHAR *app,
 								const PFTBL *tbl, UINT count, PFREAD cb);
-void profile_iniwrite(const OEMCHAR *path, const char *app,
+void profile_iniwrite(const OEMCHAR *path, const OEMCHAR *app,
 								const PFTBL *tbl, UINT count, PFWRITE cb);
 
 #ifdef __cplusplus
 }
 #endif
 
-
-/* Profile File I/O */
-
-enum {
-	PFILEH_READONLY		= 0x0001,
-	PFILEH_MODIFY		= 0x0002,
-	PFILEH_UTF8			= 0x0004
-};
-
-typedef struct {
-	char	*buffer;
-	UINT	buffers;
-	UINT	size;
-	UINT	flag;
-	OEMCHAR	path[MAX_PATH];
-} _PFILEH, *PFILEH;
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-PFILEH profile_open(const OEMCHAR *filename, UINT flag);
-void profile_close(PFILEH hdl);
-BRESULT profile_read(const char *app, const char *key, const OEMCHAR *def,
-										OEMCHAR *ret, UINT size, PFILEH hdl);
-BRESULT profile_write(const char *app, const char *key,
-										const OEMCHAR *data, PFILEH hdl);
-
-#ifdef __cplusplus
-}
-#endif
+#endif	// defined(NP2_PROFILE_H__)
 
