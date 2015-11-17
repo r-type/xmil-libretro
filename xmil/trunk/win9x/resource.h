@@ -16,6 +16,7 @@
 #define IDR_TURBOZ                      207
 #define IDR_DEBUG                       208
 #define IDR_WAVEREC                     209
+#define IDR_TRACE                       210
 #define IDC_SAMPLERATE                  1000
 #define IDC_SNDBUFFER                   1001
 #define IDC_SEEKVOL                     1002
@@ -104,6 +105,11 @@
 #define IDM_FLAGLOAD7                   40258
 #define IDM_FLAGLOAD8                   40259
 #define IDM_FLAGLOAD9                   40260
+#define IDM_TRACE_TRACE                 40301
+#define IDM_TRACE_VERBOSE               40302
+#define IDM_TRACE_ENABLE                40303
+#define IDM_TRACE_FILEOUT               40304
+#define IDM_TRACE_CLEAR                 40305
 
 // Next default values for new objects
 // 
