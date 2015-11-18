@@ -620,7 +620,7 @@ SOURCE=..\IO\SIO.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\SNDBOARD.C
+SOURCE=.\ext\sndboard.cpp
 # End Source File
 # Begin Source File
 
@@ -861,6 +861,26 @@ SOURCE=.\DIALOG\DIALOGS.CPP
 SOURCE=.\DIALOG\EXTCLASS.CPP
 # End Source File
 # End Group
+# Begin Group "ext"
+
+# PROP Default_Filter ""
+# Begin Group "romeo"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\romeo\juliet.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\romeo\juliet.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\romeo\romeo.h
+# End Source File
+# End Group
+# End Group
 # Begin Group "misc"
 
 # PROP Default_Filter ""
@@ -932,10 +952,6 @@ SOURCE=.\INI.CPP
 # Begin Source File
 
 SOURCE=.\JOYMNG.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\JULIET.CPP
 # End Source File
 # Begin Source File
 
