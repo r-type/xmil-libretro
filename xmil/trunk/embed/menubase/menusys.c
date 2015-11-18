@@ -1,11 +1,17 @@
-#include	"compiler.h"
-#include	"fontmng.h"
-#include	"inputmng.h"
-#include	"vramhdl.h"
-#include	"vrammix.h"
-#include	"menudeco.inc"
-#include	"menubase.h"
+/**
+ * @file	menusys.c
+ * @brief	Implementation of the menu of the system
+ */
 
+#include "compiler.h"
+#include "menusys.h"
+#include "menubase.h"
+#include "menudeco.inc"
+#include "menures.h"
+#include "menuvram.h"
+#include "../vrammix.h"
+#include "fontmng.h"
+#include "inputmng.h"
 
 typedef struct _mhdl {
 struct _mhdl	*chain;
@@ -44,12 +50,56 @@ typedef struct {
 
 static MENUSYS	menusys;
 
+#if defined(OSLANG_SJIS) && !defined(RESOURCE_US)
+static const OEMCHAR str_sysr[] = 			// 元のサイズに戻す
+			"\214\263\202\314\203\124\203\103\203\131\202\311" \
+			"\226\337\202\267";
+static const OEMCHAR str_sysm[] =			// 移動
+			"\210\332\223\256";
+static const OEMCHAR str_syss[] =			// サイズ変更
+			"\203\124\203\103\203\131\225\317\215\130";
+static const OEMCHAR str_sysn[] =			// 最小化
+			"\215\305\217\254\211\273";
+static const OEMCHAR str_sysx[] =			// 最大化
+			"\215\305\221\345\211\273";
+static const OEMCHAR str_sysc[] =			// 閉じる
+			"\225\302\202\266\202\351";
+#elif defined(OSLANG_EUC) && !defined(RESOURCE_US)
+static const OEMCHAR str_sysr[] = 			// 元のサイズに戻す
+			"\270\265\244\316\245\265\245\244\245\272\244\313" \
+			"\314\341\244\271";
+static const OEMCHAR str_sysm[] =			// 移動
+			"\260\334\306\260";
+static const OEMCHAR str_syss[] =			// サイズ変更
+			"\245\265\245\244\245\272\312\321\271\271";
+static const OEMCHAR str_sysn[] =			// 最小化
+			"\272\307\276\256\262\275";
+static const OEMCHAR str_sysx[] =			// 最大化
+			"\272\307\302\347\262\275";
+static const OEMCHAR str_sysc[] =			// 閉じる
+			"\312\304\244\270\244\353";
+#elif defined(OSLANG_UTF8) && !defined(RESOURCE_US)
+static const OEMCHAR str_sysr[] = 			// 元のサイズに戻す
+			"\345\205\203\343\201\256\343\202\265\343\202\244\343\202\272" \
+			"\343\201\253\346\210\273\343\201\231";
+static const OEMCHAR str_sysm[] =			// 移動
+			"\347\247\273\345\213\225";
+static const OEMCHAR str_syss[] =			// サイズ変更
+			"\343\202\265\343\202\244\343\202\272\345\244\211\346\233\264";
+static const OEMCHAR str_sysn[] =			// 最小化
+			"\346\234\200\345\260\217\345\214\226";
+static const OEMCHAR str_sysx[] =			// 最大化
+			"\346\234\200\345\244\247\345\214\226";
+static const OEMCHAR str_sysc[] =			// 閉じる
+			"\351\226\211\343\201\230\343\202\213";
+#else
 static const OEMCHAR str_sysr[] = OEMTEXT("Restore");
 static const OEMCHAR str_sysm[] = OEMTEXT("Move");
 static const OEMCHAR str_syss[] = OEMTEXT("Size");
 static const OEMCHAR str_sysn[] = OEMTEXT("Minimize");
 static const OEMCHAR str_sysx[] = OEMTEXT("Maximize");
 static const OEMCHAR str_sysc[] = OEMTEXT("Close");
+#endif
 
 
 static const MSYSITEM s_exit[] = {
@@ -1028,7 +1078,7 @@ mssf_end:
 	return;
 }
 
-static void menusys_settxt(MENUID id, void *arg) {
+static void menusys_settxt(MENUID id, const OEMCHAR *arg) {
 
 	MENUSYS	*sys;
 	MENUHDL	itm;
@@ -1043,7 +1093,7 @@ static void menusys_settxt(MENUID id, void *arg) {
 	}
 
 	if (arg) {
-		milstr_ncpy(itm->string, (OEMCHAR *)arg, NELEMENTS(itm->string));
+		milstr_ncpy(itm->string, arg, NELEMENTS(itm->string));
 	}
 	else {
 		itm->string[0] = '\0';
@@ -1076,13 +1126,13 @@ msst_end:
 	return;
 }
 
-void *menusys_msg(int ctrl, MENUID id, void *arg) {
+INTPTR menusys_msg(int ctrl, MENUID id, INTPTR arg) {
 
-	void	*ret;
+	INTPTR	ret;
 	MENUSYS	*sys;
 	MENUHDL	itm;
 
-	ret = NULL;
+	ret = 0;
 	sys = &menusys;
 	itm = itemsea(sys, id);
 	if (itm == NULL) {
@@ -1091,36 +1141,34 @@ void *menusys_msg(int ctrl, MENUID id, void *arg) {
 
 	switch(ctrl) {
 		case SMSG_SETHIDE:
-			ret = (void *)((itm->flag & MENU_DISABLE)?1:0);
-			menusys_setflag(id,
-							(MENUFLG)((arg)?MENU_DISABLE:0), MENU_DISABLE);
+			ret = (itm->flag & MENU_DISABLE) ? 1 : 0;
+			menusys_setflag(id, (MENUFLG)((arg) ? MENU_DISABLE : 0), MENU_DISABLE);
 			break;
 
 		case SMSG_GETHIDE:
-			ret = (void *)((itm->flag & MENU_DISABLE)?1:0);
+			ret = (itm->flag & MENU_DISABLE) ? 1 : 0;
 			break;
 
 		case SMSG_SETENABLE:
-			ret = (void *)((itm->flag & MENU_GRAY)?0:1);
-			menusys_setflag(id, (MENUFLG)((arg)?0:MENU_GRAY), MENU_GRAY);
+			ret = (itm->flag & MENU_GRAY) ? 0 : 1;
+			menusys_setflag(id, (MENUFLG)((arg) ? 0 : MENU_GRAY), MENU_GRAY);
 			break;
 
 		case SMSG_GETENABLE:
-			ret = (void *)((itm->flag & MENU_GRAY)?0:1);
+			ret = (itm->flag & MENU_GRAY) ? 0 : 1;
 			break;
 
 		case SMSG_SETCHECK:
-			ret = (void *)((itm->flag & MENU_CHECKED)?1:0);
-			menusys_setflag(id,
-							(MENUFLG)((arg)?MENU_CHECKED:0), MENU_CHECKED);
+			ret = (itm->flag & MENU_CHECKED) ? 1 : 0;
+			menusys_setflag(id, (MENUFLG)((arg) ? MENU_CHECKED : 0), MENU_CHECKED);
 			break;
 
 		case SMSG_GETCHECK:
-			ret = (void *)((itm->flag & MENU_CHECKED)?1:0);
+			ret = (itm->flag & MENU_CHECKED) ? 1 : 0;
 			break;
 
 		case SMSG_SETTEXT:
-			menusys_settxt(id, arg);
+			menusys_settxt(id, (OEMCHAR*)arg);
 			break;
 	}
 

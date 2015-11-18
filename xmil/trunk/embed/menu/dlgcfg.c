@@ -1,17 +1,19 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"xmil.h"
-#include	"sysmng.h"
-#include	"pccore.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
-#include	"menustr.h"
+/**
+ * @file	dlgcfg.c
+ * @brief	Implementation of the configure dialog
+ */
+
+#include "compiler.h"
 #include "dlgcfg.h"
-#include	"sysmenu.res"
+#include "../menubase/menudlg.h"
+#include "../menubase/menures.h"
+#include "strres.h"
+#include "pccore.h"
+#include "xmil.h"
+#include "sysmng.h"
 #if !defined(SIZE_QVGA)
 #include	"palettes.h"
 #endif
-
 
 enum {
 	DID_Z80A		= DID_USER,
