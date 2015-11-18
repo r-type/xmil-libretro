@@ -1,8 +1,58 @@
-#include	"compiler.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
+/**
+ * @file	menures.c
+ * @brief	Implementation of the resources of the menu
+ */
 
+#include "compiler.h"
+#include "menures.h"
 
+#if defined(OSLANG_SJIS) && !defined(RESOURCE_US)
+const OEMCHAR mstr_fontcheck[] = " ";
+const OEMCHAR mstr_ok[] = "OK";
+			// キャンセル
+const OEMCHAR mstr_cancel[] = "\267\254\335\276\331";
+			// 中止
+const OEMCHAR mstr_abort[] = "\222\206\216\176";
+			// 再試行
+const OEMCHAR mstr_retry[] = "\215\304\216\216\215\163";
+			// 無視
+const OEMCHAR mstr_ignore[] = "\226\263\216\213";
+			// はい
+const OEMCHAR mstr_yes[] = "\202\315\202\242";
+			// いいえ
+const OEMCHAR mstr_no[] = "\202\242\202\242\202\246";
+#elif defined(OSLANG_EUC) && !defined(RESOURCE_US)
+const OEMCHAR mstr_fontcheck[] = " ";
+const OEMCHAR mstr_ok[] = "OK";
+			// キャンセル
+const OEMCHAR mstr_cancel[] = "\216\267\216\254\216\335\216\276\216\331";
+			// 中止
+const OEMCHAR mstr_abort[] = "\303\346\273\337";
+			// 再試行
+const OEMCHAR mstr_retry[] = "\272\306\273\356\271\324";
+			// 無視
+const OEMCHAR mstr_ignore[] = "\314\265\273\353";
+			// はい
+const OEMCHAR mstr_yes[] = "\244\317\244\244";
+			// いいえ
+const OEMCHAR mstr_no[] = "\244\244\244\244\244\250";
+#elif defined(OSLANG_UTF8) && !defined(RESOURCE_US)
+const OEMCHAR mstr_fontcheck[] = " ";
+const OEMCHAR mstr_ok[] = "OK";
+			// キャンセル
+const OEMCHAR mstr_cancel[] = "\357\275\267\357\275\254\357\276\235" \
+							"\357\275\276\357\276\231";
+			// 中止
+const OEMCHAR mstr_abort[] = "\344\270\255\346\255\242";
+			// 再試行
+const OEMCHAR mstr_retry[] = "\345\206\215\350\251\246\350\241\214";
+			// 無視
+const OEMCHAR mstr_ignore[] = "\347\204\241\350\246\226";
+			// はい
+const OEMCHAR mstr_yes[] = "\343\201\257\343\201\204";
+			// いいえ
+const OEMCHAR mstr_no[] = "\343\201\204\343\201\204\343\201\210";
+#else
 const OEMCHAR mstr_fontcheck[] = OEMTEXT(" ");
 const OEMCHAR mstr_ok[] = OEMTEXT("OK");
 const OEMCHAR mstr_cancel[] = OEMTEXT("Cancel");
@@ -11,6 +61,7 @@ const OEMCHAR mstr_retry[] = OEMTEXT("Retry");
 const OEMCHAR mstr_ignore[] = OEMTEXT("Ignore");
 const OEMCHAR mstr_yes[] = OEMTEXT("Yes");
 const OEMCHAR mstr_no[] = OEMTEXT("No");
+#endif
 
 
 #ifndef SIZE_QVGA
