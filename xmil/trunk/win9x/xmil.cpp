@@ -13,7 +13,7 @@
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
-#include	"juliet.h"
+#include	"ext\romeo\juliet.h"
 #include	"dialog.h"
 #include	"extclass.h"
 #include "misc\wndloc.h"
