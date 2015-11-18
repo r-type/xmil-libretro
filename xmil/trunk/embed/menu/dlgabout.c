@@ -42,7 +42,12 @@ static void dlginit(void) {
 	menudlg_appends(res_about, NELEMENTS(res_about));
 	milstr_ncpy(work, str_xmil, NELEMENTS(work));
 	milstr_ncat(work, str_space, NELEMENTS(work));
+
+#if defined(SDL_REVISION) && defined(XMILVER_SDL)
+	milstr_ncat(work, OEMTEXT(XMILVER_SDL), NELEMENTS(work));
+#else
 	milstr_ncat(work, xmilversion, NELEMENTS(work));
+#endif
 	menudlg_settext(DID_VER, work);
 }
 
