@@ -322,19 +322,17 @@ void menu_setsound(UINT8 value) {
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_FMBOARD, MFCHECK(value));
 }
 
-void menu_setjoystick(UINT8 value) {
+void menu_enablejoystick(bool bEnabled)
+{
+	HMENU hMenu = extclass_gethmenu(hWndMain);
+	EnableMenuItem(hMenu, IDM_JOYSTICK, (bEnabled) ? MF_ENABLED : MF_GRAYED);
+}
 
-	HMENU	hmenu;
-
-	hmenu = extclass_gethmenu(hWndMain);
-	xmiloscfg.JOYSTICK &= 0x80;
-	xmiloscfg.JOYSTICK |= (value & 0x7f);
-	if (value & 2) {
-		EnableMenuItem(hmenu, IDM_JOYSTICK, MF_GRAYED);
-	}
-	else {
-		CheckMenuItem(hmenu, IDM_JOYSTICK, MFCHECK(value & 1));
-	}
+void menu_setjoystick(UINT8 value)
+{
+	xmiloscfg.JOYSTICK = value & 1;
+	HMENU hMenu = extclass_gethmenu(hWndMain);
+	CheckMenuItem(hMenu, IDM_JOYSTICK, MFCHECK(value & 1));
 }
 
 void menu_setmouse(UINT8 value) {
