@@ -31,7 +31,9 @@ void menu_setsound(UINT8 value);
 void menu_enablejoystick(bool bEnabled);
 void menu_setjoystick(UINT8 value);
 void menu_setmouse(UINT8 value);
+#if !defined(DISABLE_SOUND)
 void menu_setmotorflg(UINT8 value);
+#endif	// !defined(DISABLE_SOUND)
 #if defined(SUPPORT_X1F)
 void menu_opmlog(UINT8 value);
 #endif	// defined(SUPPORT_X1F)
