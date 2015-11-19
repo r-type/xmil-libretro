@@ -125,7 +125,6 @@ BEGIN
     POPUP "&Other"
     BEGIN
         MENUITEM "&BMP Save...",                IDM_BMPSAVE
-        MENUITEM "&OPM LOG...",                 IDM_OPMLOG
         MENUITEM "&Clock Disp",                 IDM_DISPCLOCK
         MENUITEM "&Frame Disp",                 IDM_DISPFRAME
         MENUITEM "Joy Re&verse",                IDM_JOYX
@@ -339,6 +338,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDM_TURBOZ              "turbo&Z"
+    IDM_OPMLOG              "&OPM LOG..."
     IDM_WAVEREC             "&Wave Record..."
 END
 
