@@ -9,7 +9,7 @@ static const SINT32 psgvolrate[16] = {
 				   0,  508,  719, 1017, 1440, 2037, 2883, 4079,
 				5772, 8167,11556,16351,23135,32735,46317,65536};
 
-const UINT8 psggen_deftbl[0x10] =
+static const UINT8 psggen_deftbl[0x10] =
 				{0, 0, 0, 0, 0, 0, 0, 0xbf, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
 
 static const UINT8 psgenv_pat[16] = {
