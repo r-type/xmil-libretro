@@ -415,11 +415,13 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			winuileave();
 			break;
 
+#if defined(SUPPORT_X1F)
 		case IDM_OPMLOG:
 			winuienter();
 			dialog_x1f(hWnd);
 			winuileave();
 			break;
+#endif	// defined(SUPPORT_X1F)
 
 		case IDM_DISPCLOCK:
 			menu_setdispclk(xmiloscfg.DISPCLK ^ 1);

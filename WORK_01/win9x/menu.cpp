@@ -185,8 +185,11 @@ void menu_initialize()
 {
 	HMENU hMenu = GetMenu(hWndMain);
 
+#if defined(SUPPORT_X1F)
+	InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_OPMLOG);
+#endif	// defined(SUPPORT_X1F)
 #if defined(SUPPORT_WAVEREC)
-		InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_WAVEREC);
+	InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_WAVEREC);
 #endif
 
 	if (xmiloscfg.Z80SAVE)
@@ -350,10 +353,12 @@ void menu_setmotorflg(UINT8 value) {
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_SEEKSND, MFCHECK(value));
 }
 
+#if defined(SUPPORT_X1F)
 void menu_opmlog(UINT8 value) {
 
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_OPMLOG, MFCHECK(value));
 }
+#endif	// defined(SUPPORT_X1F)
 
 void menu_setdispclk(UINT8 value) {
 
