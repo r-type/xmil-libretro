@@ -185,6 +185,9 @@ void menu_initialize()
 {
 	HMENU hMenu = GetMenu(hWndMain);
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	InsertMenuString(hMenu, IDM_JOYSTICK, MF_BYCOMMAND | MF_STRING, IDM_FMBOARD);
+#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 #if defined(SUPPORT_X1F)
 	InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_OPMLOG);
 #endif	// defined(SUPPORT_X1F)
@@ -320,11 +323,13 @@ void menu_setkey(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_JOY2, MFCHECK(value == 2));
 }
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 void menu_setsound(UINT8 value) {
 
 	xmilcfg.SOUND_SW = value;
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_FMBOARD, MFCHECK(value));
 }
+#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 
 void menu_enablejoystick(bool bEnabled)
 {
