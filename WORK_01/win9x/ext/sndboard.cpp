@@ -10,6 +10,9 @@
 
 static	BOOL	romeo_exist;
 
+static const UINT8 psggen_deftbl[0x10] =
+				{0, 0, 0, 0, 0, 0, 0, 0xbf, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
+
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 void IOOUTCALL opm_o(UINT port, REG8 dat) {
 
