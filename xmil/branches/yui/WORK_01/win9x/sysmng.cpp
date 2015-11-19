@@ -2,7 +2,6 @@
 #include	"xmil.h"
 #include	"dosio.h"
 #include	"sysmng.h"
-#include	"menu.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"fddfile.h"
@@ -13,8 +12,6 @@
 
 
 void sysmng_scrnwidth(REG8 mode) {
-
-	menu_setwidth(mode);
 }
 
 
