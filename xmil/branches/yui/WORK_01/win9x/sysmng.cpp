@@ -10,11 +10,6 @@
 
 	UINT	sys_updates;
 
-
-void sysmng_scrnwidth(REG8 mode) {
-}
-
-
 // ----
 
 static	OEMCHAR	title[512];
