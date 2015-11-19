@@ -137,91 +137,63 @@ END
 
 IDR_STAT MENU DISCARDABLE 
 BEGIN
-    POPUP "S&tat"
-    BEGIN
-        MENUITEM "Save 0",                      IDM_FLAGSAVE0
-        MENUITEM "Save 1",                      IDM_FLAGSAVE1
-        MENUITEM "Save 2",                      IDM_FLAGSAVE2
-        MENUITEM "Save 3",                      IDM_FLAGSAVE3
-        MENUITEM "Save 4",                      IDM_FLAGSAVE4
-        MENUITEM "Save 5",                      IDM_FLAGSAVE5
-        MENUITEM "Save 6",                      IDM_FLAGSAVE6
-        MENUITEM "Save 7",                      IDM_FLAGSAVE7
-        MENUITEM "Save 8",                      IDM_FLAGSAVE8
-        MENUITEM "Save 9",                      IDM_FLAGSAVE9
-        MENUITEM SEPARATOR
-        MENUITEM "Load 0",                      IDM_FLAGLOAD0
-        MENUITEM "Load 1",                      IDM_FLAGLOAD1
-        MENUITEM "Load 2",                      IDM_FLAGLOAD2
-        MENUITEM "Load 3",                      IDM_FLAGLOAD3
-        MENUITEM "Load 4",                      IDM_FLAGLOAD4
-        MENUITEM "Load 5",                      IDM_FLAGLOAD5
-        MENUITEM "Load 6",                      IDM_FLAGLOAD6
-        MENUITEM "Load 7",                      IDM_FLAGLOAD7
-        MENUITEM "Load 8",                      IDM_FLAGLOAD8
-        MENUITEM "Load 9",                      IDM_FLAGLOAD9
-    END
+    MENUITEM "Save 0",                      IDM_FLAGSAVE0
+    MENUITEM "Save 1",                      IDM_FLAGSAVE1
+    MENUITEM "Save 2",                      IDM_FLAGSAVE2
+    MENUITEM "Save 3",                      IDM_FLAGSAVE3
+    MENUITEM "Save 4",                      IDM_FLAGSAVE4
+    MENUITEM "Save 5",                      IDM_FLAGSAVE5
+    MENUITEM "Save 6",                      IDM_FLAGSAVE6
+    MENUITEM "Save 7",                      IDM_FLAGSAVE7
+    MENUITEM "Save 8",                      IDM_FLAGSAVE8
+    MENUITEM "Save 9",                      IDM_FLAGSAVE9
+    MENUITEM SEPARATOR
+    MENUITEM "Load 0",                      IDM_FLAGLOAD0
+    MENUITEM "Load 1",                      IDM_FLAGLOAD1
+    MENUITEM "Load 2",                      IDM_FLAGLOAD2
+    MENUITEM "Load 3",                      IDM_FLAGLOAD3
+    MENUITEM "Load 4",                      IDM_FLAGLOAD4
+    MENUITEM "Load 5",                      IDM_FLAGLOAD5
+    MENUITEM "Load 6",                      IDM_FLAGLOAD6
+    MENUITEM "Load 7",                      IDM_FLAGLOAD7
+    MENUITEM "Load 8",                      IDM_FLAGLOAD8
+    MENUITEM "Load 9",                      IDM_FLAGLOAD9
 END
 
 IDR_FDD0MENU MENU DISCARDABLE 
 BEGIN
-    POPUP "FDD-&0"
-    BEGIN
-        MENUITEM "&Open...",                    IDM_FDD0OPEN
-        MENUITEM SEPARATOR
-        MENUITEM "&Eject",                      IDM_FDD0EJECT
-    END
+    MENUITEM "&Open...",                    IDM_FDD0OPEN
+    MENUITEM SEPARATOR
+    MENUITEM "&Eject",                      IDM_FDD0EJECT
 END
 
 IDR_FDD1MENU MENU DISCARDABLE 
 BEGIN
-    POPUP "FDD-&1"
-    BEGIN
-        MENUITEM "&Open...",                    IDM_FDD1OPEN
-        MENUITEM SEPARATOR
-        MENUITEM "&Eject",                      IDM_FDD1EJECT
-    END
+    MENUITEM "&Open...",                    IDM_FDD1OPEN
+    MENUITEM SEPARATOR
+    MENUITEM "&Eject",                      IDM_FDD1EJECT
 END
 
 IDR_FDD2MENU MENU DISCARDABLE 
 BEGIN
-    POPUP "FDD-&2"
-    BEGIN
-        MENUITEM "&Open...",                    IDM_FDD2OPEN
-        MENUITEM SEPARATOR
-        MENUITEM "&Eject",                      IDM_FDD2EJECT
-    END
+    MENUITEM "&Open...",                    IDM_FDD2OPEN
+    MENUITEM SEPARATOR
+    MENUITEM "&Eject",                      IDM_FDD2EJECT
 END
 
 IDR_FDD3MENU MENU DISCARDABLE 
 BEGIN
-    POPUP "FDD-&3"
-    BEGIN
-        MENUITEM "&Open...",                    IDM_FDD3OPEN
-        MENUITEM SEPARATOR
-        MENUITEM "&Eject",                      IDM_FDD3EJECT
-    END
-END
-
-IDR_TURBOZ MENU DISCARDABLE 
-BEGIN
-    MENUITEM "turbo&Z",                     IDM_TURBOZ
+    MENUITEM "&Open...",                    IDM_FDD3OPEN
+    MENUITEM SEPARATOR
+    MENUITEM "&Eject",                      IDM_FDD3EJECT
 END
 
 IDR_DEBUG MENU DISCARDABLE 
 BEGIN
-    POPUP "D&ebug"
-    BEGIN
-        MENUITEM "Width &40",                   IDM_WIDTH40
-        MENUITEM "Width &80",                   IDM_WIDTH80
-        MENUITEM SEPARATOR
-        MENUITEM "&Z80 save",                   IDM_Z80SAVE
-    END
-END
-
-IDR_WAVEREC MENU DISCARDABLE 
-BEGIN
-    MENUITEM "&Wave Record...",             IDM_WAVEREC
+    MENUITEM "Width &40",                   IDM_WIDTH40
+    MENUITEM "Width &80",                   IDM_WIDTH80
+    MENUITEM SEPARATOR
+    MENUITEM "&Z80 save",                   IDM_Z80SAVE
 END
 
 IDR_TRACE MENU DISCARDABLE 
@@ -352,6 +324,22 @@ TURBOZ                  BITMAP  DISCARDABLE     "Icons\\turboz.bmp"
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_APP_NAME            "X millennium ÇÀÇ±ÇøÇ„Å`ÇÒ"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDR_STAT                "S&tat"
+    IDR_FDD0MENU            "FDD-&0"
+    IDR_FDD1MENU            "FDD-&1"
+    IDR_FDD2MENU            "FDD-&2"
+    IDR_FDD3MENU            "FDD-&3"
+    IDR_DEBUG               "D&ebug"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_TURBOZ              "turbo&Z"
+    IDM_WAVEREC             "&Wave Record..."
 END
 
 #endif    // ì˙ñ{åÍ resources
