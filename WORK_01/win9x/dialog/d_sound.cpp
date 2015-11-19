@@ -31,7 +31,6 @@ void dialog_x1f(HWND hWnd) {
 		sysmng_update(SYS_UPDATEOSCFG);
 		check = TRUE;
 	}
-	menu_opmlog(check);
 }
 #endif
 

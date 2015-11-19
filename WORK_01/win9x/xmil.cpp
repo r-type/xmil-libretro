@@ -274,39 +274,39 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			break;
 
 		case IDM_X1ROM:
-			menu_setiplrom(1);
+			xmilcfg.ROM_TYPE = 1;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_TURBO:
-			menu_setiplrom(2);
+			xmilcfg.ROM_TYPE = 2;
 			update = SYS_UPDATECFG;
 			break;
 
 #if defined(SUPPORT_TURBOZ)
 		case IDM_TURBOZ:
-			menu_setiplrom(3);
+			xmilcfg.ROM_TYPE = 3;
 			update = SYS_UPDATECFG;
 			break;
 #endif
 
 		case IDM_BOOT2D:
-			menu_setbootmedia(0);
+			xmilcfg.DIP_SW &= ~DIPSW_BOOTMEDIA;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_BOOT2HD:
-			menu_setbootmedia(DIPSW_BOOTMEDIA);
+			xmilcfg.DIP_SW |= DIPSW_BOOTMEDIA;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_HIGHRES:
-			menu_setresolute(0);
+			xmilcfg.DIP_SW &= ~DIPSW_RESOLUTE;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_LOWRES:
-			menu_setresolute(DIPSW_RESOLUTE);
+			xmilcfg.DIP_SW |= DIPSW_RESOLUTE;
 			update = SYS_UPDATECFG;
 			break;
 
@@ -319,12 +319,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			break;
 
 		case IDM_DISPSYNC:
-			menu_setdispmode(xmilcfg.DISPSYNC ^ 1);
+			xmilcfg.DISPSYNC = !xmilcfg.DISPSYNC;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_RASTER:
-			menu_setraster(xmilcfg.RASTER ^ 1);
+			xmilcfg.RASTER = !xmilcfg.RASTER;
 			if (xmilcfg.RASTER) {
 				scrnmng_changescreen(scrnmode | SCRNMODE_SYSHIGHCOLOR);
 			}
@@ -335,68 +335,71 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			break;
 
 		case IDM_NOWAIT:
-			menu_setwaitflg(xmiloscfg.NOWAIT ^ 1);
+			xmiloscfg.NOWAIT = !xmiloscfg.NOWAIT;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_AUTOFPS:
-			menu_setframe(0);
+			xmiloscfg.DRAW_SKIP = 0;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_60FPS:
-			menu_setframe(1);
+			xmiloscfg.DRAW_SKIP = 1;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_30FPS:
-			menu_setframe(2);
+			xmiloscfg.DRAW_SKIP = 2;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_20FPS:
-			menu_setframe(3);
+			xmiloscfg.DRAW_SKIP = 3;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_15FPS:
-			menu_setframe(4);
+			xmiloscfg.DRAW_SKIP = 4;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_KEY:
-			menu_setkey(0);
+			xmilcfg.KEY_MODE = 0;
+			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_JOY1:
-			menu_setkey(1);
+			xmilcfg.KEY_MODE = 1;
+			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_JOY2:
-			menu_setkey(2);
+			xmilcfg.KEY_MODE = 2;
+			update = SYS_UPDATECFG;
 			break;
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 		case IDM_FMBOARD:
-			menu_setsound(xmilcfg.SOUND_SW ^ 1);
+			xmilcfg.SOUND_SW = !xmilcfg.SOUND_SW;
 			update = SYS_UPDATECFG;
 			break;
 #endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 
 		case IDM_JOYSTICK:
-			menu_setjoystick(xmiloscfg.JOYSTICK ^ 1);
+			xmiloscfg.JOYSTICK = !xmiloscfg.JOYSTICK;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_MOUSE:
 		//	mousemng_toggle(MOUSEPROC_SYSTEM);
-			menu_setmouse(xmilcfg.MOUSE_SW ^ 1);
+			xmilcfg.MOUSE_SW = !xmilcfg.MOUSE_SW;
 			update = SYS_UPDATECFG;
 			break;
 
 #if !defined(DISABLE_SOUND)
 		case IDM_SEEKSND:
-			menu_setmotorflg(xmilcfg.MOTOR ^ 1);
+			xmilcfg.MOTOR = !xmilcfg.MOTOR;
 			update = SYS_UPDATECFG;
 			break;
 #endif	// !defined(DISABLE_SOUND)
@@ -428,22 +431,26 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 #endif	// defined(SUPPORT_X1F)
 
 		case IDM_DISPCLOCK:
-			menu_setdispclk(xmiloscfg.DISPCLK ^ 1);
+			xmiloscfg.DISPCLK ^= 1;
 			update = SYS_UPDATECFG;
+			sysmng_workclockrenewal();
+			sysmng_updatecaption(3);
 			break;
 
 		case IDM_DISPFRAME:
-			menu_setdispclk(xmiloscfg.DISPCLK ^ 2);
+			xmiloscfg.DISPCLK ^= 2;
 			update = SYS_UPDATECFG;
+			sysmng_workclockrenewal();
+			sysmng_updatecaption(3);
 			break;
 
 		case IDM_JOYX:
-			menu_setbtnmode(xmilcfg.BTN_MODE ^ 1);
+			xmilcfg.BTN_MODE = !xmilcfg.BTN_MODE;
 			update = SYS_UPDATECFG;
 			break;
 
 		case IDM_RAPID:
-			menu_setbtnrapid(xmilcfg.BTN_RAPID ^ 1);
+			xmilcfg.BTN_RAPID = !xmilcfg.BTN_RAPID;
 			update = SYS_UPDATECFG;
 			break;
 
@@ -496,17 +503,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					break;
 
 				case IDM_SNAPENABLE:
-					sysmenu_setwinsnap(xmiloscfg.WINSNAP ^ 1);
+					xmiloscfg.WINSNAP = !xmiloscfg.WINSNAP;
 					updateflag = SYS_UPDATEOSCFG;
 					break;
 
 				case IDM_BACKGROUND:
-					sysmenu_setbackground(xmiloscfg.background ^ 1);
+					xmiloscfg.background ^= 1;
 					updateflag = SYS_UPDATEOSCFG;
 					break;
 
 				case IDM_BGSOUND:
-					sysmenu_setbgsound(xmiloscfg.background ^ 2);
+					xmiloscfg.background ^= 2;
 					updateflag = SYS_UPDATEOSCFG;
 					break;
 
@@ -588,6 +595,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 
 		case WM_ENTERMENULOOP:
+			sysmenu_update(GetSystemMenu(hWnd, FALSE));
+			menu_update(extclass_gethmenu(hWnd));
 			winuienter();
 			if (scrnmng_isfullscreen()) {
 				DrawMenuBar(hWnd);
@@ -853,6 +862,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	hWndMain = hWnd;
 	scrnmng_initialize();
 
+#if 0
 	menu_setiplrom(xmilcfg.ROM_TYPE);
 	menu_setbootmedia(xmilcfg.DIP_SW);
 	menu_setresolute(xmilcfg.DIP_SW);
@@ -872,17 +882,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	menu_setdispclk(xmiloscfg.DISPCLK);
 	menu_setbtnmode(xmilcfg.BTN_MODE);
 	menu_setbtnrapid(xmilcfg.BTN_RAPID);
+#endif
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	sysmenu_initialize();
-	menu_initialize();
+	sysmenu_initialize(GetSystemMenu(hWnd, FALSE));
+	menu_initialize(GetMenu(hWnd));
 	DrawMenuBar(hWnd);
-
-	sysmenu_setwinsnap(xmiloscfg.WINSNAP);
-	sysmenu_setbackground(xmiloscfg.background);
-	sysmenu_setbgsound(xmiloscfg.background);
 
 	scrndraw_initialize();
 	scrnmode = 0;
