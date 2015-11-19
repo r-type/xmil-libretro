@@ -20,120 +20,121 @@
 #include "fdd_mtr.h"
 #include "fdd_ini.h"
 
-bool menu_searchmenu(HMENU hMenu, UINT uID, HMENU *phmenuRet, int *pnPos)
+/**
+ * メニュー内の指定された位置に、新しいメニュー項目を挿入します
+ * @param[in] hMenu メニューのハンドル
+ * @param[in] uItem 識別子または位置
+ * @param[in] fByPosition uItem パラメータの意味
+ * @param[in] hPopup 追加するメニュー
+ * @return 追加した項目数
+ */
+static UINT InsertMenuPopup(HMENU hMenu, UINT uItem, BOOL fByPosition, HMENU hPopup)
 {
-	int nCount = GetMenuItemCount(hMenu);
+	int nCount = GetMenuItemCount(hPopup);
+	UINT nAdded = 0;
 	for (int i = 0; i < nCount; i++)
 	{
-		MENUITEMINFO mii;
-		ZeroMemory(&mii, sizeof(mii));
-		mii.cbSize = sizeof(mii);
-		mii.fMask = MIIM_ID | MIIM_SUBMENU;
-		if (GetMenuItemInfo(hMenu, i, TRUE, &mii))
-		{
-			if (mii.wID == uID)
-			{
-				if (phmenuRet)
-				{
-					*phmenuRet = hMenu;
-				}
-				if (pnPos)
-				{
-					*pnPos = i;
-				}
-				return true;
-			}
-			else if ((mii.hSubMenu) && (menu_searchmenu(mii.hSubMenu, uID, phmenuRet, pnPos)))
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-// これってAPIあるのか？
-int menu_addmenu(HMENU hMenu, int nPos, HMENU hmenuAdd, bool bSeparator)
-{
-	if (nPos < 0)
-	{
-		nPos = GetMenuItemCount(hMenu);
-	}
-	int nCount = GetMenuItemCount(hmenuAdd);
-	int nAdded = 0;
-	for (int i = 0; i < nCount; i++)
-	{
-		MENUITEMINFO mii;
-		ZeroMemory(&mii, sizeof(mii));
-
 		TCHAR szString[128];
+
+		MENUITEMINFO mii;
+		ZeroMemory(&mii, sizeof(mii));
 		mii.cbSize = sizeof(mii);
 		mii.fMask = MIIM_TYPE | MIIM_STATE | MIIM_ID | MIIM_SUBMENU | MIIM_DATA;
 		mii.dwTypeData = szString;
 		mii.cch = _countof(szString);
-		if (GetMenuItemInfo(hmenuAdd, i, TRUE, &mii))
+		if (!GetMenuItemInfo(hPopup, i, TRUE, &mii))
 		{
-			if (mii.hSubMenu)
-			{
-				HMENU hmenuSub = CreatePopupMenu();
-				(void)menu_addmenu(hmenuSub, 0, mii.hSubMenu);
-				mii.hSubMenu = hmenuSub;
-			}
-			if (bSeparator)
-			{
-				bSeparator = false;
-				InsertMenu(hMenu, nPos + nAdded, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
-				nAdded++;
-			}
-			InsertMenuItem(hMenu, nPos + nAdded, TRUE, &mii);
+			continue;
+		}
+		if (mii.hSubMenu)
+		{
+			HMENU hSubMenu = CreatePopupMenu();
+			InsertMenuPopup(hSubMenu, 0, TRUE, mii.hSubMenu);
+			mii.hSubMenu = hSubMenu;
+		}
+		if (InsertMenuItem(hMenu, uItem, fByPosition, &mii))
+		{
 			nAdded++;
+			if (fByPosition)
+			{
+				uItem++;
+			}
 		}
 	}
 	return nAdded;
 }
 
-int menu_addmenures(HMENU hMenu, int nPos, UINT uID, bool bSeparator)
+/**
+ * メニュー内の指定された位置に、新しいメニュー項目を挿入します
+ * @param[in] hMenu メニューのハンドル
+ * @param[in] uItem 識別子または位置
+ * @param[in] fByPosition uItem パラメータの意味
+ * @param[in] nMenuID 追加するメニュー ID
+ * @return 追加した項目数
+ */
+UINT InsertMenuResource(HMENU hMenu, UINT uItem, BOOL fByPosition, UINT nMenuID)
 {
-	int nCount = 0;
+	HMENU hSubMenu = LoadMenu(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(nMenuID));
+	const UINT nAdded = InsertMenuPopup(hMenu, uItem, fByPosition, hSubMenu);
+	::DestroyMenu(hSubMenu);
+	return nAdded;
+}
 
-	HMENU hmenuAdd = LoadMenu(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(uID));
-	if (hmenuAdd)
+/**
+ * メニューを追加する
+ * @param[in] hMenu メニューのハンドル
+ * @param[in] uFlags オプション
+ * @param[in] uIDNewItem 識別子、メニュー、サブメニューのいずれか
+ * @retval 関数が成功すると、0 以外の値が返ります
+ */
+static BOOL AppendMenuString(HMENU hMenu, UINT uFlags, UINT_PTR uIDNewItem)
+{
+	std::tstring rString(LoadTString(uIDNewItem));
+	if (rString.empty())
 	{
-		nCount = menu_addmenu(hMenu, nPos, hmenuAdd, bSeparator);
-		DestroyMenu(hmenuAdd);
+		return FALSE;
 	}
-	return nCount;
-}
 
-int menu_addmenubyid(HMENU hMenu, UINT uByID, UINT uID)
-{
-	int nCount = 0;
-
-	HMENU hmenuSub;
-	int nSubPos;
-	if (menu_searchmenu(hMenu, uByID, &hmenuSub, &nSubPos))
+	if (uFlags & MF_POPUP)
 	{
-		nCount = menu_addmenures(hmenuSub, nSubPos + 1, uID);
+		HMENU hSubMenu = LoadMenu(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(uIDNewItem));
+		if (hSubMenu == NULL)
+		{
+			return FALSE;
+		}
+		uIDNewItem = reinterpret_cast<UINT_PTR>(hSubMenu);
 	}
-	return nCount;
+	return AppendMenu(hMenu, uFlags, uIDNewItem, rString.c_str());
 }
 
-BOOL menu_insertmenures(HMENU hMenu, int nPosition, UINT uFlags, UINT_PTR uIDNewItem, UINT uID)
+/**
+ * メニューを挿入する
+ * @param[in] hMenu メニューのハンドル
+ * @param[in] uItem 挿入するべきメニュー項目の直後に位置するメニュー項目の識別子または位置を指定します
+ * @param[in] uFlags オプション
+ * @param[in] uIDNewItem 識別子、メニュー、サブメニューのいずれか
+ * @retval 関数が成功すると、0 以外の値が返ります
+ */
+static BOOL InsertMenuString(HMENU hMenu, UINT uItem, UINT uFlags, UINT_PTR uIDNewItem)
 {
-	std::tstring rString(LoadTString(uID));
-
-	BOOL bResult = FALSE;
-	if (!rString.empty())
+	std::tstring rString(LoadTString(uIDNewItem));
+	if (rString.empty())
 	{
-		bResult = InsertMenu(hMenu, nPosition, uFlags, uIDNewItem, rString.c_str());
+		return FALSE;
 	}
-	return bResult;
+
+	if (uFlags & MF_POPUP)
+	{
+		HMENU hSubMenu = LoadMenu(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(uIDNewItem));
+		if (hSubMenu == NULL)
+		{
+			return FALSE;
+		}
+		uIDNewItem = reinterpret_cast<UINT_PTR>(hSubMenu);
+	}
+	return InsertMenu(hMenu, uItem, uFlags, uIDNewItem, rString.c_str());
 }
 
-int menu_addmenubar(HMENU popup, HMENU menubar)
-{
-	return menu_addmenu(popup, 0, menubar);
-}
 
 
 // ----
@@ -141,7 +142,7 @@ int menu_addmenubar(HMENU popup, HMENU menubar)
 void sysmenu_initialize()
 {
 	HMENU hMenu = GetSystemMenu(hWndMain, FALSE);
-	menu_addmenures(hMenu, 0, IDR_SYS);
+	InsertMenuResource(hMenu, 0, TRUE, IDR_SYS);
 }
 
 void sysmenu_setwinsnap(UINT8 value) {
@@ -185,23 +186,23 @@ void menu_initialize()
 	HMENU hMenu = GetMenu(hWndMain);
 
 #if defined(SUPPORT_WAVEREC)
-	menu_addmenubyid(hMenu, IDM_OPMLOG, IDR_WAVEREC);
+		InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_WAVEREC);
 #endif
 
 	if (xmiloscfg.Z80SAVE)
 	{
-		menu_addmenures(hMenu, 5, IDR_DEBUG);
+		InsertMenuString(hMenu, 5, MF_BYPOSITION | MF_POPUP, IDR_DEBUG);
 	}
 
 #if defined(SUPPORT_TURBOZ)
-	menu_addmenubyid(hMenu, IDM_TURBO, IDR_TURBOZ);
+	AppendMenuString(GetSubMenu(hMenu, 1), MF_BYPOSITION | MF_STRING, IDM_TURBOZ);
 #endif
 
-	int nPos = 1;
+	UINT nPos = 1;
 #if defined(SUPPORT_STATSAVE)
 	if (xmiloscfg.statsave)
 	{
-		nPos += menu_addmenures(hMenu, nPos, IDR_STAT);
+		nPos += InsertMenuString(hMenu, nPos, MF_BYPOSITION | MF_POPUP, IDR_STAT);
 	}
 #endif
 
@@ -209,7 +210,7 @@ void menu_initialize()
 	{
 		if (xmilcfg.fddequip & (1 << i))
 		{
-			nPos += menu_addmenures(hMenu, nPos, IDR_FDD0MENU + i);
+			nPos += InsertMenuString(hMenu, nPos, MF_BYPOSITION | MF_POPUP, IDR_FDD0MENU + i);
 		}
 	}
 
