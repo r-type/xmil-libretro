@@ -34,7 +34,7 @@ void sysmng_fddaccess(REG8 drv);
 			sys_updates &= (SYS_UPDATECFG | SYS_UPDATEOSCFG);			\
 			sysmng_workclockreset()
 
-void sysmng_scrnwidth(REG8 mode);
+#define sysmng_scrnwidth(m)
 
 #define	sysmng_fddaccess(a)
 
