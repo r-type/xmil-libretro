@@ -351,12 +351,14 @@ void menu_setmouse(UINT8 value) {
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_MOUSE, MFCHECK(value));
 }
 
+#if !defined(DISABLE_SOUND)
 void menu_setmotorflg(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.MOTOR = value;
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_SEEKSND, MFCHECK(value));
 }
+#endif	// !defined(DISABLE_SOUND)
 
 #if defined(SUPPORT_X1F)
 void menu_opmlog(UINT8 value) {

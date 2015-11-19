@@ -25,12 +25,20 @@ static void cfgcreate(HWND hWnd) {
 
 	dlgs_setlistuint32(hWnd, IDC_SAMPLERATE, ratehz, NELEMENTS(ratehz));
 
+#if !defined(DISABLE_SOUND)
 	OEMSPRINTF(work, str_u, xmilcfg.samplingrate);
 	SetDlgItemText(hWnd, IDC_SAMPLERATE, work);
 	OEMSPRINTF(work, str_u, xmilcfg.delayms);
 	SetDlgItemText(hWnd, IDC_SNDBUFFER, work);
 	OEMSPRINTF(work, str_u, xmilcfg.MOTORVOL);
 	SetDlgItemText(hWnd, IDC_SEEKVOL, work);
+#else	// !defined(DISABLE_SOUND)
+	static UINT s_nSoundIDs[] = {IDC_SAMPLERATE, IDC_SNDBUFFER, IDC_SEEKVOL};
+	for (size_t i = 0; i < _countof(s_nSoundIDs); i++)
+	{
+		EnableWindow(GetDlgItem(hWnd, s_nSoundIDs[i]), FALSE);
+	}
+#endif	// !defined(DISABLE_SOUND)
 
 	SetDlgItemCheck(hWnd, IDC_SKIPLINE, xmilcfg.skipline);
 	SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_SETRANGE, TRUE,
@@ -54,13 +62,14 @@ static void lightstr(HWND hWnd) {
 static void cfgupdate(HWND hWnd) {
 
 	UINT	updateflag;
-	OEMCHAR	work[32];
 	UINT16	wval;
 	UINT8	bval;
 	BOOL	renewalflg;
 
 	updateflag = 0;
 
+#if !defined(DISABLE_SOUND)
+	OEMCHAR work[32];
 	GetDlgItemText(hWnd, IDC_SAMPLERATE, work, NELEMENTS(work));
 	wval = (UINT16)LIMITS(milstr_solveINT(work), 11025, 55500);
 	if (xmilcfg.samplingrate != wval) {
@@ -85,6 +94,7 @@ static void cfgupdate(HWND hWnd) {
 		soundmng_pcmvolume(SOUND_PCMSEEK1, bval);
 		updateflag |= SYS_UPDATEOSCFG;
 	}
+#endif	// !defined(DISABLE_SOUND)
 
 	renewalflg = FALSE;
 	bval = GetDlgItemCheck(hWnd, IDC_SKIPLINE);
