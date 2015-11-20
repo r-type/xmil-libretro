@@ -890,10 +890,6 @@ SOURCE=.\dialog\d_sound.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\DIALOGS.CPP
-# End Source File
-# Begin Source File
-
 SOURCE=.\DIALOG\EXTCLASS.CPP
 # End Source File
 # End Group
