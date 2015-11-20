@@ -61,6 +61,6 @@ typedef	signed int			SINT32;
 #define SOUND_CRITICAL
 #define	SOUNDRESERVE	100
 
-// #define	SUPPORT_OPM
+#define	SUPPORT_OPM
 
 #define	SCREEN_BPP		16
