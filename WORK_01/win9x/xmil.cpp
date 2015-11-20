@@ -14,6 +14,8 @@
 #include	"menu.h"
 #include	"ini.h"
 #include	"ext\romeo\juliet.h"
+#include "dialog\d_about.h"
+#include "dialog\d_cfg.h"
 #include	"dialog.h"
 #include	"extclass.h"
 #include "misc\wndloc.h"
@@ -34,7 +36,6 @@
 #if defined(SUPPORT_DCLOCK)
 #include "subwnd/dclock.h"
 #endif	// defined(SUPPORT_DCLOCK)
-
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
@@ -219,7 +220,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_CONFIG:
 			winuienter();
-			DialogBox(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDD_CONFIG), hWnd, (DLGPROC)CfgDialogProc);
+			CConfigDlg::Config(hWnd);
 			winuileave();
 			break;
 
@@ -456,7 +457,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_ABOUT:
 			winuienter();
-			DialogBox(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDD_ABOUT), hWnd, (DLGPROC)AboutDialogProc);
+			CAboutDlg::About(hWnd);
 			winuileave();
 			break;
 
