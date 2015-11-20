@@ -135,7 +135,9 @@ static const MSYSITEM s_device[] = {
 		{str_joykey2,		NULL,		MID_JOY2,			0},
 //		{str_mousekey,		NULL,		MID_MOUSEKEY,		0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 		{str_fmboard,		NULL,		MID_FMBOARD,		0},
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
         {str_joystick,		NULL,		MID_JOYSTICK,		MENU_GRAY},
 		{str_mouse,			NULL,		MID_MOUSE,			MENU_GRAY},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
