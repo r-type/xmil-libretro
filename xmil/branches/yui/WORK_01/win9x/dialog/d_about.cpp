@@ -24,7 +24,7 @@ CAboutDlg::CAboutDlg(HWND hwndParent)
  */
 BOOL CAboutDlg::OnInitDialog()
 {
-	std::tstring str = LoadTString(IDS_APP_NAME) + std::string("  ") + std::tstring(xmilversion);
+	std::tstring str = LoadTString(IDS_APP_NAME) + std::tstring(TEXT("  ")) + std::tstring(xmilversion);
 #if defined(XMILVER_WIN9X)
 	str += std::tstring(XMILVER_WIN9X);
 #endif
