@@ -902,6 +902,14 @@ SOURCE=.\ext\romeo\romeo.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\misc\DlgProc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\DlgProc.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\misc\tickcounter.cpp
 # End Source File
 # Begin Source File
