@@ -4,8 +4,6 @@
 
 extern	char	licenced[];
 
-void dialog_changefdd(HWND hWnd, REG8 drv);
-void dialog_newdisk(HWND hWnd);
 void dialog_writebmp(HWND hWnd);
 #if defined(SUPPORT_X1F)
 void dialog_x1f(HWND hWnd);
