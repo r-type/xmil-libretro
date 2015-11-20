@@ -865,28 +865,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	hWndMain = hWnd;
 	scrnmng_initialize();
 
-#if 0
-	menu_setiplrom(xmilcfg.ROM_TYPE);
-	menu_setbootmedia(xmilcfg.DIP_SW);
-	menu_setresolute(xmilcfg.DIP_SW);
-	menu_setdispmode(xmilcfg.DISPSYNC);
-	menu_setraster(xmilcfg.RASTER);
-	menu_setwaitflg(xmiloscfg.NOWAIT);
-	menu_setframe(xmiloscfg.DRAW_SKIP);
-	menu_setkey(0);
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	menu_setsound(xmilcfg.SOUND_SW);
-#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	menu_setjoystick(xmiloscfg.JOYSTICK);
-	menu_setmouse(xmilcfg.MOUSE_SW);
-#if !defined(DISABLE_SOUND)
-	menu_setmotorflg(xmilcfg.MOTOR);
-#endif	// !defined(DISABLE_SOUND)
-	menu_setdispclk(xmiloscfg.DISPCLK);
-	menu_setbtnmode(xmilcfg.BTN_MODE);
-	menu_setbtnrapid(xmilcfg.BTN_RAPID);
-#endif
-
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
