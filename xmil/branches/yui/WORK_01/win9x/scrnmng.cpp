@@ -60,70 +60,59 @@ static	DDRAW		ddraw;
 static	SCRNSTAT	scrnstat;
 static	SCRNSURF	scrnsurf;
 
-
-static void setwindowsize(HWND hWnd, int width, int height) {
-
-	int		winx;
-	int		winy;
-	RECT	workrc;
-	int		scx;
-	int		scy;
-	UINT	cnt;
-	RECT	rectwindow;
-	RECT	rectclient;
-	int		cx;
-	int		cy;
-	UINT	update;
-
-	winx = xmiloscfg.winx;
-	winy = xmiloscfg.winy;
-
+static void setwindowsize(HWND hWnd, int width, int height)
+{
+	RECT workrc;
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	scx = GetSystemMetrics(SM_CXSCREEN);
-	scy = GetSystemMetrics(SM_CYSCREEN);
+	int scx = GetSystemMetrics(SM_CXSCREEN);
+	int scy = GetSystemMetrics(SM_CYSCREEN);
 
-	cnt = 2;
-	do {
+	UINT nCount = 2;
+	do
+	{
+		RECT rectwindow;
 		GetWindowRect(hWnd, &rectwindow);
-		GetClientRect(hWnd, &rectclient);
-		cx = width;
-		cx += rectwindow.right - rectwindow.left;
-		cx -= rectclient.right - rectclient.left;
-		cy = height;
-		cy += rectwindow.bottom - rectwindow.top;
-		cy -= rectclient.bottom - rectclient.top;
 
-		update = 0;
-		if (scx < cx) {
+		RECT rectclient;
+		GetClientRect(hWnd, &rectclient);
+
+		int winx = rectwindow.left;
+		int winy = rectwindow.top;
+		int cx = width + (rectwindow.right - rectwindow.left) - (rectclient.right - rectclient.left);
+		int cy = height + (rectwindow.bottom - rectwindow.top) - (rectclient.bottom - rectclient.top);
+
+		if (scx < cx)
+		{
 			winx = (scx - cx) / 2;
 		}
-		else {
-			if ((winx + cx) > workrc.right) {
+		else
+		{
+			if ((winx + cx) > workrc.right)
+			{
 				winx = workrc.right - cx;
 			}
-			if (winx < workrc.left) {
+			if (winx < workrc.left)
+			{
 				winx = workrc.left;
 			}
 		}
-		if (scy < cy) {
+		if (scy < cy)
+		{
 			winy = (scy - cy) / 2;
 		}
-		else {
-			if ((winy + cy) > workrc.bottom) {
+		else
+		{
+			if ((winy + cy) > workrc.bottom)
+			{
 				winy = workrc.bottom - cy;
 			}
-			if (winy < workrc.top) {
+			if (winy < workrc.top)
+			{
 				winy = workrc.top;
 			}
 		}
-		MoveWindow(hWnd, winx, winy, cx, cy, TRUE);
-	} while(--cnt);
-
-	if ((xmiloscfg.winx != winx) || (xmiloscfg.winy != winy)) {
-		xmiloscfg.winx = winx;
-		xmiloscfg.winy = winy;
-		sysmng_update(SYS_UPDATEOSCFG);
-	}
+		::MoveWindow(hWnd, winx, winy, cx, cy, TRUE);
+	} while(--nCount);
 }
 
 static void renewalclientsize(BOOL winloc) {
