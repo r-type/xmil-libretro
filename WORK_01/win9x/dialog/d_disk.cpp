@@ -1,49 +1,21 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"xmil.h"
-#include	"resource.h"
-#include	"dosio.h"
-#include	"sysmng.h"
-#include	"dialog.h"
-#include	"dialogs.h"
-#include	"diskdrv.h"
-#include	"newdisk.h"
-#include	"fddfile.h"
+/**
+ * @file	d_disk.cpp
+ * @brief	ディスク アクセスの動作の定義を行います
+ */
+
+#include "compiler.h"
+#include "d_disk.h"
+#include "resource.h"
+#include "xmil.h"
+#include "dosio.h"
+#include "sysmng.h"
 #include "misc/DlgProc.h"
+#include "strres.h"
+#include "diskdrv.h"
+#include "fddfile.h"
+#include "newdisk.h"
 
-static const OEMCHAR fddui_title[] = OEMTEXT("Select floppy image");
-static const OEMCHAR fddui_filter[] = OEMTEXT("2D image files (*.2D)\0*.2d\0D88 image files (*.D88;*.88D)\0*.d88;*.88d\0All supported Files\0*.2d;*.d88;*.88d;*.d8u\0All files (*.*)\0*.*\0\0");
-static const FILESEL fddui = {fddui_title, str_d88, fddui_filter, 3};
-
-static const OEMCHAR newdisk_title[] = OEMTEXT("Create disk image");
-static const OEMCHAR newdisk_filter[] = OEMTEXT("D88 image files (*.D88;*.88D)\0*.d88;*.88d\0");
-static const FILESEL newdiskui = {newdisk_title, str_d88, newdisk_filter, 1};
-
-
-// ----
-
-void dialog_changefdd(HWND hWnd, REG8 drv) {
-
-const OEMCHAR	*p;
-	OEMCHAR		path[MAX_PATH];
-	int			readonly;
-
-	p = fddfile_diskname(drv);
-	if ((p == NULL) || (p[0] == '\0')) {
-		p = fddfolder;
-	}
-	file_cpyname(path, p, _countof(path));
-	if (dlgs_selectfile(hWnd, &fddui, path, NELEMENTS(path), &readonly)) {
-		file_cpyname(fddfolder, path, NELEMENTS(fddfolder));
-		sysmng_update(SYS_UPDATEOSCFG);
-		diskdrv_setfdd(drv, path, readonly);
-	}
-}
-
-
-// ----
-
-static const OEMCHAR str_newdisk[] = OEMTEXT("newdisk");
+static const TCHAR str_newdisk[] = TEXT("newdisk");
 
 /**
  * @brief 新しいディスク ダイアログ
@@ -99,30 +71,65 @@ void CNewDiskDlg::OnOK()
 	CDlgProc::OnOK();
 }
 
-void dialog_newdisk(HWND hWnd) {
 
-	OEMCHAR		path[MAX_PATH];
-	HINSTANCE	hinst;
-const OEMCHAR	*ext;
 
-	file_cpyname(path, fddfolder, NELEMENTS(path));
-	file_cutname(path);
-	file_catname(path, str_newdisk, NELEMENTS(path));
+// ----
 
-	if (!dlgs_selectwritefile(hWnd, &newdiskui, path, NELEMENTS(path))) {
-		return;
-	}
-	hinst = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
-	ext = file_getext(path);
-	if ((!file_cmpname(ext, str_d88)) || (!file_cmpname(ext, str_88d)))
+/**
+ * フロッピー ディスク挿入
+ * @param[in] hWnd 親ウィンドウ
+ * @param[in] drv ドライブ
+ */
+void dialog_changefdd(HWND hWnd, REG8 drv)
+{
+	LPCTSTR lpDefaultPath = fddfile_diskname(drv);
+	if ((lpDefaultPath == NULL) || (lpDefaultPath[0] == TEXT('\0')))
 	{
-		CNewDiskDlg dlg(hWnd, path);
-		dlg.DoModal();
-#if 0
-		{
-			newdisk_fdd(path, makefdtype, disklabel);
-		}
-#endif
+		lpDefaultPath = fddfolder;
+	}
+
+	std::tstring rTitle(LoadTString(IDS_FDDTITLE));
+	std::tstring rFilter(LoadTString(IDS_FDDFILTER));
+	std::tstring rExt(LoadTString(IDS_FDDEXT));
+
+	CFileDlg dlg(TRUE, rExt.c_str(), lpDefaultPath, OFN_FILEMUSTEXIST, rFilter.c_str(), hWnd);
+	dlg.m_ofn.nFilterIndex = 3;
+	if (dlg.DoModal() == IDOK)
+	{
+		LPCTSTR lpPath = dlg.GetPathName();
+		file_cpyname(fddfolder, lpPath, _countof(fddfolder));
+		sysmng_update(SYS_UPDATEOSCFG);
+		diskdrv_setfdd(drv, lpPath, dlg.GetReadOnlyPref());
 	}
 }
 
+
+
+/**
+ * フロッピー ディスクの作成
+ * @param[in] hWnd 親ウィンドウ
+ */
+void dialog_newdisk(HWND hWnd)
+{
+	TCHAR szPath[MAX_PATH];
+	file_cpyname(szPath, fddfolder, _countof(szPath));
+	file_cutname(szPath);
+	file_catname(szPath, str_newdisk, _countof(szPath));
+
+	std::tstring rTitle(LoadTString(IDS_NEWDISKTITLE));
+	std::tstring rFilter(LoadTString(IDS_NEWDISKFILTER));
+	std::tstring rExt(LoadTString(IDS_NEWDISKEXT));
+
+	CFileDlg dlg(FALSE, rExt.c_str(), szPath, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
+	dlg.m_ofn.nFilterIndex = 1;
+	if (dlg.DoModal() == IDOK)
+	{
+		LPCTSTR lpPath = dlg.GetPathName();
+		LPCTSTR lpExt = file_getext(lpPath);
+		if ((file_cmpname(lpExt, str_d88) == 0) || (file_cmpname(lpExt, str_88d) == 0))
+		{
+			CNewDiskDlg dlg2(hWnd, lpPath);
+			dlg2.DoModal();
+		}
+	}
+}
