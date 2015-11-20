@@ -850,7 +850,11 @@ SOURCE=..\FONT\FONTX1.C
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\DIALOG\D_ABOUT.CPP
+SOURCE=.\dialog\d_about.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_about.h
 # End Source File
 # Begin Source File
 
@@ -858,7 +862,11 @@ SOURCE=.\DIALOG\D_BMP.CPP
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_CFG.CPP
+SOURCE=.\dialog\d_cfg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_cfg.h
 # End Source File
 # Begin Source File
 

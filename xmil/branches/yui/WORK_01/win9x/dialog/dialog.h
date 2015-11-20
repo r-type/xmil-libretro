@@ -4,9 +4,6 @@
 
 extern	char	licenced[];
 
-LRESULT CALLBACK CfgDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
-LRESULT CALLBACK AboutDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
-
 void dialog_changefdd(HWND hWnd, REG8 drv);
 void dialog_newdisk(HWND hWnd);
 void dialog_writebmp(HWND hWnd);

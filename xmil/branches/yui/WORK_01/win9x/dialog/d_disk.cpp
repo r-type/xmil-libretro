@@ -9,7 +9,7 @@
 #include	"diskdrv.h"
 #include	"newdisk.h"
 #include	"fddfile.h"
-
+#include "misc/DlgProc.h"
 
 static const OEMCHAR fddui_title[] = OEMTEXT("Select floppy image");
 static const OEMCHAR fddui_filter[] = OEMTEXT("2D image files (*.2D)\0*.2d\0D88 image files (*.D88;*.88D)\0*.d88;*.88d\0All supported Files\0*.2d;*.d88;*.88d;*.d8u\0All files (*.*)\0*.*\0\0");
@@ -45,60 +45,58 @@ const OEMCHAR	*p;
 
 static const OEMCHAR str_newdisk[] = OEMTEXT("newdisk");
 
-static	UINT8	makefdtype = DISKTYPE_2D << 4;
-static	OEMCHAR	disklabel[16+1];
+/**
+ * @brief 新しいディスク ダイアログ
+ */
+class CNewDiskDlg : public CDlgProc
+{
+public:
+	CNewDiskDlg(HWND hwndParent, LPCTSTR lpPath);
 
-static LRESULT CALLBACK NewdiskDlgProc(HWND hWnd, UINT msg,
-													WPARAM wp, LPARAM lp) {
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
 
-	UINT16	res;
+private:
+	LPCTSTR m_lpPath;			//!< パス
+};
 
-	switch (msg) {
-		case WM_INITDIALOG:
-			if (makefdtype == (DISKTYPE_2D << 4)) {
-				res = IDC_MAKE2D;
-			}
-			else {
-				res = IDC_MAKE2HD;
-			}
-			SetDlgItemCheck(hWnd, res, 1);
-			SetFocus(GetDlgItem(hWnd, IDC_DISKLABEL));
-			return(FALSE);
+/**
+ * コンストラクタ
+ * @param[in] hwndParent 親ウィンドウ
+ * @param[in] lpPath パス
+ */
+CNewDiskDlg::CNewDiskDlg(HWND hwndParent, LPCTSTR lpPath)
+	: CDlgProc(IDD_NEWDISK, hwndParent)
+	, m_lpPath(lpPath)
+{
+}
 
-		case WM_COMMAND:
-			switch (LOWORD(wp)) {
-				case IDOK:
-					GetWindowText(GetDlgItem(hWnd, IDC_DISKLABEL),
-											disklabel, NELEMENTS(disklabel));
-					if (milstr_kanji1st(disklabel, NELEMENTS(disklabel) - 1)) {
-						disklabel[NELEMENTS(disklabel) - 1] = '\0';
-					}
-					if (GetDlgItemCheck(hWnd, IDC_MAKE2D)) {
-						makefdtype = (DISKTYPE_2D << 4);
-					}
-					else {
-						makefdtype = (DISKTYPE_2HD << 4);
-					}
-					EndDialog(hWnd, IDOK);
-					break;
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL CNewDiskDlg::OnInitDialog()
+{
+	CheckDlgButton(IDC_MAKE2D, BST_CHECKED);
+	GetDlgItem(IDC_DISKLABEL).SetFocus();
+	return FALSE;
+}
 
-				case IDCANCEL:
-					EndDialog(hWnd, IDCANCEL);
-					break;
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void CNewDiskDlg::OnOK()
+{
+	TCHAR szLabel[32];
+	GetDlgItemText(IDC_DISKLABEL, szLabel, _countof(szLabel));
 
-				default:
-					return(FALSE);
-			}
-			break;
+	const UINT nMakeFdType = (IsDlgButtonChecked(IDC_MAKE2D) != BST_UNCHECKED) ? (DISKTYPE_2D << 4) : (DISKTYPE_2HD << 4);
 
-		case WM_CLOSE:
-			PostMessage(hWnd, WM_COMMAND, IDCANCEL, 0);
-			break;
+	newdisk_fdd(m_lpPath, nMakeFdType, szLabel);
 
-		default:
-			return(FALSE);
-	}
-	return(TRUE);
+	CDlgProc::OnOK();
 }
 
 void dialog_newdisk(HWND hWnd) {
@@ -116,11 +114,15 @@ const OEMCHAR	*ext;
 	}
 	hinst = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
 	ext = file_getext(path);
-	if ((!file_cmpname(ext, str_d88)) || (!file_cmpname(ext, str_88d))) {
-		if (DialogBox(hinst, MAKEINTRESOURCE(IDD_NEWDISK),
-									hWnd, (DLGPROC)NewdiskDlgProc) == IDOK) {
+	if ((!file_cmpname(ext, str_d88)) || (!file_cmpname(ext, str_88d)))
+	{
+		CNewDiskDlg dlg(hWnd, path);
+		dlg.DoModal();
+#if 0
+		{
 			newdisk_fdd(path, makefdtype, disklabel);
 		}
+#endif
 	}
 }
 

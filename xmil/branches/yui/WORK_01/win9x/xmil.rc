@@ -321,7 +321,7 @@ TURBOZ                  BITMAP  DISCARDABLE     "Icons\\turboz.bmp"
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_APP_NAME            "X millennium ÇÀÇ±ÇøÇ„Å`ÇÒ"
+    IDS_APP_NAME            "X millennium"
 END
 
 STRINGTABLE DISCARDABLE 
