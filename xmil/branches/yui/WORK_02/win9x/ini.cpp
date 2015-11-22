@@ -328,11 +328,15 @@ static const PFTBL s_IniItems[] =
 	PFVAL("skipline", PFTYPE_BOOL,		&xmilcfg.skipline),
 	PFVAL("skplight", PFTYPE_UINT16,	&xmilcfg.skiplight),
 
+#if !defined(DISABLE_SOUND)
 	PFVAL("SampleHz", PFTYPE_UINT16,	&xmilcfg.samplingrate),
 	PFVAL("Latencys", PFTYPE_UINT16,	&xmilcfg.delayms),
-	PFVAL("OPMsound", PFTYPE_BOOL,		&xmilcfg.SOUND_SW),
 	PFVAL("Seek_Snd", PFTYPE_BOOL,		&xmilcfg.MOTOR),
 	PFMAX("Seek_Vol", PFTYPE_UINT8,		&xmilcfg.MOTORVOL,		100),
+#endif	// !defined(DISABLE_SOUND)
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	PFVAL("OPMsound", PFTYPE_BOOL,		&xmilcfg.SOUND_SW),
+#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 
 	PFVAL("MouseInt", PFTYPE_BOOL,		&xmilcfg.MOUSE_SW),
 	PFVAL("btnRAPID", PFTYPE_BOOL,		&xmilcfg.BTN_RAPID),

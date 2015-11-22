@@ -874,27 +874,43 @@ SOURCE=..\FONT\FONTX1.C
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\DIALOG\D_ABOUT.CPP
+SOURCE=.\dialog\d_about.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_BMP.CPP
+SOURCE=.\dialog\d_about.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_CFG.CPP
+SOURCE=.\dialog\d_bmp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_DISK.CPP
+SOURCE=.\dialog\d_bmp.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_SOUND.CPP
+SOURCE=.\dialog\d_cfg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\DIALOGS.CPP
+SOURCE=.\dialog\d_cfg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_disk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_disk.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_sound.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_sound.h
 # End Source File
 # Begin Source File
 
@@ -1008,6 +1024,14 @@ SOURCE=.\ext\externalpsg.h
 # Begin Group "misc"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\misc\DlgProc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\DlgProc.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\misc\guard.h

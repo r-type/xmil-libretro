@@ -158,17 +158,19 @@ static void sys_cmd(MENUID id) {
 			break;
 #endif
 
-#if defined(SUPPORT_OPM)
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 		case MID_FMBOARD:
 			xmilcfg.SOUND_SW ^= 1;
 			update = SYS_UPDATECFG;
 			break;
-#endif	// defined(SUPPORT_OPM)
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
 
+#if !defined(DISABLE_SOUND)
 		case MID_SEEKSND:
 			xmilcfg.MOTOR ^= 1;
 			update |= SYS_UPDATECFG;
 			break;
+#endif	/* !defined(DISABLE_SOUND) */
 
 		case MID_JOYX:
 			xmilcfg.BTN_MODE ^= 1;
@@ -254,10 +256,12 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_JOY1, (b == 1));
 	menusys_setcheck(MID_JOY2, (b == 2));
 	menusys_setcheck(MID_MOUSEKEY, (b == 3));
-#if defined(SUPPORT_OPM)
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	menusys_setcheck(MID_FMBOARD, (xmilcfg.SOUND_SW & 1));
-#endif	// defined(SUPPORT_OPM)
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
+#if !defined(DISABLE_SOUND)
 	menusys_setcheck(MID_SEEKSND, (xmilcfg.MOTOR & 1));
+#endif	/* !defined(DISABLE_SOUND) */
 	menusys_setcheck(MID_JOYX, (xmilcfg.BTN_MODE & 1));
 	menusys_setcheck(MID_RAPID, (xmilcfg.BTN_RAPID & 1));
 	return(menusys_open(x, y));
