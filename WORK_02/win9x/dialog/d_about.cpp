@@ -1,49 +1,34 @@
-#include	"compiler.h"
-#include	"resource.h"
-#include	"pccore.h"
-#include	"dialog.h"
+/**
+ * @file	d_about.cpp
+ * @brief	バージョン情報ダイアログ クラスの動作の定義を行います
+ */
 
+#include "compiler.h"
+#include "resource.h"
+#include "d_about.h"
+#include "pccore.h"
 
-static const OEMCHAR str_xmiltitle[] = OEMTEXT("X millennium  ");
-// static const OEMCHAR str_xmiltitle[] = OEMTEXT("ねことィヵの微妙な関係  ");
+/**
+ * コンストラクタ
+ * @param[in] hwndParent 親ウィンドウ
+ */
+CAboutDlg::CAboutDlg(HWND hwndParent)
+	: CDlgProc(IDD_ABOUT, hwndParent)
+{
+}
 
-static void about_init(HWND hWnd) {
-
-	OEMCHAR	work[128];
-
-	milstr_ncpy(work, str_xmiltitle, NELEMENTS(work));
-	milstr_ncat(work, xmilversion, NELEMENTS(work));
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL CAboutDlg::OnInitDialog()
+{
+	std::tstring str = LoadTString(IDS_APP_NAME) + std::tstring(TEXT("  ")) + std::tstring(xmilversion);
 #if defined(XMILVER_WIN9X)
-	milstr_ncat(work, XMILVER_WIN9X, NELEMENTS(work));
+	str += std::tstring(XMILVER_WIN9X);
 #endif
-	SetDlgItemText(hWnd, IDC_XMILVER, work);
+	SetDlgItemText(IDC_XMILVER, str.c_str());
+
+	return TRUE;
 }
-
-LRESULT CALLBACK AboutDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
-
-	switch (msg) {
-		case WM_INITDIALOG:
-			about_init(hWnd);
-			return(FALSE);
-
-		case WM_COMMAND:
-			switch(LOWORD(wp)) {
-				case IDOK:
-					EndDialog(hWnd, IDOK);
-					break;
-
-				default:
-					return(FALSE);
-			}
-			break;
-
-		case WM_CLOSE:
-			PostMessage(hWnd, WM_COMMAND, IDOK, 0);
-			break;
-
-		default:
-			return(FALSE);
-	}
-	return(TRUE);
-}
-

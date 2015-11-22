@@ -124,6 +124,7 @@ static const MENUPRM res_cfg[] = {
 
 static const OEMCHAR str_buffmt[] = OEMTEXT("%ums");
 
+#if !defined(DISABLE_SOUND)
 static void setbufstr(void) {
 
 	UINT	val;
@@ -139,6 +140,7 @@ static void setbufstr(void) {
 	OEMSPRINTF(work, str_buffmt, val);
 	menudlg_settext(DID_BUFSTR, work);
 }
+#endif	/* !defined(DISABLE_SOUND) */
 
 #if !defined(SIZE_QVGA)
 static void setskipen(UINT en) {
@@ -164,11 +166,14 @@ static void setskipstr(void) {
 
 static void dlginit(void) {
 
+#if !defined(DISABLE_SOUND)
 	MENUID	id;
+#endif	/* !defined(DISABLE_SOUND) */
 
 	menudlg_appends(res_cfg, NELEMENTS(res_cfg));
 	menudlg_setval(DID_Z80A, 1);
 
+#if !defined(DISABLE_SOUND)
 	if (xmilcfg.samplingrate < ((11025 + 22050) / 2)) {
 		id = DID_RATE11;
 	}
@@ -181,6 +186,12 @@ static void dlginit(void) {
 	menudlg_setval(id, 1);
 	menudlg_setval(DID_BUFFER, xmilcfg.delayms);
 	setbufstr();
+#else	/* !defined(DISABLE_SOUND) */
+	menudlg_setenable(DID_RATE11, FALSE);
+	menudlg_setenable(DID_RATE22, FALSE);
+	menudlg_setenable(DID_RATE44, FALSE);
+	menudlg_setenable(DID_BUFFER, FALSE);
+#endif	/* !defined(DISABLE_SOUND) */
 
 #if !defined(SIZE_QVGA)
 	menudlg_setval(DID_SKIPLINE, xmilcfg.skipline);
@@ -200,6 +211,7 @@ static void dlgupdate(void) {
 
 	update = 0;
 
+#if !defined(DISABLE_SOUND)
 	if (menudlg_getval(DID_RATE11)) {
 		val = 11025;
 	}
@@ -227,6 +239,7 @@ static void dlgupdate(void) {
 		update |= SYS_UPDATECFG;
 		corestat.soundrenewal = 1;
 	}
+#endif	/* !defined(DISABLE_SOUND) */
 
 #if !defined(SIZE_QVGA)
 	renewalflg = FALSE;
@@ -270,9 +283,11 @@ int dlgcfg_cmd(int msg, MENUID id, long param) {
 					menubase_close();
 					break;
 
+#if !defined(DISABLE_SOUND)
 				case DID_BUFFER:
 					setbufstr();
 					break;
+#endif	/* !defined(DISABLE_SOUND) */
 
 #if !defined(SIZE_QVGA)
 				case DID_SKIPLINE:

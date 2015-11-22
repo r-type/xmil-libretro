@@ -9,7 +9,7 @@
 #if defined(SUPPORT_X1F)
 
 typedef struct {
-	UINT	enable;
+	BOOL	enable;
 	FILEH	fh;
 	UINT	counter;
 	UINT	pos;
@@ -68,7 +68,7 @@ BRESULT x1f_open(const OEMCHAR *filename) {
 	CopyMemory(buf, "X1F", 4);
 	file_write(fh, buf, 256);
 
-	x1f.enable = 1;
+	x1f.enable = TRUE;
 	x1f.fh = fh;
 	x1f.counter = 0;
 	x1f.pos = 0;
@@ -81,7 +81,7 @@ BRESULT x1f_open(const OEMCHAR *filename) {
 void x1f_close(void) {
 
 	if (x1f.enable) {
-		x1f.enable = 0;
+		x1f.enable = FALSE;
 		if (x1f.pos) {
 			file_write(x1f.fh, x1f.buf, x1f.pos);
 		}
@@ -113,6 +113,11 @@ void x1f_sync(void) {
 	if (x1f.enable) {
 		x1f.counter++;
 	}
+}
+
+BOOL x1f_isopened(void)
+{
+	return x1f.enable;
 }
 
 #endif
