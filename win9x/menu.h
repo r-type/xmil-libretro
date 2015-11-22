@@ -25,12 +25,18 @@ void menu_setraster(UINT8 value);
 void menu_setwaitflg(UINT8 value);
 void menu_setframe(UINT8 value);
 void menu_setkey(UINT8 value);
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 void menu_setsound(UINT8 value);
+#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 void menu_enablejoystick(bool bEnabled);
 void menu_setjoystick(UINT8 value);
 void menu_setmouse(UINT8 value);
+#if !defined(DISABLE_SOUND)
 void menu_setmotorflg(UINT8 value);
+#endif	// !defined(DISABLE_SOUND)
+#if defined(SUPPORT_X1F)
 void menu_opmlog(UINT8 value);
+#endif	// defined(SUPPORT_X1F)
 void menu_setdispclk(UINT8 value);
 void menu_setbtnmode(UINT8 value);
 void menu_setbtnrapid(UINT8 value);

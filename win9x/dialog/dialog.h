@@ -10,8 +10,9 @@ LRESULT CALLBACK AboutDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 void dialog_changefdd(HWND hWnd, REG8 drv);
 void dialog_newdisk(HWND hWnd);
 void dialog_writebmp(HWND hWnd);
+#if defined(SUPPORT_X1F)
 void dialog_x1f(HWND hWnd);
-
+#endif	// defined(SUPPORT_X1F)
 
 #if 0
 void dialog_scropt(HWND hWnd);
