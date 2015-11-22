@@ -1,7 +1,12 @@
-#include	"compiler.h"
-#include	"sound.h"
-#include	"sndctrl.h"
+/**
+ * @file	psggenc.c
+ * @brief	Implementation of the PSG generator
+ */
 
+#include "compiler.h"
+#include <math.h>
+#include "sound.h"
+#include "psggen.h"
 
 	PSGGENCFG	psggencfg;
 
@@ -9,7 +14,7 @@ static const SINT32 psgvolrate[16] = {
 				   0,  508,  719, 1017, 1440, 2037, 2883, 4079,
 				5772, 8167,11556,16351,23135,32735,46317,65536};
 
-const UINT8 psggen_deftbl[0x10] =
+static const UINT8 psggen_deftbl[0x10] =
 				{0, 0, 0, 0, 0, 0, 0, 0xbf, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
 
 static const UINT8 psgenv_pat[16] = {
@@ -120,7 +125,6 @@ void psggen_setreg(PSGGEN psg, REG8 reg, REG8 value) {
 			break;
 
 		case 7:
-//			keydisp_psgmix(psg);
 			psg->mixer = ~value;
 			psg->puchicount = psggencfg.puchidec;
 			break;
@@ -129,7 +133,6 @@ void psggen_setreg(PSGGEN psg, REG8 reg, REG8 value) {
 		case 9:
 		case 10:
 			ch = reg - 8;
-//			keydisp_psgvol(psg, (UINT8)ch);
 			if (value & 0x10) {
 				psg->tone[ch].pvol = &psg->evol;
 			}

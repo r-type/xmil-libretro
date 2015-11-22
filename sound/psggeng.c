@@ -1,8 +1,12 @@
-#include	"compiler.h"
-#include	"parts.h"
-#include	"sound.h"
-#include	"sndctrl.h"
+/**
+ * @file	psggeng.c
+ * @brief	Implementation of the PSG generator
+ */
 
+#include "compiler.h"
+#include "sound.h"
+#include "psggen.h"
+#include "parts.h"
 
 extern	PSGGENCFG	psggencfg;
 

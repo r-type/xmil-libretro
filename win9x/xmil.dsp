@@ -771,11 +771,15 @@ InputName=OPMGENG
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\PSGGENC.C
+SOURCE=..\sound\psggen.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\PSGGENG.C
+SOURCE=..\sound\psggenc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggeng.c
 # End Source File
 # Begin Source File
 
