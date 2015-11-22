@@ -1,12 +1,15 @@
-#include	"compiler.h"
+/**
+ * @file	opmgenc.c
+ * @brief	Implementation of the OPM generator
+ */
 
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#include "compiler.h"
 
-#ifndef		PALMOS
-#include	<math.h>
+#ifndef PALMOS
+#include <math.h>
 #endif
-#include	"sound.h"
-#include	"sndctrl.h"
+#include "sound.h"
+#include "opmgen.h"
 
 
 #define	OPM_ARRATE		 399128L
@@ -131,13 +134,13 @@ void opmgen_setvol(UINT vol) {
 
 /* ---- */
 
-static void keyon(OPMCH *ch, REG8 value) {
+static void keyon(OPMGEN opmgen, OPMCH *ch, REG8 value) {
 
 	OPMSLOT	*slot;
 	REG8	bit;
 	UINT	i;
 
-	opmgen.playing++;
+	opmgen->playing++;
 	ch->playing |= (value >> 3) & 0x0f;
 	slot = ch->slot;
 	bit = 0x08;
@@ -170,7 +173,7 @@ static void keyon(OPMCH *ch, REG8 value) {
 	}
 }
 
-static void set_algorithm(OPMCH *ch, REG8 value) {
+static void set_algorithm(OPMGEN opmgen, OPMCH *ch, REG8 value) {
 
 	UINT8	feed;
 	SINT32	*outd;
@@ -188,55 +191,55 @@ static void set_algorithm(OPMCH *ch, REG8 value) {
 	switch ((value >> 6) & 3) {
 		case 0:
 		default:
-			outd = &opmgen.feedback4;
+			outd = &opmgen->feedback4;
 			break;
 
 		case 1:
-			outd = &opmgen.outdl;
+			outd = &opmgen->outdl;
 			break;
 
 		case 2:
-			outd = &opmgen.outdr;
+			outd = &opmgen->outdr;
 			break;
 
 		case 3:
-			outd = &opmgen.outdc;
+			outd = &opmgen->outdc;
 			break;
 	}
 
 	switch(value & 7) {
 		case 0:
-			ch->connect1 = &opmgen.feedback2;
-			ch->connect2 = &opmgen.feedback3;
-			ch->connect3 = &opmgen.feedback4;
+			ch->connect1 = &opmgen->feedback2;
+			ch->connect2 = &opmgen->feedback3;
+			ch->connect3 = &opmgen->feedback4;
 			outslot = 0x08;
 			break;
 
 		case 1:
-			ch->connect1 = &opmgen.feedback3;
-			ch->connect2 = &opmgen.feedback3;
-			ch->connect3 = &opmgen.feedback4;
+			ch->connect1 = &opmgen->feedback3;
+			ch->connect2 = &opmgen->feedback3;
+			ch->connect3 = &opmgen->feedback4;
 			outslot = 0x08;
 			break;
 
 		case 2:
-			ch->connect1 = &opmgen.feedback4;
-			ch->connect2 = &opmgen.feedback3;
-			ch->connect3 = &opmgen.feedback4;
+			ch->connect1 = &opmgen->feedback4;
+			ch->connect2 = &opmgen->feedback3;
+			ch->connect3 = &opmgen->feedback4;
 			outslot = 0x08;
 			break;
 
 		case 3:
-			ch->connect1 = &opmgen.feedback2;
-			ch->connect2 = &opmgen.feedback4;
-			ch->connect3 = &opmgen.feedback4;
+			ch->connect1 = &opmgen->feedback2;
+			ch->connect2 = &opmgen->feedback4;
+			ch->connect3 = &opmgen->feedback4;
 			outslot = 0x08;
 			break;
 
 		case 4:
-			ch->connect1 = &opmgen.feedback2;
+			ch->connect1 = &opmgen->feedback2;
 			ch->connect2 = outd;
-			ch->connect3 = &opmgen.feedback4;
+			ch->connect3 = &opmgen->feedback4;
 			outslot = 0x0a;
 			break;
 
@@ -248,7 +251,7 @@ static void set_algorithm(OPMCH *ch, REG8 value) {
 			break;
 
 		case 6:
-			ch->connect1 = &opmgen.feedback2;
+			ch->connect1 = &opmgen->feedback2;
 			ch->connect2 = outd;
 			ch->connect3 = outd;
 			outslot = 0x0e;
@@ -354,15 +357,15 @@ static void channelupdate(OPMCH *ch) {
 
 /*----------------------------------------------------------------------------- */
 
-void opmgen_reset(void) {
+void opmgen_reset(OPMGEN opmgen) {
 
 	OPMCH	*ch;
 	UINT	i;
 	OPMSLOT	*slot;
 	UINT	j;
 
-	opmgen.mode = 0;
-	ch = opmch;
+	opmgen->mode = 0;
+	ch = opmgen->opmch;
 	for(i=0; i<OPMCH_MAX; i++) {
 		ch->keynote = 0;
 		slot = ch->slot;
@@ -381,11 +384,11 @@ void opmgen_reset(void) {
 		ch++;
 	}
 	for (i=0x20; i<0x100; i++) {
-		opmgen_setreg((REG8)i, 0);
+		opmgen_setreg(opmgen, (REG8)i, 0);
 	}
 }
 
-void opmgen_setreg(REG8 reg, REG8 value) {
+void opmgen_setreg(OPMGEN opmgen, REG8 reg, REG8 value) {
 
 	UINT		c;
 	UINT		i;
@@ -394,20 +397,20 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 
 	sound_sync();
 	c = reg & 7;
-	ch = opmch + c;
+	ch = opmgen->opmch + c;
 	slot = ch->slot + fmslot[(reg >> 3) & 3];
 	switch(reg & 0xe0) {
 		case 0x00:
 			switch(reg) {
 				case 0x08:				/* key on/off */
-					keyon(opmch + (value & 7), value);
+					keyon(opmgen, opmgen->opmch + (value & 7), value);
 					break;
 
 				case 0x14:				/* mode */
-					opmgen.mode = value;
+					opmgen->mode = value;
 					if ((value & 0x81) == 0x81) {
-						opmgen.playing++;
-						ch = opmch;
+						opmgen->playing++;
+						ch = opmgen->opmch;
 						for (c=0; c<8; c++) {
 							ch->playing = 0x0f;
 							ch->op1fb = 0;
@@ -430,7 +433,7 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 		case 0x20:
 			switch(reg & 0x18) {
 				case 0x00: 			/* pan feedback connection */
-					set_algorithm(ch, value);
+					set_algorithm(opmgen, ch, value);
 					break;
 
 				case 0x08:			/* keycode */
@@ -477,6 +480,4 @@ void opmgen_setreg(REG8 reg, REG8 value) {
 			break;
 	}
 }
-
-#endif
 

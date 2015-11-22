@@ -7,8 +7,7 @@
 
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	OPMCH		opmch[OPMCH_MAX];
-	_OPMGEN		opmgen;
+	_OPMGEN		g_opmgen;
 #endif
 	_PSGGEN		psggen;
 
@@ -36,8 +35,8 @@ void sndctrl_deinitialize(void) {
 void sndctrl_reset(void) {
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	opmgen_reset();
-	sound_streamregist(&opmgen, (SOUNDCB)opmgen_getpcm);
+	opmgen_reset(&g_opmgen);
+	sound_streamregist(&g_opmgen, (SOUNDCB)opmgen_getpcm);
 #endif
 	psggen_reset(&psggen);
 	sound_streamregist(&psggen, (SOUNDCB)psggen_getpcm);
