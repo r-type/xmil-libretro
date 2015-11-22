@@ -13,10 +13,8 @@
 #define IDR_FDD1MENU                    204
 #define IDR_FDD2MENU                    205
 #define IDR_FDD3MENU                    206
-#define IDR_TURBOZ                      207
-#define IDR_DEBUG                       208
-#define IDR_WAVEREC                     209
-#define IDR_TRACE                       210
+#define IDR_DEBUG                       207
+#define IDR_TRACE                       208
 #define IDC_SAMPLERATE                  1000
 #define IDC_SNDBUFFER                   1001
 #define IDC_SEEKVOL                     1002
