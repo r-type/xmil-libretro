@@ -103,6 +103,7 @@ typedef struct {
 	SINT32	outdr;
 	SINT32	calcremain;
 	UINT8	keyreg[OPMCH_MAX];
+	OPMCH	opmch[OPMCH_MAX];
 } _OPMGEN, *OPMGEN;
 
 typedef struct {
@@ -121,10 +122,10 @@ extern "C" {
 
 void opmgen_initialize(UINT rate);
 void opmgen_setvol(UINT vol);
-void opmgen_reset(void);
-void opmgen_setreg(REG8 reg, REG8 value);
+void opmgen_reset(OPMGEN opmgen);
+void opmgen_setreg(OPMGEN opmgen, REG8 reg, REG8 value);
 
-void SOUNDCALL opmgen_getpcm(void *hdl, SINT32 *pcm, UINT count);
+void SOUNDCALL opmgen_getpcm(OPMGEN opmgen, SINT32 *pcm, UINT count);
 
 #ifdef __cplusplus
 }
