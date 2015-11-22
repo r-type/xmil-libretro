@@ -48,7 +48,7 @@ BOOL CConfigDlg::OnInitDialog()
 	static UINT s_nSoundIDs[] = {IDC_SAMPLERATE, IDC_SNDBUFFER, IDC_SEEKVOL};
 	for (size_t i = 0; i < _countof(s_nSoundIDs); i++)
 	{
-		EnableWindow(GetDlgItem(s_nSoundIDs[i]), FALSE);
+		GetDlgItem(s_nSoundIDs[i]).EnableWindow(FALSE);
 	}
 #endif	// !defined(DISABLE_SOUND)
 
