@@ -31,6 +31,7 @@ void menu_setwaitflg(UINT8 value);
 void menu_setframe(UINT8 value);
 void menu_setkey(UINT8 value);
 void menu_setsound(UINT8 value);
+void menu_enablejoystick(bool bEnabled);
 void menu_setjoystick(UINT8 value);
 void menu_setmouse(UINT8 value);
 void menu_setmotorflg(UINT8 value);
