@@ -376,10 +376,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			menu_setkey(2);
 			break;
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 		case IDM_FMBOARD:
 			menu_setsound(xmilcfg.SOUND_SW ^ 1);
 			update = SYS_UPDATECFG;
 			break;
+#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 
 		case IDM_JOYSTICK:
 			menu_setjoystick(xmiloscfg.JOYSTICK ^ 1);
@@ -392,10 +394,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			update = SYS_UPDATECFG;
 			break;
 
+#if !defined(DISABLE_SOUND)
 		case IDM_SEEKSND:
 			menu_setmotorflg(xmilcfg.MOTOR ^ 1);
 			update = SYS_UPDATECFG;
 			break;
+#endif	// !defined(DISABLE_SOUND)
 
 		case IDM_WIDTH40:
 			crtc_forcesetwidth(40);
@@ -415,11 +419,13 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			winuileave();
 			break;
 
+#if defined(SUPPORT_X1F)
 		case IDM_OPMLOG:
 			winuienter();
 			dialog_x1f(hWnd);
 			winuileave();
 			break;
+#endif	// defined(SUPPORT_X1F)
 
 		case IDM_DISPCLOCK:
 			menu_setdispclk(xmiloscfg.DISPCLK ^ 1);
@@ -855,10 +861,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	menu_setwaitflg(xmiloscfg.NOWAIT);
 	menu_setframe(xmiloscfg.DRAW_SKIP);
 	menu_setkey(0);
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	menu_setsound(xmilcfg.SOUND_SW);
+#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	menu_setjoystick(xmiloscfg.JOYSTICK);
 	menu_setmouse(xmilcfg.MOUSE_SW);
+#if !defined(DISABLE_SOUND)
 	menu_setmotorflg(xmilcfg.MOTOR);
+#endif	// !defined(DISABLE_SOUND)
 	menu_setdispclk(xmiloscfg.DISPCLK);
 	menu_setbtnmode(xmilcfg.BTN_MODE);
 	menu_setbtnrapid(xmilcfg.BTN_RAPID);
@@ -892,10 +902,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	juliet_prepare();
 //	juliet2_reset();
 	if (soundmng_initialize() == SUCCESS) {
+#if !defined(DISABLE_SOUND)
 		soundmng_pcmload(SOUND_PCMSEEK, OEMTEXT("fddseek.wav"), 0);
 		soundmng_pcmload(SOUND_PCMSEEK1, OEMTEXT("fddseek1.wav"), 0);
 		soundmng_pcmvolume(SOUND_PCMSEEK, xmilcfg.MOTORVOL);
 		soundmng_pcmvolume(SOUND_PCMSEEK1, xmilcfg.MOTORVOL);
+#endif	// !defined(DISABLE_SOUND)
 	}
 
 	sysmng_initialize();

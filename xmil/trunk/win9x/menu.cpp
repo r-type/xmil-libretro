@@ -185,8 +185,14 @@ void menu_initialize()
 {
 	HMENU hMenu = GetMenu(hWndMain);
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	InsertMenuString(hMenu, IDM_JOYSTICK, MF_BYCOMMAND | MF_STRING, IDM_FMBOARD);
+#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#if defined(SUPPORT_X1F)
+	InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_OPMLOG);
+#endif	// defined(SUPPORT_X1F)
 #if defined(SUPPORT_WAVEREC)
-		InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_WAVEREC);
+	InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_WAVEREC);
 #endif
 
 	if (xmiloscfg.Z80SAVE)
@@ -317,11 +323,13 @@ void menu_setkey(UINT8 value) {
 	CheckMenuItem(hmenu, IDM_JOY2, MFCHECK(value == 2));
 }
 
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 void menu_setsound(UINT8 value) {
 
 	xmilcfg.SOUND_SW = value;
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_FMBOARD, MFCHECK(value));
 }
+#endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 
 void menu_enablejoystick(bool bEnabled)
 {
@@ -343,17 +351,21 @@ void menu_setmouse(UINT8 value) {
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_MOUSE, MFCHECK(value));
 }
 
+#if !defined(DISABLE_SOUND)
 void menu_setmotorflg(UINT8 value) {
 
 	value &= 1;
 	xmilcfg.MOTOR = value;
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_SEEKSND, MFCHECK(value));
 }
+#endif	// !defined(DISABLE_SOUND)
 
+#if defined(SUPPORT_X1F)
 void menu_opmlog(UINT8 value) {
 
 	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_OPMLOG, MFCHECK(value));
 }
+#endif	// defined(SUPPORT_X1F)
 
 void menu_setdispclk(UINT8 value) {
 

@@ -116,7 +116,6 @@ BEGIN
         MENUITEM "JoyKey-&1",                   IDM_JOY1
         MENUITEM "Joykey-&2",                   IDM_JOY2
         MENUITEM SEPARATOR
-        MENUITEM "&FM Board",                   IDM_FMBOARD
         MENUITEM "&Joystick",                   IDM_JOYSTICK
         MENUITEM "&MOUSE",                      IDM_MOUSE
         MENUITEM SEPARATOR
@@ -125,7 +124,6 @@ BEGIN
     POPUP "&Other"
     BEGIN
         MENUITEM "&BMP Save...",                IDM_BMPSAVE
-        MENUITEM "&OPM LOG...",                 IDM_OPMLOG
         MENUITEM "&Clock Disp",                 IDM_DISPCLOCK
         MENUITEM "&Frame Disp",                 IDM_DISPFRAME
         MENUITEM "Joy Re&verse",                IDM_JOYX
@@ -339,6 +337,8 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDM_TURBOZ              "turbo&Z"
+    IDM_FMBOARD             "&FM Board"
+    IDM_OPMLOG              "&OPM LOG..."
     IDM_WAVEREC             "&Wave Record..."
 END
 
