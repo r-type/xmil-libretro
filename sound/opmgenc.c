@@ -8,7 +8,6 @@
 #ifndef PALMOS
 #include <math.h>
 #endif
-#include "sound.h"
 #include "opmgen.h"
 
 
