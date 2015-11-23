@@ -712,7 +712,7 @@ SOURCE=..\VRAM\VRAM.C
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sound\opm.c
+SOURCE=.\ext\opm.cpp
 # End Source File
 # Begin Source File
 
@@ -783,7 +783,7 @@ InputName=opmgeng
 # End Source File
 # Begin Source File
 
-SOURCE=..\sound\psg.c
+SOURCE=.\ext\psg.cpp
 # End Source File
 # Begin Source File
 
@@ -920,6 +920,106 @@ SOURCE=.\DIALOG\EXTCLASS.CPP
 # Begin Group "ext"
 
 # PROP Default_Filter ""
+# Begin Group "romeo"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\romeo\juliet.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\romeo\juliet.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\romeo\romeo.h
+# End Source File
+# End Group
+# Begin Group "scci"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\scci\scci.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\scci\SCCIDefines.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\scci\scciif.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\scci\scciif.h
+# End Source File
+# End Group
+# Begin Group "c86ctl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\c86ctl\c86ctl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\c86ctl\c86ctlif.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\c86ctl\c86ctlif.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\c86ctl\cbus_boardtype.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\ext\externalchip.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchipmanager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchipmanager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopl3.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopl3.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopna.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopna.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalpsg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalpsg.h
+# End Source File
 # End Group
 # Begin Group "misc"
 
@@ -931,6 +1031,18 @@ SOURCE=.\misc\DlgProc.cpp
 # Begin Source File
 
 SOURCE=.\misc\DlgProc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\guard.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\threadbase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\threadbase.h
 # End Source File
 # Begin Source File
 
