@@ -6,6 +6,7 @@
 #include	"dosio.h"
 #include	"soundmng.h"
 #include	"sound.h"
+#include "ext\externalchipmanager.h"
 
 #pragma comment(lib, "dsound.lib")
 
@@ -145,7 +146,7 @@ static void streamenable(BOOL play) {
 			pDSData3->Stop();
 		}
 	}
-//	juliet_YMF288Enable(play);
+	CExternalChipManager::GetInstance()->Mute(!play);
 }
 
 void soundmng_play(void) {
@@ -397,6 +398,8 @@ void soundmng_pcmstop(UINT num) {
 
 BRESULT soundmng_initialize(void) {
 
+	CExternalChipManager::GetInstance()->Initialize();
+
 	if (dsoundcreate() != SUCCESS) {
 		goto smcre_err;
 	}
@@ -413,6 +416,8 @@ void soundmng_deinitialize(void) {
 	pcmdestroy();
 	soundmng_destroy();
 	RELEASE(pDSound);
+
+	CExternalChipManager::GetInstance()->Deinitialize();
 }
 
 
