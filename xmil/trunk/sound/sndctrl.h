@@ -1,17 +1,24 @@
+/**
+ * @file	sndctrl.h
+ * @brief	Interface of the sound
+ */
 
-#include	"opmgen.h"
-#include	"psggen.h"
+#pragma once
+
+#include "opm.h"
+#include "psg.h"
 
 #if !defined(DISABLE_SOUND)
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-extern	_OPMGEN		g_opmgen;
+extern	OPM		g_opm;
 #endif
-extern	_PSGGEN		psggen;
+extern	PSG		g_psg;
 
 void sndctrl_initialize(void);
 void sndctrl_deinitialize(void);

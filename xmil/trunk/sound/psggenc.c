@@ -5,7 +5,6 @@
 
 #include "compiler.h"
 #include <math.h>
-#include "sound.h"
 #include "psggen.h"
 
 	PSGGENCFG	psggencfg;

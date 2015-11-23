@@ -13,7 +13,6 @@
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
-#include	"ext\romeo\juliet.h"
 #include	"dialog.h"
 #include	"extclass.h"
 #include "misc\wndloc.h"
@@ -898,9 +897,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 		}
 	}
 
-	juliet_load();
-	juliet_prepare();
-//	juliet2_reset();
 	if (soundmng_initialize() == SUCCESS) {
 #if !defined(DISABLE_SOUND)
 		soundmng_pcmload(SOUND_PCMSEEK, OEMTEXT("fddseek.wav"), 0);
@@ -1013,10 +1009,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	pccore_deinitialize();
 
 	soundmng_deinitialize();
-
-	juliet_YM2151Reset();
-	juliet_YMF288Reset();
-	juliet_unload();
 
 	scrnmng_destroy();
 

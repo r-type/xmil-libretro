@@ -4,7 +4,6 @@
  */
 
 #include "compiler.h"
-#include "sound.h"
 #include "psggen.h"
 #include "parts.h"
 

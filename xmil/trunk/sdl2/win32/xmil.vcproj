@@ -442,11 +442,19 @@
 				Name="sound"
 				>
 				<File
+					RelativePath="..\..\sound\opm.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\sound\opmgenc.c"
 					>
 				</File>
 				<File
 					RelativePath="..\..\sound\opmgeng.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\sound\psg.c"
 					>
 				</File>
 				<File
@@ -912,7 +920,15 @@
 				Name="sound"
 				>
 				<File
+					RelativePath="..\..\sound\opm.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\sound\opmgen.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\sound\psg.h"
 					>
 				</File>
 				<File

@@ -636,7 +636,7 @@ SOURCE=..\IO\SIO.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\ext\sndboard.cpp
+SOURCE=..\IO\SNDBOARD.C
 # End Source File
 # Begin Source File
 
@@ -712,6 +712,14 @@ SOURCE=..\VRAM\VRAM.C
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\sound\opm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\opm.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sound\opmgen.h
 # End Source File
 # Begin Source File
@@ -772,6 +780,14 @@ InputName=opmgeng
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psg.h
 # End Source File
 # Begin Source File
 
@@ -888,22 +904,6 @@ SOURCE=.\DIALOG\EXTCLASS.CPP
 # Begin Group "ext"
 
 # PROP Default_Filter ""
-# Begin Group "romeo"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\ext\romeo\juliet.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\romeo\juliet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\romeo\romeo.h
-# End Source File
-# End Group
 # End Group
 # Begin Group "misc"
 

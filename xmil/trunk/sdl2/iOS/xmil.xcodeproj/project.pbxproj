@@ -121,6 +121,8 @@
 		BA6D169E193D5CC1006EC729 /* z80c_sb.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D160C193D5CC1006EC729 /* z80c_sb.c */; };
 		BA6D169F193D5CC1006EC729 /* z80dmap.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D160E193D5CC1006EC729 /* z80dmap.c */; };
 		BA6D16A0193D5CC1006EC729 /* z80mem.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D1610193D5CC1006EC729 /* z80mem.c */; };
+		BAD1A2C71BE7565800B23E7C /* opm.c in Sources */ = {isa = PBXBuildFile; fileRef = BAD1A2C51BE7565800B23E7C /* opm.c */; };
+		BAD1A2CA1BE7566400B23E7C /* psg.c in Sources */ = {isa = PBXBuildFile; fileRef = BAD1A2C81BE7566400B23E7C /* psg.c */; };
 		BAD9FBD9193F194700B3C0D5 /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = BAD9FBD7193F194700B3C0D5 /* Default-Landscape.png */; };
 		BAD9FBDA193F194700B3C0D5 /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = BAD9FBD8193F194700B3C0D5 /* Icon-72.png */; };
 		FD779EDE0E26BA1200F39101 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD779EDD0E26BA1200F39101 /* CoreAudio.framework */; };
@@ -400,6 +402,10 @@
 		BA6D160F193D5CC1006EC729 /* z80dmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = z80dmap.h; sourceTree = "<group>"; };
 		BA6D1610193D5CC1006EC729 /* z80mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = z80mem.c; sourceTree = "<group>"; };
 		BA6D1611193D5CC1006EC729 /* z80mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = z80mem.h; sourceTree = "<group>"; };
+		BAD1A2C51BE7565800B23E7C /* opm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = opm.c; sourceTree = "<group>"; };
+		BAD1A2C61BE7565800B23E7C /* opm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opm.h; sourceTree = "<group>"; };
+		BAD1A2C81BE7566400B23E7C /* psg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psg.c; sourceTree = "<group>"; };
+		BAD1A2C91BE7566400B23E7C /* psg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psg.h; sourceTree = "<group>"; };
 		BAD9FBD7193F194700B3C0D5 /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape.png"; sourceTree = "<group>"; };
 		BAD9FBD8193F194700B3C0D5 /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		FD779EDD0E26BA1200F39101 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -806,9 +812,13 @@
 		BA6D15D6193D5CC1006EC729 /* sound */ = {
 			isa = PBXGroup;
 			children = (
+				BAD1A2C51BE7565800B23E7C /* opm.c */,
+				BAD1A2C61BE7565800B23E7C /* opm.h */,
 				BA6D15D7193D5CC1006EC729 /* opmgen.h */,
 				BA6D15D8193D5CC1006EC729 /* opmgenc.c */,
 				BA6D15D9193D5CC1006EC729 /* opmgeng.c */,
+				BAD1A2C81BE7566400B23E7C /* psg.c */,
+				BAD1A2C91BE7566400B23E7C /* psg.h */,
 				BA6D15DA193D5CC1006EC729 /* psggen.h */,
 				BA6D15DB193D5CC1006EC729 /* psggenc.c */,
 				BA6D15DC193D5CC1006EC729 /* psggeng.c */,
@@ -939,6 +949,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAD1A2CA1BE7566400B23E7C /* psg.c in Sources */,
 				BA6D1649193D5CC1006EC729 /* crtc.c in Sources */,
 				BA6D1687193D5CC1006EC729 /* make24.c in Sources */,
 				BA6D1685193D5CC1006EC729 /* timing.c in Sources */,
@@ -972,6 +983,7 @@
 				BA6D1651193D5CC1006EC729 /* pcg.c in Sources */,
 				BA6D161D193D5CC1006EC729 /* _memory.c in Sources */,
 				BA6D1640193D5CC1006EC729 /* font.c in Sources */,
+				BAD1A2C71BE7565800B23E7C /* opm.c in Sources */,
 				BA6D1656193D5CC1006EC729 /* vramio.c in Sources */,
 				BA6D163A193D5CC1006EC729 /* fdd_2d.c in Sources */,
 				BA6D163F193D5CC1006EC729 /* newdisk.c in Sources */,
