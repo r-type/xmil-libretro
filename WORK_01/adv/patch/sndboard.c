@@ -35,8 +35,16 @@ REG8 IOINPCALL sndboard_psgsta(UINT port) {
 
 // ----
 
-void sndboard_reset(void) {
+void sndboard_initialize(void)
+{
+}
 
+void sndboard_deinitialize(void)
+{
+}
+
+void sndboard_reset(void)
+{
 	advpsg_reset(&advpsg);
 }
 

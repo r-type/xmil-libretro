@@ -5,7 +5,6 @@
 #include	"pccore.h"
 #include	"iocore.h"
 
-
 	IOCORE		iocore;
 	CGROM		cgrom;
 	CMT			cmt;
@@ -16,7 +15,6 @@
 	PCG			pcg;
 	PPI			ppi;
 	SIO			sio;
-	SNDBOARD	sndboard;
 	SUBCPU		subcpu;
 
 

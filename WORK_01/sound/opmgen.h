@@ -1,3 +1,11 @@
+/**
+ * @file	omngen.h
+ * @brief	Interface of the OPM generator
+ */
+
+#pragma once
+
+#include "sound.h"
 
 #define	OPM_CLOCK		4000000L			/* X1 & X68000 OPM 4MHz */
 #define	OPMCH_MAX		8
@@ -103,6 +111,7 @@ typedef struct {
 	SINT32	outdr;
 	SINT32	calcremain;
 	UINT8	keyreg[OPMCH_MAX];
+	OPMCH	opmch[OPMCH_MAX];
 } _OPMGEN, *OPMGEN;
 
 typedef struct {
@@ -121,10 +130,10 @@ extern "C" {
 
 void opmgen_initialize(UINT rate);
 void opmgen_setvol(UINT vol);
-void opmgen_reset(void);
-void opmgen_setreg(REG8 reg, REG8 value);
+void opmgen_reset(OPMGEN opmgen);
+void opmgen_setreg(OPMGEN opmgen, REG8 reg, REG8 value);
 
-void SOUNDCALL opmgen_getpcm(void *hdl, SINT32 *pcm, UINT count);
+void SOUNDCALL opmgen_getpcm(OPMGEN opmgen, SINT32 *pcm, UINT count);
 
 #ifdef __cplusplus
 }

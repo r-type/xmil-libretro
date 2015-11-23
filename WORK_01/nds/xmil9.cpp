@@ -13,7 +13,7 @@
 #include "makescrn.h"
 #include "fddfile.h"
 #include "font.h"
-#include "nds9psg.h"
+#include "sound/nds9psg.h"
 #include "vram.h"
 #include "vsyncff.h"
 #include "resource.h"

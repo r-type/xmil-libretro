@@ -636,7 +636,7 @@ SOURCE=..\IO\SIO.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\ext\sndboard.cpp
+SOURCE=..\IO\SNDBOARD.C
 # End Source File
 # Begin Source File
 
@@ -712,18 +712,30 @@ SOURCE=..\VRAM\VRAM.C
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\SOUND\OPMGENC.C
+SOURCE=..\sound\opm.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\x86\OPMGENG.X86
+SOURCE=..\sound\opm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\opmgen.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\opmgenc.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\x86\opmgeng.x86
 
 !IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xreljp
-InputPath=.\x86\OPMGENG.X86
-InputName=OPMGENG
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -734,8 +746,8 @@ InputName=OPMGENG
 
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xrelworld
-InputPath=.\x86\OPMGENG.X86
-InputName=OPMGENG
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -746,8 +758,8 @@ InputName=OPMGENG
 
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xtrc
-InputPath=.\x86\OPMGENG.X86
-InputName=OPMGENG
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -758,8 +770,8 @@ InputName=OPMGENG
 
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xdbg
-InputPath=.\x86\OPMGENG.X86
-InputName=OPMGENG
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -771,11 +783,23 @@ InputName=OPMGENG
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\PSGGENC.C
+SOURCE=..\sound\psg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\PSGGENG.C
+SOURCE=..\sound\psg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggen.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggenc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggeng.c
 # End Source File
 # Begin Source File
 
@@ -896,22 +920,6 @@ SOURCE=.\DIALOG\EXTCLASS.CPP
 # Begin Group "ext"
 
 # PROP Default_Filter ""
-# Begin Group "romeo"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\ext\romeo\juliet.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\romeo\juliet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\romeo\romeo.h
-# End Source File
-# End Group
 # End Group
 # Begin Group "misc"
 
