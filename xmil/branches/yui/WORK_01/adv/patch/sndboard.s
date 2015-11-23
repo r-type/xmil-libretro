@@ -3,6 +3,8 @@
 	.global	sndboard_psgreg
 	.global	sndboard_psgdat
 	.global	sndboard_psgsta
+	.global	sndboard_initialize
+	.global	sndboard_deinitialize
 	.global	sndboard_reset
 	.extern	advpsg_setreg
 	.extern	advpsg_reset
@@ -52,6 +54,9 @@ advpsg:			.fill	ADVPSG_SIZE, 1, 0
 	.code	32
 	.align	0
 
+sndboard_initialize:
+sndboard_deinitialize:
+				mov		pc, lr
 
 sndboard_reset:
 				ldr		r0, 200f

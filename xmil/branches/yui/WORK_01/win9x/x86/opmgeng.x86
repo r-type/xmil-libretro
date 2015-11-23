@@ -87,6 +87,7 @@ EM_OFF			equ		0
 .outdr			resd	1
 .calcremain		resd	1
 .keyreg			resb	OPMCH_MAX
+.opmch			resb	0
 				endstruc
 
 				struc opmcfg_t
@@ -101,8 +102,8 @@ EM_OFF			equ		0
 
 section .text
 
-	extern	_opmgen
-	extern	_opmch
+;	extern	_opmgen
+;	extern	_opmch
 	extern	_opmcfg
 
 ;	extern	_sinshift
@@ -166,7 +167,7 @@ ENVTABLE	equ		(_opmcfg + opmcfg_t.envtable)
 %%setrr:		mov		byte [edi + slot_t.env_mode], EM_OFF
 %%setd2:		mov		dword [edi + slot_t.env_end], EC_OFF + 1
 				and		dword [edi + slot_t.env_inc], byte 0
-				and		byte [esi + ch_t.playing], ~(%3)
+				and		byte [edi - (slot_t_size * %3) + ch_t.playing], ~(1 << %3)
 				mov		eax, EC_OFF
 				jmp		near %2
 %endmacro
@@ -176,7 +177,7 @@ ENVTABLE	equ		(_opmcfg + opmcfg_t.envtable)
 @opmgen_getpcm@12:
 				cmp		dword [esp+4], byte 0
 				je		near og_noupdate
-				cmp		dword [_opmgen + opmgen_t.playing], byte 0
+				cmp		dword [ecx + opmgen_t.playing], byte 0
 				je		near og_noupdate
 
 				push	ebx
@@ -189,100 +190,101 @@ OPN_SAMPL		equ		0
 OPN_SAMPR		equ		4
 OPN_LENG		equ		16 + 8 + 4
 
+				mov		esi, ecx
 				mov		ebp, edx
-				mov		ebx, [_opmgen + opmgen_t.calcremain]
+				mov		ebx, [esi + opmgen_t.calcremain]
 og_fmout_st:	mov		eax, ebx
-				imul	ebx, [_opmgen + opmgen_t.outdl]
+				imul	ebx, [esi + opmgen_t.outdl]
 				mov		[esp + OPN_SAMPL], ebx
 				mov		ebx, FMDIV_ENT
 				sub		ebx, eax
-				imul	eax, [_opmgen + opmgen_t.outdr]
+				imul	eax, [esi + opmgen_t.outdr]
 				mov		[esp + OPN_SAMPR], eax
-og_fmout_lp:	mov		[_opmgen + opmgen_t.calcremain], ebx
-				and		dword [_opmgen + opmgen_t.playing], byte 0
-				and		dword [_opmgen + opmgen_t.outdl], byte 0
-				and		dword [_opmgen + opmgen_t.outdc], byte 0
-				and		dword [_opmgen + opmgen_t.outdr], byte 0
+og_fmout_lp:	mov		[esi + opmgen_t.calcremain], ebx
+				and		dword [esi + opmgen_t.playing], byte 0
+				and		dword [esi + opmgen_t.outdl], byte 0
+				and		dword [esi + opmgen_t.outdc], byte 0
+				and		dword [esi + opmgen_t.outdr], byte 0
 				mov		ch, OPMCH_MAX
-				mov		esi, _opmch
-og_calcch_lp:	mov		cl, [esi + ch_t.outslot]
-				test	cl, [esi + ch_t.playing]
+				lea		edi, [esi + opmgen_t.opmch]
+og_calcch_lp:	mov		cl, [edi + ch_t.outslot]
+				test	cl, [edi + ch_t.playing]
 				je		near og_calcch_nt
-				and		dword [_opmgen + opmgen_t.feedback2], byte 0
-				and		dword [_opmgen + opmgen_t.feedback3], byte 0
-				and		dword [_opmgen + opmgen_t.feedback4], byte 0
-				mov		edi, esi
+				and		dword [esi + opmgen_t.feedback2], byte 0
+				and		dword [esi + opmgen_t.feedback3], byte 0
+				and		dword [esi + opmgen_t.feedback4], byte 0
 				calcenv	envcalc1, envret1			; slot1 calculate
 				jl		near og_calcslot3
-				mov		cl, [esi + ch_t.feedback]
+				mov		cl, [edi + ch_t.feedback]
 				test	cl, cl
 				je		short og_nofeed
-				mov		eax, [esi + ch_t.op1fb]		; with feedback
+				mov		eax, [edi + ch_t.op1fb]		; with feedback
 				mov		ebx, eax
 				shr		eax, cl
 				op_out
-				mov		[esi + ch_t.op1fb], eax
+				mov		[edi + ch_t.op1fb], eax
 				add		eax, ebx
 				sar		eax, 1
 				jmp		short og_algchk
 og_nofeed:		xor		eax, eax					; without feedback
 				op_out
-og_algchk:		cmp		byte [esi + ch_t.algorithm], 5
+og_algchk:		cmp		byte [edi + ch_t.algorithm], 5
 				jne		short og_calcalg5
-				mov		[_opmgen + opmgen_t.feedback2], eax		; case ALG == 5
-				mov		[_opmgen + opmgen_t.feedback3], eax
-				mov		[_opmgen + opmgen_t.feedback4], eax
+				mov		[esi + opmgen_t.feedback2], eax		; case ALG == 5
+				mov		[esi + opmgen_t.feedback3], eax
+				mov		[esi + opmgen_t.feedback4], eax
 				jmp		short og_calcslot3
-og_calcalg5:	mov		ebx, [esi + ch_t.connect1]	; case ALG != 5
+og_calcalg5:	mov		ebx, [edi + ch_t.connect1]	; case ALG != 5
 				add		[ebx], eax
 og_calcslot3:	add		edi, byte slot_t_size		; slot3 calculate
 				calcenv	envcalc2, envret2
 				jl		short og_calcslot2
-				mov		eax, [_opmgen + opmgen_t.feedback2]
+				mov		eax, [esi + opmgen_t.feedback2]
 				op_out
-				mov		ebx, [esi + ch_t.connect2]
+				mov		ebx, [edi - (slot_t_size * 1) + ch_t.connect2]
 				add		[ebx], eax
 og_calcslot2:	add		edi, byte slot_t_size		; slot2 calculate
 				calcenv	envcalc3, envret3
 				jl		short og_calcslot4
-				mov		eax, [_opmgen + opmgen_t.feedback3]
+				mov		eax, [esi + opmgen_t.feedback3]
 				op_out
-				mov		ebx, [esi + ch_t.connect3]
+				mov		ebx, [edi - (slot_t_size * 2) + ch_t.connect3]
 				add		[ebx], eax
 og_calcslot4:	add		edi, byte slot_t_size		; slot4 calculate
 				calcenv	envcalc4, envret4
 				jl		short og_calcsloted
-				mov		eax, [_opmgen + opmgen_t.feedback4]
+				mov		eax, [esi + opmgen_t.feedback4]
 				op_out
-				mov		ebx, [esi + ch_t.connect4]
+				mov		ebx, [edi - (slot_t_size * 3) + ch_t.connect4]
 				add		[ebx], eax
-og_calcsloted:	inc		dword [_opmgen + opmgen_t.playing]
-og_calcch_nt:	add		esi, ch_t_size
+og_calcsloted:	sub		edi, (slot_t_size * 3)
+				inc		dword [esi + opmgen_t.playing]
+og_calcch_nt:	add		edi, ch_t_size
 				dec		ch
 				jne		near og_calcch_lp
-				mov		eax, [_opmgen + opmgen_t.outdc]
-				add		[_opmgen + opmgen_t.outdl], eax
-				add		[_opmgen + opmgen_t.outdr], eax
-				sar		dword [_opmgen + opmgen_t.outdl], FMVOL_SFTBIT
-				sar		dword [_opmgen + opmgen_t.outdr], FMVOL_SFTBIT
+				mov		eax, [esi + opmgen_t.outdc]
+				add		[esi + opmgen_t.outdl], eax
+				add		[esi + opmgen_t.outdr], eax
+				sar		dword [esi + opmgen_t.outdl], FMVOL_SFTBIT
+				sar		dword [esi + opmgen_t.outdr], FMVOL_SFTBIT
 				mov		edx, [_opmcfg + opmcfg_t.calc1024]
-				mov		ebx, [_opmgen + opmgen_t.calcremain]
+				mov		ebx, [esi + opmgen_t.calcremain]
 				mov		eax, ebx
 				sub		ebx, edx
 				jbe		short og_nextsamp
-				mov		[_opmgen + opmgen_t.calcremain], ebx
+				mov		[esi + opmgen_t.calcremain], ebx
 				mov		eax, edx
-				imul	eax, [_opmgen + opmgen_t.outdl]
+				imul	eax, [esi + opmgen_t.outdl]
 				add		[esp + OPN_SAMPL], eax
-				imul	edx, [_opmgen + opmgen_t.outdr]
+				imul	edx, [esi + opmgen_t.outdr]
 				add		[esp + OPN_SAMPR], edx
 				jmp		near og_fmout_lp
 og_nextsamp:	neg		ebx
-				mov		[_opmgen + opmgen_t.calcremain], ebx
+				mov		[esi + opmgen_t.calcremain], ebx
 				mov		edx, eax
 				mov		ecx, [_opmcfg + opmcfg_t.fmvol]
-				imul	eax, [_opmgen + opmgen_t.outdl]
-				imul	edx, [_opmgen + opmgen_t.outdr]
+				imul	eax, [esi + opmgen_t.outdl]
+				imul	edx, [esi + opmgen_t.outdr]
 				add		eax, [esp + OPN_SAMPL]
 				add		edx, [esp + OPN_SAMPR]
 				sar		eax, 8
@@ -303,8 +305,8 @@ og_nextsamp:	neg		ebx
 				pop		ebx
 og_noupdate:	ret		4
 
-				setenv	envcalc1, envret1, 1
-				setenv	envcalc2, envret2, 2
-				setenv	envcalc3, envret3, 4
-				setenv	envcalc4, envret4, 8
+				setenv	envcalc1, envret1, 0
+				setenv	envcalc2, envret2, 1
+				setenv	envcalc3, envret3, 2
+				setenv	envcalc4, envret4, 3
 

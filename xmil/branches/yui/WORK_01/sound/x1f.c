@@ -61,9 +61,9 @@ BRESULT x1f_open(const OEMCHAR *filename) {
 		return(FAILURE);
 	}
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	CopyMemory(buf, sndboard.opmdat, 256);
+	memcpy(buf, g_opm.s.reg, 256);
 #else
-	ZeroMemory(buf, 256);
+	memset(buf, 0, 256);
 #endif
 	CopyMemory(buf, "X1F", 4);
 	file_write(fh, buf, 256);
@@ -73,7 +73,7 @@ BRESULT x1f_open(const OEMCHAR *filename) {
 	x1f.counter = 0;
 	x1f.pos = 0;
 	for (i=0; i<14; i++) {
-		x1f_psg((REG8)i, ((UINT8 *)&psggen.reg)[i]);
+		x1f_psg((REG8)i, g_psg.s.reg[i]);
 	}
 	return(SUCCESS);
 }

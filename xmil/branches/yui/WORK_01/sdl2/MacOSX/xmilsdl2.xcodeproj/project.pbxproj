@@ -127,6 +127,8 @@
 		BAABD7341BC3BA5E00522E67 /* z80dmap.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD69D1BC3BA5D00522E67 /* z80dmap.c */; };
 		BAABD7351BC3BA5E00522E67 /* z80mem.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD69F1BC3BA5D00522E67 /* z80mem.c */; };
 		BAABD73B1BC3BBE200522E67 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAABD73A1BC3BBE200522E67 /* SDL2.framework */; };
+		BAD1A2CD1BE7569C00B23E7C /* opm.c in Sources */ = {isa = PBXBuildFile; fileRef = BAD1A2CB1BE7569C00B23E7C /* opm.c */; };
+		BAD1A2D01BE756A400B23E7C /* psg.c in Sources */ = {isa = PBXBuildFile; fileRef = BAD1A2CE1BE756A400B23E7C /* psg.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -354,6 +356,10 @@
 		BAABD6A01BC3BA5D00522E67 /* z80mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = z80mem.h; sourceTree = "<group>"; };
 		BAABD7391BC3BB2400522E67 /* compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compiler.h; sourceTree = "<group>"; };
 		BAABD73A1BC3BBE200522E67 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
+		BAD1A2CB1BE7569C00B23E7C /* opm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = opm.c; sourceTree = "<group>"; };
+		BAD1A2CC1BE7569C00B23E7C /* opm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opm.h; sourceTree = "<group>"; };
+		BAD1A2CE1BE756A400B23E7C /* psg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psg.c; sourceTree = "<group>"; };
+		BAD1A2CF1BE756A400B23E7C /* psg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psg.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -694,9 +700,13 @@
 		BAABD6641BC3BA5D00522E67 /* sound */ = {
 			isa = PBXGroup;
 			children = (
+				BAD1A2CB1BE7569C00B23E7C /* opm.c */,
+				BAD1A2CC1BE7569C00B23E7C /* opm.h */,
 				BAABD6651BC3BA5D00522E67 /* opmgen.h */,
 				BAABD6661BC3BA5D00522E67 /* opmgenc.c */,
 				BAABD6671BC3BA5D00522E67 /* opmgeng.c */,
+				BAD1A2CE1BE756A400B23E7C /* psg.c */,
+				BAD1A2CF1BE756A400B23E7C /* psg.h */,
 				BAABD6681BC3BA5D00522E67 /* psggen.h */,
 				BAABD6691BC3BA5D00522E67 /* psggenc.c */,
 				BAABD66A1BC3BA5D00522E67 /* psggeng.c */,
@@ -924,9 +934,11 @@
 				BAABD7201BC3BA5D00522E67 /* makescrn.c in Sources */,
 				BAABD7221BC3BA5E00522E67 /* maketxth.c in Sources */,
 				BAABD6E51BC3BA5D00522E67 /* vramio.c in Sources */,
+				BAD1A2D01BE756A400B23E7C /* psg.c in Sources */,
 				BAABD6D81BC3BA5D00522E67 /* crtc.c in Sources */,
 				BAABD6DE1BC3BA5D00522E67 /* iocore.c in Sources */,
 				BAABD7011BC3BA5D00522E67 /* scrnmng.c in Sources */,
+				BAD1A2CD1BE7569C00B23E7C /* opm.c in Sources */,
 				BAABD6E81BC3BA5D00522E67 /* nevent.c in Sources */,
 				BAABD6C61BC3BA5D00522E67 /* vramhdl.c in Sources */,
 				BAABD6E21BC3BA5D00522E67 /* sio.c in Sources */,

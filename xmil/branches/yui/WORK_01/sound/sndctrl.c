@@ -1,20 +1,21 @@
-#include	"compiler.h"
+/**
+ * @file	sndctrl.c
+ * @brief	Implementation of the sound
+ */
+
+#include "compiler.h"
+#include "sndctrl.h"
 #if !defined(DISABLE_SOUND)
-#include	"soundmng.h"
-#include	"pccore.h"
-#include	"sound.h"
-#include	"sndctrl.h"
+#include "pccore.h"
+#include "opmgen.h"
+#include "psggen.h"
+#include "soundmng.h"
 
-
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	OPMCH		opmch[OPMCH_MAX];
-	_OPMGEN		opmgen;
-#endif
-	_PSGGEN		psggen;
-
-
-void sndctrl_initialize(void) {
-
+/**
+ * Initialize
+ */
+void sndctrl_initialize(void)
+{
 	UINT	rate;
 
 	rate = xmilcfg.samplingrate;
@@ -27,21 +28,12 @@ void sndctrl_initialize(void) {
 	psggen_setvol(xmilcfg.vol_ssg);
 }
 
-void sndctrl_deinitialize(void) {
-
+/**
+ * Deinitialize
+ */
+void sndctrl_deinitialize(void)
+{
 	soundmng_stop();
 	sound_destroy();
 }
-
-void sndctrl_reset(void) {
-
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	opmgen_reset();
-	sound_streamregist(&opmgen, (SOUNDCB)opmgen_getpcm);
 #endif
-	psggen_reset(&psggen);
-	sound_streamregist(&psggen, (SOUNDCB)psggen_getpcm);
-}
-
-#endif
-

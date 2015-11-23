@@ -4,7 +4,7 @@
 #if defined(_WIN32) && defined(NDS_SIMULATE)
 #include "dosio.h"
 #endif
-#include "nds7psg.h"
+#include "sound/nds7psg.h"
 #include "softkbd7.h"
 
 static void touch()
