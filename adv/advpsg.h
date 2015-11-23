@@ -1,14 +1,11 @@
+/**
+ * @file	advpsg.h
+ * @brief	Interface of the PSG generator
+ */
 
-typedef struct {
-	UINT8	tune[3][2];		// 0
-	UINT8	noise;			// 6
-	UINT8	mixer;			// 7
-	UINT8	vol[3];			// 8
-	UINT8	envtime[2];		// b
-	UINT8	env;			// d
-	UINT8	io1;
-	UINT8	io2;
-} PSGREG;
+#pragma once
+
+#include "sound/psggen.h"
 
 typedef struct {
 	PSGREG		reg;
