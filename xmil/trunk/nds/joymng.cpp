@@ -1,7 +1,7 @@
 #include "compiler.h"
 #include "libnds.h"
 #include "iocore.h"
-#include "nds9psg.h"
+#include "sound/nds9psg.h"
 #include "makescrn.h"
 
 

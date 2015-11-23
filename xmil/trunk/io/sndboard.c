@@ -9,11 +9,12 @@
 #include "iocore.h"
 #include "keystat.h"
 #include "sound.h"
-#include "sndctrl.h"
 
-static UINT8 s_rapids;
+/* OPM */
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+	OPM g_opm;
+
 void IOOUTCALL opm_o(UINT port, REG8 dat)
 {
 	REG8 lsb;
@@ -53,6 +54,12 @@ REG8 IOINPCALL opm_i(UINT port)
 }
 #endif
 
+
+
+/* PSG */
+
+static UINT8 s_rapids;
+	PSG g_psg;
 
 void IOOUTCALL sndboard_psgreg(UINT port, REG8 dat)
 {
@@ -105,11 +112,14 @@ REG8 IOINPCALL sndboard_psgsta(UINT port)
 	}
 }
 
+/**
+ * Initialize
+ */
 void sndboard_initialize(void)
 {
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	opm_construct(&g_opm);
-#endif
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
 	psg_construct(&g_psg);
 }
 

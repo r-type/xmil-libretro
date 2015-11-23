@@ -6,15 +6,14 @@
 #include "compiler.h"
 #include "sndctrl.h"
 #if !defined(DISABLE_SOUND)
-#include "soundmng.h"
 #include "pccore.h"
-#include "sound.h"
+#include "opmgen.h"
+#include "psggen.h"
+#include "soundmng.h"
 
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	OPM g_opm;
-#endif
-	PSG g_psg;
-
+/**
+ * Initialize
+ */
 void sndctrl_initialize(void)
 {
 	UINT	rate;
@@ -29,13 +28,12 @@ void sndctrl_initialize(void)
 	psggen_setvol(xmilcfg.vol_ssg);
 }
 
+/**
+ * Deinitialize
+ */
 void sndctrl_deinitialize(void)
 {
 	soundmng_stop();
 	sound_destroy();
-}
-
-void sndctrl_reset(void)
-{
 }
 #endif
