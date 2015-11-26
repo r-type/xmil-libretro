@@ -13,7 +13,7 @@
 #include "makescrn.h"
 #include "fddfile.h"
 #include "font.h"
-#include "nds9psg.h"
+#include "sound/nds9psg.h"
 #include "vram.h"
 #include "vsyncff.h"
 #include "resource.h"
@@ -160,7 +160,7 @@ static void processwait(XMILMAIN &xmm, UINT uCount)
 static void exec1frame(XMILMAIN &xmm)
 {
 	joymng_setflags();
-	pccore_exec((BRESULT)(xmm.uFrameCount == 0));
+	pccore_exec(xmm.uFrameCount == 0);
 	xmm.uFrameCount++;
 	nds9psg_sync(&nds9psg);
 	softkbd9_sync();

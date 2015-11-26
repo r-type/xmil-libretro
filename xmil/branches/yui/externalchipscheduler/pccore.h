@@ -1,4 +1,6 @@
 
+#include "nevent.h"
+
 typedef struct {
 	UINT8	ROM_TYPE;
 	UINT8	DIP_SW;
@@ -65,16 +67,16 @@ extern	PCCORE		pccore;
 extern	CORESTAT	corestat;
 
 #if !defined(MAINFRAMES_OLD)
-void neitem_mainframes(UINT id);
+void neitem_mainframes(NEVENTID id);
 #else
-void neitem_disp(UINT id);
-void neitem_vsync(UINT id);
+void neitem_disp(NEVENTID id);
+void neitem_vsync(NEVENTID id);
 #endif
 
 void pccore_initialize(void);
 void pccore_reset(void);
 void pccore_deinitialize(void);
-void pccore_exec(BRESULT draw);
+void pccore_exec(BOOL draw);
 
 #ifdef __cplusplus
 }

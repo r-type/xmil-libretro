@@ -67,6 +67,7 @@ private:
 		kYMF288		= 0,		/*!< YMF288 */
 		kYM2151					/*!< YM2151 */
 	};
+	void ResetChip(ChipId nChipId);
 	void Write(ChipId nChipId, UINT nAddr, UINT8 cData);
 
 	/**

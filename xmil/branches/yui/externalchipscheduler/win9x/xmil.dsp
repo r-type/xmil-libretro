@@ -720,18 +720,22 @@ SOURCE=..\sound\opm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\OPMGENC.C
+SOURCE=..\sound\opmgen.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\x86\OPMGENG.X86
+SOURCE=..\sound\opmgenc.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\x86\opmgeng.x86
 
 !IF  "$(CFG)" == "xmil - Win32 Release JP"
 
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xreljp
-InputPath=.\x86\OPMGENG.X86
-InputName=OPMGENG
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -742,8 +746,8 @@ InputName=OPMGENG
 
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xrelworld
-InputPath=.\x86\OPMGENG.X86
-InputName=OPMGENG
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -754,8 +758,8 @@ InputName=OPMGENG
 
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xtrc
-InputPath=.\x86\OPMGENG.X86
-InputName=OPMGENG
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -766,8 +770,8 @@ InputName=OPMGENG
 
 # Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
 IntDir=.\..\obj\vc\win9xdbg
-InputPath=.\x86\OPMGENG.X86
-InputName=OPMGENG
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
@@ -787,11 +791,15 @@ SOURCE=..\sound\psg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\PSGGENC.C
+SOURCE=..\sound\psggen.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\SOUND\PSGGENG.C
+SOURCE=..\sound\psggenc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggeng.c
 # End Source File
 # Begin Source File
 
@@ -866,27 +874,43 @@ SOURCE=..\FONT\FONTX1.C
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\DIALOG\D_ABOUT.CPP
+SOURCE=.\dialog\d_about.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_BMP.CPP
+SOURCE=.\dialog\d_about.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_CFG.CPP
+SOURCE=.\dialog\d_bmp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_DISK.CPP
+SOURCE=.\dialog\d_bmp.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\D_SOUND.CPP
+SOURCE=.\dialog\d_cfg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DIALOG\DIALOGS.CPP
+SOURCE=.\dialog\d_cfg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_disk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_disk.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_sound.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_sound.h
 # End Source File
 # Begin Source File
 
@@ -1026,6 +1050,14 @@ SOURCE=.\ext\externalpsg.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\misc\DlgProc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\DlgProc.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\misc\guard.h
 # End Source File
 # Begin Source File
@@ -1085,65 +1117,18 @@ SOURCE=.\misc\WndProc.cpp
 SOURCE=.\misc\WndProc.h
 # End Source File
 # End Group
+# Begin Group "subwnd"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\DCLOCK.CPP
+SOURCE=.\subwnd\dclock.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DCLOCKD.X86
-
-!IF  "$(CFG)" == "xmil - Win32 Release JP"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xreljp
-InputPath=.\DCLOCKD.X86
-InputName=DCLOCKD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xrelworld
-InputPath=.\DCLOCKD.X86
-InputName=DCLOCKD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xtrc
-InputPath=.\DCLOCKD.X86
-InputName=DCLOCKD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xdbg
-InputPath=.\DCLOCKD.X86
-InputName=DCLOCKD
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ENDIF 
-
+SOURCE=.\subwnd\dclock.h
 # End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\DOSIO.CPP

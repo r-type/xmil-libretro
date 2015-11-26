@@ -102,7 +102,7 @@ void calendar_settime(const UINT8 *bcd) {
 
 /* ---- */
 
-void neitem_rtc(UINT id) {
+void neitem_rtc(NEVENTID id) {
 
 	nevent_repeat(id);
 	cal.steps++;
