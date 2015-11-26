@@ -122,8 +122,10 @@ typedef signed __int64		SINT64;
 #define	SUPPORT_OPM
 #define	SUPPORT_BANKMEM
 #define	SUPPORT_X1F
+#define	SUPPORT_DCLOCK
 #define	SUPPORT_RESUME
 #define	SUPPORT_STATSAVE	10
 
 #define	SOUNDRESERVE		20
 
+#define SUPPORT_DCLOCK

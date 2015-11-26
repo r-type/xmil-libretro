@@ -1,6 +1,4 @@
 
-section .bss
-
 	global	_mainmem
 	global	_gram
 	global	_tram
@@ -18,6 +16,8 @@ section .bss
 	global	_cgrom
 	global	_fdc
 	global	_vramupd
+
+section .bss
 
 				align	4
 _mainmem		resb	0x10000
@@ -43,6 +43,4 @@ _ctc			resb	0xe4
 _cgrom			resb	0xc
 _fdc			resb	0x40
 _vramupd		resb	0x800
-
-ends
 

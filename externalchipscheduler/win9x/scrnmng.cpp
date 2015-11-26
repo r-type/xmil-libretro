@@ -15,8 +15,8 @@
 #include	"palettes.h"
 #include	"makescrn.h"
 #if defined(SUPPORT_DCLOCK)
-#include "dclock.h"
-#endif
+#include "subwnd/dclock.h"
+#endif	// defined(SUPPORT_DCLOCK)
 
 #pragma comment(lib, "ddraw.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -28,7 +28,7 @@ typedef struct {
 	LPDIRECTDRAWSURFACE	backsurf;
 #if defined(SUPPORT_DCLOCK)
 	LPDIRECTDRAWSURFACE	clocksurf;
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 	LPDIRECTDRAWCLIPPER	clipper;
 	LPDIRECTDRAWPALETTE	palette;
 	UINT				scrnmode;
@@ -40,7 +40,7 @@ typedef struct {
 	UINT8				r16b;
 	UINT8				l16r;
 	UINT8				l16g;
-	BRESULT				menudisp;
+	BOOL				menudisp;
 	int					menusize;
 	RECT				scrn;
 	RECT				rect;
@@ -60,73 +60,62 @@ static	DDRAW		ddraw;
 static	SCRNSTAT	scrnstat;
 static	SCRNSURF	scrnsurf;
 
-
-static void setwindowsize(HWND hWnd, int width, int height) {
-
-	int		winx;
-	int		winy;
-	RECT	workrc;
-	int		scx;
-	int		scy;
-	UINT	cnt;
-	RECT	rectwindow;
-	RECT	rectclient;
-	int		cx;
-	int		cy;
-	UINT	update;
-
-	winx = xmiloscfg.winx;
-	winy = xmiloscfg.winy;
-
+static void setwindowsize(HWND hWnd, int width, int height)
+{
+	RECT workrc;
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	scx = GetSystemMetrics(SM_CXSCREEN);
-	scy = GetSystemMetrics(SM_CYSCREEN);
+	int scx = GetSystemMetrics(SM_CXSCREEN);
+	int scy = GetSystemMetrics(SM_CYSCREEN);
 
-	cnt = 2;
-	do {
+	UINT nCount = 2;
+	do
+	{
+		RECT rectwindow;
 		GetWindowRect(hWnd, &rectwindow);
-		GetClientRect(hWnd, &rectclient);
-		cx = width;
-		cx += rectwindow.right - rectwindow.left;
-		cx -= rectclient.right - rectclient.left;
-		cy = height;
-		cy += rectwindow.bottom - rectwindow.top;
-		cy -= rectclient.bottom - rectclient.top;
 
-		update = 0;
-		if (scx < cx) {
+		RECT rectclient;
+		GetClientRect(hWnd, &rectclient);
+
+		int winx = rectwindow.left;
+		int winy = rectwindow.top;
+		int cx = width + (rectwindow.right - rectwindow.left) - (rectclient.right - rectclient.left);
+		int cy = height + (rectwindow.bottom - rectwindow.top) - (rectclient.bottom - rectclient.top);
+
+		if (scx < cx)
+		{
 			winx = (scx - cx) / 2;
 		}
-		else {
-			if ((winx + cx) > workrc.right) {
+		else
+		{
+			if ((winx + cx) > workrc.right)
+			{
 				winx = workrc.right - cx;
 			}
-			if (winx < workrc.left) {
+			if (winx < workrc.left)
+			{
 				winx = workrc.left;
 			}
 		}
-		if (scy < cy) {
+		if (scy < cy)
+		{
 			winy = (scy - cy) / 2;
 		}
-		else {
-			if ((winy + cy) > workrc.bottom) {
+		else
+		{
+			if ((winy + cy) > workrc.bottom)
+			{
 				winy = workrc.bottom - cy;
 			}
-			if (winy < workrc.top) {
+			if (winy < workrc.top)
+			{
 				winy = workrc.top;
 			}
 		}
-		MoveWindow(hWnd, winx, winy, cx, cy, TRUE);
-	} while(--cnt);
-
-	if ((xmiloscfg.winx != winx) || (xmiloscfg.winy != winy)) {
-		xmiloscfg.winx = winx;
-		xmiloscfg.winy = winy;
-		sysmng_update(SYS_UPDATEOSCFG);
-	}
+		::MoveWindow(hWnd, winx, winy, cx, cy, TRUE);
+	} while(--nCount);
 }
 
-static void renewalclientsize(BRESULT winloc) {
+static void renewalclientsize(BOOL winloc) {
 
 	int		width;
 	int		height;
@@ -237,8 +226,8 @@ static void clearoutfullscreen(void) {
 	base.bottom = ddraw.height;
 	clearoutofrect(&ddraw.scrn, &base);
 #if defined(SUPPORT_DCLOCK)
-	dclock_redraw();
-#endif	/* defined(SUPPORT_DCLOCK) */
+	DispClock::GetInstance()->Redraw();
+#endif	// defined(SUPPORT_DCLOCK)
 }
 
 static void paletteinit(void) {
@@ -253,13 +242,15 @@ static void paletteinit(void) {
 		ddraw.pal[i + START_PAL].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
 #if defined(SUPPORT_DCLOCK)
-	for (i=0; i<4; i++) {
-		ddraw.pal[i + START_PALORG].peBlue = dclockpal.pal32[i].p.b;
-		ddraw.pal[i + START_PALORG].peRed = dclockpal.pal32[i].p.r;
-		ddraw.pal[i + START_PALORG].peGreen = dclockpal.pal32[i].p.g;
+	const RGB32* pal32 = DispClock::GetInstance()->GetPalettes();
+	for (i = 0; i < 4; i++)
+	{
+		ddraw.pal[i + START_PALORG].peBlue = pal32[i].p.b;
+		ddraw.pal[i + START_PALORG].peRed = pal32[i].p.r;
+		ddraw.pal[i + START_PALORG].peGreen = pal32[i].p.g;
 		ddraw.pal[i + START_PALORG].peFlags = PC_RESERVED | PC_NOCOLLAPSE;
 	}
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 	pal_reset();
 	ddraw.ddraw2->CreatePalette(DDPCAPS_8BIT, ddraw.pal, &ddraw.palette, 0);
 	ddraw.primsurf->SetPalette(ddraw.palette);
@@ -368,8 +359,8 @@ BRESULT scrnmng_create(UINT8 mode) {
 
 	if (mode & SCRNMODE_FULLSCREEN) {
 #if defined(SUPPORT_DCLOCK)
-		dclock_init();
-#endif	/* defined(SUPPORT_DCLOCK) */
+		DispClock::GetInstance()->Initialize();
+#endif	// defined(SUPPORT_DCLOCK)
 		ddraw2->SetCooperativeLevel(hWndMain,
 										DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
 		height = 480;
@@ -416,23 +407,18 @@ BRESULT scrnmng_create(UINT8 mode) {
 		}
 
 #if defined(SUPPORT_DCLOCK)
-		if (bitcolor == 8) {
-			dclock_init8();
-		}
-		else {
-			dclock_init16();
-		}
+		DispClock::GetInstance()->SetPalettes(bitcolor);
 		ZeroMemory(&ddsd, sizeof(ddsd));
 		ddsd.dwSize = sizeof(ddsd);
 		ddsd.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
-		ddsd.dwWidth = DCLOCK_X;
-		ddsd.dwHeight = DCLOCK_Y;
+		ddsd.dwWidth = DCLOCK_WIDTH;
+		ddsd.dwHeight = DCLOCK_HEIGHT;
 		if (ddraw2->CreateSurface(&ddsd, &ddraw.clocksurf, NULL) != DD_OK) {
 			ddraw.clocksurf = NULL;
 		}
-		dclock_reset();
-#endif	/* defined(SUPPORT_DCLOCK) */
+		DispClock::GetInstance()->Reset();
+#endif	// defined(SUPPORT_DCLOCK)
 	}
 	else {
 		ddraw2->SetCooperativeLevel(hWndMain, DDSCL_NORMAL);
@@ -505,7 +491,7 @@ void scrnmng_destroy(void) {					// ddraws_TermDirectDraw
 		ddraw.clocksurf->Release();
 		ddraw.clocksurf = NULL;
 	}
-#endif	/* defined(SUPPORT_DCLOCK) */
+#endif	// defined(SUPPORT_DCLOCK)
 	if (ddraw.backsurf) {
 		ddraw.backsurf->Release();
 		ddraw.backsurf = NULL;
@@ -538,7 +524,7 @@ void scrnmng_destroy(void) {					// ddraws_TermDirectDraw
 
 BRESULT scrnmng_changescreen(REG8 newmode) {
 
-	BRESULT	renewal;
+	BOOL	renewal;
 	REG8	change;
 	BRESULT	r;
 
@@ -597,7 +583,7 @@ RGB16 scrnmng_makepal16(RGB32 pal32) {
 
 void scrnmng_fullscrnmenu(int y) {
 
-	BRESULT	menudisp;
+	BOOL	menudisp;
 
 	if (scrnmng.flag & SCRNFLAG_FULLSCREEN) {
 		menudisp = ((y >= 0) && (y < ddraw.menusize))?TRUE:FALSE;
@@ -755,37 +741,35 @@ void scrnmng_update(void) {
 
 // -------------------------------------------------------------------- clock
 
-void scrnmng_dispclock(void)
-{
 #if defined(SUPPORT_DCLOCK)
 
-	DDSURFACEDESC	dest;
+static const RECT rectclk = {0, 0, DCLOCK_WIDTH, DCLOCK_HEIGHT};
 
-	if ((ddraw.clocksurf) &&
-		(ddraw.scrn.top >= DCLOCK_Y) && (dclock_disp())) {
-		dclock_make();
+void scrnmng_dispclock(void)
+{
+	if ((ddraw.clocksurf) && (ddraw.scrn.top >= DCLOCK_HEIGHT) && (DispClock::GetInstance()->IsDisplayed()))
+	{
+		DispClock::GetInstance()->Make();
+
+		DDSURFACEDESC dest;
 		ZeroMemory(&dest, sizeof(dest));
 		dest.dwSize = sizeof(dest);
-		if (ddraw.clocksurf->Lock(NULL, &dest, DDLOCK_WAIT, NULL) == DD_OK) {
-			if (scrnmng.bpp == 8) {
-				dclock_out8(dest.lpSurface, dest.lPitch);
-			}
-			else {
-				dclock_out16(dest.lpSurface, dest.lPitch);
-			}
+		if (ddraw.clocksurf->Lock(NULL, &dest, DDLOCK_WAIT, NULL) == DD_OK)
+		{
+			DispClock::GetInstance()->Draw(scrnmng.bpp, dest.lpSurface, dest.lPitch);
 			ddraw.clocksurf->Unlock(NULL);
 		}
 
-		static const RECT rectclk = {0, 0, DCLOCK_X, DCLOCK_Y};
-		if (ddraw.primsurf->BltFast(640 - DCLOCK_X - 4,
-									ddraw.height - DCLOCK_Y,
-									ddraw.clocksurf, (RECT *)&rectclk,
-									DDBLTFAST_WAIT) == DDERR_SURFACELOST) {
+		if (ddraw.primsurf->BltFast(640 - DCLOCK_WIDTH - 4,
+									ddraw.height - DCLOCK_HEIGHT,
+									ddraw.clocksurf, const_cast<RECT*>(&rectclk),
+									DDBLTFAST_WAIT) == DDERR_SURFACELOST)
+		{
 			ddraw.primsurf->Restore();
 			ddraw.clocksurf->Restore();
 		}
-		dclock_cntdown(xmiloscfg.DRAW_SKIP);
+		DispClock::GetInstance()->CountDown(xmiloscfg.DRAW_SKIP);
 	}
-#endif	/* defined(SUPPORT_DCLOCK) */
 }
+#endif	// defined(SUPPORT_DCLOCK)
 

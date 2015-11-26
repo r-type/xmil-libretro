@@ -1,12 +1,20 @@
-#include	"compiler.h"
-#include	"pccore.h"
-#include	"xmil.h"
-#include	"joymng.h"
-#include	"menu.h"
+/**
+ * @file	joymng.cpp
+ * @brief	ジョイパッドの動作の定義を行います
+ */
+
+#include "compiler.h"
+#include "joymng.h"
+#include "pccore.h"
+#include "xmil.h"
 
 #pragma comment(lib, "winmm.lib")
 
-enum {
+/**
+ * ビット
+ */
+enum
+{
 	JOY_LEFT_BIT	= 0x04,
 	JOY_RIGHT_BIT	= 0x08,
 	JOY_UP_BIT		= 0x01,
@@ -17,58 +25,84 @@ enum {
 	JOY_BTN4_BIT	= 0x10
 };
 
-static	UINT8	joyflag;
+//! 有効フラグ
+static bool s_bEnabled = false;
+//! ステータス
+static UINT8 s_cJoyFlag = 0;
 
-
-void joymng_initialize(void) {
-
-	JOYINFO		ji;
-
-	if ((!joyGetNumDevs()) ||
-		(joyGetPos(JOYSTICKID1, &ji) == JOYERR_UNPLUGGED)) {
-		menu_setjoystick(xmiloscfg.JOYSTICK | 2);
-	}
+/**
+ * 初期化
+ */
+void joymng_initialize()
+{
+	JOYINFO ji;
+	s_bEnabled = ((joyGetNumDevs() != 0) && (joyGetPos(JOYSTICKID1, &ji) == JOYERR_NOERROR));
 }
 
-void joymng_sync(void) {
-
-	xmiloscfg.JOYSTICK &= 0x7f;
-	joyflag = 0xff;
+/**
+ * 有効?
+ * @return 有効フラグ
+ */
+bool joymng_isEnabled()
+{
+	return s_bEnabled;
 }
 
-REG8 joymng_getstat(void) {
+/**
+ * シンク
+ */
+void joymng_sync()
+{
+	s_cJoyFlag = 0;
+}
 
-	JOYINFO		ji;
-
-	if ((xmiloscfg.JOYSTICK == 1) &&
-		(joyGetPos(JOYSTICKID1, &ji) == JOYERR_NOERROR)) {
-		xmiloscfg.JOYSTICK |= 0x80;
-		joyflag = 0xff;
-		if (ji.wXpos < 0x4000U) {
-			joyflag &= ~JOY_LEFT_BIT;
+/**
+ * ステータスを得る
+ * @return ステータス
+ */
+REG8 joymng_getstat(void)
+{
+	if (s_cJoyFlag == 0)
+	{
+		UINT8 cJoyFlag = 0xff;
+		JOYINFO ji;
+		if ((xmiloscfg.JOYSTICK) && (s_bEnabled) && (joyGetPos(JOYSTICKID1, &ji) == JOYERR_NOERROR))
+		{
+			if (ji.wXpos < 0x4000U)
+			{
+				cJoyFlag &= ~JOY_LEFT_BIT;
+			}
+			else if (ji.wXpos > 0xc000U)
+			{
+				cJoyFlag &= ~JOY_RIGHT_BIT;
+			}
+			if (ji.wYpos < 0x4000U)
+			{
+				cJoyFlag &= ~JOY_UP_BIT;
+			}
+			else if (ji.wYpos > 0xc000U)
+			{
+				cJoyFlag &= ~JOY_DOWN_BIT;
+			}
+			if (ji.wButtons & JOY_BUTTON1)
+			{
+				cJoyFlag &= ~JOY_BTN1_BIT;
+			}
+			if (ji.wButtons & JOY_BUTTON2)
+			{
+				cJoyFlag &= ~JOY_BTN2_BIT;
+			}
+			if (ji.wButtons & JOY_BUTTON3)
+			{
+				cJoyFlag &= ~JOY_BTN3_BIT;
+			}
+			if (ji.wButtons & JOY_BUTTON4)
+			{
+				cJoyFlag &= ~JOY_BTN4_BIT;
+			}
 		}
-		else if (ji.wXpos > 0xc000U) {
-			joyflag &= ~JOY_RIGHT_BIT;
-		}
-		if (ji.wYpos < 0x4000U) {
-			joyflag &= ~JOY_UP_BIT;
-		}
-		else if (ji.wYpos > 0xc000U) {
-			joyflag &= ~JOY_DOWN_BIT;
-		}
-		if (ji.wButtons & JOY_BUTTON1) {
-			joyflag &= ~JOY_BTN1_BIT;
-		}
-		if (ji.wButtons & JOY_BUTTON2) {
-			joyflag &= ~JOY_BTN2_BIT;
-		}
-		if (ji.wButtons & JOY_BUTTON3) {
-			joyflag &= ~JOY_BTN3_BIT;
-		}
-		if (ji.wButtons & JOY_BUTTON4) {
-			joyflag &= ~JOY_BTN4_BIT;
-		}
+		s_cJoyFlag = cJoyFlag;
 	}
-	return(joyflag);
+	return s_cJoyFlag;
 }
 

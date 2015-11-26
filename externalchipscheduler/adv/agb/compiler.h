@@ -36,6 +36,7 @@ typedef	unsigned int		UINT32;
 #endif
 
 
+#define BOOL		char
 #define	FALSE		0
 #define	TRUE		1
 

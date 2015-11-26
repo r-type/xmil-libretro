@@ -21,11 +21,12 @@ Z80A		=	../z80ands
 Z80C		=	../z80ac
 IO			=	../io
 VRAM		=	./vram
-SOUND		=	./sound
+SOUND		=	../sound
 FDD			=	./fdd
 TARGET		=	.
 TARGET2		=	./nds
 PATCH		=	./patch
+ASOUND		=	./sound
 
 HEADERS		=	$(TARGET2)/compiler.h $(BASE)/common.h \
 				$(COMMON)/milstr.h $(COMMON)/_memory.h $(TARGET2)/trace.h \
@@ -282,7 +283,7 @@ $(OBJ)/sio.o:		$(IO)/sio.c $(HEADERS) $(Z80CORES) $(PCCORES) $(IOCORES) \
 	$(CC) $(COPT9) -c $< -o $@
 
 $(OBJ)/sndboard.o:	$(PATCH)/sndboard.c $(HEADERS) $(PCCORES) $(IOCORES) \
-					$(TARGET)/ipcxfer.h $(SOUND)/nds9psg.h
+					$(TARGET)/ipcxfer.h $(ASOUND)/nds9psg.h
 	$(CC) $(COPT9) -c $< -o $@
 
 $(OBJ)/sndboard.oa	:$(PATCH)/sndboard.s $(TARGET2)/ramptr.inc
@@ -378,12 +379,12 @@ $(OBJ)/vsyncff.o:	$(VRAM)/vsyncff.cpp
 
 
 
-$(OBJ)/nds9psg.o:	$(SOUND)/nds9psg.cpp $(HEADERS) $(TARGET)/ipcxfer.h \
-					$(SOUND)/nds9psg.h
+$(OBJ)/nds9psg.o:	$(ASOUND)/nds9psg.cpp $(HEADERS) $(TARGET)/ipcxfer.h \
+					$(ASOUND)/nds9psg.h
 	$(CXX) $(COPT9) -c $< -o $@
 
-$(OBJ)/nds7psg.o:	$(SOUND)/nds7psg.cpp $(HEADERS) $(TARGET)/ipcxfer.h \
-					$(SOUND)/nds7psg.h
+$(OBJ)/nds7psg.o:	$(ASOUND)/nds7psg.cpp $(HEADERS) $(TARGET)/ipcxfer.h \
+					$(ASOUND)/nds7psg.h
 	$(CXX) $(COPT7) -c $< -o $@
 
 
@@ -410,11 +411,11 @@ $(OBJ)/xmil9.o:		$(TARGET)/xmil9.cpp $(HEADERS) $(TARGET)/xmil9.h \
 					$(TARGET)/sysmng.h $(Z80CORES) $(PCCORES) $(IOCORES) \
 					$(TARGET)/joymng.h $(BASE)/timing.h $(VRAM)/makescrn.h \
 					$(FDD)/fddfile.h $(PATCH)/font.h $(TARGET)/ipcxfer.h \
-					$(SOUND)/nds9psg.h $(VRAM)/vram.h $(VRAM)/vsyncff.h
+					$(ASOUND)/nds9psg.h $(VRAM)/vram.h $(VRAM)/vsyncff.h
 	$(CXX) $(COPT9) -c $< -o $@
 
 $(OBJ)/xmil7.o:		$(TARGET)/xmil7.cpp $(HEADERS) $(TARGET)/xmil7.h \
-					$(TARGET)/ipcxfer.h $(SOUND)/nds7psg.h
+					$(TARGET)/ipcxfer.h $(ASOUND)/nds7psg.h
 	$(CXX) $(COPT7) -c $< -o $@
 
 $(OBJ)/joymng.o:	$(TARGET)/joymng.cpp $(HEADERS) $(TARGET)/mousemng.h

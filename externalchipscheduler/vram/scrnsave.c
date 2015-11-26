@@ -224,13 +224,13 @@ SCRNSAVE scrnsave_get(void) {
 	sd->width = width;
 	sd->height = height;
 	sd->pals = pals;
-	if (pals < 2) {
+	if (pals <= 2) {
 		sd->type = SCRNSAVE_1BIT;
 	}
-	else if (pals < 16) {
+	else if (pals <= 16) {
 		sd->type = SCRNSAVE_4BIT;
 	}
-	else if (pals < 256) {
+	else if (pals <= 256) {
 		sd->type = SCRNSAVE_8BIT;
 	}
 	else {

@@ -53,7 +53,7 @@ const SCRNSURF *scrnmng_surflock(void);
 void scrnmng_surfunlock(const SCRNSURF *surf);
 void scrnmng_update(void);						// ddraws_drawall
 
-#define	scrnmng_isfullscreen()	(scrnmng.flag & SCRNFLAG_FULLSCREEN)
+#define	scrnmng_isfullscreen()	((scrnmng.flag & SCRNFLAG_FULLSCREEN) != 0)
 #define	scrnmng_getbpp()		(scrnmng.bpp)
 #define	scrnmng_allflash()		scrnmng.allflash = TRUE
 #define	scrnmng_palchanged()	scrnmng.palchanged = TRUE
@@ -71,7 +71,9 @@ void scrnmng_initialize(void);						// ddraws_initwindowsize
 BRESULT scrnmng_create(UINT8 scrnmode);				// ddraws_InitDirectDraw
 void scrnmng_destroy(void);							// ddraws_TermDirectDraw
 BRESULT scrnmng_changescreen(REG8 newmode);
+#if defined(SUPPORT_DCLOCK)
 void scrnmng_dispclock(void);						// ddraws_dispclock
+#endif	// defined(SUPPORT_DCLOCK)
 
 void scrnmng_querypalette(void);					// ddraws_palette
 void scrnmng_fullscrnmenu(int y);

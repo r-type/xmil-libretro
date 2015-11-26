@@ -1,12 +1,14 @@
-#include	"compiler.h"
+/**
+ * @file	opmgenc.c
+ * @brief	Implementation of the OPM generator
+ */
 
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#include "compiler.h"
 
-#ifndef		PALMOS
-#include	<math.h>
+#ifndef PALMOS
+#include <math.h>
 #endif
-#include	"sound.h"
-#include	"sndctrl.h"
+#include "opmgen.h"
 
 
 #define	OPM_ARRATE		 399128L
@@ -477,6 +479,4 @@ void opmgen_setreg(OPMGEN opmgen, REG8 reg, REG8 value) {
 			break;
 	}
 }
-
-#endif
 

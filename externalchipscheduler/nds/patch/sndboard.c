@@ -1,8 +1,8 @@
 #include "compiler.h"
 #include "pccore.h"
 #include "iocore.h"
-#include"z80core.h"
-#include "nds9psg.h"
+#include "z80core.h"
+#include "sound/nds9psg.h"
 #if defined(SUPPORT_ROMEO2)
 #include <nds/registers_alt.h>
 #include "romeo2.h"
@@ -138,6 +138,14 @@ REG8 IOINPCALL opm_i(UINT uPort)
 
 
 // ----
+
+void sndboard_initialize(void)
+{
+}
+
+void sndboard_deinitialize(void)
+{
+}
 
 void sndboard_reset()
 {

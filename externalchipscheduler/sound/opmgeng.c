@@ -1,9 +1,10 @@
-#include	"compiler.h"
+/**
+ * @file	opmgeng.c
+ * @brief	Implementation of the OPM generator
+ */
 
-#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-
-#include	"sound.h"
-#include	"sndctrl.h"
+#include "compiler.h"
+#include "opmgen.h"
 
 extern	OPMCFG	opmcfg;
 
@@ -147,4 +148,3 @@ void SOUNDCALL opmgen_getpcm(OPMGEN opmgen, SINT32 *pcm, UINT count) {
 	opmgen->playing = playing;
 }
 
-#endif

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\patch" /I ".\win32s" /I "..\\" /I "..\common" /I "..\z80ac" /I "..\io" /I ".\vram" /I ".\sound" /I ".\fdd" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "TRACE" /D MAKESCRN_VRAMFF=1 /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I ".\patch" /I ".\win32s" /I "..\\" /I "..\common" /I "..\z80ac" /I "..\io" /I ".\vram" /I "..\sound" /I ".\fdd" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "TRACE" /D MAKESCRN_VRAMFF=1 /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
 # ADD RSC /l 0x411 /d "NDEBUG"
@@ -68,7 +68,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I ".\\" /I ".\patch" /I ".\win32s" /I "..\\" /I "..\common" /I "..\z80ac" /I "..\io" /I ".\vram" /I ".\sound" /I ".\fdd" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D MAKESCRN_VRAMFF=1 /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I ".\\" /I ".\patch" /I ".\win32s" /I "..\\" /I "..\common" /I "..\z80ac" /I "..\io" /I ".\vram" /I "..\sound" /I ".\fdd" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D MAKESCRN_VRAMFF=1 /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x411 /d "_DEBUG"
 # ADD RSC /l 0x411 /d "_DEBUG"
@@ -363,7 +363,7 @@ InputPath=.\bss.x86
 InputName=bss
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 -o $(IntDir)\$(InputName).obj -i.\x86\ -i..\i286x\ -i..\io\x86\ $(InputPath)
+	nasm -f win32 -o $(IntDir)\$(InputName).obj -i.\x86\ -i..\i286x\ -i..\io\x86\ $(InputPath)
 
 # End Custom Build
 
@@ -375,7 +375,7 @@ InputPath=.\bss.x86
 InputName=bss
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -f win32 -o $(IntDir)\$(InputName).obj -i.\x86\ -i..\i286x\ -i..\io\x86\ $(InputPath)
+	nasm -f win32 -o $(IntDir)\$(InputName).obj -i.\x86\ -i..\i286x\ -i..\io\x86\ $(InputPath)
 
 # End Custom Build
 
