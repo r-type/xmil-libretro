@@ -13,6 +13,7 @@
 #include "extclass.h"
 #include "misc\tstring.h"
 #include "misc\WndProc.h"
+#include "subwnd/kdispwnd.h"
 #include "subwnd/skbdwnd.h"
 #include "pccore.h"
 #include "iocore.h"
@@ -145,6 +146,10 @@ void sysmenu_initialize(HMENU hMenu)
 {
 	UINT nPos = 0;
 
+#if defined(SUPPORT_KEYDISP)
+	nPos += InsertMenuString(hMenu, nPos, MF_BYPOSITION | MF_STRING, IDM_KEYDISP);
+#endif	// defined(SUPPORT_KEYDISP)
+
 #if defined(SUPPORT_SOFTKBD)
 	nPos += InsertMenuString(hMenu, nPos, MF_BYPOSITION | MF_STRING, IDM_SOFTKBD);
 #endif	// defined(SUPPORT_SOFTKBD)
@@ -158,6 +163,10 @@ void sysmenu_initialize(HMENU hMenu)
  */
 void sysmenu_update(HMENU hMenu)
 {
+#if defined(SUPPORT_KEYDISP)
+	CheckMenuItem(hMenu, IDM_KEYDISP, MF_BYCOMMAND | MFCHECK(kdispwin_gethwnd() != NULL));
+#endif	// defined(SUPPORT_KEYDISP)
+
 #if defined(SUPPORT_SOFTKBD)
 	CheckMenuItem(hMenu, IDM_SOFTKBD, MF_BYCOMMAND | MFCHECK(skbdwin_gethwnd() != NULL));
 #endif	// defined(SUPPORT_SOFTKBD)

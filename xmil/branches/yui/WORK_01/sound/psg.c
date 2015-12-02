@@ -7,6 +7,7 @@
 #include "psg.h"
 #include "sound.h"
 #include "x1f.h"
+#include "generic/keydisp.h"
 
 static void writeRegister(PPSG psg, REG8 nAddress, REG8 cData);
 
@@ -66,6 +67,11 @@ void psg_bind(PPSG psg)
 {
 	const UINT8 cCaps = psg->s.cCaps;
 
+	if (cCaps & PSG_HAS_PSG)
+	{
+		keydisp_bindpsg(psg->s.reg, 4000000);
+	}
+
 	psg_restore(psg);
 
 	if (cCaps & PSG_HAS_PSG)
@@ -123,6 +129,7 @@ static void writeRegister(PPSG psg, REG8 nAddress, REG8 cData)
 	{
 		if (cCaps & PSG_HAS_PSG)
 		{
+			keydisp_psg(psg->s.reg, nAddress);
 			psggen_setreg(&psg->psg, nAddress, cData);
 		}
 	}
