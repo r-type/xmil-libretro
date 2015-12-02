@@ -1104,6 +1104,22 @@ SOURCE=.\subwnd\dclock.cpp
 
 SOURCE=.\subwnd\dclock.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\dd2.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\dd2.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\subwnd.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\subwnd.h
+# End Source File
 # End Group
 # Begin Source File
 

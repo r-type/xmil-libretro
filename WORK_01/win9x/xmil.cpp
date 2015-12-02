@@ -37,6 +37,7 @@
 #if defined(SUPPORT_DCLOCK)
 #include "subwnd/dclock.h"
 #endif	// defined(SUPPORT_DCLOCK)
+#include "subwnd/subwnd.h"
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
@@ -818,6 +819,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	MSG			msg;
 
 	CWndProc::Initialize(hInstance);
+	CSubWndBase::Initialize(hInstance);
 
 	GetModuleFileName(NULL, modulefile, _countof(modulefile));
 	dosio_init();
