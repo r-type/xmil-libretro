@@ -669,7 +669,6 @@ void keydisp_bindopm(const UINT8 *pcRegister, UINT nBaseClock)
 		k->pcRegister = pcRegister;
 		k->cFMChannels = 8;
 		k->wTone = (SINT16)(log((double)nBaseClock / 3579545) / log(2.0) * 12.0 * 64.0);
-		TRACEOUT(("t = %d", k->wTone));
 		s_keydisp.opmmax++;
 		s_keydisp.keymax += 8;
 	}
