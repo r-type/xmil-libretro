@@ -315,6 +315,14 @@ SOURCE=..\generic\cmndraw.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\generic\keydisp.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\generic\keydisp.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\generic\softkbd.c
 # End Source File
 # Begin Source File
@@ -734,6 +742,14 @@ SOURCE=.\subwnd\dd2.cpp
 # Begin Source File
 
 SOURCE=.\subwnd\dd2.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\kdispwnd.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\kdispwnd.h
 # End Source File
 # Begin Source File
 
