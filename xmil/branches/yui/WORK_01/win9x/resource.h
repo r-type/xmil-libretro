@@ -92,10 +92,10 @@
 #define IDM_JOYX                        40047
 #define IDM_RAPID                       40048
 #define IDM_ABOUT                       40049
-#define IDM_SCREENCENTER                40101
-#define IDM_SNAPENABLE                  40102
-#define IDM_BACKGROUND                  40103
-#define IDM_BGSOUND                     40104
+#define IDM_SCREENCENTER                40103
+#define IDM_SNAPENABLE                  40104
+#define IDM_BACKGROUND                  40105
+#define IDM_BGSOUND                     40106
 #define IDM_FLAGSAVE                    40201
 #define IDM_FLAGSAVE0                   40201
 #define IDM_FLAGSAVE1                   40202
