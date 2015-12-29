@@ -1,57 +1,74 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"resource.h"
-#include	"xmil.h"
-#include	"dosio.h"
-#include	"sysmng.h"
-#include	"dialog.h"
-#include	"dialogs.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"scrnsave.h"
-#include	"font.h"
+/**
+ * @file	d_bmp.cpp
+ * @brief	画像ファイル アクセスの動作の定義を行います
+ */
 
+#include "compiler.h"
+#include "resource.h"
+#include "d_bmp.h"
+#include "xmil.h"
+#include "dosio.h"
+#include "sysmng.h"
+#include "misc/DlgProc.h"
+#include "strres.h"
+#include "pccore.h"
+#include "iocore.h"
+#include "scrnsave.h"
 
-static const OEMCHAR bmpui_file[] = OEMTEXT("XMIL%04d.BMP");
-static const OEMCHAR bmpui_title[] = OEMTEXT("Save as bitmap file");
-static const OEMCHAR bmpui_filter1[] = OEMTEXT("1bit-bitmap (*.bmp)\0*.bmp\0Graphics Interchange Format (*.gif)\0*.gif\0");
-static const OEMCHAR bmpui_filter4[] = OEMTEXT("4bit-bitmap (*.bmp)\0*.bmp\0Graphics Interchange Format (*.gif)\0*.gif\0");
-static const OEMCHAR bmpui_filter8[] = OEMTEXT("8bit-bitmap (*.bmp)\0*.bmp\0Graphics Interchange Format (*.gif)\0*.gif\0");
-static const OEMCHAR bmpui_filter24[] = OEMTEXT("24bit-bitmap (*.bmp)\0*.bmp\0");
-static const OEMCHAR *bmpui_filter[4] = {
-				bmpui_filter1, bmpui_filter4, bmpui_filter8, bmpui_filter24};
+static const TCHAR bmpui_file[] = TEXT("XMIL%04d.BMP");
 
+static const UINT s_nFilterIDs[] =
+{
+	IDS_BMPFILTER1,
+	IDS_BMPFILTER4,
+	IDS_BMPFILTER8,
+	IDS_BMPFILTER24
+};
 
-void dialog_writebmp(HWND hWnd) {
-
-	SCRNSAVE	ss;
-	FILESEL		bmpui;
-	OEMCHAR		path[MAX_PATH];
-const OEMCHAR	*ext;
-
-	ss = scrnsave_get();
-	if (ss == NULL) {
+void dialog_writebmp(HWND hWnd)
+{
+	SCRNSAVE ss = scrnsave_get();
+	if (ss == NULL)
+	{
 		return;
 	}
-	bmpui.title = bmpui_title;
-	bmpui.ext = str_bmp;
-	bmpui.filter = bmpui_filter[ss->type];
-	bmpui.defindex = 1;
-	file_cpyname(path, bmpfilefolder, _countof(path));
-	file_cutname(path);
-	file_catname(path, bmpui_file, _countof(path));
-	if (dlgs_selectwritenum(hWnd, &bmpui, path, _countof(path))) {
-		file_cpyname(bmpfilefolder, path, _countof(bmpfilefolder));
+
+	TCHAR szPath[MAX_PATH];
+	for (UINT i = 0; i < 10000; i++)
+	{
+		TCHAR szFilename[MAX_PATH];
+		wsprintf(szFilename, bmpui_file, i);
+
+		file_cpyname(szPath, fddfolder, _countof(szPath));
+		file_cutname(szPath);
+		file_catname(szPath, szFilename, _countof(szPath));
+		if (file_attr(szPath) == -1)
+		{
+			break;
+		}
+	}
+
+	std::tstring rTitle(LoadTString(IDS_BMPTITLE));
+	std::tstring rFilter(LoadTString(s_nFilterIDs[ss->type]));
+	std::tstring rExt(LoadTString(IDS_BMPEXT));
+
+	CFileDlg dlg(FALSE, rExt.c_str(), szPath, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
+	dlg.m_ofn.nFilterIndex = 1;
+	if (dlg.DoModal() == IDOK)
+	{
+		LPCTSTR lpPath = dlg.GetPathName();
+		LPCTSTR lpExt = file_getext(lpPath);
+		if ((ss->type <= SCRNSAVE_8BIT) && (!file_cmpname(lpExt, TEXT("gif"))))
+		{
+			scrnsave_writegif(ss, lpPath, SCRNSAVE_AUTO);
+		}
+		else if (!file_cmpname(lpExt, str_bmp))
+		{
+			scrnsave_writebmp(ss, lpPath, SCRNSAVE_AUTO);
+		}
+
+		file_cpyname(bmpfilefolder, lpPath, _countof(bmpfilefolder));
 		sysmng_update(SYS_UPDATEOSCFG);
-		ext = file_getext(path);
-		if ((ss->type <= SCRNSAVE_8BIT) &&
-			(!file_cmpname(ext, OEMTEXT("gif")))) {
-			scrnsave_writegif(ss, path, SCRNSAVE_AUTO);
-		}
-		else if (!file_cmpname(ext, str_bmp)) {
-			scrnsave_writebmp(ss, path, SCRNSAVE_AUTO);
-		}
 	}
 	scrnsave_trash(ss);
 }
-

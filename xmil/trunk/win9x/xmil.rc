@@ -321,7 +321,7 @@ TURBOZ                  BITMAP  DISCARDABLE     "Icons\\turboz.bmp"
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_APP_NAME            "X millennium ÇÀÇ±ÇøÇ„Å`ÇÒ"
+    IDS_APP_NAME            "X millennium"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -332,6 +332,37 @@ BEGIN
     IDR_FDD2MENU            "FDD-&2"
     IDR_FDD3MENU            "FDD-&3"
     IDR_DEBUG               "D&ebug"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_NEWDISKTITLE        "Create disk image"
+    IDS_NEWDISKEXT          "d88"
+    IDS_NEWDISKFILTER       "D88 image files (*.D88;*.88D)|*.d88;*.88d|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_FDDTITLE            "Select floppy image"
+    IDS_FDDEXT              "d88"
+    IDS_FDDFILTER           "2D image files (*.2D)|*.2d|D88 image files (*.D88;*.88D)|*.d88;*.88d|All supported Files|*.2d;*.d88;*.88d;*.d8u|All files (*.*)|*.*|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_BMPTITLE            "Save as bitmap file"
+    IDS_BMPEXT              "bmp"
+    IDS_BMPFILTER1          "1bit-bitmap (*.bmp)|*.bmp|Graphics Interchange Format (*.gif)|*.gif|"
+    IDS_BMPFILTER4          "4bit-bitmap (*.bmp)|*.bmp|Graphics Interchange Format (*.gif)|*.gif|"
+    IDS_BMPFILTER8          "8bit-bitmap (*.bmp)|*.bmp|Graphics Interchange Format (*.gif)|*.gif|"
+    IDS_BMPFILTER24         "24bit-bitmap (*.bmp)|*.bmp|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_X1FTITLE            "Save as OPM log"
+    IDS_X1FEXT              "x1f"
+    IDS_X1FFILTER           "OPM log (*.x1f)|*.x1f|"
 END
 
 STRINGTABLE DISCARDABLE 

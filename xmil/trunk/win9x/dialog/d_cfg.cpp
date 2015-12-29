@@ -1,154 +1,147 @@
-#include	"compiler.h"
-#include	<commctrl.h>
-#include	"strres.h"
-#include	"xmil.h"
-#include	"resource.h"
-#include	"dosio.h"
-#include	"soundmng.h"
-#include	"sysmng.h"
-#include	"ini.h"
-#include	"dialog.h"
-#include	"dialogs.h"
-#include	"pccore.h"
-#include	"palettes.h"
-#include	"makescrn.h"
+/**
+ * @file	d_cfg.cpp
+ * @brief	コンフィグ ダイアログ クラスの動作の定義を行います
+ */
 
+#include "compiler.h"
+#include "d_cfg.h"
+#include "resource.h"
+#include <commctrl.h>
+#include "soundmng.h"
+#include "sysmng.h"
+#include "pccore.h"
+#include "palettes.h"
 
-#define	LIMITS(v, n, m)		(((v) > (m))?(m):(((v) < (n))?(n):(v)))
+//! クランプ定義
+#define LIMITS(v, n, m)		(((v) > (m))? (m) : (((v) < (n)) ? (n) : (v)))
 
-static const UINT32 ratehz[] = {48000, 44100, 33075, 32000,
-								24000, 22050, 16000, 11025};
+static const UINT32 ratehz[] = {48000, 44100, 33075, 32000, 24000, 22050, 16000, 11025};
 
-static void cfgcreate(HWND hWnd) {
+/**
+ * コンストラクタ
+ * @param[in] hwndParent 親ウィンドウ
+ */
+CConfigDlg::CConfigDlg(HWND hwndParent)
+	: CDlgProc(IDD_CONFIG, hwndParent)
+{
+}
 
-	OEMCHAR	work[32];
-
-	dlgs_setlistuint32(hWnd, IDC_SAMPLERATE, ratehz, NELEMENTS(ratehz));
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL CConfigDlg::OnInitDialog()
+{
+	for (UINT i = 0; i < _countof(ratehz); i++)
+	{
+		TCHAR szBuffer[16];
+		wsprintf(szBuffer, TEXT("%d"), ratehz[i]);
+		SendDlgItemMessage(IDC_SAMPLERATE, CB_ADDSTRING, NULL, reinterpret_cast<LPARAM>(szBuffer));
+	}
 
 #if !defined(DISABLE_SOUND)
-	OEMSPRINTF(work, str_u, xmilcfg.samplingrate);
-	SetDlgItemText(hWnd, IDC_SAMPLERATE, work);
-	OEMSPRINTF(work, str_u, xmilcfg.delayms);
-	SetDlgItemText(hWnd, IDC_SNDBUFFER, work);
-	OEMSPRINTF(work, str_u, xmilcfg.MOTORVOL);
-	SetDlgItemText(hWnd, IDC_SEEKVOL, work);
+	SetDlgItemInt(IDC_SAMPLERATE, xmilcfg.samplingrate);
+	SetDlgItemInt(IDC_SNDBUFFER, xmilcfg.delayms);
+	SetDlgItemInt(IDC_SEEKVOL, xmilcfg.MOTORVOL);
 #else	// !defined(DISABLE_SOUND)
 	static UINT s_nSoundIDs[] = {IDC_SAMPLERATE, IDC_SNDBUFFER, IDC_SEEKVOL};
 	for (size_t i = 0; i < _countof(s_nSoundIDs); i++)
 	{
-		EnableWindow(GetDlgItem(hWnd, s_nSoundIDs[i]), FALSE);
+		EnableWindow(GetDlgItem(s_nSoundIDs[i]), FALSE);
 	}
 #endif	// !defined(DISABLE_SOUND)
 
-	SetDlgItemCheck(hWnd, IDC_SKIPLINE, xmilcfg.skipline);
-	SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_SETRANGE, TRUE,
-														MAKELONG(0, 256));
-	SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_SETPOS, TRUE,
-														xmilcfg.skiplight);
-	OEMSPRINTF(work, str_d, xmilcfg.skiplight);
-	SetDlgItemText(hWnd, IDC_LIGHTSTR, work);
+	CheckDlgButton(IDC_SKIPLINE, (xmilcfg.skipline) ? BST_CHECKED : BST_UNCHECKED);
+	SendDlgItemMessage(IDC_SKIPLIGHT, TBM_SETRANGE, TRUE, MAKELONG(0, 256));
+	SendDlgItemMessage(IDC_SKIPLIGHT, TBM_SETPOS, TRUE, xmilcfg.skiplight);
+	SetDlgItemInt(IDC_LIGHTSTR, xmilcfg.skiplight);
+
+	return TRUE;
 }
 
-static void lightstr(HWND hWnd) {
-
-	UINT	val;
-	OEMCHAR	work[32];
-
-	val = (UINT)SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_GETPOS, 0, 0);
-	OEMSPRINTF(work, str_d, val);
-	SetDlgItemText(hWnd, IDC_LIGHTSTR, work);
-}
-
-static void cfgupdate(HWND hWnd) {
-
-	UINT	updateflag;
-	UINT16	wval;
-	UINT8	bval;
-	BOOL	renewalflg;
-
-	updateflag = 0;
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void CConfigDlg::OnOK()
+{
+	UINT nUpdateFlags = 0;
 
 #if !defined(DISABLE_SOUND)
-	OEMCHAR work[32];
-	GetDlgItemText(hWnd, IDC_SAMPLERATE, work, NELEMENTS(work));
-	wval = (UINT16)LIMITS(milstr_solveINT(work), 11025, 55500);
-	if (xmilcfg.samplingrate != wval) {
-		xmilcfg.samplingrate = wval;
-		updateflag |= SYS_UPDATECFG;
+	UINT nSamplingRate = GetDlgItemInt(IDC_SAMPLERATE, NULL, FALSE);
+	nSamplingRate = LIMITS(nSamplingRate, 11025, 55500);
+	if (xmilcfg.samplingrate != nSamplingRate)
+	{
+		xmilcfg.samplingrate = nSamplingRate;
+		nUpdateFlags |= SYS_UPDATECFG;
 		corestat.soundrenewal = TRUE;
 	}
 
-	GetDlgItemText(hWnd, IDC_SNDBUFFER, work, NELEMENTS(work));
-	wval = (UINT16)LIMITS(milstr_solveINT(work), 100, 1000);
-	if (xmilcfg.delayms != wval) {
-		xmilcfg.delayms = wval;
-		updateflag |= SYS_UPDATECFG;
+	UINT nDelayMs = GetDlgItemInt(IDC_SNDBUFFER, NULL, FALSE);
+	nDelayMs = LIMITS(nDelayMs, 100, 1000);
+	if (xmilcfg.delayms != nDelayMs)
+	{
+		xmilcfg.delayms = nDelayMs;
+		nUpdateFlags |= SYS_UPDATECFG;
 		corestat.soundrenewal = TRUE;
 	}
 
-	GetDlgItemText(hWnd, IDC_SEEKVOL, work, NELEMENTS(work));
-	bval = (UINT8)LIMITS(milstr_solveINT(work), 0, 100);
-	if (xmilcfg.MOTORVOL != bval) {
-		xmilcfg.MOTORVOL = bval;
-		soundmng_pcmvolume(SOUND_PCMSEEK, bval);
-		soundmng_pcmvolume(SOUND_PCMSEEK1, bval);
-		updateflag |= SYS_UPDATEOSCFG;
+	UINT nMotorVol = GetDlgItemInt(IDC_SEEKVOL, NULL, FALSE);
+	nMotorVol = LIMITS(nMotorVol, 0, 100);
+	if (xmilcfg.MOTORVOL != nMotorVol)
+	{
+		xmilcfg.MOTORVOL = nMotorVol;
+		soundmng_pcmvolume(SOUND_PCMSEEK, nMotorVol);
+		soundmng_pcmvolume(SOUND_PCMSEEK1, nMotorVol);
+		nUpdateFlags |= SYS_UPDATEOSCFG;
 	}
 #endif	// !defined(DISABLE_SOUND)
 
-	renewalflg = FALSE;
-	bval = GetDlgItemCheck(hWnd, IDC_SKIPLINE);
-	if (xmilcfg.skipline != bval) {
-		xmilcfg.skipline = bval;
-		renewalflg = TRUE;
+	bool bRenewal = false;
+	const UINT8 bSkipline = (IsDlgButtonChecked(IDC_SKIPLINE) != BST_UNCHECKED) ? 1 : 0;
+	if (xmilcfg.skipline != bSkipline)
+	{
+		xmilcfg.skipline = bSkipline;
+		bRenewal = true;
 	}
-	wval = (UINT16)SendDlgItemMessage(hWnd, IDC_SKIPLIGHT, TBM_GETPOS, 0, 0);
-	if (wval > 256) {
-		wval = 256;
+	UINT nSkipLight = SendDlgItemMessage(IDC_SKIPLIGHT, TBM_GETPOS, 0, 0);
+	if (nSkipLight > 256)
+	{
+		nSkipLight = 256;
 	}
-	if (xmilcfg.skiplight != wval) {
-		xmilcfg.skiplight = wval;
-		renewalflg = TRUE;
+	if (xmilcfg.skiplight != nSkipLight)
+	{
+		xmilcfg.skiplight = nSkipLight;
+		bRenewal = true;
 	}
-	if (renewalflg) {
+	if (bRenewal)
+	{
 		pal_reset();
-		updateflag |= SYS_UPDATECFG;
+		nUpdateFlags |= SYS_UPDATECFG;
 	}
-	sysmng_update(updateflag);
+	::sysmng_update(nUpdateFlags);
+
+	CDlgProc::OnOK();
 }
 
-LRESULT CALLBACK CfgDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
-
-	switch (msg) {
-		case WM_INITDIALOG:
-			cfgcreate(hWnd);
-			break;
-
-		case WM_COMMAND:
-			switch (LOWORD(wp)) {
-				case IDOK:
-					cfgupdate(hWnd);
-					EndDialog(hWnd, IDOK);
-					return(TRUE);
-
-				case IDCANCEL:
-					EndDialog(hWnd, IDCANCEL);
-					return(TRUE);
-			}
-			break;
-
+/**
+ * CWndProc オブジェクトの Windows プロシージャ (WindowProc) が用意されています
+ * @param[in] nMsg 処理される Windows メッセージを指定します
+ * @param[in] wParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @param[in] lParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @return メッセージに依存する値を返します
+ */
+LRESULT CConfigDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMsg)
+	{
 		case WM_HSCROLL:
-			switch(GetDlgCtrlID((HWND)lp)) {
-				case IDC_SKIPLIGHT:
-					lightstr(hWnd);
-					return(TRUE);
+			if (reinterpret_cast<HWND>(lParam) == GetDlgItem(IDC_SKIPLIGHT))
+			{
+				SetDlgItemInt(IDC_LIGHTSTR, HIWORD(wParam));
+				return TRUE;
 			}
 			break;
-
-		case WM_CLOSE:
-			PostMessage(hWnd, WM_COMMAND, IDCANCEL, 0);
-			return(TRUE);
 	}
-	return(FALSE);
+	return CDlgProc::WindowProc(nMsg, wParam, lParam);
 }
-
