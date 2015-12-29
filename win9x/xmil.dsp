@@ -149,6 +149,70 @@ LINK32=link.exe
 # Begin Group "common"
 
 # PROP Default_Filter ""
+# Begin Group "io"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\IO\CGROM.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\CMT.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\CRTC.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\CTC.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\DIPSW.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\DMAC.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\FDC.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\IOCORE.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\MEMIO.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\PCG.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\PPI.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\SIO.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\SNDBOARD.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\SUBCPU.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\IO\VRAMIO.C
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\COMMON\_MEMORY.C
@@ -186,7 +250,546 @@ SOURCE=..\common\textfile.c
 SOURCE=..\common\textfile.h
 # End Source File
 # End Group
-# Begin Group "cpu"
+# Begin Group "fdd"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\FDD\DISKDRV.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FDD\FDD_2D.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FDD\FDD_D88.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FDD\FDD_INI.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FDD\FDD_MTR.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FDD\FDDFILE.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FDD\NEWDISK.C
+# End Source File
+# End Group
+# Begin Group "font"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\FONT\FONT.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FONT\FONTDATA.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FONT\FONTMAKE.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\FONT\FONTX1.C
+# End Source File
+# End Group
+# Begin Group "generic"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\generic\cmndraw.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\generic\cmndraw.h
+# End Source File
+# End Group
+# Begin Group "sound"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\opm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\opm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\opmgen.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\opmgenc.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\x86\opmgeng.x86
+
+!IF  "$(CFG)" == "xmil - Win32 Release JP"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xreljp
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xrelworld
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xtrc
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
+
+# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
+IntDir=.\..\obj\vc\win9xdbg
+InputPath=.\x86\opmgeng.x86
+InputName=opmgeng
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\psg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggen.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggenc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sound\psggeng.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\SOUND\SNDCTRL.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\SOUND\SOUND.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\SOUND\X1F.C
+# End Source File
+# End Group
+# Begin Group "vram"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\VRAM\MAKE15.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\MAKE24.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\MAKEATR.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\MAKECHR.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\MAKEMIX.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\MAKESCRN.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\MAKESUB.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\MAKETXTH.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\MAKETXTL.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\PALETTES.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\SCRNDRAW.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\SCRNSAVE.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\SDRAW.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\VRAM\VRAM.C
+# End Source File
+# End Group
+# Begin Group "win9x"
+
+# PROP Default_Filter ""
+# Begin Group "dialog"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\dialog\d_about.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_about.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_bmp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_bmp.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_cfg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_cfg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_disk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_disk.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_sound.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_sound.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DIALOG\EXTCLASS.CPP
+# End Source File
+# End Group
+# Begin Group "ext"
+
+# PROP Default_Filter ""
+# Begin Group "romeo"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\romeo\juliet.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\romeo\juliet.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\romeo\romeo.h
+# End Source File
+# End Group
+# Begin Group "scci"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\scci\scci.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\scci\SCCIDefines.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\scci\scciif.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\scci\scciif.h
+# End Source File
+# End Group
+# Begin Group "c86ctl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ext\c86ctl\c86ctl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\c86ctl\c86ctlif.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\c86ctl\c86ctlif.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\c86ctl\cbus_boardtype.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\ext\externalchip.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchipmanager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalchipmanager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopl3.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopl3.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopna.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalopna.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalpsg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ext\externalpsg.h
+# End Source File
+# End Group
+# Begin Group "misc"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\misc\DlgProc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\DlgProc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\guard.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\threadbase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\threadbase.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\tickcounter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\tickcounter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\trace.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\trace.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\tstring.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\tstring.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\vc6macros.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\WndBase.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\wndloc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\wndloc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\WndProc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\WndProc.h
+# End Source File
+# End Group
+# Begin Group "subwnd"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\subwnd\dclock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\dclock.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\dd2.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\dd2.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\subwnd.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\subwnd.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\DOSIO.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\FONTMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\INI.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\JOYMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\MENU.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\MOUSEMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\SCRNMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\SOUNDMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\SYSMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\TIMEMNG.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\WINKBD.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\XMIL.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\Xmil.rc
+# End Source File
+# End Group
+# Begin Group "z80x"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -581,581 +1184,6 @@ InputName=Z80XMEM
 
 !ENDIF 
 
-# End Source File
-# End Group
-# Begin Group "io"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\IO\CGROM.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\CMT.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\CRTC.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\CTC.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\DIPSW.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\DMAC.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\FDC.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\IOCORE.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\MEMIO.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\PCG.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\PPI.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\SIO.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\SNDBOARD.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\SUBCPU.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\IO\VRAMIO.C
-# End Source File
-# End Group
-# Begin Group "vram"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\VRAM\MAKE15.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\MAKE24.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\MAKEATR.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\MAKECHR.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\MAKEMIX.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\MAKESCRN.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\MAKESUB.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\MAKETXTH.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\MAKETXTL.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\PALETTES.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\SCRNDRAW.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\SCRNSAVE.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\SDRAW.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\VRAM\VRAM.C
-# End Source File
-# End Group
-# Begin Group "sound"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\ext\opm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\sound\opm.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sound\opmgen.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sound\opmgenc.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\x86\opmgeng.x86
-
-!IF  "$(CFG)" == "xmil - Win32 Release JP"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xreljp
-InputPath=.\x86\opmgeng.x86
-InputName=opmgeng
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Release World"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xrelworld
-InputPath=.\x86\opmgeng.x86
-InputName=opmgeng
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Trace"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xtrc
-InputPath=.\x86\opmgeng.x86
-InputName=opmgeng
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "xmil - Win32 Debug"
-
-# Begin Custom Build - ±¾ÝÌÞÙ’†... $(InputPath)
-IntDir=.\..\obj\vc\win9xdbg
-InputPath=.\x86\opmgeng.x86
-InputName=opmgeng
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasm -f win32 $(InputPath) -o $(IntDir)\$(InputName).obj
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\psg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\sound\psg.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sound\psggen.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sound\psggenc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sound\psggeng.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\SOUND\SNDCTRL.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\SOUND\SOUND.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\SOUND\X1F.C
-# End Source File
-# End Group
-# Begin Group "fdd"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\FDD\DISKDRV.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FDD\FDD_2D.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FDD\FDD_D88.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FDD\FDD_INI.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FDD\FDD_MTR.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FDD\FDDFILE.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FDD\NEWDISK.C
-# End Source File
-# End Group
-# Begin Group "font"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\FONT\FONT.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FONT\FONTDATA.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FONT\FONTMAKE.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\FONT\FONTX1.C
-# End Source File
-# End Group
-# Begin Group "win9x"
-
-# PROP Default_Filter ""
-# Begin Group "dialog"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\dialog\d_about.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_about.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_bmp.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_bmp.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_cfg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_cfg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_disk.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_disk.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_sound.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog\d_sound.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DIALOG\EXTCLASS.CPP
-# End Source File
-# End Group
-# Begin Group "ext"
-
-# PROP Default_Filter ""
-# Begin Group "romeo"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\ext\romeo\juliet.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\romeo\juliet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\romeo\romeo.h
-# End Source File
-# End Group
-# Begin Group "scci"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\ext\scci\scci.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\scci\SCCIDefines.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\scci\scciif.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\scci\scciif.h
-# End Source File
-# End Group
-# Begin Group "c86ctl"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\ext\c86ctl\c86ctl.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\c86ctl\c86ctlif.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\c86ctl\c86ctlif.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\c86ctl\cbus_boardtype.h
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=.\ext\externalchip.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalchipmanager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalchipmanager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalopl3.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalopl3.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalopm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalopm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalopna.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalopna.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalpsg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ext\externalpsg.h
-# End Source File
-# End Group
-# Begin Group "misc"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\misc\DlgProc.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\DlgProc.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\guard.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\threadbase.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\threadbase.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\tickcounter.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\tickcounter.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\trace.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\trace.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\tstring.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\tstring.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\vc6macros.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\WndBase.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\wndloc.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\wndloc.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\WndProc.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc\WndProc.h
-# End Source File
-# End Group
-# Begin Group "subwnd"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\subwnd\dclock.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\subwnd\dclock.h
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=.\DOSIO.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\FONTMNG.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\INI.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\JOYMNG.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\MENU.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\MOUSEMNG.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\SCRNMNG.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\SOUNDMNG.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\SYSMNG.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\TIMEMNG.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\WINKBD.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\XMIL.CPP
-# End Source File
-# Begin Source File
-
-SOURCE=.\Xmil.rc
 # End Source File
 # End Group
 # Begin Source File
