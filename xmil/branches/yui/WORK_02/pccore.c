@@ -110,11 +110,10 @@ void pccore_reset(void) {
 
 	pccore.ROM_TYPE = xmilcfg.ROM_TYPE;
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	if (xmilcfg.ROM_TYPE >= 3) {
-		pccore.SOUND_SW = 1;					/* –³ðŒ‚Å“‹Ú */
-	}
-	else {
-		pccore.SOUND_SW = xmilcfg.SOUND_SW;
+	pccore.SOUND_SW = xmilcfg.SOUND_SW;
+	if ((xmilcfg.ROM_TYPE >= 3) && (pccore.SOUND_SW == 0))
+	{
+		pccore.SOUND_SW = 1;					/* –³ðŒ‚Å1‚Â“‹Ú */
 	}
 #endif
 	pccore.DIP_SW = xmilcfg.DIP_SW;
