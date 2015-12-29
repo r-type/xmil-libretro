@@ -326,6 +326,12 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
+    IDS_CAPTION_KEYDISP     "Key display"
+    IDS_CAPTION_SOFTKBD     "Soft keyboard"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
     IDR_STAT                "S&tat"
     IDR_FDD0MENU            "FDD-&0"
     IDR_FDD1MENU            "FDD-&1"
@@ -371,6 +377,8 @@ BEGIN
     IDM_FMBOARD             "&FM Board"
     IDM_OPMLOG              "&OPM LOG..."
     IDM_WAVEREC             "&Wave Record..."
+    IDM_KEYDISP             "&Key display"
+    IDM_SOFTKBD             "&Soft keyboard"
 END
 
 #endif    // “ú–{Œê resources

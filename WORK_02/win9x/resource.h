@@ -27,6 +27,8 @@
 #define IDC_MAKE2HD                     1009
 #define IDC_XMILVER                     1010
 #define IDS_APP_NAME                    30001
+#define IDS_CAPTION_KEYDISP             30101
+#define IDS_CAPTION_SOFTKBD             30102
 #define IDS_NEWDISKTITLE                31001
 #define IDS_NEWDISKEXT                  31002
 #define IDS_NEWDISKFILTER               31003
@@ -92,10 +94,12 @@
 #define IDM_JOYX                        40047
 #define IDM_RAPID                       40048
 #define IDM_ABOUT                       40049
-#define IDM_SCREENCENTER                40101
-#define IDM_SNAPENABLE                  40102
-#define IDM_BACKGROUND                  40103
-#define IDM_BGSOUND                     40104
+#define IDM_KEYDISP                     40101
+#define IDM_SOFTKBD                     40102
+#define IDM_SCREENCENTER                40103
+#define IDM_SNAPENABLE                  40104
+#define IDM_BACKGROUND                  40105
+#define IDM_BGSOUND                     40106
 #define IDM_FLAGSAVE                    40201
 #define IDM_FLAGSAVE0                   40201
 #define IDM_FLAGSAVE1                   40202

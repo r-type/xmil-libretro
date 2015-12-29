@@ -9,6 +9,7 @@
 #include "iocore.h"
 #include "keystat.h"
 #include "sound.h"
+#include "generic/keydisp.h"
 
 /* OPM */
 
@@ -138,11 +139,16 @@ void sndboard_reset(void)
 {
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	UINT8 cCaps;
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
 
+	keydisp_reset();
+
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	cCaps = (pccore.SOUND_SW) ? (OPM_HAS_OPM | OPM_X1F) : 0;
 	opm_reset(&g_opm, cCaps);
 	opm_bind(&g_opm);
-#endif
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
+
 	psg_reset(&g_psg, PSG_HAS_PSG | PSG_X1F);
 	psg_bind(&g_psg);
 }
