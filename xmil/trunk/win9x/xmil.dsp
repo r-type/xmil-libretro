@@ -313,6 +313,14 @@ SOURCE=..\generic\cmndraw.c
 
 SOURCE=..\generic\cmndraw.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\generic\softkbd.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\generic\softkbd.h
+# End Source File
 # End Group
 # Begin Group "sound"
 
@@ -726,6 +734,14 @@ SOURCE=.\subwnd\dd2.cpp
 # Begin Source File
 
 SOURCE=.\subwnd\dd2.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\skbdwnd.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\subwnd\skbdwnd.h
 # End Source File
 # Begin Source File
 
