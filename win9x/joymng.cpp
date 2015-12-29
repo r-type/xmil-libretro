@@ -7,7 +7,6 @@
 #include "joymng.h"
 #include "pccore.h"
 #include "xmil.h"
-#include "menu.h"
 
 #pragma comment(lib, "winmm.lib")
 
@@ -38,7 +37,15 @@ void joymng_initialize()
 {
 	JOYINFO ji;
 	s_bEnabled = ((joyGetNumDevs() != 0) && (joyGetPos(JOYSTICKID1, &ji) == JOYERR_NOERROR));
-	menu_enablejoystick(s_bEnabled);
+}
+
+/**
+ * 有効?
+ * @return 有効フラグ
+ */
+bool joymng_isEnabled()
+{
+	return s_bEnabled;
 }
 
 /**
