@@ -129,3 +129,4 @@ typedef signed __int64		SINT64;
 #define	SOUNDRESERVE		20
 
 #define SUPPORT_DCLOCK
+#define SUPPORT_SOFTKBD

@@ -13,6 +13,7 @@
 #include "extclass.h"
 #include "misc\tstring.h"
 #include "misc\WndProc.h"
+#include "subwnd/skbdwnd.h"
 #include "pccore.h"
 #include "iocore.h"
 #include "x1f.h"
@@ -142,7 +143,13 @@ static BOOL InsertMenuString(HMENU hMenu, UINT uItem, UINT uFlags, UINT_PTR uIDN
  */
 void sysmenu_initialize(HMENU hMenu)
 {
-	InsertMenuResource(hMenu, 0, TRUE, IDR_SYS);
+	UINT nPos = 0;
+
+#if defined(SUPPORT_SOFTKBD)
+	nPos += InsertMenuString(hMenu, nPos, MF_BYPOSITION | MF_STRING, IDM_SOFTKBD);
+#endif	// defined(SUPPORT_SOFTKBD)
+
+	InsertMenuResource(hMenu, nPos, TRUE, IDR_SYS);
 }
 
 /**
@@ -151,6 +158,10 @@ void sysmenu_initialize(HMENU hMenu)
  */
 void sysmenu_update(HMENU hMenu)
 {
+#if defined(SUPPORT_SOFTKBD)
+	CheckMenuItem(hMenu, IDM_SOFTKBD, MF_BYCOMMAND | MFCHECK(skbdwin_gethwnd() != NULL));
+#endif	// defined(SUPPORT_SOFTKBD)
+
 	CheckMenuItem(hMenu, IDM_SNAPENABLE, MF_BYCOMMAND | MFCHECK(xmiloscfg.WINSNAP));
 
 	const UINT8 background = xmiloscfg.background ^ 3;

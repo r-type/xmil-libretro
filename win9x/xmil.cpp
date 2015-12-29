@@ -37,7 +37,7 @@
 #if defined(SUPPORT_DCLOCK)
 #include "subwnd/dclock.h"
 #endif	// defined(SUPPORT_DCLOCK)
-#include "subwnd/subwnd.h"
+#include "subwnd/skbdwnd.h"
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
@@ -499,6 +499,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case WM_SYSCOMMAND:
 			updateflag = 0;
 			switch(wParam) {
+#if defined(SUPPORT_SOFTKBD)
+				case IDM_SOFTKBD:
+					if (skbdwin_gethwnd() == NULL)
+					{
+						skbdwin_create();
+					}
+					else
+					{
+						skbdwin_destroy();
+					}
+					break;
+#endif	// defined(SUPPORT_SOFTKBD)
+
 				case IDM_SCREENCENTER:
 					if (!scrnmng_isfullscreen()) {
 						wincentering(hWnd);
@@ -777,7 +790,7 @@ static void framereset(UINT cnt) {
 	scrnmng_dispclock();
 #endif	/* defined(SUPPORT_DCLOCK) */
 //	kdispwin_draw((BYTE)cnt);
-//	skbdwin_process();
+	skbdwin_process();
 //	mdbgwin_process();
 //	toolwin_draw((BYTE)cnt);
 //	viewer_allreload(FALSE);
@@ -825,6 +838,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	dosio_init();
 	file_setcd(modulefile);
 	initload();
+	skbdwin_readini();
 
 	hWnd = FindWindow(szClassName, NULL);
 	if (hWnd != NULL) {
@@ -852,6 +866,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 		if (!RegisterClass(&wc)) {
 			return(FALSE);
 		}
+
+		skbdwin_initialize();
 	}
 
 	mousemng_initialize();
@@ -993,6 +1009,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 		}
 	}
 
+	skbdwin_destroy();
+
 	mousemng_disable(MOUSEPROC_WINUI);
 
 	x1f_close();
@@ -1004,6 +1022,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	if (sys_updates	& (SYS_UPDATECFG | SYS_UPDATEOSCFG)) {
 		initsave();
+		skbdwin_writeini();
 	}
 
 	TRACETERM();
