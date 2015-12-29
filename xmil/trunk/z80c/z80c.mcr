@@ -17,7 +17,7 @@ extern	UINT	lastpc;
 
 #define Z80_COUNT(clock)												\
 	do {																\
-		CPU_REMCLOCK -= (clock);										\
+		R_Z80REMCLOCK -= (clock);										\
 	} while (/*CONSTCOND*/ 0)
 
 
@@ -297,8 +297,8 @@ extern	UINT	lastpc;
 
 #define MCR_HALT {														\
 		R_Z80PC--;														\
-		Z80_IFF |= (1 << IFF_HALT);										\
-		CPU_REMCLOCK = 0;												\
+		R_Z80IFF |= (1 << IFF_HALT);									\
+		R_Z80REMCLOCK = 0;												\
 	}
 
 
@@ -579,7 +579,7 @@ extern	UINT	lastpc;
 
 
 #define MCR_DI {														\
-		Z80_IFF |= (1 << IFF_IFLAG);									\
+		R_Z80IFF |= (1 << IFF_IFLAG);									\
 	}
 
 #define MCR_OR_BYTE {													\
@@ -591,14 +591,14 @@ extern	UINT	lastpc;
 #define MCR_EI {														\
 		REG8 iff;														\
 		SINT32 rem;														\
-		iff = Z80_IFF;													\
+		iff = R_Z80IFF;													\
 		if (iff & (1 << IFF_IFLAG)) {									\
-			Z80_IFF = (UINT8)(iff & (~(1 << IFF_IFLAG)));				\
-			rem = CPU_REMCLOCK - 1;										\
+			R_Z80IFF = (UINT8)(iff & (~(1 << IFF_IFLAG)));				\
+			rem = R_Z80REMCLOCK - 1;									\
 			if ((rem < 0) ||											\
-				((!(iff & (1 << IFF_NMI))) && (CPU_REQIRQ != 0))) {		\
-				CPU_BASECLOCK -= rem;									\
-				CPU_REMCLOCK = 1;										\
+				((!(iff & (1 << IFF_NMI))) && (R_Z80REQIRQ != 0))) {	\
+				R_Z80BASECLOCK -= rem;									\
+				R_Z80REMCLOCK = 1;										\
 			}															\
 		}																\
 	}
