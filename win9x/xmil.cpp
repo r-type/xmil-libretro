@@ -13,7 +13,11 @@
 #include	"winkbd.h"
 #include	"menu.h"
 #include	"ini.h"
-#include	"dialog.h"
+#include "dialog\d_about.h"
+#include "dialog\d_bmp.h"
+#include "dialog\d_cfg.h"
+#include "dialog\d_disk.h"
+#include "dialog\d_sound.h"
 #include	"extclass.h"
 #include "misc\wndloc.h"
 #include "misc\WndProc.h"
@@ -33,7 +37,6 @@
 #if defined(SUPPORT_DCLOCK)
 #include "subwnd/dclock.h"
 #endif	// defined(SUPPORT_DCLOCK)
-
 
 static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
@@ -218,7 +221,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_CONFIG:
 			winuienter();
-			DialogBox(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDD_CONFIG), hWnd, (DLGPROC)CfgDialogProc);
+			CConfigDlg::Config(hWnd);
 			winuileave();
 			break;
 
@@ -455,7 +458,7 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 
 		case IDM_ABOUT:
 			winuienter();
-			DialogBox(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDD_ABOUT), hWnd, (DLGPROC)AboutDialogProc);
+			CAboutDlg::About(hWnd);
 			winuileave();
 			break;
 
