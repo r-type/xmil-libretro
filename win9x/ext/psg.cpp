@@ -9,6 +9,7 @@
 #include "sound/x1f.h"
 #include "externalchipmanager.h"
 #include "externalpsg.h"
+#include "generic/keydisp.h"
 
 static void writeRegister(PPSG psg, REG8 nAddress, REG8 cData);
 
@@ -81,6 +82,11 @@ void psg_bind(PPSG psg)
 {
 	UINT8 cCaps = psg->s.cCaps;
 
+	if (cCaps & PSG_HAS_PSG)
+	{
+		keydisp_bindpsg(psg->s.reg, 4000000);
+	}
+
 	CExternalPsg* pExt = reinterpret_cast<CExternalPsg*>(psg->userdata);
 	if (pExt == NULL)
 	{
@@ -150,6 +156,8 @@ static void writeRegister(PPSG psg, REG8 nAddress, REG8 cData)
 
 	if ((cCaps & PSG_HAS_PSG) && (nAddress < 0x0e))
 	{
+		keydisp_psg(psg->s.reg, nAddress);
+
 		CExternalPsg* pExt = reinterpret_cast<CExternalPsg*>(psg->userdata);
 		if (!pExt)
 		{

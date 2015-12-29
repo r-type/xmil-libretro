@@ -326,6 +326,7 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
+    IDS_CAPTION_KEYDISP     "Key display"
     IDS_CAPTION_SOFTKBD     "Soft keyboard"
 END
 
@@ -376,6 +377,7 @@ BEGIN
     IDM_FMBOARD             "&FM Board"
     IDM_OPMLOG              "&OPM LOG..."
     IDM_WAVEREC             "&Wave Record..."
+    IDM_KEYDISP             "&Key display"
     IDM_SOFTKBD             "&Soft keyboard"
 END
 
