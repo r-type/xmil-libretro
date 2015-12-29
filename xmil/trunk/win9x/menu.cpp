@@ -7,18 +7,15 @@
 #include "resource.h"
 #include "menu.h"
 #include "xmil.h"
-#include "dosio.h"
-#include "ini.h"
+#include "joymng.h"
 #include "scrnmng.h"
 #include "sysmng.h"
 #include "extclass.h"
 #include "misc\tstring.h"
 #include "misc\WndProc.h"
 #include "pccore.h"
-#include "palettes.h"
-#include "makescrn.h"
-#include "fdd_mtr.h"
-#include "fdd_ini.h"
+#include "iocore.h"
+#include "x1f.h"
 
 /**
  * メニュー内の指定された位置に、新しいメニュー項目を挿入します
@@ -139,51 +136,35 @@ static BOOL InsertMenuString(HMENU hMenu, UINT uItem, UINT uFlags, UINT_PTR uIDN
 
 // ----
 
-void sysmenu_initialize()
+/**
+ * システム メニュー初期化
+ * @param[in] hMenu メニュー ハンドル
+ */
+void sysmenu_initialize(HMENU hMenu)
 {
-	HMENU hMenu = GetSystemMenu(hWndMain, FALSE);
 	InsertMenuResource(hMenu, 0, TRUE, IDR_SYS);
 }
 
-void sysmenu_setwinsnap(UINT8 value) {
-
-	value &= 1;
-	xmiloscfg.WINSNAP = value;
-	CheckMenuItem(GetSystemMenu(hWndMain, FALSE),
-									IDM_SNAPENABLE, MFCHECK(value));
-}
-
-void sysmenu_setbackground(UINT8 value) {
-
-	HMENU	hmenu;
-
-	hmenu = GetSystemMenu(hWndMain, FALSE);
-	xmiloscfg.background &= 2;
-	xmiloscfg.background |= (value & 1);
-	if (value & 1) {
-		CheckMenuItem(hmenu, IDM_BACKGROUND, MF_UNCHECKED);
-		EnableMenuItem(hmenu, IDM_BGSOUND, MF_GRAYED);
-	}
-	else {
-		CheckMenuItem(hmenu, IDM_BACKGROUND, MF_CHECKED);
-		EnableMenuItem(hmenu, IDM_BGSOUND, MF_ENABLED);
-	}
-}
-
-void sysmenu_setbgsound(UINT8 value) {
-
-	xmiloscfg.background &= 1;
-	xmiloscfg.background |= (value & 2);
-	CheckMenuItem(GetSystemMenu(hWndMain, FALSE),
-									IDM_BGSOUND, MFCHECK((value & 2) ^ 2));
-}
-
-
-// ----
-
-void menu_initialize()
+/**
+ * システム メニュー更新
+ * @param[in] hMenu メニュー ハンドル
+ */
+void sysmenu_update(HMENU hMenu)
 {
-	HMENU hMenu = GetMenu(hWndMain);
+	CheckMenuItem(hMenu, IDM_SNAPENABLE, MF_BYCOMMAND | MFCHECK(xmiloscfg.WINSNAP));
+
+	const UINT8 background = xmiloscfg.background ^ 3;
+	EnableMenuItem(hMenu, IDM_BGSOUND, (background & 1) ? MF_ENABLED : MF_GRAYED);
+	CheckMenuItem(hMenu, IDM_BACKGROUND, MF_BYCOMMAND | MFCHECK(background & 1));
+	CheckMenuItem(hMenu, IDM_BGSOUND, MF_BYCOMMAND | MFCHECK(background & 2));
+}
+
+/**
+ * メニュー初期化
+ * @param[in] メニュー ハンドル
+ */
+void menu_initialize(HMENU hMenu)
+{
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	InsertMenuString(hMenu, IDM_JOYSTICK, MF_BYCOMMAND | MF_STRING, IDM_FMBOARD);
@@ -219,178 +200,77 @@ void menu_initialize()
 			nPos += InsertMenuString(hMenu, nPos, MF_BYPOSITION | MF_POPUP, IDR_FDD0MENU + i);
 		}
 	}
-
 }
 
-void menu_disablewindow(void) {
+/**
+ * メニュー状態を更新する
+ * @param[in] hMenu メニュー ハンドル
+ */
+void menu_update(HMENU hMenu)
+{
+	// IPL-ROM
+	const UINT8 ROM_TYPE = xmilcfg.ROM_TYPE;
+	CheckMenuItem(hMenu, IDM_X1ROM, MF_BYCOMMAND | MFCHECK(ROM_TYPE == 1));
+	CheckMenuItem(hMenu, IDM_TURBO, MF_BYCOMMAND | MFCHECK(ROM_TYPE == 2));
+	CheckMenuItem(hMenu, IDM_TURBOZ, MF_BYCOMMAND | MFCHECK(ROM_TYPE == 3));
 
-	HMENU	hmenu;
+	// DIP-SW
+	const bool b2hd = ((xmilcfg.DIP_SW & DIPSW_BOOTMEDIA) != 0);
+	CheckMenuItem(hMenu, IDM_BOOT2D, MF_BYCOMMAND | MFCHECK(!b2hd));
+	CheckMenuItem(hMenu, IDM_BOOT2HD, MF_BYCOMMAND | MFCHECK(b2hd));
+	const bool bHighRes = ((xmilcfg.DIP_SW & DIPSW_RESOLUTE) == 0);
+	CheckMenuItem(hMenu, IDM_HIGHRES, MF_BYCOMMAND | MFCHECK(bHighRes));
+	CheckMenuItem(hMenu, IDM_LOWRES, MF_BYCOMMAND | MFCHECK(!bHighRes));
 
-	hmenu = extclass_gethmenu(hWndMain);
-	EnableMenuItem(hmenu, IDM_WINDOW, MF_GRAYED);
-	EnableMenuItem(hmenu, IDM_FULLSCREEN, MF_GRAYED);
-}
+	// Screen
+	const bool bFullScreen = scrnmng_isfullscreen();
+	CheckMenuItem(hMenu, IDM_WINDOW, MF_BYCOMMAND | MFCHECK(!bFullScreen));
+	CheckMenuItem(hMenu, IDM_FULLSCREEN, MF_BYCOMMAND | MFCHECK(bFullScreen));
+	CheckMenuItem(hMenu, IDM_DISPSYNC, MF_BYCOMMAND | MFCHECK(xmilcfg.DISPSYNC));
+	CheckMenuItem(hMenu, IDM_RASTER, MF_BYCOMMAND | MFCHECK(xmilcfg.RASTER));
+	CheckMenuItem(hMenu, IDM_NOWAIT, MF_BYCOMMAND | MFCHECK(xmiloscfg.NOWAIT));
+	const UINT8 DRAW_SKIP = xmiloscfg.DRAW_SKIP;
+	CheckMenuItem(hMenu, IDM_AUTOFPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 0));
+	CheckMenuItem(hMenu, IDM_60FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 1));
+	CheckMenuItem(hMenu, IDM_30FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 2));
+	CheckMenuItem(hMenu, IDM_20FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 3));
+	CheckMenuItem(hMenu, IDM_15FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 4));
 
-void menu_setiplrom(UINT8 num) {
-
-	HMENU	hmenu;
-
-	hmenu = extclass_gethmenu(hWndMain);
-	xmilcfg.ROM_TYPE = num;
-	CheckMenuItem(hmenu, IDM_TURBOZ, MFCHECK(num == 3));
-	CheckMenuItem(hmenu, IDM_TURBO, MFCHECK(num == 2));
-	CheckMenuItem(hmenu, IDM_X1ROM, MFCHECK(num == 1));
-}
-
-void menu_setbootmedia(UINT8 value) {
-
-	HMENU	hmenu;
-
-	hmenu = extclass_gethmenu(hWndMain);
-	value &= DIPSW_BOOTMEDIA;
-	xmilcfg.DIP_SW &= ~DIPSW_BOOTMEDIA;
-	xmilcfg.DIP_SW |= value;
-	CheckMenuItem(hmenu, IDM_BOOT2D, MFCHECK(!value));
-	CheckMenuItem(hmenu, IDM_BOOT2HD, MFCHECK(value));
-}
-
-void menu_setresolute(UINT8 value) {
-
-	HMENU	hmenu;
-
-	hmenu = extclass_gethmenu(hWndMain);
-	value &= DIPSW_RESOLUTE;
-	xmilcfg.DIP_SW &= ~DIPSW_RESOLUTE;
-	xmilcfg.DIP_SW |= value;
-	CheckMenuItem(hmenu, IDM_HIGHRES, MFCHECK(!value));
-	CheckMenuItem(hmenu, IDM_LOWRES, MFCHECK(value));
-}
-
-void menu_setwidth(UINT8 value) {
-
-	HMENU	hmenu;
-
-	hmenu = extclass_gethmenu(hWndMain);
-	CheckMenuItem(hmenu, IDM_WIDTH80, MFCHECK(!value));
-	CheckMenuItem(hmenu, IDM_WIDTH40, MFCHECK(value));
-}
-
-void menu_setdispmode(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.DISPSYNC = value;
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_DISPSYNC, MFCHECK(value));
-}
-
-void menu_setraster(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.RASTER = value;
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_RASTER, MFCHECK(value));
-}
-
-void menu_setwaitflg(UINT8 value) {
-
-	value &= 1;
-	xmiloscfg.NOWAIT = value;
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_NOWAIT, MFCHECK(value));
-}
-
-void menu_setframe(UINT8 value) {
-
-	HMENU	hmenu;
-
-	hmenu = extclass_gethmenu(hWndMain);
-	xmiloscfg.DRAW_SKIP = value;
-	CheckMenuItem(hmenu, IDM_AUTOFPS, MFCHECK(!value));
-	CheckMenuItem(hmenu, IDM_60FPS, MFCHECK(value == 1));
-	CheckMenuItem(hmenu, IDM_30FPS, MFCHECK(value == 2));
-	CheckMenuItem(hmenu, IDM_20FPS, MFCHECK(value == 3));
-	CheckMenuItem(hmenu, IDM_15FPS, MFCHECK(value == 4));
-}
-
-void menu_setkey(UINT8 value) {
-
-	HMENU	hmenu;
-
-	hmenu = extclass_gethmenu(hWndMain);
-	if (value >= 3) {
-		value = 0;
-	}
-	xmilcfg.KEY_MODE = value;
-	CheckMenuItem(hmenu, IDM_KEY, MFCHECK(value == 0));
-	CheckMenuItem(hmenu, IDM_JOY1, MFCHECK(value == 1));
-	CheckMenuItem(hmenu, IDM_JOY2, MFCHECK(value == 2));
-}
-
+	// Device
+	const UINT8 KEY_MODE = xmilcfg.KEY_MODE;
+	CheckMenuItem(hMenu, IDM_KEY, MF_BYCOMMAND | MFCHECK(KEY_MODE == 0));
+	CheckMenuItem(hMenu, IDM_JOY1, MF_BYCOMMAND | MFCHECK(KEY_MODE == 1));
+	CheckMenuItem(hMenu, IDM_JOY2, MF_BYCOMMAND | MFCHECK(KEY_MODE == 2));
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-void menu_setsound(UINT8 value) {
-
-	xmilcfg.SOUND_SW = value;
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_FMBOARD, MFCHECK(value));
-}
+	CheckMenuItem(hMenu, IDM_FMBOARD, MF_BYCOMMAND | MFCHECK(xmilcfg.SOUND_SW));
 #endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-
-void menu_enablejoystick(bool bEnabled)
-{
-	HMENU hMenu = extclass_gethmenu(hWndMain);
-	EnableMenuItem(hMenu, IDM_JOYSTICK, (bEnabled) ? MF_ENABLED : MF_GRAYED);
-}
-
-void menu_setjoystick(UINT8 value)
-{
-	xmiloscfg.JOYSTICK = value & 1;
-	HMENU hMenu = extclass_gethmenu(hWndMain);
-	CheckMenuItem(hMenu, IDM_JOYSTICK, MFCHECK(value & 1));
-}
-
-void menu_setmouse(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.MOUSE_SW = value;
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_MOUSE, MFCHECK(value));
-}
-
+	const UINT8 JOYSTICK = xmiloscfg.JOYSTICK;
+	EnableMenuItem(hMenu, IDM_JOYSTICK, (joymng_isEnabled()) ? MF_GRAYED : MF_ENABLED);
+	CheckMenuItem(hMenu, MF_BYCOMMAND | IDM_JOYSTICK, MFCHECK(xmiloscfg.JOYSTICK));
+	CheckMenuItem(hMenu, IDM_MOUSE, MF_BYCOMMAND | MFCHECK(xmilcfg.MOUSE_SW));
 #if !defined(DISABLE_SOUND)
-void menu_setmotorflg(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.MOTOR = value;
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_SEEKSND, MFCHECK(value));
-}
+	CheckMenuItem(hMenu, IDM_SEEKSND, MF_BYCOMMAND | MFCHECK(xmilcfg.MOTOR));
 #endif	// !defined(DISABLE_SOUND)
 
+	// Debug
+	const bool bWidth80 = ((crtc.e.dispmode & DISPMODE_WIDTH80) != 0);
+	CheckMenuItem(hMenu, IDM_WIDTH40, MF_BYCOMMAND | MFCHECK(!bWidth80));
+	CheckMenuItem(hMenu, IDM_WIDTH80, MF_BYCOMMAND | MFCHECK(bWidth80));
+
+	// Other
 #if defined(SUPPORT_X1F)
-void menu_opmlog(UINT8 value) {
-
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_OPMLOG, MFCHECK(value));
-}
+	CheckMenuItem(hMenu, IDM_OPMLOG, MF_BYCOMMAND | MFCHECK(x1f_isopened()));
 #endif	// defined(SUPPORT_X1F)
-
-void menu_setdispclk(UINT8 value) {
-
-	HMENU	hmenu;
-
-	hmenu = extclass_gethmenu(hWndMain);
-	value &= 3;
-	xmiloscfg.DISPCLK = value;
-	CheckMenuItem(hmenu, IDM_DISPCLOCK, MFCHECK(value & 1));
-	CheckMenuItem(hmenu, IDM_DISPFRAME, MFCHECK(value & 2));
-	sysmng_workclockrenewal();
-	sysmng_updatecaption(3);
+	const UINT8 DISPCLK = xmiloscfg.DISPCLK;
+	CheckMenuItem(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MFCHECK(DISPCLK & 1));
+	CheckMenuItem(hMenu, IDM_DISPFRAME, MF_BYCOMMAND | MFCHECK(DISPCLK & 2));
+	CheckMenuItem(hMenu, IDM_JOYX, MF_BYCOMMAND | MFCHECK(xmilcfg.BTN_MODE));
+	CheckMenuItem(hMenu, IDM_RAPID, MF_BYCOMMAND | MFCHECK(xmilcfg.BTN_RAPID));
 }
 
-void menu_setbtnmode(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.BTN_MODE = value;
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_JOYX, MFCHECK(value));
+void menu_disablewindow(void)
+{
+	HMENU hMenu = extclass_gethmenu(hWndMain);
+	EnableMenuItem(hMenu, IDM_WINDOW, MF_GRAYED);
+	EnableMenuItem(hMenu, IDM_FULLSCREEN, MF_GRAYED);
 }
-
-void menu_setbtnrapid(UINT8 value) {
-
-	value &= 1;
-	xmilcfg.BTN_RAPID = value;
-	CheckMenuItem(extclass_gethmenu(hWndMain), IDM_RAPID, MFCHECK(value));
-}
-

@@ -53,7 +53,7 @@ const SCRNSURF *scrnmng_surflock(void);
 void scrnmng_surfunlock(const SCRNSURF *surf);
 void scrnmng_update(void);						// ddraws_drawall
 
-#define	scrnmng_isfullscreen()	(scrnmng.flag & SCRNFLAG_FULLSCREEN)
+#define	scrnmng_isfullscreen()	((scrnmng.flag & SCRNFLAG_FULLSCREEN) != 0)
 #define	scrnmng_getbpp()		(scrnmng.bpp)
 #define	scrnmng_allflash()		scrnmng.allflash = TRUE
 #define	scrnmng_palchanged()	scrnmng.palchanged = TRUE

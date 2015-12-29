@@ -8,6 +8,7 @@
 #ifdef __cplusplus
 
 void joymng_initialize();
+bool joymng_isEnabled();
 void joymng_sync();
 
 extern "C"
