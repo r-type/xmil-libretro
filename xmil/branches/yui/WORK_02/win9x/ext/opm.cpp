@@ -9,6 +9,7 @@
 #include "sound/x1f.h"
 #include "externalchipmanager.h"
 #include "externalopm.h"
+#include "generic/keydisp.h"
 
 static void writeRegister(POPM opm, REG8 nAddress, REG8 cData);
 
@@ -83,6 +84,11 @@ void opm_bind(POPM opm)
 {
 	UINT8 cCaps = opm->s.cCaps;
 
+	if (cCaps & OPM_HAS_OPM)
+	{
+		keydisp_bindopm(opm->s.reg, 4000000);
+	}
+
 	CExternalOpm* pExt = reinterpret_cast<CExternalOpm*>(opm->userdata);
 	if (pExt == NULL)
 	{
@@ -138,6 +144,11 @@ static void writeRegister(POPM opm, REG8 nAddress, REG8 cData)
 		if ((nAddress < 0x20) && ((0x0b178102 & ((1 << nAddress))) == 0))
 		{
 			return;
+		}
+
+		if (nAddress == 8)
+		{
+			keydisp_opmkeyon(opm->s.reg, cData);
 		}
 
 		CExternalOpm* pExt = reinterpret_cast<CExternalOpm*>(opm->userdata);
