@@ -71,24 +71,24 @@ static	CWndLoc		s_wndloc;
 
 BRESULT xmil_changescreen(REG8 newmode) {
 
-	BOOL	renewal;
 	REG8	change;
+	REG8	renewal;
 	BRESULT	r;
 
-	renewal = FALSE;
+	change = g_scrnmode ^ newmode;
+	renewal = (change & SCRNMODE_FULLSCREEN);
 	if (g_scrnmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
-		renewal = !renewal;
+		renewal ^= SCRNMODE_COREHIGHCOLOR;
 	}
 	if (newmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
-		renewal = !renewal;
-	}
-
-	change = g_scrnmode ^ newmode;
-	if (change & SCRNMODE_FULLSCREEN) {
-		renewal = TRUE;
+		renewal ^= SCRNMODE_COREHIGHCOLOR;
 	}
 	r = SUCCESS;
 	if (renewal) {
+		if (renewal & SCRNMODE_FULLSCREEN) {
+			kdispwin_destroy();
+			skbdwin_destroy();
+		}
 		soundmng_stop();
 		mousemng_disable(MOUSEPROC_WINUI);
 		scrnmng_destroy();
@@ -99,7 +99,7 @@ BRESULT xmil_changescreen(REG8 newmode) {
 			r = FAILURE;
 			if (scrnmng_create(g_scrnmode) != SUCCESS) {
 				PostQuitMessage(0);
-				return(r);
+				return r;
 			}
 		}
 		scrndraw_redraw();
@@ -109,7 +109,7 @@ BRESULT xmil_changescreen(REG8 newmode) {
 	else {
 		g_scrnmode = newmode;
 	}
-	return(r);
+	return r;
 }
 
 static void wincentering(HWND hWnd) {
