@@ -348,6 +348,9 @@ static const PFTBL s_IniItems[] =
 
 	PFVAL("shortcut", PFTYPE_HEX8,		&xmiloscfg.shortcut),
 
+#if defined(SUPPORT_RESUME)
+	PFVAL("e_resume", PFTYPE_BOOL,		&xmiloscfg.resume),
+#endif	// defined(SUPPORT_RESUME)
 #if defined(SUPPORT_STATSAVE)
 	PFVAL("STATSAVE", PFRO_BOOL,		&xmiloscfg.statsave),
 #endif	// defined(SUPPORT_STATSAVE)
