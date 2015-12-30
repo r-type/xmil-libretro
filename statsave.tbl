@@ -1,5 +1,5 @@
 
-#define		XMILSTATUS_VERSION		0002
+#define		XMILSTATUS_VERSION		600
 
 static const NP2FHDR np2flagdef = {
 						"X millennium",
