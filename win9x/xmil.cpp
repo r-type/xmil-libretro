@@ -22,6 +22,7 @@
 #include	"extclass.h"
 #include "misc\wndloc.h"
 #include "misc\WndProc.h"
+#include "strres.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -173,12 +174,8 @@ static void dispbmp(HINSTANCE hinst, HDC hdc,
 
 // ----
 
-#if defined(SUPPORT_RESUME)
-static const OEMCHAR xmilresumeext[] = OEMTEXT(".sav");
-static const OEMCHAR str_resume[] = OEMTEXT("Resume");
-#endif
 #if defined(SUPPORT_STATSAVE)
-static const OEMCHAR xmilflagext[] = OEMTEXT(".sv%u");
+static const OEMCHAR xmilflagext[] = OEMTEXT(".S%2u");
 static const OEMCHAR str_statload[] = OEMTEXT("Status Load");
 #endif
 
@@ -190,6 +187,7 @@ static void getstatfilename(OEMCHAR *path, const OEMCHAR *ext, UINT size) {
 
 	file_cpyname(path, modulefile, size);
 	file_cutext(path);
+	file_catname(path, str_dot, size);
 	file_catname(path, ext, size);
 }
 
@@ -1031,7 +1029,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	pccore_initialize();
 	pccore_reset();
 
-#if !defined(UNICODE)
+	xmilopening = 0;
+
+	// ‚ê‚¶‚¤‚Þ
+#if defined(SUPPORT_RESUME)
+	if (xmiloscfg.resume) {
+		int id = flagload(str_sav, TEXT("Resume"), FALSE);
+		if (id == IDYES)
+		{
+//			XmilArg::GetInstance()->ClearDisk();
+		}
+		else if (id == IDCANCEL) {
+			DestroyWindow(hWnd);
+			mousemng_disable(MOUSEPROC_WINUI);
+			x1f_close();
+			pccore_deinitialize();
+			soundmng_deinitialize();
+			scrnmng_destroy();
+			TRACETERM();
+			dosio_term();
+			return(FALSE);
+		}
+	}
+#endif	// defined(SUPPORT_RESUME)
+
+#if 0 // !defined(UNICODE)
 	if (__argc > 1) {
 		for (int i=1; i<__argc; i++) {
 			if (is_d8ufile(__argv[i])) {
@@ -1044,8 +1066,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif
 
 	scrndraw_redraw();
-
-	xmilopening = 0;
 
 	while(1) {
 		if (!xmilstopemulate) {
@@ -1128,6 +1148,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	mousemng_disable(MOUSEPROC_WINUI);
 
 	x1f_close();
+
+#if defined(SUPPORT_RESUME)
+	if (xmiloscfg.resume) {
+		flagsave(str_sav);
+	}
+	else {
+		flagdelete(str_sav);
+	}
+#endif	// defined(SUPPORT_RESUME)
+
 	pccore_deinitialize();
 
 	soundmng_deinitialize();

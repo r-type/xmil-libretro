@@ -54,6 +54,12 @@ BOOL CConfigDlg::OnInitDialog()
 
 	CheckDlgButton(IDC_ALLOWRESIZE, (xmiloscfg.thickframe) ? BST_CHECKED : BST_UNCHECKED);
 
+#if defined(SUPPORT_RESUME)
+	CheckDlgButton(IDC_RESUME, (xmiloscfg.resume) ? BST_CHECKED : BST_UNCHECKED);
+#else	// defined(SUPPORT_RESUME)
+	GetDlgItem(IDC_RESUME).EnableWindow(FALSE);
+#endif	// defined(SUPPORT_RESUME)
+
 	return TRUE;
 }
 
@@ -100,6 +106,15 @@ void CConfigDlg::OnOK()
 		xmiloscfg.thickframe = bAllowResize;
 		nUpdateFlags |= SYS_UPDATEOSCFG;
 	}
+
+#if defined(SUPPORT_RESUME)
+	const UINT8 bResume = (IsDlgButtonChecked(IDC_RESUME) != BST_UNCHECKED) ? 1 : 0;
+	if (xmiloscfg.resume != bResume)
+	{
+		xmiloscfg.resume = bResume;
+		nUpdateFlags |= SYS_UPDATEOSCFG;
+	}
+#endif	// defined(SUPPORT_RESUME)
 
 	::sysmng_update(nUpdateFlags);
 

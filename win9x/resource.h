@@ -30,6 +30,7 @@
 #define IDC_MAKE2HD                     1009
 #define IDC_XMILVER                     1010
 #define IDC_ALLOWRESIZE                 1011
+#define IDC_RESUME                      1012
 #define IDC_FULLSCREEN_SAMEBPP          1101
 #define IDC_FULLSCREEN_SAMERES          1102
 #define IDC_FULLSCREEN_ZOOM             1103
