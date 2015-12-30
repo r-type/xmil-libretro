@@ -63,7 +63,7 @@ typedef struct {
 	int		width;
 	int		height;
 //	int		extend;
-//	int		multiple;
+	int		multiple;
 } SCRNSTAT;
 
 static	DDRAW		ddraw;
@@ -208,7 +208,7 @@ static void renewalclientsize(BOOL winloc) {
 		}
 	}
 	else {
-		multiple = 8;
+		multiple = scrnstat.multiple;
 		scrnwidth = (width * multiple) >> 3;
 		scrnheight = (height * multiple) >> 3;
 		ddraw.rect.right = width;
@@ -387,7 +387,7 @@ void scrnmng_initialize(void) {
 	scrnstat.width = 640;
 	scrnstat.height = 400;
 //	scrnstat.extend = 1;
-//	scrnstat.multiple = 8;
+	scrnstat.multiple = 8;
 	setwindowsize(hWndMain, 640, 400);
 }
 
@@ -407,7 +407,7 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 	winstyleex = GetWindowLong(hWndMain, GWL_EXSTYLE);
 	if (scrnmode & SCRNMODE_FULLSCREEN) {
 		scrnmng.flag = SCRNFLAG_FULLSCREEN;
-		winstyle &= ~(WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU);
+		winstyle &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
 		winstyle |= WS_POPUP;
 		winstyleex |= WS_EX_TOPMOST;
 		ddraw.menudisp = FALSE;
@@ -417,6 +417,9 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 	else {
 //		scrnmng.flag = 0;
 		winstyle |= WS_SYSMENU;
+		if (xmiloscfg.thickframe) {
+			winstyle |= WS_THICKFRAME;
+		}
 		winstyle |= WS_CAPTION;
 		winstyle &= ~WS_POPUP;
 		winstyleex &= ~WS_EX_TOPMOST;
@@ -800,6 +803,23 @@ void scrnmng_update(void) {
 
 // ----
 
+void scrnmng_setmultiple(int multiple)
+{
+	if (scrnstat.multiple != multiple)
+	{
+		scrnstat.multiple = multiple;
+		renewalclientsize(TRUE);
+	}
+}
+
+int scrnmng_getmultiple(void)
+{
+	return scrnstat.multiple;
+}
+
+
+// ----
+
 #if defined(SUPPORT_DCLOCK)
 static const RECT rectclk = {0, 0, DCLOCK_WIDTH, DCLOCK_HEIGHT};
 
@@ -839,4 +859,114 @@ void scrnmng_dispclock(void)
 	DispClock::GetInstance()->CountDown(xmiloscfg.DRAW_SKIP);
 }
 #endif	// defined(SUPPORT_DCLOCK)
+
+
+// ----
+
+typedef struct {
+	int		bx;
+	int		by;
+	int		cx;
+	int		cy;
+	int		mul;
+} SCRNSIZING;
+
+static	SCRNSIZING	scrnsizing;
+
+enum {
+	SIZING_ADJUST	= 12
+};
+
+void scrnmng_entersizing(void) {
+
+	RECT	rectwindow;
+	RECT	rectclient;
+	int		cx;
+	int		cy;
+
+	GetWindowRect(hWndMain, &rectwindow);
+	GetClientRect(hWndMain, &rectclient);
+	scrnsizing.bx = (rectwindow.right - rectwindow.left) -
+					(rectclient.right - rectclient.left);
+	scrnsizing.by = (rectwindow.bottom - rectwindow.top) -
+					(rectclient.bottom - rectclient.top);
+	cx = min(scrnstat.width, ddraw.width);
+	cx = (cx + 7) >> 3;
+	cy = min(scrnstat.height, ddraw.height);
+	cy = (cy + 7) >> 3;
+	scrnsizing.cx = cx;
+	scrnsizing.cy = cy;
+	scrnsizing.mul = scrnstat.multiple;
+}
+
+void scrnmng_sizing(UINT side, RECT *rect) {
+
+	int		width;
+	int		height;
+	int		mul;
+
+	if ((side != WMSZ_TOP) && (side != WMSZ_BOTTOM)) {
+		width = rect->right - rect->left - scrnsizing.bx + SIZING_ADJUST;
+		width /= scrnsizing.cx;
+	}
+	else {
+		width = 16;
+	}
+	if ((side != WMSZ_LEFT) && (side != WMSZ_RIGHT)) {
+		height = rect->bottom - rect->top - scrnsizing.by + SIZING_ADJUST;
+		height /= scrnsizing.cy;
+	}
+	else {
+		height = 16;
+	}
+	mul = min(width, height);
+	if (mul <= 0) {
+		mul = 1;
+	}
+	else if (mul > 16) {
+		mul = 16;
+	}
+	width = scrnsizing.bx + (scrnsizing.cx * mul);
+	height = scrnsizing.by + (scrnsizing.cy * mul);
+	switch(side) {
+		case WMSZ_LEFT:
+		case WMSZ_TOPLEFT:
+		case WMSZ_BOTTOMLEFT:
+			rect->left = rect->right - width;
+			break;
+
+		case WMSZ_RIGHT:
+		case WMSZ_TOP:
+		case WMSZ_TOPRIGHT:
+		case WMSZ_BOTTOM:
+		case WMSZ_BOTTOMRIGHT:
+		default:
+			rect->right = rect->left + width;
+			break;
+	}
+
+	switch(side) {
+		case WMSZ_TOP:
+		case WMSZ_TOPLEFT:
+		case WMSZ_TOPRIGHT:
+			rect->top = rect->bottom - height;
+			break;
+
+		case WMSZ_LEFT:
+		case WMSZ_RIGHT:
+		case WMSZ_BOTTOM:
+		case WMSZ_BOTTOMLEFT:
+		case WMSZ_BOTTOMRIGHT:
+		default:
+			rect->bottom = rect->top + height;
+			break;
+	}
+	scrnsizing.mul = mul;
+}
+
+void scrnmng_exitsizing(void)
+{
+	scrnmng_setmultiple(scrnsizing.mul);
+	InvalidateRect(hWndMain, NULL, TRUE);		// ugh
+}
 

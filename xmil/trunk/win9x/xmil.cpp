@@ -57,7 +57,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 #if defined(SUPPORT_DCLOCK)
 							0, 0, 0xffffff, 0xffbf6a,
 #endif	// defined(SUPPORT_DCLOCK)
-							0,
+							0, 0,
 							FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8
 						};
 
@@ -272,6 +272,13 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 		case IDM_CONFIG:
 			winuienter();
 			CConfigDlg::Config(hWnd);
+			if (!scrnmng_isfullscreen()) {
+				UINT8 thick;
+				thick = (GetWindowLong(hWnd, GWL_STYLE) & WS_THICKFRAME) ? 1 : 0;
+				if (thick != xmiloscfg.thickframe) {
+					extclass_frametype(hWnd, xmiloscfg.thickframe);
+				}
+			}
 			winuileave();
 			break;
 
@@ -714,11 +721,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			soundmng_disable(SNDPROC_MAIN);
 			mousemng_disable(MOUSEPROC_WINUI);
 			s_wndloc.Start();
-			break;
-
-		case WM_EXITSIZEMOVE:
-			mousemng_enable(MOUSEPROC_WINUI);
-			soundmng_enable(SNDPROC_MAIN);
+			scrnmng_entersizing();
 			break;
 
 		case WM_MOVING:
@@ -726,6 +729,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			{
 				s_wndloc.Moving(reinterpret_cast<RECT*>(lParam));
 			}
+			break;
+
+		case WM_SIZING:
+			scrnmng_sizing((UINT)wParam, (RECT *)lParam);
+			break;
+
+		case WM_EXITSIZEMOVE:
+			scrnmng_exitsizing();
+			mousemng_enable(MOUSEPROC_WINUI);
+			soundmng_enable(SNDPROC_MAIN);
 			break;
 
 		case WM_KEYDOWN:
@@ -971,12 +984,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	mousemng_initialize();
 
+	DWORD style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
+	if (xmiloscfg.thickframe) {
+		style |= WS_THICKFRAME;
+	}
 	hWnd = CreateWindowEx(0,
-						szClassName, szProgName,
-						WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION |
-						WS_MINIMIZEBOX,
-						xmiloscfg.winx, xmiloscfg.winy,
-						SURFACE_WIDTH, SURFACE_HEIGHT,
+						szClassName, szProgName, style,
+						xmiloscfg.winx, xmiloscfg.winy, SURFACE_WIDTH, SURFACE_HEIGHT,
 						NULL, NULL, hInstance, NULL);
 	hWndMain = hWnd;
 	scrnmng_initialize();
