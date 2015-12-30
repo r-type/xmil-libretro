@@ -40,7 +40,7 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	XMILCFG		xmilcfg = { 2, 1, 0x03,
 							1, 0, 0, 0,
 #if !defined(DISABLE_SOUND)
-							22050, 500,
+							44100, 250,
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 							64,
 #endif
@@ -110,11 +110,10 @@ void pccore_reset(void) {
 
 	pccore.ROM_TYPE = xmilcfg.ROM_TYPE;
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	if (xmilcfg.ROM_TYPE >= 3) {
-		pccore.SOUND_SW = 1;					/* –³ðŒ‚Å“‹Ú */
-	}
-	else {
-		pccore.SOUND_SW = xmilcfg.SOUND_SW;
+	pccore.SOUND_SW = xmilcfg.SOUND_SW;
+	if ((xmilcfg.ROM_TYPE >= 3) && (pccore.SOUND_SW == 0))
+	{
+		pccore.SOUND_SW = 1;					/* –³ðŒ‚Å1‚Â“‹Ú */
 	}
 #endif
 	pccore.DIP_SW = xmilcfg.DIP_SW;

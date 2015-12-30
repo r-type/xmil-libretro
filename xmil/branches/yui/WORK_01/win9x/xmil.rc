@@ -212,6 +212,13 @@ BEGIN
     MENUITEM SEPARATOR
 END
 
+IDR_OPM MENU DISCARDABLE 
+BEGIN
+    MENUITEM "&None",                       IDM_OPM_NONE
+    MENUITEM "&CZ-8BS1",                    IDM_OPM_1
+    MENUITEM "CZ-8BS1 x &2",                IDM_OPM_2
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -370,6 +377,7 @@ BEGIN
     IDR_FDD2MENU            "FDD-&2"
     IDR_FDD3MENU            "FDD-&3"
     IDR_DEBUG               "D&ebug"
+    IDR_OPM                 "&FM Board"
 END
 
 STRINGTABLE DISCARDABLE 
