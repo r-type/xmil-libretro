@@ -22,5 +22,6 @@ enum {
 void extclass_wmcreate(HWND hWnd);
 void extclass_wmdestroy(HWND hWnd);
 void extclass_enablemenu(HWND hWnd, BOOL enable);
+void extclass_frametype(HWND hWnd, UINT8 thick);
 HMENU extclass_gethmenu(HWND hWnd);
-
+void extclass_setclientsize(HWND hwnd, int width, int height);

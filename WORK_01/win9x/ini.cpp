@@ -359,6 +359,7 @@ static const PFTBL s_IniItems[] =
 	PFAND("clock_dn", PFRO_HEX32,		&xmiloscfg.clockcolor2,	0xffffff),
 #endif	/* defined(SUPPORT_DCLOCK) */
 
+	PFVAL("thickfrm", PFTYPE_BOOL,		&xmiloscfg.thickframe),
 	PFVAL("fscrnbpp", PFRO_UINT8,		&xmiloscfg.fscrnbpp),
 	PFVAL("fscrnmod", PFTYPE_HEX8,		&xmiloscfg.fscrnmod),
 };
