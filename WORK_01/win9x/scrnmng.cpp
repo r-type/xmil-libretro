@@ -64,8 +64,8 @@ static void setwindowsize(HWND hWnd, int width, int height)
 {
 	RECT workrc;
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	int scx = GetSystemMetrics(SM_CXSCREEN);
-	int scy = GetSystemMetrics(SM_CYSCREEN);
+	const int scx = GetSystemMetrics(SM_CXSCREEN);
+	const int scy = GetSystemMetrics(SM_CYSCREEN);
 
 	UINT nCount = 2;
 	do
@@ -76,10 +76,14 @@ static void setwindowsize(HWND hWnd, int width, int height)
 		RECT rectclient;
 		GetClientRect(hWnd, &rectclient);
 
-		int winx = rectwindow.left;
-		int winy = rectwindow.top;
-		int cx = width + (rectwindow.right - rectwindow.left) - (rectclient.right - rectclient.left);
-		int cy = height + (rectwindow.bottom - rectwindow.top) - (rectclient.bottom - rectclient.top);
+		int winx = (xmiloscfg.winx != CW_USEDEFAULT) ? xmiloscfg.winx : rectwindow.left;
+		int winy = (xmiloscfg.winy != CW_USEDEFAULT) ? xmiloscfg.winy : rectwindow.top;
+		int cx = width;
+		cx += rectwindow.right - rectwindow.left;
+		cx -= rectclient.right - rectclient.left;
+		int cy = height;
+		cy += rectwindow.bottom - rectwindow.top;
+		cy -= rectclient.bottom - rectclient.top;
 
 		if (scx < cx)
 		{
@@ -111,8 +115,8 @@ static void setwindowsize(HWND hWnd, int width, int height)
 				winy = workrc.top;
 			}
 		}
-		::MoveWindow(hWnd, winx, winy, cx, cy, TRUE);
-	} while(--nCount);
+		MoveWindow(hWnd, winx, winy, cx, cy, TRUE);
+	} while (--nCount);
 }
 
 static void renewalclientsize(BOOL winloc) {
