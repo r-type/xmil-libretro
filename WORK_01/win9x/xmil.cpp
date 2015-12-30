@@ -59,6 +59,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium ÇÀÇ±ÇøÇ„Å`ÇÒ");
 		HWND		hWndMain;
+		UINT8		g_scrnmode;
 		OEMCHAR		modulefile[MAX_PATH];
 		OEMCHAR		fddfolder[MAX_PATH];
 		OEMCHAR		bmpfilefolder[MAX_PATH];
@@ -67,6 +68,49 @@ static	BOOL		xmilstopemulate = FALSE;
 static	UINT8		xmilopening = 1;
 
 static	CWndLoc		s_wndloc;
+
+BRESULT xmil_changescreen(REG8 newmode) {
+
+	BOOL	renewal;
+	REG8	change;
+	BRESULT	r;
+
+	renewal = FALSE;
+	if (g_scrnmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
+		renewal = !renewal;
+	}
+	if (newmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
+		renewal = !renewal;
+	}
+
+	change = g_scrnmode ^ newmode;
+	if (change & SCRNMODE_FULLSCREEN) {
+		renewal = TRUE;
+	}
+	r = SUCCESS;
+	if (renewal) {
+		soundmng_stop();
+		mousemng_disable(MOUSEPROC_WINUI);
+		scrnmng_destroy();
+		if (scrnmng_create(newmode) == SUCCESS) {
+			g_scrnmode = newmode;
+		}
+		else {
+			r = FAILURE;
+			if (scrnmng_create(g_scrnmode) != SUCCESS) {
+				PostQuitMessage(0);
+				return(r);
+			}
+		}
+		scrndraw_redraw();
+		mousemng_enable(MOUSEPROC_WINUI);
+		soundmng_play();
+	}
+	else {
+		g_scrnmode = newmode;
+	}
+	return(r);
+}
 
 static void wincentering(HWND hWnd) {
 
@@ -315,11 +359,11 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			break;
 
 		case IDM_WINDOW:
-			scrnmng_changescreen(scrnmode & (~SCRNMODE_FULLSCREEN));
+			xmil_changescreen(g_scrnmode & (~SCRNMODE_FULLSCREEN));
 			break;
 
 		case IDM_FULLSCREEN:
-			scrnmng_changescreen(scrnmode | SCRNMODE_FULLSCREEN);
+			xmil_changescreen(g_scrnmode | SCRNMODE_FULLSCREEN);
 			break;
 
 		case IDM_DISPSYNC:
@@ -330,10 +374,10 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 		case IDM_RASTER:
 			xmilcfg.RASTER = !xmilcfg.RASTER;
 			if (xmilcfg.RASTER) {
-				scrnmng_changescreen(scrnmode | SCRNMODE_SYSHIGHCOLOR);
+				xmil_changescreen(g_scrnmode | SCRNMODE_SYSHIGHCOLOR);
 			}
 			else {
-				scrnmng_changescreen(scrnmode & (~SCRNMODE_SYSHIGHCOLOR));
+				xmil_changescreen(g_scrnmode & (~SCRNMODE_SYSHIGHCOLOR));
 			}
 			update = SYS_UPDATECFG;
 			break;
@@ -906,13 +950,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	DrawMenuBar(hWnd);
 
 	scrndraw_initialize();
-	scrnmode = 0;
+	g_scrnmode = 0;
 	if (xmilcfg.RASTER) {
-		scrnmode |= SCRNMODE_SYSHIGHCOLOR;
+		g_scrnmode |= SCRNMODE_SYSHIGHCOLOR;
 	}
-	if (scrnmng_create(scrnmode) != SUCCESS) {
-		scrnmode ^= SCRNMODE_FULLSCREEN;
-		if (scrnmng_create(scrnmode) != SUCCESS) {
+	if (scrnmng_create(g_scrnmode) != SUCCESS) {
+		g_scrnmode ^= SCRNMODE_FULLSCREEN;
+		if (scrnmng_create(g_scrnmode) != SUCCESS) {
 			MessageBox(hWnd, OEMTEXT("Couldn't create DirectDraw Object"),
 													szProgName, MB_OK);
 			return(FALSE);

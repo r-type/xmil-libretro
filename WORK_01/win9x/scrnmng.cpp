@@ -15,7 +15,6 @@
 #include "xmil.h"
 #include "mousemng.h"
 #include "scrnmng.h"
-#include "soundmng.h"
 // #include "sysmng.h"
 #include "extclass.h"
 #include "pccore.h"
@@ -65,7 +64,6 @@ typedef struct {
 //	int		multiple;
 } SCRNSTAT;
 
-		REG8		scrnmode;
 static	DDRAW		ddraw;
 		SCRNMNG		scrnmng;
 static	SCRNSTAT	scrnstat;
@@ -546,49 +544,6 @@ void scrnmng_destroy(void) {
 	ZeroMemory(&ddraw, sizeof(ddraw));
 }
 
-BRESULT scrnmng_changescreen(REG8 newmode) {
-
-	BOOL	renewal;
-	REG8	change;
-	BRESULT	r;
-
-	renewal = FALSE;
-	if (scrnmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
-		renewal = !renewal;
-	}
-	if (newmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
-		renewal = !renewal;
-	}
-
-	change = scrnmode ^ newmode;
-	if (change & SCRNMODE_FULLSCREEN) {
-		renewal = TRUE;
-	}
-	r = SUCCESS;
-	if (renewal) {
-		soundmng_stop();
-		mousemng_disable(MOUSEPROC_WINUI);
-		scrnmng_destroy();
-		if (scrnmng_create(newmode) == SUCCESS) {
-			scrnmode = newmode;
-		}
-		else {
-			r = FAILURE;
-			if (scrnmng_create(scrnmode) != SUCCESS) {
-				PostQuitMessage(0);
-				return(r);
-			}
-		}
-		scrndraw_redraw();
-		mousemng_enable(MOUSEPROC_WINUI);
-		soundmng_play();
-	}
-	else {
-		scrnmode = newmode;
-	}
-	return(r);
-}
-
 void scrnmng_querypalette(void) {
 
 	if (ddraw.palette) {
@@ -668,11 +623,11 @@ BRESULT scrnmng_setcolormode(BOOL fullcolor) {
 
 	REG8	newmode;
 
-	newmode = scrnmode & (~(SCRNMODE_COREHIGHCOLOR));
+	newmode = g_scrnmode & (~(SCRNMODE_COREHIGHCOLOR));
 	if (fullcolor) {
 		newmode |= SCRNMODE_COREHIGHCOLOR;
 	}
-	return(scrnmng_changescreen(newmode));
+	return xmil_changescreen(newmode);
 }
 
 const SCRNSURF *scrnmng_surflock(void) {
