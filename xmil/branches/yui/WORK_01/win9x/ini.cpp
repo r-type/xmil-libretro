@@ -347,6 +347,10 @@ static const PFTBL s_IniItems[] =
 
 	PFVAL("shortcut", PFTYPE_HEX8,		&xmiloscfg.shortcut),
 
+#if defined(SUPPORT_STATSAVE)
+	PFVAL("STATSAVE", PFRO_BOOL,		&xmiloscfg.statsave),
+#endif	// defined(SUPPORT_STATSAVE)
+
 #if defined(SUPPORT_DCLOCK)
 	PFVAL("clocknow", PFTYPE_UINT8,		&xmiloscfg.clockx),
 	PFVAL("clockfnt", PFTYPE_UINT8,		&xmiloscfg.clockfnt),
