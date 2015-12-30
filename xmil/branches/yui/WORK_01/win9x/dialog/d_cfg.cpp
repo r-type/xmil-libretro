@@ -7,6 +7,7 @@
 #include "d_cfg.h"
 #include "resource.h"
 #include <commctrl.h>
+#include "xmil.h"
 #include "soundmng.h"
 #include "sysmng.h"
 #include "pccore.h"
@@ -51,6 +52,8 @@ BOOL CConfigDlg::OnInitDialog()
 	}
 #endif	// !defined(DISABLE_SOUND)
 
+	CheckDlgButton(IDC_ALLOWRESIZE, (xmiloscfg.thickframe) ? BST_CHECKED : BST_UNCHECKED);
+
 	return TRUE;
 }
 
@@ -90,6 +93,13 @@ void CConfigDlg::OnOK()
 		nUpdateFlags |= SYS_UPDATEOSCFG;
 	}
 #endif	// !defined(DISABLE_SOUND)
+
+	const UINT8 bAllowResize = (IsDlgButtonChecked(IDC_ALLOWRESIZE) != BST_UNCHECKED) ? 1 : 0;
+	if (xmiloscfg.thickframe != bAllowResize)
+	{
+		xmiloscfg.thickframe = bAllowResize;
+		nUpdateFlags |= SYS_UPDATEOSCFG;
+	}
 
 	::sysmng_update(nUpdateFlags);
 

@@ -110,6 +110,26 @@ void extclass_enablemenu(HWND hWnd, BOOL enable) {
 	}
 }
 
+void extclass_frametype(HWND hWnd, UINT8 thick) {
+
+	RECT	rect;
+	DWORD	style;
+
+	GetClientRect(hWnd, &rect);
+	style = GetWindowLong(hWnd, GWL_STYLE);
+	if (thick) {
+		style |= WS_THICKFRAME;
+	}
+	else {
+		style &= ~WS_THICKFRAME;
+	}
+	SetWindowLong(hWnd, GWL_STYLE, style);
+	SetWindowPos(hWnd, 0, 0, 0, 0, 0,
+					SWP_FRAMECHANGED | SWP_DRAWFRAME | 
+					SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER);
+	extclass_setclientsize(hWnd, rect.right - rect.left, rect.bottom - rect.top);
+}
+
 HMENU extclass_gethmenu(HWND hWnd) {
 
 	HMENU	ret;
@@ -121,3 +141,53 @@ HMENU extclass_gethmenu(HWND hWnd) {
 	return(ret);
 }
 
+void extclass_setclientsize(HWND hwnd, int width, int height) {
+
+	RECT	rectDisktop;
+	int		scx;
+	int		scy;
+	UINT	cnt;
+	RECT	rectWindow;
+	RECT	rectClient;
+	int		x, y, w, h;
+
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rectDisktop, 0);
+	scx = GetSystemMetrics(SM_CXSCREEN);
+	scy = GetSystemMetrics(SM_CYSCREEN);
+
+	cnt = 2;
+	do {
+		GetWindowRect(hwnd, &rectWindow);
+		GetClientRect(hwnd, &rectClient);
+		w = width + (rectWindow.right - rectWindow.left)
+					- (rectClient.right - rectClient.left);
+		h = height + (rectWindow.bottom - rectWindow.top)
+					- (rectClient.bottom - rectClient.top);
+
+		x = rectWindow.left;
+		y = rectWindow.top;
+		if (scx < w) {
+			x = (scx - w) / 2;
+		}
+		else {
+			if ((x + w) > rectDisktop.right) {
+				x = rectDisktop.right - w;
+			}
+			if (x < rectDisktop.left) {
+				x = rectDisktop.left;
+			}
+		}
+		if (scy < h) {
+			y = (scy - h) / 2;
+		}
+		else {
+			if ((y + h) > rectDisktop.bottom) {
+				y = rectDisktop.bottom - h;
+			}
+			if (y < rectDisktop.top) {
+				y = rectDisktop.top;
+			}
+		}
+		MoveWindow(hwnd, x, y, w, h, TRUE);
+	} while(--cnt);
+}
