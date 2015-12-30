@@ -343,14 +343,16 @@ static const PFTBL s_IniItems[] =
 	PFVAL("btn_MODE", PFTYPE_BOOL,		&xmilcfg.BTN_MODE),
 
 	PFVAL("Joystick", PFTYPE_BOOL,		&xmiloscfg.JOYSTICK),
+	PFVAL("Z80_SAVE", PFRO_BOOL,		&xmiloscfg.Z80SAVE),
+
+	PFVAL("shortcut", PFTYPE_HEX8,		&xmiloscfg.shortcut),
+
 #if defined(SUPPORT_DCLOCK)
 	PFVAL("clocknow", PFTYPE_UINT8,		&xmiloscfg.clockx),
 	PFVAL("clockfnt", PFTYPE_UINT8,		&xmiloscfg.clockfnt),
 	PFAND("clock_up", PFRO_HEX32,		&xmiloscfg.clockcolor1,	0xffffff),
 	PFAND("clock_dn", PFRO_HEX32,		&xmiloscfg.clockcolor2,	0xffffff),
 #endif	/* defined(SUPPORT_DCLOCK) */
-
-	PFVAL("Z80_SAVE", PFRO_BOOL,		&xmiloscfg.Z80SAVE),
 };
 
 //! .ini Šg’£Žq

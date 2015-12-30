@@ -13,6 +13,8 @@ typedef struct {
 	UINT8	JOYSTICK;
 	UINT8	Z80SAVE;
 
+	UINT8	shortcut;												// ver0.30
+
 #if defined(SUPPORT_RESUME)
 	UINT8	resume;
 #endif
