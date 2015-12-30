@@ -292,6 +292,9 @@ void menu_update(HMENU hMenu)
 #if defined(SUPPORT_X1F)
 	CheckMenuItem(hMenu, IDM_OPMLOG, MF_BYCOMMAND | MFCHECK(x1f_isopened()));
 #endif	// defined(SUPPORT_X1F)
+	const UINT8 shortcut = xmiloscfg.shortcut;
+	CheckMenuItem(hMenu, IDM_ALTENTER, MF_BYCOMMAND | MFCHECK(shortcut & 1));
+	CheckMenuItem(hMenu, IDM_ALTF4, MF_BYCOMMAND | MFCHECK(shortcut & 2));
 	const UINT8 DISPCLK = xmiloscfg.DISPCLK;
 	CheckMenuItem(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MFCHECK(DISPCLK & 1));
 	CheckMenuItem(hMenu, IDM_DISPFRAME, MF_BYCOMMAND | MFCHECK(DISPCLK & 2));

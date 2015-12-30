@@ -95,6 +95,8 @@
 #define IDM_JOYX                        40047
 #define IDM_RAPID                       40048
 #define IDM_ABOUT                       40049
+#define IDM_ALTENTER                    40051
+#define IDM_ALTF4                       40052
 #define IDM_KEYDISP                     40101
 #define IDM_SOFTKBD                     40102
 #define IDM_SCREENCENTER                40103
