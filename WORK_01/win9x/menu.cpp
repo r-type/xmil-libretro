@@ -185,9 +185,12 @@ void sysmenu_update(HMENU hMenu)
  */
 void menu_initialize(HMENU hMenu)
 {
-
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#if defined(SUPPORT_OPMx2)
+	InsertMenuString(hMenu, IDM_JOYSTICK, MF_BYCOMMAND | MF_POPUP, IDR_OPM);
+#else	// defined(SUPPORT_OPMx2)
 	InsertMenuString(hMenu, IDM_JOYSTICK, MF_BYCOMMAND | MF_STRING, IDM_FMBOARD);
+#endif	// defined(SUPPORT_OPMx2)
 #endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 #if defined(SUPPORT_X1F)
 	InsertMenuString(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MF_STRING, IDM_OPMLOG);
@@ -262,6 +265,14 @@ void menu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_JOY1, MF_BYCOMMAND | MFCHECK(KEY_MODE == 1));
 	CheckMenuItem(hMenu, IDM_JOY2, MF_BYCOMMAND | MFCHECK(KEY_MODE == 2));
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#if defined(SUPPORT_OPMx2)
+	const UINT8 SOUND_SW = xmilcfg.SOUND_SW;
+	CheckMenuItem(hMenu, IDM_OPM_NONE, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0));
+	CheckMenuItem(hMenu, IDM_OPM_1, MF_BYCOMMAND | MFCHECK(SOUND_SW == 1));
+	CheckMenuItem(hMenu, IDM_OPM_2, MF_BYCOMMAND | MFCHECK(SOUND_SW == 2));
+#else	// defined(SUPPORT_OPMx2)
+	CheckMenuItem(hMenu, IDM_FMBOARD, MF_BYCOMMAND | MFCHECK(xmilcfg.SOUND_SW));
+#endif	// defined(SUPPORT_OPMx2)
 	CheckMenuItem(hMenu, IDM_FMBOARD, MF_BYCOMMAND | MFCHECK(xmilcfg.SOUND_SW));
 #endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 	const UINT8 JOYSTICK = xmiloscfg.JOYSTICK;

@@ -16,7 +16,7 @@ extern "C"
 #endif
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-extern OPM g_opm;
+extern OPM g_opm[];
 void IOOUTCALL opm_o(UINT port, REG8 dat);
 REG8 IOINPCALL opm_i(UINT port);
 #endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */

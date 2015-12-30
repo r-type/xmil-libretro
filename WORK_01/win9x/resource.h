@@ -17,6 +17,7 @@
 #define IDR_FDD3MENU                    206
 #define IDR_DEBUG                       207
 #define IDR_TRACE                       208
+#define IDR_OPM                         209
 #define IDC_SAMPLERATE                  1000
 #define IDC_SNDBUFFER                   1001
 #define IDC_SEEKVOL                     1002
@@ -115,6 +116,9 @@
 #define IDM_SNAPENABLE                  40104
 #define IDM_BACKGROUND                  40105
 #define IDM_BGSOUND                     40106
+#define IDM_OPM_NONE                    40111
+#define IDM_OPM_1                       40112
+#define IDM_OPM_2                       40113
 #define IDM_FLAGSAVE                    40201
 #define IDM_FLAGSAVE0                   40201
 #define IDM_FLAGSAVE1                   40202

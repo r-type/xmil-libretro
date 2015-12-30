@@ -61,7 +61,7 @@ BRESULT x1f_open(const OEMCHAR *filename) {
 		return(FAILURE);
 	}
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	memcpy(buf, g_opm.s.reg, 256);
+	memcpy(buf, g_opm[0].s.reg, 256);
 #else
 	memset(buf, 0, 256);
 #endif
