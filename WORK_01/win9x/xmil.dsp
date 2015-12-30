@@ -537,6 +537,14 @@ SOURCE=.\dialog\d_disk.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\dialog\d_screen.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\d_screen.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\dialog\d_sound.cpp
 # End Source File
 # Begin Source File
@@ -666,6 +674,14 @@ SOURCE=.\misc\DlgProc.h
 # Begin Source File
 
 SOURCE=.\misc\guard.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\PropProc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\misc\PropProc.h
 # End Source File
 # Begin Source File
 

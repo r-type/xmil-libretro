@@ -10,7 +10,6 @@
 #include "soundmng.h"
 #include "sysmng.h"
 #include "pccore.h"
-#include "palettes.h"
 
 //! クランプ定義
 #define LIMITS(v, n, m)		(((v) > (m))? (m) : (((v) < (n)) ? (n) : (v)))
@@ -52,11 +51,6 @@ BOOL CConfigDlg::OnInitDialog()
 	}
 #endif	// !defined(DISABLE_SOUND)
 
-	CheckDlgButton(IDC_SKIPLINE, (xmilcfg.skipline) ? BST_CHECKED : BST_UNCHECKED);
-	SendDlgItemMessage(IDC_SKIPLIGHT, TBM_SETRANGE, TRUE, MAKELONG(0, 256));
-	SendDlgItemMessage(IDC_SKIPLIGHT, TBM_SETPOS, TRUE, xmilcfg.skiplight);
-	SetDlgItemInt(IDC_LIGHTSTR, xmilcfg.skiplight);
-
 	return TRUE;
 }
 
@@ -97,51 +91,7 @@ void CConfigDlg::OnOK()
 	}
 #endif	// !defined(DISABLE_SOUND)
 
-	bool bRenewal = false;
-	const UINT8 bSkipline = (IsDlgButtonChecked(IDC_SKIPLINE) != BST_UNCHECKED) ? 1 : 0;
-	if (xmilcfg.skipline != bSkipline)
-	{
-		xmilcfg.skipline = bSkipline;
-		bRenewal = true;
-	}
-	UINT nSkipLight = SendDlgItemMessage(IDC_SKIPLIGHT, TBM_GETPOS);
-	if (nSkipLight > 256)
-	{
-		nSkipLight = 256;
-	}
-	if (xmilcfg.skiplight != nSkipLight)
-	{
-		xmilcfg.skiplight = nSkipLight;
-		bRenewal = true;
-	}
-	if (bRenewal)
-	{
-		pal_reset();
-		nUpdateFlags |= SYS_UPDATECFG;
-	}
 	::sysmng_update(nUpdateFlags);
 
 	CDlgProc::OnOK();
-}
-
-/**
- * CWndProc オブジェクトの Windows プロシージャ (WindowProc) が用意されています
- * @param[in] nMsg 処理される Windows メッセージを指定します
- * @param[in] wParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
- * @param[in] lParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
- * @return メッセージに依存する値を返します
- */
-LRESULT CConfigDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
-{
-	switch (nMsg)
-	{
-		case WM_HSCROLL:
-			if (reinterpret_cast<HWND>(lParam) == GetDlgItem(IDC_SKIPLIGHT))
-			{
-				SetDlgItemInt(IDC_LIGHTSTR, SendDlgItemMessage(IDC_SKIPLIGHT, TBM_GETPOS));
-				return TRUE;
-			}
-			break;
-	}
-	return CDlgProc::WindowProc(nMsg, wParam, lParam);
 }

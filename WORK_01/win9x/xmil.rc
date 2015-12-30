@@ -109,6 +109,8 @@ BEGIN
         MENUITEM "1/&2 frame",                  IDM_30FPS
         MENUITEM "1/&3 frame",                  IDM_20FPS
         MENUITEM "1/&4 frame",                  IDM_15FPS
+        MENUITEM SEPARATOR
+        MENUITEM "&Screen option...",           IDM_SCREENOPT
     END
     POPUP "&Device"
     BEGIN
@@ -211,7 +213,7 @@ END
 // Dialog
 //
 
-IDD_CONFIG DIALOG DISCARDABLE  0, 0, 194, 126
+IDD_CONFIG DIALOG DISCARDABLE  0, 0, 194, 80
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Configure"
 FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
@@ -226,13 +228,6 @@ BEGIN
     LTEXT           "ms",IDC_STATIC,116,37,10,8
     LTEXT           "Seek Volume",IDC_STATIC,16,52,38,8
     EDITTEXT        IDC_SEEKVOL,80,50,20,12
-    GROUPBOX        "Screen",IDC_STATIC,8,72,180,48
-    CONTROL         "Use skipline revisions",IDC_SKIPLINE,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,16,86,81,10
-    LTEXT           "Ratio",IDC_STATIC,28,101,16,8
-    CONTROL         "Slider1",IDC_SKIPLIGHT,"msctls_trackbar32",TBS_BOTH | 
-                    TBS_NOTICKS | WS_TABSTOP,52,101,96,10
-    RTEXT           "",IDC_LIGHTSTR,152,100,16,10,SS_SUNKEN
     DEFPUSHBUTTON   "&OK",IDOK,144,12,44,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,30,44,14
 END
@@ -261,6 +256,19 @@ BEGIN
     ICON            IDI_ICON1,IDC_STATIC,8,8,20,21
     LTEXT           "",IDC_XMILVER,36,16,102,8
     DEFPUSHBUTTON   "&OK",IDOK,148,4,40,14,WS_GROUP
+END
+
+IDD_SCROPT DIALOG DISCARDABLE  0, 0, 172, 96
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Video"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    CONTROL         "&Use skipline revisions",IDC_SKIPLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
+    LTEXT           "&Ratio",IDC_STATIC,20,23,22,8
+    CONTROL         "Slider1",IDC_SKIPLIGHT,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,44,23,96,10
+    RTEXT           "",IDC_LIGHTSTR,144,22,20,10,SS_SUNKEN
 END
 
 
@@ -369,6 +377,11 @@ BEGIN
     IDS_X1FTITLE            "Save as OPM log"
     IDS_X1FEXT              "x1f"
     IDS_X1FFILTER           "OPM log (*.x1f)|*.x1f|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_SCREENOPTION        "Screen option"
 END
 
 STRINGTABLE DISCARDABLE 
