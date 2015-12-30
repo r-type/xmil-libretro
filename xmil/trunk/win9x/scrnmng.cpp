@@ -660,7 +660,7 @@ void scrnmng_setheight(int posy, int height) {
 	renewalclientsize(TRUE);
 }
 
-BRESULT scrnmng_setcolormode(BRESULT fullcolor) {
+BRESULT scrnmng_setcolormode(BOOL fullcolor) {
 
 	REG8	newmode;
 
