@@ -384,10 +384,19 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			break;
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#if defined(SUPPORT_OPMx2)
+		case IDM_OPM_NONE:
+		case IDM_OPM_1:
+		case IDM_OPM_2:
+			xmilcfg.SOUND_SW = static_cast<UINT8>(cmd - IDM_OPM_NONE);
+			update = SYS_UPDATECFG;
+			break;
+#else	// defined(SUPPORT_OPMx2)
 		case IDM_FMBOARD:
 			xmilcfg.SOUND_SW = !xmilcfg.SOUND_SW;
 			update = SYS_UPDATECFG;
 			break;
+#endif	// defined(SUPPORT_OPMx2)
 #endif	// defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 
 		case IDM_JOYSTICK:
