@@ -7,6 +7,7 @@
 #define IDD_CONFIG                      103
 #define IDD_NEWDISK                     104
 #define IDD_ABOUT                       105
+#define IDD_SCROPT                      106
 #define IDR_SYS                         201
 #define IDR_STAT                        202
 #define IDR_FDD0MENU                    203
@@ -44,6 +45,7 @@
 #define IDS_X1FTITLE                    31031
 #define IDS_X1FEXT                      31032
 #define IDS_X1FFILTER                   31033
+#define IDS_SCREENOPTION                31051
 #define IDM_IPLRESET                    40000
 #define IDM_NMIRESET                    40001
 #define IDM_CONFIG                      40002
@@ -94,6 +96,7 @@
 #define IDM_JOYX                        40047
 #define IDM_RAPID                       40048
 #define IDM_ABOUT                       40049
+#define IDM_SCREENOPT                   40050
 #define IDM_KEYDISP                     40101
 #define IDM_SOFTKBD                     40102
 #define IDM_SCREENCENTER                40103
