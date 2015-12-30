@@ -8,8 +8,11 @@
 #include "resource.h"
 #include <commctrl.h>
 #include <vector>
-#include "misc/PropProc.h"
+#include "xmil.h"
+#include "scrnmng.h"
 #include "sysmng.h"
+#include "misc/PropProc.h"
+#include "dialogs.h"
 #include "pccore.h"
 #include "palettes.h"
 
@@ -53,6 +56,7 @@ BOOL ScrOptVideoPage::OnInitDialog()
 
 	return TRUE;
 }
+
 /**
  * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
  */
@@ -109,6 +113,109 @@ LRESULT ScrOptVideoPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 	return CPropPageProc::WindowProc(nMsg, wParam, lParam);
 }
 
+
+
+// ----
+
+/**
+ * @brief Fullscreen ページ
+ */
+class ScrOptFullscreenPage : public CPropPageProc
+{
+public:
+	ScrOptFullscreenPage();
+	virtual ~ScrOptFullscreenPage();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+
+private:
+	CNp2ComboBox m_zoom;				//!< ズーム
+};
+
+static const CBPARAM s_cpZoom[] =
+{
+	{MAKEINTRESOURCE(IDS_ZOOM_NONE),			0},
+	{MAKEINTRESOURCE(IDS_ZOOM_FIXEDASPECT),		1},
+	{MAKEINTRESOURCE(IDS_ZOOM_ADJUSTASPECT),	2},
+	{MAKEINTRESOURCE(IDS_ZOOM_FULL),			3},
+};
+
+/**
+ * コンストラクタ
+ */
+ScrOptFullscreenPage::ScrOptFullscreenPage()
+	: CPropPageProc(IDD_SCROPT_FULLSCREEN)
+{
+}
+
+/**
+ * デストラクタ
+ */
+ScrOptFullscreenPage::~ScrOptFullscreenPage()
+{
+}
+
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL ScrOptFullscreenPage::OnInitDialog()
+{
+	const UINT8 c = xmiloscfg.fscrnmod;
+	CheckDlgButton(IDC_FULLSCREEN_SAMEBPP, (c & FSCRNMOD_SAMEBPP) ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_FULLSCREEN_SAMERES, (c & FSCRNMOD_SAMERES) ? BST_CHECKED : BST_UNCHECKED);
+
+	m_zoom.SubclassDlgItem(IDC_FULLSCREEN_ZOOM, this);
+	m_zoom.Add(s_cpZoom, _countof(s_cpZoom));
+	m_zoom.SetCurItemData(c & 3);
+	m_zoom.EnableWindow((c & FSCRNMOD_SAMERES) ? TRUE : FALSE);
+
+	return TRUE;
+}
+
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void ScrOptFullscreenPage::OnOK()
+{
+	UINT8 c = 0;
+	if (IsDlgButtonChecked(IDC_FULLSCREEN_SAMEBPP) != BST_UNCHECKED)
+	{
+		c |= FSCRNMOD_SAMEBPP;
+	}
+	if (IsDlgButtonChecked(IDC_FULLSCREEN_SAMERES) != BST_UNCHECKED)
+	{
+		c |= FSCRNMOD_SAMERES;
+	}
+	c |= m_zoom.GetCurItemData(xmiloscfg.fscrnmod & 3);
+	if (xmiloscfg.fscrnmod != c)
+	{
+		xmiloscfg.fscrnmod = c;
+		::sysmng_update(SYS_UPDATEOSCFG);
+	}
+}
+
+
+/**
+ * ユーザーがメニューの項目を選択したときに、フレームワークによって呼び出されます
+ * @param[in] wParam パラメタ
+ * @param[in] lParam パラメタ
+ * @retval TRUE アプリケーションがこのメッセージを処理した
+ */
+BOOL ScrOptFullscreenPage::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	if (LOWORD(wParam) == IDC_FULLSCREEN_SAMERES)
+	{
+		m_zoom.EnableWindow((IsDlgButtonChecked(IDC_FULLSCREEN_SAMERES) != BST_UNCHECKED) ? TRUE : FALSE);
+		return TRUE;
+	}
+	return FALSE;
+}
+
 /**
  * スクリーン設定
  * @param[in] hWnd 親ウィンドウ
@@ -119,6 +226,9 @@ void dialog_scropt(HWND hWnd)
 
 	ScrOptVideoPage video;
 	hpsp.push_back(::CreatePropertySheetPage(&video.m_psp));
+
+	ScrOptFullscreenPage fullscreen;
+	hpsp.push_back(::CreatePropertySheetPage(&fullscreen.m_psp));
 
 	std::tstring rTitle(LoadTString(IDS_SCREENOPTION));
 

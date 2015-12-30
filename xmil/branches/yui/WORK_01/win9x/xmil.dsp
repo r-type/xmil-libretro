@@ -553,6 +553,14 @@ SOURCE=.\dialog\d_sound.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\dialog\dialogs.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialog\dialogs.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DIALOG\EXTCLASS.CPP
 # End Source File
 # End Group

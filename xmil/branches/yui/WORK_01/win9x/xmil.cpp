@@ -57,6 +57,8 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 #if defined(SUPPORT_DCLOCK)
 							0, 0, 0xffffff, 0xffbf6a,
 #endif	// defined(SUPPORT_DCLOCK)
+							0,
+							FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8
 						};
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium ÇÀÇ±ÇøÇ„Å`ÇÒ");
