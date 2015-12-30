@@ -48,7 +48,7 @@ extern	SCRNMNG		scrnmng;			// É}ÉNÉçóp
 
 // void scrnmng_setwidth(int posx, int width);
 void scrnmng_setheight(int posy, int height);	// ddraws_change_drawlines
-BRESULT scrnmng_setcolormode(BRESULT fullcolor);
+BRESULT scrnmng_setcolormode(BOOL fullcolor);
 const SCRNSURF *scrnmng_surflock(void);
 void scrnmng_surfunlock(const SCRNSURF *surf);
 void scrnmng_update(void);						// ddraws_drawall
