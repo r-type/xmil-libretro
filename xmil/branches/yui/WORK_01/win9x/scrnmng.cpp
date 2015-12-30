@@ -54,6 +54,8 @@ typedef struct {
 	int					menusize;
 	RECT				scrn;
 	RECT				rect;
+	RECT				scrnclip;
+	RECT				rectclip;
 	PALETTEENTRY		pal[256];
 } DDRAW;
 
@@ -178,6 +180,32 @@ static void renewalclientsize(BOOL winloc) {
 		ddraw.scrn.top = (ddraw.height - scrnheight) / 2;
 		ddraw.scrn.right = ddraw.scrn.left + scrnwidth;
 		ddraw.scrn.bottom = ddraw.scrn.top + scrnheight;
+
+		// ƒƒjƒ…[•\¦‚Ì•`‰æ—Ìˆæ
+		ddraw.rectclip = ddraw.rect;
+		ddraw.scrnclip = ddraw.scrn;
+		if (ddraw.scrnclip.top < ddraw.menusize) {
+			ddraw.scrnclip.top = ddraw.menusize;
+			int tmpcy = ddraw.height - ddraw.menusize;
+			if (scrnheight > tmpcy) {
+				switch(fscrnmod) {
+					default:
+					case FSCRNMOD_NORESIZE:
+						tmpcy = min(tmpcy, height);
+						ddraw.rectclip.bottom = tmpcy;
+						break;
+
+					case FSCRNMOD_ASPECTFIX8:
+					case FSCRNMOD_ASPECTFIX:
+						ddraw.rectclip.bottom = (tmpcy * height) / scrnheight;
+						break;
+
+					case FSCRNMOD_LARGE:
+						break;
+				}
+			}
+			ddraw.scrnclip.bottom = ddraw.menusize + tmpcy;
+		}
 	}
 	else {
 		multiple = 8;
@@ -263,18 +291,21 @@ static void clearoutscreen(void) {
 static void clearoutfullscreen(void) {
 
 	RECT	base;
+const RECT	*scrn;
 
 	base.left = 0;
 	base.top = 0;
 	base.right = ddraw.width;
 	base.bottom = ddraw.height;
 	if (GetWindowLong(hWndMain, EXTGWL_HMENU)) {
+		scrn = &ddraw.scrn;
 		base.top = 0;
 	}
 	else {
+		scrn = &ddraw.scrnclip;
 		base.top = ddraw.menusize;
 	}
-	clearoutofrect(&ddraw.scrn, &base);
+	clearoutofrect(scrn, &base);
 #if defined(SUPPORT_DCLOCK)
 	DispClock::GetInstance()->Redraw();
 #endif	// defined(SUPPORT_DCLOCK)
@@ -454,7 +485,7 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 		ddsd.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
 		ddsd.dwWidth = SURFACE_WIDTH;
-		ddsd.dwHeight = height;
+		ddsd.dwHeight = SURFACE_HEIGHT;
 		if (ddraw2->CreateSurface(&ddsd, &ddraw.backsurf, NULL) != DD_OK) {
 			goto scre_err;
 		}
@@ -711,6 +742,8 @@ void scrnmng_update(void) {
 
 	POINT	clip;
 	RECT	dst;
+	RECT	*rect;
+	RECT	*scrn;
 	HRESULT	r;
 
 	if (scrnmng.palchanged) {
@@ -723,7 +756,22 @@ void scrnmng_update(void) {
 				scrnmng.allflash = 0;
 				clearoutfullscreen();
 			}
-			dst = ddraw.scrn;
+			if (GetWindowLong(hWndMain, EXTGWL_HMENU)) {
+				rect = &ddraw.rect;
+				scrn = &ddraw.scrn;
+			}
+			else {
+				rect = &ddraw.rectclip;
+				scrn = &ddraw.scrnclip;
+			}
+			r = ddraw.primsurf->Blt(scrn, ddraw.backsurf, rect,
+															DDBLT_WAIT, NULL);
+			if (r == DDERR_SURFACELOST) {
+				ddraw.backsurf->Restore();
+				ddraw.primsurf->Restore();
+				ddraw.primsurf->Blt(scrn, ddraw.backsurf, rect,
+															DDBLT_WAIT, NULL);
+			}
 		}
 		else {
 			if (scrnmng.allflash) {
@@ -737,14 +785,14 @@ void scrnmng_update(void) {
 			dst.top = clip.y + ddraw.scrn.top;
 			dst.right = clip.x + ddraw.scrn.right;
 			dst.bottom = clip.y + ddraw.scrn.bottom;
-		}
-		r = ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
+			r = ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
+									DDBLT_WAIT, NULL);
+			if (r == DDERR_SURFACELOST) {
+				ddraw.backsurf->Restore();
+				ddraw.primsurf->Restore();
+				ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
 														DDBLT_WAIT, NULL);
-		if (r == DDERR_SURFACELOST) {
-			ddraw.backsurf->Restore();
-			ddraw.primsurf->Restore();
-			ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
-														DDBLT_WAIT, NULL);
+			}
 		}
 	}
 }
