@@ -52,7 +52,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 							0,
 #endif
 #if defined(SUPPORT_STATSAVE)
-							1,
+							0,
 #endif
 #if defined(SUPPORT_DCLOCK)
 							0, 0, 0xffffff, 0xffbf6a,
