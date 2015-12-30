@@ -40,7 +40,7 @@ const OEMCHAR xmilversion[] = OEMTEXT(XMILVER_CORE);
 	XMILCFG		xmilcfg = { 2, 1, 0x03,
 							1, 0, 0, 0,
 #if !defined(DISABLE_SOUND)
-							22050, 500,
+							44100, 250,
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
 							64,
 #endif
