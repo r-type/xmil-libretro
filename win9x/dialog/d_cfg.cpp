@@ -104,7 +104,7 @@ void CConfigDlg::OnOK()
 		xmilcfg.skipline = bSkipline;
 		bRenewal = true;
 	}
-	UINT nSkipLight = SendDlgItemMessage(IDC_SKIPLIGHT, TBM_GETPOS, 0, 0);
+	UINT nSkipLight = SendDlgItemMessage(IDC_SKIPLIGHT, TBM_GETPOS);
 	if (nSkipLight > 256)
 	{
 		nSkipLight = 256;
@@ -138,7 +138,7 @@ LRESULT CConfigDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case WM_HSCROLL:
 			if (reinterpret_cast<HWND>(lParam) == GetDlgItem(IDC_SKIPLIGHT))
 			{
-				SetDlgItemInt(IDC_LIGHTSTR, HIWORD(wParam));
+				SetDlgItemInt(IDC_LIGHTSTR, SendDlgItemMessage(IDC_SKIPLIGHT, TBM_GETPOS));
 				return TRUE;
 			}
 			break;
