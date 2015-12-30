@@ -36,7 +36,10 @@ typedef struct {
 
 extern	XMILOSCFG	xmiloscfg;
 extern	HWND		hWndMain;
+extern	UINT8		g_scrnmode;
 extern	OEMCHAR		szProgName[];
 extern	OEMCHAR		modulefile[MAX_PATH];
 extern	OEMCHAR		fddfolder[MAX_PATH];
 extern	OEMCHAR		bmpfilefolder[MAX_PATH];
+
+BRESULT xmil_changescreen(REG8 newmode);
