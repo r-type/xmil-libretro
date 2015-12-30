@@ -46,6 +46,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 							CW_USEDEFAULT, CW_USEDEFAULT,
 							1, 0, 0, 0, 0,
 							0, 0, 0,
+							1,
 #if defined(SUPPORT_RESUME)
 							0,
 #endif
@@ -487,6 +488,16 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			break;
 #endif	// defined(SUPPORT_X1F)
 
+		case IDM_ALTENTER:
+			xmiloscfg.shortcut ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case IDM_ALTF4:
+			xmiloscfg.shortcut ^= 2;
+			update |= SYS_UPDATECFG;
+			break;
+
 		case IDM_DISPCLOCK:
 			xmiloscfg.DISPCLK ^= 1;
 			update = SYS_UPDATECFG;
@@ -724,6 +735,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 
 		case WM_SYSKEYDOWN:
+			if (lParam & 0x20000000) {
+				if ((xmiloscfg.shortcut & 1) && (wParam == VK_RETURN)) {
+					xmil_changescreen(g_scrnmode ^ SCRNMODE_FULLSCREEN);
+					break;
+				}
+				if ((xmiloscfg.shortcut & 2) && (wParam == VK_F4)) {
+					SendMessage(hWnd, WM_CLOSE, 0, 0L);
+					break;
+				}
+			}
 			if (wParam == VK_F10) {
 				return(DefWindowProc(hWnd, WM_SYSKEYDOWN, wParam, lParam));
 			}

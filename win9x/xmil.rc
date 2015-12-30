@@ -126,6 +126,11 @@ BEGIN
         MENUITEM "&BMP Save...",                IDM_BMPSAVE
         MENUITEM "&Clock Disp",                 IDM_DISPCLOCK
         MENUITEM "&Frame Disp",                 IDM_DISPFRAME
+        POPUP "Shortcut &key"
+        BEGIN
+            MENUITEM "Alt+Enter",                   IDM_ALTENTER
+            MENUITEM "Alt+F4",                      IDM_ALTF4
+        END
         MENUITEM "Joy Re&verse",                IDM_JOYX
         MENUITEM "Joy &Rapid",                  IDM_RAPID
         MENUITEM SEPARATOR
