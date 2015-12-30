@@ -120,6 +120,7 @@ typedef signed __int64		SINT64;
 #define	SUPPORT_32BPP
 
 #define	SUPPORT_OPM
+#define SUPPORT_OPMx2
 #define	SUPPORT_BANKMEM
 #define	SUPPORT_X1F
 #define	SUPPORT_DCLOCK
