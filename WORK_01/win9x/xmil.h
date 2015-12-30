@@ -28,6 +28,9 @@ typedef struct {
 	UINT32	clockcolor1;
 	UINT32	clockcolor2;
 #endif	// defined(SUPPORT_DCLOCK)
+
+	UINT8	fscrnbpp;
+	UINT8	fscrnmod;
 } XMILOSCFG;
 
 
