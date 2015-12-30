@@ -17,6 +17,7 @@
 #include "dialog\d_bmp.h"
 #include "dialog\d_cfg.h"
 #include "dialog\d_disk.h"
+#include "dialog\d_screen.h"
 #include "dialog\d_sound.h"
 #include	"extclass.h"
 #include "misc\wndloc.h"
@@ -411,6 +412,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 		case IDM_15FPS:
 			xmiloscfg.DRAW_SKIP = 4;
 			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_SCREENOPT:
+			winuienter();
+			dialog_scropt(hWnd);
+			winuileave();
 			break;
 
 		case IDM_KEY:

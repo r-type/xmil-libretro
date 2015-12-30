@@ -19,7 +19,6 @@ public:
 protected:
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
-	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 };
 
 /**
