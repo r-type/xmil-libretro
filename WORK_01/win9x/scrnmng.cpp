@@ -329,11 +329,10 @@ void scrnmng_initialize(void) {
 	setwindowsize(hWndMain, 640, 400);
 }
 
-BRESULT scrnmng_create(UINT8 mode) {
+BRESULT scrnmng_create(UINT8 scrnmode) {
 
 	DWORD			winstyle;
 	DWORD			winstyleex;
-	HMENU			hmenu;
 	LPDIRECTDRAW2	ddraw2;
 	DDSURFACEDESC	ddsd;
 	DDPIXELFORMAT	ddpf;
@@ -343,14 +342,11 @@ BRESULT scrnmng_create(UINT8 mode) {
 	ZeroMemory(&scrnmng, sizeof(scrnmng));
 	winstyle = GetWindowLong(hWndMain, GWL_STYLE);
 	winstyleex = GetWindowLong(hWndMain, GWL_EXSTYLE);
-	hmenu = GetMenu(hWndMain);
-	if (mode & SCRNMODE_FULLSCREEN) {
+	if (scrnmode & SCRNMODE_FULLSCREEN) {
 		scrnmng.flag = SCRNFLAG_FULLSCREEN;
 		winstyle &= ~(WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU);
 		winstyle |= WS_POPUP;
 		winstyleex |= WS_EX_TOPMOST;
-		CheckMenuItem(hmenu, IDM_WINDOW, MF_UNCHECKED);
-		CheckMenuItem(hmenu, IDM_FULLSCREEN, MF_CHECKED);
 		ddraw.menudisp = FALSE;
 		ddraw.menusize = GetSystemMetrics(SM_CYMENU);
 		extclass_enablemenu(hWndMain, FALSE);
@@ -361,8 +357,6 @@ BRESULT scrnmng_create(UINT8 mode) {
 		winstyle |= WS_CAPTION;
 		winstyle &= ~WS_POPUP;
 		winstyleex &= ~WS_EX_TOPMOST;
-		CheckMenuItem(hmenu, IDM_WINDOW, MF_CHECKED);
-		CheckMenuItem(hmenu, IDM_FULLSCREEN, MF_UNCHECKED);
 	}
 	SetWindowLong(hWndMain, GWL_STYLE, winstyle);
 	SetWindowLong(hWndMain, GWL_EXSTYLE, winstyleex);
@@ -373,7 +367,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 	ddraw.ddraw1->QueryInterface(IID_IDirectDraw2, (void **)&ddraw2);
 	ddraw.ddraw2 = ddraw2;
 
-	if (mode & SCRNMODE_FULLSCREEN) {
+	if (scrnmode & SCRNMODE_FULLSCREEN) {
 #if defined(SUPPORT_DCLOCK)
 		DispClock::GetInstance()->Initialize();
 #endif	// defined(SUPPORT_DCLOCK)
@@ -381,7 +375,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 										DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
 		height = 480;
 		bitcolor = 8;
-		if (mode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
+		if (scrnmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
 			bitcolor = 16;
 		}
 		if (ddraw2->SetDisplayMode(SURFACE_WIDTH, height,
@@ -491,7 +485,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 	}
 	scrnmng.bpp = (UINT8)bitcolor;
 	scrnsurf.bpp = bitcolor;
-	ddraw.scrnmode = mode;
+	ddraw.scrnmode = scrnmode;
 	ddraw.width = SURFACE_WIDTH;
 	ddraw.height = height;
 	ddraw.cliping = 0;

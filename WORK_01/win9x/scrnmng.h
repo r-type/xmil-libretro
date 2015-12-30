@@ -32,8 +32,8 @@ enum {
 };
 
 typedef struct {
-	UINT8	bpp;
 	UINT8	flag;
+	UINT8	bpp;
 	UINT8	allflash;
 	UINT8	palchanged;
 } SCRNMNG;
