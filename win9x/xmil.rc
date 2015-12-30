@@ -283,6 +283,21 @@ BEGIN
     RTEXT           "",IDC_LIGHTSTR,144,22,20,10,SS_SUNKEN
 END
 
+IDD_SCROPT_FULLSCREEN DIALOG DISCARDABLE  0, 0, 172, 96
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "FullScreen"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    CONTROL         "No change screen &colors",IDC_FULLSCREEN_SAMEBPP,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
+    CONTROL         "No change screen &resolution",IDC_FULLSCREEN_SAMERES,
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,24,
+                    156,10
+    LTEXT           "&Zoom",IDC_STATIC,8,45,22,8
+    COMBOBOX        IDC_FULLSCREEN_ZOOM,40,42,96,80,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -395,6 +410,10 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_SCREENOPTION        "Screen option"
+    IDS_ZOOM_NONE           "None"
+    IDS_ZOOM_FIXEDASPECT    "Fixed aspect"
+    IDS_ZOOM_ADJUSTASPECT   "Adjust aspect"
+    IDS_ZOOM_FULL           "Full"
 END
 
 STRINGTABLE DISCARDABLE 

@@ -8,6 +8,7 @@
 #define IDD_NEWDISK                     104
 #define IDD_ABOUT                       105
 #define IDD_SCROPT                      106
+#define IDD_SCROPT_FULLSCREEN           107
 #define IDR_SYS                         201
 #define IDR_STAT                        202
 #define IDR_FDD0MENU                    203
@@ -28,6 +29,9 @@
 #define IDC_MAKE2D                      1008
 #define IDC_MAKE2HD                     1009
 #define IDC_XMILVER                     1010
+#define IDC_FULLSCREEN_SAMEBPP          1101
+#define IDC_FULLSCREEN_SAMERES          1102
+#define IDC_FULLSCREEN_ZOOM             1103
 #define IDS_APP_NAME                    30001
 #define IDS_CAPTION_KEYDISP             30101
 #define IDS_CAPTION_SOFTKBD             30102
@@ -47,6 +51,10 @@
 #define IDS_X1FEXT                      31032
 #define IDS_X1FFILTER                   31033
 #define IDS_SCREENOPTION                31051
+#define IDS_ZOOM_NONE                   31052
+#define IDS_ZOOM_FIXEDASPECT            31053
+#define IDS_ZOOM_ADJUSTASPECT           31054
+#define IDS_ZOOM_FULL                   31055
 #define IDM_IPLRESET                    40000
 #define IDM_NMIRESET                    40001
 #define IDM_CONFIG                      40002
