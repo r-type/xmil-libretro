@@ -50,6 +50,7 @@
 				PrecompiledHeaderThrough="compiler.h"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				CompileAs="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -124,6 +125,7 @@
 				PrecompiledHeaderThrough="compiler.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				CompileAs="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -568,6 +570,22 @@
 						RelativePath=".\main.c"
 						>
 					</File>
+					<Filter
+						Name="misc"
+						>
+						<File
+							RelativePath=".\misc\threadbase.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\misc\tty.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\misc\usbdev.cpp"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
@@ -1066,6 +1084,26 @@
 						RelativePath=".\compiler.h"
 						>
 					</File>
+					<Filter
+						Name="misc"
+						>
+						<File
+							RelativePath=".\misc\guard.h"
+							>
+						</File>
+						<File
+							RelativePath=".\misc\threadbase.h"
+							>
+						</File>
+						<File
+							RelativePath=".\misc\tty.h"
+							>
+						</File>
+						<File
+							RelativePath=".\misc\usbdev.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
