@@ -1195,10 +1195,6 @@
 							RelativePath="..\ext\c86ctl\c86ctlrealchipbase.h"
 							>
 						</File>
-						<File
-							RelativePath="..\ext\c86ctl\cbus_boardtype.h"
-							>
-						</File>
 					</Filter>
 					<Filter
 						Name="scci"
