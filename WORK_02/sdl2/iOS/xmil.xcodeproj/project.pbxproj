@@ -81,7 +81,6 @@
 		BA6D1665193D5CC1006EC729 /* mousemng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B2193D5CC1006EC729 /* mousemng.c */; };
 		BA6D1666193D5CC1006EC729 /* scrnmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B5193D5CC1006EC729 /* scrnmng.c */; };
 		BA6D1667193D5CC1006EC729 /* sdlkbd.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B7193D5CC1006EC729 /* sdlkbd.c */; };
-		BA6D1668193D5CC1006EC729 /* soundmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B9193D5CC1006EC729 /* soundmng.c */; };
 		BA6D1669193D5CC1006EC729 /* sysmenu.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15BB193D5CC1006EC729 /* sysmenu.c */; };
 		BA6D166C193D5CC1006EC729 /* sysmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15BF193D5CC1006EC729 /* sysmng.c */; };
 		BA6D166D193D5CC1006EC729 /* taskmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15C1193D5CC1006EC729 /* taskmng.c */; };
@@ -125,6 +124,7 @@
 		BAD1A2CA1BE7566400B23E7C /* psg.c in Sources */ = {isa = PBXBuildFile; fileRef = BAD1A2C81BE7566400B23E7C /* psg.c */; };
 		BAD9FBD9193F194700B3C0D5 /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = BAD9FBD7193F194700B3C0D5 /* Default-Landscape.png */; };
 		BAD9FBDA193F194700B3C0D5 /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = BAD9FBD8193F194700B3C0D5 /* Icon-72.png */; };
+		BADA5F971C3E11EA00FAEC20 /* soundmng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BADA5F961C3E11EA00FAEC20 /* soundmng.cpp */; };
 		FD779EDE0E26BA1200F39101 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD779EDD0E26BA1200F39101 /* CoreAudio.framework */; };
 		FD77A07D0E26BD8C00F39101 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FD77A07C0E26BD8C00F39101 /* Icon.png */; };
 		FD77A07F0E26BDA900F39101 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FD77A07E0E26BDA900F39101 /* Default.png */; };
@@ -335,7 +335,6 @@
 		BA6D15B6193D5CC1006EC729 /* scrnmng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scrnmng.h; sourceTree = "<group>"; };
 		BA6D15B7193D5CC1006EC729 /* sdlkbd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sdlkbd.c; sourceTree = "<group>"; };
 		BA6D15B8193D5CC1006EC729 /* sdlkbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sdlkbd.h; sourceTree = "<group>"; };
-		BA6D15B9193D5CC1006EC729 /* soundmng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = soundmng.c; sourceTree = "<group>"; };
 		BA6D15BA193D5CC1006EC729 /* soundmng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundmng.h; sourceTree = "<group>"; };
 		BA6D15BB193D5CC1006EC729 /* sysmenu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sysmenu.c; sourceTree = "<group>"; };
 		BA6D15BC193D5CC1006EC729 /* sysmenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sysmenu.h; sourceTree = "<group>"; };
@@ -408,6 +407,7 @@
 		BAD1A2C91BE7566400B23E7C /* psg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psg.h; sourceTree = "<group>"; };
 		BAD9FBD7193F194700B3C0D5 /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape.png"; sourceTree = "<group>"; };
 		BAD9FBD8193F194700B3C0D5 /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
+		BADA5F961C3E11EA00FAEC20 /* soundmng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundmng.cpp; sourceTree = "<group>"; };
 		FD779EDD0E26BA1200F39101 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		FD77A07C0E26BD8C00F39101 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		FD77A07E0E26BDA900F39101 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
@@ -781,7 +781,7 @@
 				BA6D15B6193D5CC1006EC729 /* scrnmng.h */,
 				BA6D15B7193D5CC1006EC729 /* sdlkbd.c */,
 				BA6D15B8193D5CC1006EC729 /* sdlkbd.h */,
-				BA6D15B9193D5CC1006EC729 /* soundmng.c */,
+				BADA5F961C3E11EA00FAEC20 /* soundmng.cpp */,
 				BA6D15BA193D5CC1006EC729 /* soundmng.h */,
 				BA6D15BB193D5CC1006EC729 /* sysmenu.c */,
 				BA6D15BC193D5CC1006EC729 /* sysmenu.h */,
@@ -973,6 +973,7 @@
 				BA6D161A193D5CC1006EC729 /* ucs2sjis.c in Sources */,
 				BA6D1630193D5CC1006EC729 /* menudlg.c in Sources */,
 				BA6D169C193D5CC1006EC729 /* z80c_mn.c in Sources */,
+				BADA5F971C3E11EA00FAEC20 /* soundmng.cpp in Sources */,
 				BA6D1621193D5CC1006EC729 /* parts.c in Sources */,
 				BA6D1650193D5CC1006EC729 /* memio.c in Sources */,
 				BA6D1681193D5CC1006EC729 /* sndctrl.c in Sources */,
@@ -1046,7 +1047,6 @@
 				BA6D162C193D5CC1006EC729 /* filesel.c in Sources */,
 				BA6D1616193D5CC1006EC729 /* sjisucs2.c in Sources */,
 				BA6D1632193D5CC1006EC729 /* menumbox.c in Sources */,
-				BA6D1668193D5CC1006EC729 /* soundmng.c in Sources */,
 				BA6D1629193D5CC1006EC729 /* debugsub.c in Sources */,
 				BA6D1669193D5CC1006EC729 /* sysmenu.c in Sources */,
 				BA6D1624193D5CC1006EC729 /* resize.c in Sources */,
