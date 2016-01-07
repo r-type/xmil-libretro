@@ -79,6 +79,9 @@ IExternalChip* CExternalChipManager::GetInterface(IExternalChip::ChipType nChipT
 			case IExternalChip::kAY8910:
 				pChip = GetInterface(IExternalChip::kYMF288, nClock * 2);
 				break;
+
+			default:
+				break;
 		}
 	}
 	return pChip;
@@ -94,16 +97,19 @@ IExternalChip* CExternalChipManager::GetInterfaceInner(IExternalChip::ChipType n
 {
 	IExternalChip* pChip = NULL;
 
-	if (pChip == NULL)
-	{
-		pChip = m_scci.GetInterface(nChipType, nClock);
-	}
+	/* G.I.M.I.C / C86BOX */
 	if (pChip == NULL)
 	{
 		pChip = m_c86ctl.GetInterface(nChipType, nClock);
 	}
 
-	// ラッピング
+	/* SPFM Light */
+	if (pChip == NULL)
+	{
+		pChip = m_scci.GetInterface(nChipType, nClock);
+	}
+
+	/* ラッピング */
 	if (pChip)
 	{
 		switch (nChipType)
@@ -126,6 +132,9 @@ IExternalChip* CExternalChipManager::GetInterfaceInner(IExternalChip::ChipType n
 
 			case IExternalChip::kYM2151:
 				pChip = new CExternalOpm(pChip);
+				break;
+
+			default:
 				break;
 		}
 	}

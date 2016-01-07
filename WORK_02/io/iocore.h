@@ -54,7 +54,7 @@ typedef struct {
 #include	"pcg.h"
 #include	"ppi.h"
 #include	"sio.h"
-#include	"sndboard.h"
+#include	<sndboard.h>
 #include	"subcpu.h"
 #include	"vramio.h"
 
