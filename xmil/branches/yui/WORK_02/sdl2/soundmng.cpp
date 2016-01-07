@@ -1,4 +1,5 @@
 #include	"compiler.h"
+#include <algorithm>
 #include	"parts.h"
 #include	"soundmng.h"
 #include	"sound.h"
@@ -24,7 +25,7 @@ static void sound_play_cb(void *userdata, BYTE *stream, int len) {
 	SINT16		*dst;
 const SINT32	*src;
 
-	length = min(len, (int)(soundmng.samples * 2 * sizeof(SINT16)));
+	length = (std::min)(len, (int)(soundmng.samples * 2 * sizeof(SINT16)));
 	dst = soundmng.buf[soundmng.nsndbuf];
 	src = sound_pcmlock();
 	if (src) {
