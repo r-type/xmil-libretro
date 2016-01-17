@@ -1,185 +1,323 @@
-/***
-	c86ctl
-	
-	Copyright (c) 2009-2012, honet. All rights reserved.
-	This software is licensed under the BSD license.
-
-	honet.kk(at)gmail.com
+/**
+ * @file	c86ctl.h
+ * @brief	Defines of C86CTL
  */
 
+#pragma once
 
-#ifndef _C86CTL_H
-#define _C86CTL_H
-
-#include <ObjBase.h>
-#include "cbus_boardtype.h"
-
-#ifdef __cplusplus
-namespace c86ctl{
-#endif
-
-/*----------------------------------------------------------------------------*/
-/*  定数定義                                                                  */
-/*----------------------------------------------------------------------------*/
-#define C86CTL_ERR_NONE						0
-#define C86CTL_ERR_UNKNOWN					-1
-#define C86CTL_ERR_INVALID_PARAM			-2
-#define C86CTL_ERR_UNSUPPORTED				-3
-#define C86CTL_ERR_NODEVICE					-1000
-#define C86CTL_ERR_NOT_IMPLEMENTED			-9999
-
-enum ChipType {
-	CHIP_UNKNOWN		= 0x0000,
-	
-	CHIP_OPNA			= 0x00001,
-	CHIP_YM2608			= 0x00001,
-	CHIP_YM2608NOADPCM	= 0x10001,
-	CHIP_OPM			= 0x00002,
-	CHIP_YM2151			= 0x00002,
-	CHIP_OPN3L			= 0x00003,
-	CHIP_YMF288			= 0x00003,
-	CHIP_OPL3			= 0x00004,
-	CHIP_YMF262			= 0x00004,
-	CHIP_OPLL			= 0x00005,
-	CHIP_YM2413			= 0x00005,
-	
-	CHIP_SN76489		= 0x00006,
-	CHIP_SN76496		= 0x10006,
-	CHIP_AY38910		= 0x00007,
-	CHIP_YM2149			= 0x10007,
-	CHIP_YM2203			= 0x00008,
-	CHIP_YM2612			= 0x00009,
-	CHIP_YM3526			= 0x0000a,
-	CHIP_YM3812			= 0x0000b,
-	CHIP_YMF271			= 0x0000c,
-	CHIP_YMF278B		= 0x0000d,
-	CHIP_YMZ280B		= 0x0000e,
-	CHIP_YMF297			= 0x0000f,
-	CHIP_YM2610B		= 0x00010,
-	CHIP_Y8950			= 0x00020,
-	CHIP_Y8950ADPCM 	= 0x10020,
-    CHIP_YM3438         = 0x00021
-};
-
-
-/*----------------------------------------------------------------------------*/
-/*  構造体定義                                                                */
-/*----------------------------------------------------------------------------*/
-struct Devinfo{
-	char Devname[16];
-	char Rev;
-	char Serial[15];
-};
-
-/*----------------------------------------------------------------------------*/
-/*  Interface定義                                                             */
-/*----------------------------------------------------------------------------*/
-// IRealChipBase {5C457918-E66D-4AC1-8CB5-B91C4704DF79}
-static const GUID IID_IRealChipBase = 
-{ 0x5c457918, 0xe66d, 0x4ac1, { 0x8c, 0xb5, 0xb9, 0x1c, 0x47, 0x4, 0xdf, 0x79 } };
-
-interface IRealChipBase : public IUnknown
+namespace c86ctl
 {
-	virtual int __stdcall initialize(void) = 0;
-	virtual int __stdcall deinitialize(void) = 0;
-	virtual int __stdcall getNumberOfChip(void) = 0;
-	virtual HRESULT __stdcall getChipInterface( int id, REFIID riid, void** ppi ) = 0;
+
+/**
+ * Status code
+ */
+enum C86CtlErr
+{
+	C86CTL_ERR_NONE				= 0,		/*!< Succeeded */
+	C86CTL_ERR_UNKNOWN			= -1,		/*!< Unknown */
+	C86CTL_ERR_INVALID_PARAM	= -2,		/*!< Invalid parameter */
+	C86CTL_ERR_UNSUPPORTED		= -3,		/*!< Unspported */
+	C86CTL_ERR_NODEVICE			= -1000,	/*!< No devices */
+	C86CTL_ERR_NOT_IMPLEMENTED	= -9999,	/*!< Not implemented */
 };
 
-// ---------------------------------------
-// DEPRECATED. use IRealChip3 instead.
-// IRealChip {F959C007-6B4D-46F3-BB60-9B0897C7E642}
-static const GUID IID_IRealChip = 
-{ 0xf959c007, 0x6b4d, 0x46f3, { 0xbb, 0x60, 0x9b, 0x8, 0x97, 0xc7, 0xe6, 0x42 } };
-interface IRealChip : public IUnknown
+/**
+ * Chip type
+ */
+enum ChipType
+{
+	CHIP_UNKNOWN		= 0,		/*!< Unknown */
+	CHIP_OPNA			= 0x0001,	/*!< OPNA */
+	CHIP_OPM			= 0x0002,	/*!< OPM */
+	CHIP_OPN3L			= 0x0003,	/*!< OPN3L */
+	CHIP_OPL3			= 0x0004,	/*!< OPL3 */
+	CHIP_OPLL			= 0x0005,	/*!< OPLL */
+	CHIP_SN76489		= 0x0006,
+	CHIP_AY38910		= 0x0007,
+	CHIP_YM2203			= 0x0008,
+	CHIP_YM2612			= 0x0009,
+	CHIP_YM3526			= 0x000a,
+	CHIP_YM3812			= 0x000b,
+	CHIP_YMF271			= 0x000c,
+	CHIP_YMF278B		= 0x000d,
+	CHIP_YMZ280B		= 0x000e,
+	CHIP_YMF297			= 0x000f,
+	CHIP_YM2610B		= 0x0010,
+	CHIP_Y8950			= 0x0020,
+	CHIP_YM3438			= 0x0021,
+
+	CHIP_YM2608NOADPCM	= 0x10000 | CHIP_OPNA,
+	CHIP_SN76496		= 0x10000 | CHIP_SN76489,
+	CHIP_YM2149			= 0x10000 | CHIP_AY38910,
+	CHIP_Y8950ADPCM 	= 0x10020 | CHIP_Y8950
+};
+
+/**
+ * The type of CBUS boards
+ */
+enum CBUS_BOARD_TYPE
+{
+	CBUS_BOARD_UNKNOWN					= 0,			/*!< Unknown */
+	CBUS_BOARD_14						= 0x0001,		/*!< NEC PC-9801-14 */
+	CBUS_BOARD_AMD98					= 0x0011,		/*!< SYSTEM SACOM AMD-98 */
+	CBUS_BOARD_26						= 0x0002,		/*!< NEC PC-9801-26, 26K */
+	CBUS_BOARD_SOUND_ORCHESTRA			= 0x0012,		/*!< SNE Sound Orchestra */
+	CBUS_BOARD_SOUND_ORCHESTRA_L		= 0x0022,		/*!< SNE Sound Orchestra L */
+	CBUS_BOARD_SOUND_ORCHESTRA_V		= 0x0032,		/*!< SNE Sound Orchestra V */
+	CBUS_BOARD_SOUND_ORCHESTRA_VS		= 0x0042,		/*!< SNE Sound Orchestra VS */
+	CBUS_BOARD_SOUND_ORCHESTRA_LS		= 0x0052,		/*!< SNE Sound Orchestra LS */
+	CBUS_BOARD_SOUND_ORCHESTRA_MATE		= 0x0062,		/*!< SNE Sound Orchestra MATE */
+	CBUS_BOARD_MULTIMEDIA_ORCHESTRA		= 0x0072,		/*!< SNE Multimedia Orchestra */
+	CBUS_BOARD_LITTLE_ORCHESTRA			= 0x0082,		/*!< SNE Litte Orchestra */
+	CBUS_BOARD_LITTLE_ORCHESTRA_L		= 0x0092,		/*!< SNE Litte Orchestra L */
+	CBUS_BOARD_LITTLE_ORCHESTRA_RS		= 0x00a2,		/*!< SNE Litte Orchestra RS */
+	CBUS_BOARD_LITTLE_ORCHESTRA_LS		= 0x00b2,		/*!< SNE Litte Orchestra LS */
+	CBUS_BOARD_LITTLE_ORCHESTRA_SS		= 0x00c2,		/*!< SNE Litte Orchestra SS */
+	CBUS_BOARD_LITTLE_ORCHESTRA_MATE	= 0x00d2,		/*!< SNE Litte Orchestra MATE */
+	CBUS_BOARD_LITTLE_ORCHESTRA_FELLOW	= 0x00e2,		/*!< SNE Litte Orchestra FELLOW */
+	CBUS_BOARD_JOY2						= 0x00f2,		/*!< SNE JOY-2 */
+	CBUS_BOARD_SOUND_GRANPRI			= 0x0102,		/*!< SNE SOUND GRANPRI */
+	CBUS_BOARD_TN_F3FM					= 0x0112,		/*!< TOKYO NEEDS TN-F3FM */
+	CBUS_BOARD_73						= 0x0003,		/*!< NEC PC-9801-73 */
+	CBUS_BOARD_86						= 0x0023,		/*!< NEC PC-9801-86 */
+	CBUS_BOARD_ASB01					= 0x0043,		/*!< SIS Amusement Sound Board ASB-01 */
+	CBUS_BOARD_SPEAKBOARD				= 0x0053,		/*!< IDOL JAPAN SpeakBoard */
+	CBUS_BOARD_SOUNDPLAYER98			= 0x0063,		/*!< SPB-98 */
+	CBUS_BOARD_SECONDBUS86				= 0x0073,		/*!< second-bus86 */
+	CBUS_BOARD_SOUNDEDGE				= 0x0083,		/*!< sound-edge */
+	CBUS_BOARD_WINDUO					= 0x0093,		/*!< win-duo */
+	CBUS_BOARD_OTOMI					= 0x00a3,		/*!< MAD FACTORY OTOMI */
+	CBUS_BOARD_WAVEMASTER				= 0x00b3,		/*!< Q-Vision WaveMaster */
+	CBUS_BOARD_WAVESMIT					= 0x00c3,		/*!< Q-Vision WaveSMIT */
+	CBUS_BOARD_WAVESTAR					= 0x00d3,		/*!< Q-Vision WaveStar */
+	CBUS_BOARD_WSN_A4F					= 0x00e3,		/*!< Buffalo WSN-A4F/A2F */
+	CBUS_BOARD_SXM_F					= 0x00f3,		/*!< SXM-F */
+	CBUS_BOARD_SRN_F					= 0x0103,		/*!< SRN-F */
+	CBUS_BOARD_SB16						= 0x0004,		/*!< sound-blaster 16 (CT2720) */
+	CBUS_BOARD_SB16_2203				= 0x0014,		/*!< sound-blaster 16 with YM2203 (CT2720) */
+	CBUS_BOARD_SB16VALUE				= 0x0024,		/*!< sound-blaster 16Value (CT3720) */
+	CBUS_BOARD_POWERWINDOW_T64S			= 0x0034,		/*!< canopus PowerWindow T64S */
+	CBUS_BOARD_PCSB2					= 0x0044,		/*!< EPSON PCSB2 */
+	CBUS_BOARD_WGS98S					= 0x0054,		/*!< COM.TECH WGS-98S */
+	CBUS_BOARD_SRB_G					= 0x0064,		/*!< buffalo SRB-G */
+	CBUS_BOARD_MIDI_ORCHESTRA_MIDI3		= 0x0074,		/*!< SNE MIDI ORCHESTRA MIDI-3 */
+	CBUS_BOARD_SB_AWE32					= 0x0005,		/*!< SoundBlaster AWE32 (CT3610) */
+	CBUS_BOARD_118						= 0x0006		/*!< NEC PC-9801-118 */
+};
+
+/**
+ * @brief Device information structure
+ */
+struct Devinfo
+{
+	char Devname[16];		/*!< Device name */
+	char Rev;				/*!< Revision */
+	char Serial[15];		/*!< Serial */
+};
+
+/**
+ * The interface ID
+ */
+enum IID
+{
+	IID_IRealChipBase	= 0,
+	IID_IRealChip,
+	IID_IRealChip2,
+	IID_IRealChip3,
+	IID_IGimic,
+	IID_IGimic2,
+	IID_IC86Usb
+};
+
+/**
+ * @brief The class of IUnknown
+ */
+class IRealUnknown
 {
 public:
-	virtual int __stdcall reset(void) = 0;
-	virtual void __stdcall out( UINT addr, UCHAR data ) = 0;
-	virtual UCHAR __stdcall in( UINT addr ) = 0;
+	/**
+	 * Increments the reference count
+	 * @return The new reference count
+	 */
+	virtual size_t AddRef() = 0;
+
+	/**
+	 * Decrements the reference count
+	 * @return The new reference count
+	 */
+	virtual size_t Release() = 0;
 };
 
-// DEPRECATED. use IRealChip3 instead.
-// IRealChip2 {BEFA830A-0DF3-46E4-A79E-FABB78E80357}
-static const GUID IID_IRealChip2 = 
-{ 0xbefa830a, 0xdf3, 0x46e4, { 0xa7, 0x9e, 0xfa, 0xbb, 0x78, 0xe8, 0x3, 0x57 } };
-
-interface IRealChip2 : public IRealChip
+/**
+ * @brief The class of IRealChipBase
+ */
+class IRealChipBase : public IRealUnknown
 {
-	virtual int __stdcall getChipStatus( UINT addr, UCHAR *status ) = 0;
-	virtual void __stdcall directOut(UINT addr, UCHAR data) = 0;
+public:
+	/**
+	 * Initialize
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr initialize() = 0;
+
+	/**
+	 * Deinitialize
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr deinitialize() = 0;
+
+	/**
+	 * Gets the count of chips
+	 * @return The chips
+	 */
+	virtual size_t getNumberOfChip() = 0;
+
+	/**
+	 * Gets interfaces
+	 * @param[in] id ID
+	 * @param[in] riid The interface ID
+	 * @param[out] ppi The pointer of the interface
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getChipInterface(size_t id, IID riid, void** ppi) = 0;
 };
 
-// IRealChip3 {761DB10B-2432-4747-AC75-0EA6D9336797}
-static const GUID IID_IRealChip3 = 
-{ 0x761db10b, 0x2432, 0x4747, { 0xac, 0x75, 0xe, 0xa6, 0xd9, 0x33, 0x67, 0x97 } };
-
-interface IRealChip3 : public IRealChip2
+/**
+ * @brief The class of IRealChip
+ */
+class IRealChip : public IRealUnknown
 {
-	virtual int __stdcall getChipType( enum ChipType *type ) = 0;
+public:
+	/**
+	 * Reset
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr reset() = 0;
+
+	/**
+	 * Output
+	 * @param[in] nAddr The address
+	 * @param[in] cData The data
+	 */
+	virtual void out(UINT nAddr, UINT8 cData) = 0;
+
+	/**
+	 * Input
+	 * @param[in] nAddr The address of registers
+	 * @return The data
+	 */
+	virtual UINT8 in(UINT nAddr) = 0;
 };
 
-
-// ---------------------------------------
-// DEPRECATED. use IGimic2 instead.
-// IGimic {175C7DA0-8AA5-4173-96DA-BB43B8EB8F17}
-static const GUID IID_IGimic = 
-{ 0x175c7da0, 0x8aa5, 0x4173, { 0x96, 0xda, 0xbb, 0x43, 0xb8, 0xeb, 0x8f, 0x17 } };
-interface IGimic : public IUnknown
+/**
+ * @brief The class of IRealChip2
+ */
+class IRealChip2 : public IRealChip
 {
-	virtual int __stdcall getFWVer( UINT *major, UINT *minor, UINT *revision, UINT *build ) = 0;
-	virtual int __stdcall getMBInfo( struct Devinfo *info ) = 0;
-	virtual int __stdcall getModuleInfo( struct Devinfo *info ) = 0;
-	virtual int __stdcall setSSGVolume(UCHAR vol) = 0;
-	virtual int __stdcall getSSGVolume(UCHAR *vol) = 0;
-	virtual int __stdcall setPLLClock(UINT clock) = 0;
-	virtual int __stdcall getPLLClock(UINT *clock) = 0;
+public:
+	/**
+	 * Gets the current status
+	 * @param[in] nAddr The address
+	 * @param[out] pcStatus The status
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getChipStatus(UINT nAddr, UINT8* pcStatus) = 0;
+
+	/**
+	 * Output
+	 * @param[in] nAddr The address
+	 * @param[in] cData The data
+	 */
+	virtual void directOut(UINT nAddr, UINT8 cData) = 0;
 };
 
-// IGimic2 {47141A01-15F5-4BF5-9554-CA7AACD54BB8}
-static const GUID IID_IGimic2 = 
-{ 0x47141a01, 0x15f5, 0x4bf5, { 0x95, 0x54, 0xca, 0x7a, 0xac, 0xd5, 0x4b, 0xb8 } };
-interface IGimic2 : public IGimic
+/**
+ * @brief The class of IRealChip3
+ */
+class IRealChip3 : public IRealChip2
 {
-	virtual int __stdcall getModuleType( enum ChipType *type ) = 0;
+public:
+	/**
+	 * Gets the type of the chip
+	 * @param[out] pnType A pointer of type
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getChipType(ChipType* pnType) = 0;
 };
 
-
-// ---------------------------------------
-// 仮定義です。まだ使えません・・・ごめん。
-// IC86Usb {312481E2-A93C-4A2F-87CA-CE3AC1096ED5}
-static const GUID IID_IC86BOX = 
-{ 0x312481e2, 0xa93c, 0x4a2f, { 0x87, 0xca, 0xce, 0x3a, 0xc1, 0x9, 0x6e, 0xd5 } };
-interface IC86Box : public IUnknown
+/**
+ * @brief The class of IGimic
+ */
+class IGimic : public IRealUnknown
 {
-	virtual int __stdcall getFWVer(UINT *major, UINT *minor, UINT *revision, UINT *build) = 0;
-	virtual int __stdcall getBoardType(CBUS_BOARD_TYPE *type) = 0;
-	virtual int __stdcall getSlotIndex() = 0;
-	virtual int __stdcall writeBoardControl(UINT index, UINT val) = 0;
+public:
+	/**
+	 * Gets the informations of firm
+	 * @param[out] pnMajor A pointer to the major
+	 * @param[out] pnMinor A pointer to the minor
+	 * @param[out] pnRev A pointer to the revision
+	 * @param[out] pnBuild A pointer to the number of build
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getFWVer(UINT* pnMajor, UINT* pnMinor, UINT* pnRev, UINT* pnBuild) = 0;
+
+	/**
+	 * Gets the informations of the mother
+	 * @param[out] pInfo A pointer to the informations
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getMBInfo(Devinfo* pInfo) = 0;
+
+	/**
+	 * Gets the informations of modules
+	 * @param[out] pInfo A pointer to the informations
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getModuleInfo(Devinfo* pInfo) = 0;
+
+	/**
+	 * Sets the volumes of SSG
+	 * @param[in] cVolume The volume
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr setSSGVolume(UINT8 cVolume) = 0;
+
+	/**
+	 * Gets the volume of SSG
+	 * @param[out] pcVolume A pointer of the volume
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getSSGVolume(UINT8* pcVolume) = 0;
+
+	/**
+	 * Sets the clock
+	 * @param[in] nClock The clock
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr setPLLClock(UINT nClock) = 0;
+
+	/**
+	 * Gets the clock
+	 * @param[out] pnClock A pointer to the clock
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getPLLClock(UINT* pnClock) = 0;
 };
 
-
-/*----------------------------------------------------------------------------*/
-/*  公開関数定義                                                              */
-/*----------------------------------------------------------------------------*/
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-HRESULT WINAPI CreateInstance( REFIID riid, void** ppi );
-
-
-int WINAPI c86ctl_initialize(void);					// DEPRECATED
-int WINAPI c86ctl_deinitialize(void);				// DEPRECATED
-int WINAPI c86ctl_reset(void);						// DEPRECATED
-void WINAPI c86ctl_out( UINT addr, UCHAR data );	// DEPRECATED
-UCHAR WINAPI c86ctl_in( UINT addr );				// DEPRECATED
-
-
-
-#ifdef __cplusplus
+/**
+ * @brief The class of IGimic2
+ */
+class IGimic2 : public IGimic
+{
+public:
+	/**
+	 * Gets the type of the modules
+	 * @param[out] pnType The type
+	 * @return C86CTL_ERR
+	 */
+	virtual C86CtlErr getModuleType(ChipType* pnType) = 0;
 };
-};
-#endif
 
-#endif
+C86CtlErr CreateInstance(IID riid, void** ppi);
+
+}

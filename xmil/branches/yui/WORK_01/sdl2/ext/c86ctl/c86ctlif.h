@@ -10,9 +10,9 @@
 
 namespace c86ctl
 {
-	interface IRealChipBase;
-	interface IGimic;
-	interface IRealChip;
+	class IRealChipBase;
+	class IGimic;
+	class IRealChip;
 }
 
 /**
@@ -29,7 +29,6 @@ public:
 	IExternalChip* GetInterface(IExternalChip::ChipType nChipType, UINT nClock);
 
 private:
-	HMODULE m_hModule;					/*!< モジュール ハンドル */
 	c86ctl::IRealChipBase* m_pChipBase;	/*!< チップ ベース インスタンス */
 
 	/**

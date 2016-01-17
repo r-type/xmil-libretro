@@ -1,10 +1,18 @@
-//----------------------------------------------------------------------
-//	SCCI Sound Interfaces defines
-//----------------------------------------------------------------------
+/**
+ * @file	SCCIDefines.h
+ * @brief	SCCI Sound Interfaces defines
+ */
+
 #pragma once
 
-// Sound chip list
-enum SC_CHIP_TYPE {
+namespace scci
+{
+
+/**
+ * Sound chip list
+ */
+enum SC_CHIP_TYPE
+{
 	SC_TYPE_NONE	= 0,
 	SC_TYPE_YM2608,
 	SC_TYPE_YM2151,
@@ -24,29 +32,34 @@ enum SC_CHIP_TYPE {
 	SC_TYPE_MAX
 };
 
-// Sound chip clock list
-enum SC_CHIP_CLOCK {
-	SC_CLOCK_1789773 = 1789773,	// SSG,OPN,OPM,SN76489 etc
-	SC_CLOCK_2000000 = 2000000,	// SSG,OPN,OPM,SN76489 etc
-	SC_CLOCK_3579545 = 3579545,	// SSG,OPN,OPM,SN76489 etc
-	SC_CLOCK_3993600 = 3993600, // OPN(88)
-	SC_CLOCK_4000000 = 4000000,	// SSF,OPN,OPM etc
-	SC_CLOCK_7670454 = 7670454,	// YM-2612 etc
-	SC_CLOCK_7987200 = 7987200,	// OPNA(88)
-	SC_CLOCK_8000000 = 8000000,	// OPNB etc
-	SC_CLOCK_12500000 = 12500000, // RF5C164
-	SC_CLOCK_14318180 = 14318180, // OPL2
-	SC_CLOCK_16934400 = 16934400, // YMF271
-	SC_CLOCK_23011361 = 23011361, // PWM
+/**
+ * Sound chip clock list
+ */
+enum SC_CHIP_CLOCK
+{
+	SC_CLOCK_1789773 = 1789773,		//!< SSG,OPN,OPM,SN76489 etc
+	SC_CLOCK_2000000 = 2000000,		//!< SSG,OPN,OPM,SN76489 etc
+	SC_CLOCK_3579545 = 3579545,		//!< SSG,OPN,OPM,SN76489 etc
+	SC_CLOCK_3993600 = 3993600, 	//!< OPN(88)
+	SC_CLOCK_4000000 = 4000000,		//!< SSF,OPN,OPM etc
+	SC_CLOCK_7670454 = 7670454,		//!< YM-2612 etc
+	SC_CLOCK_7987200 = 7987200,		//!< OPNA(88)
+	SC_CLOCK_8000000 = 8000000,		//!< OPNB etc
+	SC_CLOCK_12500000 = 12500000,	//!< RF5C164
+	SC_CLOCK_14318180 = 14318180,	//!< OPL2
+	SC_CLOCK_16934400 = 16934400,	//!< YMF271
+	SC_CLOCK_23011361 = 23011361,	//!< PWM
 };
 
-// Sound chip location
-enum SC_CHIP_LOCATION {
+/**
+ * Sound chip location
+ */
+enum SC_CHIP_LOCATION
+{
 	SC_LOCATION_MONO	= 0,
 	SC_LOCATION_LEFT	= 1,
 	SC_LOCATION_RIGHT	= 2,
 	SC_LOCATION_STEREO	= 3
 };
 
-#define	SC_WAIT_REG		(0xffffffff)
-#define SC_FLUSH_REG	(0xfffffffe)
+}	// namespace scci
