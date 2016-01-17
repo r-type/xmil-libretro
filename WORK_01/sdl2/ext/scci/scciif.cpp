@@ -6,14 +6,14 @@
 #include "compiler.h"
 #include "scciif.h"
 #include "scci.h"
-#include "SCCIDefines.h"
+
+using namespace scci;
 
 /**
  * コンストラクタ
  */
 CScciIf::CScciIf()
-	: m_hModule(NULL)
-	, m_pManager(NULL)
+	: m_pManager(NULL)
 {
 }
 
@@ -32,28 +32,15 @@ CScciIf::~CScciIf()
  */
 bool CScciIf::Initialize()
 {
-	if (m_hModule)
+	if (m_pManager)
 	{
 		return false;
 	}
 
 	do
 	{
-		m_hModule = ::LoadLibrary(TEXT("SCCI.DLL"));
-		if (m_hModule == NULL)
-		{
-			break;
-		}
-
-		/* サウンドインターフェースマネージャー取得用関数アドレス取得 */
-		SCCIFUNC fnGetSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(::GetProcAddress(m_hModule, "getSoundInterfaceManager"));
-		if (fnGetSoundInterfaceManager == NULL)
-		{
-			break;
-		}
-
 		/* サウンドインターフェースマネージャー取得 */
-		m_pManager = (*fnGetSoundInterfaceManager)();
+		m_pManager = GetSoundInterfaceManager();
 		if (m_pManager == NULL)
 		{
 			break;
@@ -90,12 +77,6 @@ void CScciIf::Deinitialize()
 		m_pManager->releaseInstance();
 
 		m_pManager = NULL;
-	}
-
-	if (m_hModule)
-	{
-		::FreeLibrary(m_hModule);
-		m_hModule = NULL;
 	}
 }
 

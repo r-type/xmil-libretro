@@ -43,7 +43,6 @@ void CExternalChipManager::Deinitialize()
 	}
 
 	m_c86ctl.Deinitialize();
-	m_juliet.Deinitialize();
 	m_scci.Deinitialize();
 }
 
@@ -101,22 +100,16 @@ IExternalChip* CExternalChipManager::GetInterfaceInner(IExternalChip::ChipType n
 {
 	IExternalChip* pChip = NULL;
 
-	/* ROMEO */
-	if (pChip == NULL)
-	{
-		pChip = m_juliet.GetInterface(nChipType, nClock);
-	}
-
-	/* SCCI */
-	if (pChip == NULL)
-	{
-		pChip = m_scci.GetInterface(nChipType, nClock);
-	}
-
 	/* G.I.M.I.C / C86BOX */
 	if (pChip == NULL)
 	{
 		pChip = m_c86ctl.GetInterface(nChipType, nClock);
+	}
+
+	/* SPFM Light */
+	if (pChip == NULL)
+	{
+		pChip = m_scci.GetInterface(nChipType, nClock);
 	}
 
 	/* ƒ‰ƒbƒsƒ“ƒO */

@@ -7,8 +7,11 @@
 
 #include "../externalchip.h"
 
-class SoundChip;
-class SoundInterfaceManager;
+namespace scci
+{
+	class SoundChip;
+	class SoundInterfaceManager;
+}
 
 /**
  * @brief SCCI アクセス クラス
@@ -24,8 +27,7 @@ public:
 	IExternalChip* GetInterface(IExternalChip::ChipType nChipType, UINT nClock);
 
 private:
-	HMODULE m_hModule;					/*!< モジュール */
-	SoundInterfaceManager* m_pManager;	/*!< マネージャ */
+	scci::SoundInterfaceManager* m_pManager;	/*!< マネージャ */
 
 	/**
 	 * @brief チップ クラス
@@ -33,17 +35,17 @@ private:
 	class Chip : public IExternalChip
 	{
 	public:
-		Chip(CScciIf* pScciIf, SoundChip* pSoundChip);
+		Chip(CScciIf* pScciIf, scci::SoundChip* pSoundChip);
 		virtual ~Chip();
-		operator SoundChip*();
+		operator scci::SoundChip*();
 		virtual ChipType GetChipType();
 		virtual void Reset();
 		virtual void WriteRegister(UINT nAddr, UINT8 cData);
 		virtual INTPTR Message(UINT nMessage, INTPTR nParameter = 0);
 
 	private:
-		CScciIf* m_pScciIf;			/*!< 親インスタンス */
-		SoundChip* m_pSoundChip;	/*!< チップ インスタンス */
+		CScciIf* m_pScciIf;				/*!< 親インスタンス */
+		scci::SoundChip* m_pSoundChip;	/*!< チップ インスタンス */
 	};
 
 	void Detach(Chip* pChip);

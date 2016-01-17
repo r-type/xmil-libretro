@@ -1,118 +1,231 @@
-//----------------------------------------------------------------------
-//	Sound Chip common Interface
-//----------------------------------------------------------------------
+/**
+ * @file	scci.h
+ * @brief	Sound Chip common Interface
+ */
+
 #pragma once
-#include	<Windows.h>
 
-// Sound Interface Infomation
-typedef struct {
-	char	cInterfaceName[64];			// Interface Name
-	int		iSoundChipCount;			// Sound Chip Count;
-} SCCI_INTERFACE_INFO;
+#include "SCCIDefines.h"
 
-// Sound Chip Infomation
-typedef struct {
-	char	cSoundChipName[64];			// Sound Chip Name
-	int		iSoundChip;					// Sound Chip ID
-	int		iCompatibleSoundChip[2];	// Compatible Sound Chip ID
-	DWORD	dColock;					// Sound Chip clock
-	DWORD	dCompatibleColock[2];		// Sound Chip clock
-	BOOL	bIsUsed;					// Sound Chip Used Check
-	DWORD	dBusID;						// 接続バスID
-	DWORD	dSoundLocation;				// サウンドロケーション
-} SCCI_SOUND_CHIP_INFO;
+namespace scci
+{
 
-class	SoundInterfaceManager;
-class	SoundInterface;
-class	SoundChip;
+class SoundChip;
 
-//----------------------------------------
-// Sound Interface Manager
-//----------------------------------------
-class	SoundInterfaceManager{
-public:
-	// ---------- LOW LEVEL APIs ----------
-	// get interface count
-	virtual int __stdcall getInterfaceCount() = 0;
-	// get interface information 
-	virtual SCCI_INTERFACE_INFO* __stdcall getInterfaceInfo(int iInterfaceNo) = 0;
-	// get interface instance
-	virtual SoundInterface* __stdcall getInterface(int iInterfaceNo) = 0;
-	// release interface instance
-	virtual BOOL __stdcall releaseInterface(SoundInterface* pSoundInterface) = 0;
-	// release all interface instance
-	virtual BOOL __stdcall releaseAllInterface() = 0;
-	// ---------- HI LEVEL APIs ----------
-	// get sound chip instance
-	virtual SoundChip* __stdcall getSoundChip(int iSoundChipType,DWORD dClock) = 0;
-	// release sound chip instance
-	virtual BOOL __stdcall releaseSoundChip(SoundChip* pSoundChip) = 0;
-	// release all sound chip instance
-	virtual BOOL __stdcall releaseAllSoundChip() = 0;
-	// set delay time
-	virtual BOOL __stdcall setDelay(DWORD dMSec) = 0;
-	// get delay time
-	virtual DWORD __stdcall getDelay() = 0;
-	// reset interfaces(A sound chips initialize after interface reset)
-	virtual BOOL __stdcall reset() = 0;
-	// initialize sound chips
-	virtual BOOL __stdcall init() = 0;
-	// Sound Interface instance initialize
-	virtual	BOOL __stdcall initializeInstance() = 0;
-	// Sound Interface instance release
-	virtual BOOL __stdcall releaseInstance() = 0;
-	// config scci
-	virtual BOOL __stdcall config() = 0;
-	// get version info
-	virtual DWORD __stdcall getVersion(DWORD *pMVersion = NULL) = 0;
-	// get Level mater disp valid
-	virtual BOOL __stdcall isValidLevelDisp() = 0;
-	// get Level mater disp visible
-	virtual BOOL __stdcall isLevelDisp() = 0;
-	// set Level mater disp visible
-	virtual void __stdcall setLevelDisp(BOOL bDisp) = 0;
+/**
+ * @brief Sound Interface Infomation
+ */
+struct SCCI_INTERFACE_INFO
+{
+	OEMCHAR cInterfaceName[64];				/*!< Interface Name */
+	size_t iSoundChipCount;					/*!< Sound Chip Count */
 };
 
-//----------------------------------------
-// Sound Interface(LOW level APIs)
-//----------------------------------------
-class	SoundInterface{
-public:
-	// support low level API check
-	virtual BOOL __stdcall isSupportLowLevelApi() = 0;
-	// send data to interface
-	virtual BOOL __stdcall setData(BYTE *pData,DWORD dSendDataLen) = 0;
-	// get data from interface
-	virtual DWORD __stdcall getData(BYTE *pData,DWORD dGetDataLen) = 0;
-	// set delay time
-	virtual	BOOL __stdcall setDelay(DWORD dDelay) = 0;
-	// get delay time
-	virtual DWORD __stdcall getDelay() = 0;
-	// reset interface
-	virtual BOOL __stdcall reset() = 0;
-	// initialize sound chips
-	virtual BOOL __stdcall init() = 0;
+/**
+ * @brief Sound Chip Infomation
+ */
+struct SCCI_SOUND_CHIP_INFO
+{
+	OEMCHAR cSoundChipName[64];				/*!< Sound Chip Name */
+	SC_CHIP_TYPE iSoundChip;				/*!< Sound Chip ID */
+	SC_CHIP_TYPE iCompatibleSoundChip[2];	/*!< Compatible Sound Chip ID */
+	UINT dClock;							/*!< Sound Chip clock */
+	UINT dCompatibleClock[2];				/*!< Sound Chip clock */
+	bool bIsUsed;							/*!< Sound Chip Used Check */
+	UINT dBusID;							/*!< 接続バスID */
+	SC_CHIP_LOCATION dSoundLocation;		/*!< サウンドロケーション */
 };
 
-//----------------------------------------
-// Sound Chip
-//----------------------------------------
-class	SoundChip{
+class SoundInterface;
+
+/**
+ * @brief Sound Interface Manager
+ */
+class SoundInterfaceManager
+{
 public:
-	// get sound chip information
-	virtual SCCI_SOUND_CHIP_INFO* __stdcall getSoundChipInfo() = 0;
-	// get sound chip type
-	virtual int __stdcall getSoundChipType() = 0;
-	// set Register data
-	virtual BOOL __stdcall setRegister(DWORD dAddr,DWORD dData) = 0;
-	// get Register data(It may not be supported)
-	virtual DWORD __stdcall getRegister(DWORD dAddr) = 0;
-	// initialize sound chip(clear registers)
-	virtual BOOL __stdcall init() = 0;
+	/**
+	 * Gets the count of interfaces
+	 * @return The count of interfaces
+	 */
+	virtual size_t getInterfaceCount() = 0;
+
+	/**
+	 * Gets the information of the interface
+	 * @param[in] iInterfaceNo The index of interfaces
+	 * @return The information
+	 */
+	virtual const SCCI_INTERFACE_INFO* getInterfaceInfo(size_t iInterfaceNo) = 0;
+
+	/**
+	 * Gets interface instance
+	 * @param[in] iInterfaceNo The index of interfaces
+	 * @return The instance
+	 */
+	virtual SoundInterface* getInterface(size_t iInterfaceNo) = 0;
+
+	/**
+	 * Releases interface instance
+	 * @param[in] pSoundInterface The instance of the interface
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool releaseInterface(SoundInterface* pSoundInterface) = 0;
+
+	/**
+	 * Release all interface instance
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool releaseAllInterface() = 0;
+
+	/**
+	 * Gets instance of the sound chip
+	 * @param[in] iSoundChipType The type of the chip
+	 * @param[in] dClock The clock of the chip
+	 * @return The interface
+	 */
+	virtual SoundChip* getSoundChip(SC_CHIP_TYPE iSoundChipType, UINT dClock) = 0;
+
+	/**
+	 * Releases the instance of the sound chip
+	 * @param[in] pSoundChip The instance of the sound chip
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool releaseSoundChip(SoundChip* pSoundChip) = 0;
+
+	/**
+	 * Releases all instances of the sound chip
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool releaseAllSoundChip() = 0;
+
+	/**
+	 * Sets delay time
+	 * @param[in] dMSec delay time
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool setDelay(UINT dMSec) = 0;
+
+	/**
+	 * Gets delay time
+	 * @return delay time
+	 */
+	virtual UINT getDelay() = 0;
+
+	/**
+	 * Resets all interfaces
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool reset() = 0;
+
+	/**
+	 * Sound Interface instance initialize
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool initializeInstance() = 0;
+
+	/**
+	 * Sound Interface instance release
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool releaseInstance() = 0;
 };
 
-//----------------------------------------
-// get sound interface manager function
-//----------------------------------------
-typedef SoundInterfaceManager* (__stdcall *SCCIFUNC)(void);
+/**
+ * @brief Sound Interface(LOW level APIs)
+ */
+class SoundInterface
+{
+public:
+	/**
+	 * Is supported low level API
+	 * @retval true yes
+	 * @retval false no
+	 */
+	virtual bool isSupportLowLevelApi() = 0;
 
+	/**
+	 * Sends data to the interface
+	 * @param[in] pData The buffer of data
+	 * @param[in] dSendDataLen The length of data
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool setData(const unsigned char* pData, size_t dSendDataLen) = 0;
+
+	/**
+	 * Gets data from the interface
+	 * @param[out] pData The buffer of data
+	 * @param[in] dGetDataLen The length of data
+	 * @return The size of read
+	 */
+	virtual size_t getData(unsigned char* pData, size_t dGetDataLen) = 0;
+
+	/**
+	 * Sets delay time
+	 * @param[in] dDelay delay time
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool setDelay(UINT dDelay) = 0;
+
+	/**
+	 * Gets delay time
+	 * @return delay time
+	 */
+	virtual UINT getDelay() = 0;
+
+	/**
+	 * Resets the interface
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool reset() = 0;
+};
+
+/**
+ * @brief Sound Chip
+ */
+class SoundChip
+{
+public:
+	/**
+	 * Gets the informations of the sound chip
+	 * @return The pointer of informations
+	 */
+	virtual const SCCI_SOUND_CHIP_INFO* getSoundChipInfo() = 0;
+
+	/**
+	 * Gets sound chip type
+	 * @return The type of the chip
+	 */
+	virtual SC_CHIP_TYPE getSoundChipType() = 0;
+
+	/**
+	 * Sets Register data
+	 * Writes the register
+	 * @param[in] dAddr The address of register
+	 * @param[in] dData The data
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool setRegister(UINT dAddr, UINT dData) = 0;
+
+	/**
+	 * Initializes sound chip(clear registers)
+	 * @retval true If succeeded
+	 * @retval false If failed
+	 */
+	virtual bool init() = 0;
+};
+
+SoundInterfaceManager* GetSoundInterfaceManager();
+
+}	// namespace scci
