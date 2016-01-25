@@ -60,14 +60,12 @@ typedef signed char BOOL;
 #define	MAX_PATH	256
 #endif
 
-#ifndef __cplusplus
 #ifndef	max
 #define	max(a,b)	(((a) > (b)) ? (a) : (b))
 #endif
 #ifndef	min
 #define	min(a,b)	(((a) < (b)) ? (a) : (b))
 #endif
-#endif	/* __cplusplus */
 
 #ifndef	ZeroMemory
 #define	ZeroMemory(d,n)		memset((d), 0, (n))
@@ -104,6 +102,3 @@ typedef signed char BOOL;
 #define SUPPORT_EXTERNALCHIP
 
 #define	SCREEN_BPP		16
-
-//! countof macro
-#define _countof(a)		(sizeof(a) / sizeof((a)[0]))
