@@ -54,6 +54,8 @@ typedef struct {
 	int					menusize;
 	RECT				scrn;
 	RECT				rect;
+	RECT				scrnclip;
+	RECT				rectclip;
 	PALETTEENTRY		pal[256];
 } DDRAW;
 
@@ -61,7 +63,7 @@ typedef struct {
 	int		width;
 	int		height;
 //	int		extend;
-//	int		multiple;
+	int		multiple;
 } SCRNSTAT;
 
 static	DDRAW		ddraw;
@@ -143,13 +145,70 @@ static void renewalclientsize(BOOL winloc) {
 	if (ddraw.scrnmode & SCRNMODE_FULLSCREEN) {
 		ddraw.rect.right = width;
 		ddraw.rect.bottom = height;
-		ddraw.scrn.left = (ddraw.width - width) / 2;
-		ddraw.scrn.top = (ddraw.height - height) / 2;
-		ddraw.scrn.right = ddraw.scrn.left + width;
-		ddraw.scrn.bottom = ddraw.scrn.top + height;
+		scrnwidth = width;
+		scrnheight = height;
+		const UINT8 fscrnmod = xmiloscfg.fscrnmod & FSCRNMOD_ASPECTMASK;
+		switch (fscrnmod)
+		{
+			default:
+			case FSCRNMOD_NORESIZE:
+				break;
+
+			case FSCRNMOD_ASPECTFIX8:
+				scrnwidth = (ddraw.width << 3) / width;
+				scrnheight = (ddraw.height << 3) / height;
+				multiple = min(scrnwidth, scrnheight);
+				scrnwidth = (width * multiple) >> 3;
+				scrnheight = (height * multiple) >> 3;
+				break;
+
+			case FSCRNMOD_ASPECTFIX:
+				scrnwidth = ddraw.width;
+				scrnheight = (scrnwidth * height) / width;
+				if (scrnheight >= ddraw.height) {
+					scrnheight = ddraw.height;
+					scrnwidth = (scrnheight * width) / height;
+				}
+				break;
+
+			case FSCRNMOD_LARGE:
+				scrnwidth = ddraw.width;
+				scrnheight = ddraw.height;
+				break;
+		}
+		ddraw.scrn.left = (ddraw.width - scrnwidth) / 2;
+		ddraw.scrn.top = (ddraw.height - scrnheight) / 2;
+		ddraw.scrn.right = ddraw.scrn.left + scrnwidth;
+		ddraw.scrn.bottom = ddraw.scrn.top + scrnheight;
+
+		// ÉÅÉjÉÖÅ[ï\é¶éûÇÃï`âÊóÃàÊ
+		ddraw.rectclip = ddraw.rect;
+		ddraw.scrnclip = ddraw.scrn;
+		if (ddraw.scrnclip.top < ddraw.menusize) {
+			ddraw.scrnclip.top = ddraw.menusize;
+			int tmpcy = ddraw.height - ddraw.menusize;
+			if (scrnheight > tmpcy) {
+				switch(fscrnmod) {
+					default:
+					case FSCRNMOD_NORESIZE:
+						tmpcy = min(tmpcy, height);
+						ddraw.rectclip.bottom = tmpcy;
+						break;
+
+					case FSCRNMOD_ASPECTFIX8:
+					case FSCRNMOD_ASPECTFIX:
+						ddraw.rectclip.bottom = (tmpcy * height) / scrnheight;
+						break;
+
+					case FSCRNMOD_LARGE:
+						break;
+				}
+			}
+			ddraw.scrnclip.bottom = ddraw.menusize + tmpcy;
+		}
 	}
 	else {
-		multiple = 8;
+		multiple = scrnstat.multiple;
 		scrnwidth = (width * multiple) >> 3;
 		scrnheight = (height * multiple) >> 3;
 		ddraw.rect.right = width;
@@ -232,18 +291,21 @@ static void clearoutscreen(void) {
 static void clearoutfullscreen(void) {
 
 	RECT	base;
+const RECT	*scrn;
 
 	base.left = 0;
 	base.top = 0;
 	base.right = ddraw.width;
 	base.bottom = ddraw.height;
 	if (GetWindowLong(hWndMain, EXTGWL_HMENU)) {
+		scrn = &ddraw.scrn;
 		base.top = 0;
 	}
 	else {
+		scrn = &ddraw.scrnclip;
 		base.top = ddraw.menusize;
 	}
-	clearoutofrect(&ddraw.scrn, &base);
+	clearoutofrect(scrn, &base);
 #if defined(SUPPORT_DCLOCK)
 	DispClock::GetInstance()->Redraw();
 #endif	// defined(SUPPORT_DCLOCK)
@@ -325,7 +387,7 @@ void scrnmng_initialize(void) {
 	scrnstat.width = 640;
 	scrnstat.height = 400;
 //	scrnstat.extend = 1;
-//	scrnstat.multiple = 8;
+	scrnstat.multiple = 8;
 	setwindowsize(hWndMain, 640, 400);
 }
 
@@ -336,6 +398,7 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 	LPDIRECTDRAW2	ddraw2;
 	DDSURFACEDESC	ddsd;
 	DDPIXELFORMAT	ddpf;
+	int				width;
 	int				height;
 	UINT			bitcolor;
 
@@ -344,7 +407,7 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 	winstyleex = GetWindowLong(hWndMain, GWL_EXSTYLE);
 	if (scrnmode & SCRNMODE_FULLSCREEN) {
 		scrnmng.flag = SCRNFLAG_FULLSCREEN;
-		winstyle &= ~(WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU);
+		winstyle &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
 		winstyle |= WS_POPUP;
 		winstyleex |= WS_EX_TOPMOST;
 		ddraw.menudisp = FALSE;
@@ -354,6 +417,9 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 	else {
 //		scrnmng.flag = 0;
 		winstyle |= WS_SYSMENU;
+		if (xmiloscfg.thickframe) {
+			winstyle |= WS_THICKFRAME;
+		}
 		winstyle |= WS_CAPTION;
 		winstyle &= ~WS_POPUP;
 		winstyleex &= ~WS_EX_TOPMOST;
@@ -373,13 +439,30 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 #endif	// defined(SUPPORT_DCLOCK)
 		ddraw2->SetCooperativeLevel(hWndMain,
 										DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
+		width = SURFACE_WIDTH;
 		height = 480;
-		bitcolor = 8;
-		if (scrnmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
-			bitcolor = 16;
+		bitcolor = xmiloscfg.fscrnbpp;
+		const UINT8 fscrnmod = xmiloscfg.fscrnmod;
+		if (fscrnmod & (FSCRNMOD_SAMERES | FSCRNMOD_SAMEBPP))
+		{
+			DEVMODE devmode;
+			if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode))
+			{
+				if (fscrnmod & FSCRNMOD_SAMERES)
+				{
+					width = devmode.dmPelsWidth;
+					height = devmode.dmPelsHeight;
+				}
+				if (fscrnmod & FSCRNMOD_SAMEBPP)
+				{
+					bitcolor = devmode.dmBitsPerPel;
+				}
+			}
 		}
-		if (ddraw2->SetDisplayMode(SURFACE_WIDTH, height,
-												bitcolor, 0, 0) != DD_OK) {
+		if (bitcolor == 0) {
+			bitcolor = (scrnmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) ? 16 : 8;
+		}
+		if (ddraw2->SetDisplayMode(width, height, bitcolor, 0, 0) != DD_OK) {
 			goto scre_err;
 		}
 		ddraw2->CreateClipper(0, &ddraw.clipper, NULL);
@@ -405,7 +488,7 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 		ddsd.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
 		ddsd.dwWidth = SURFACE_WIDTH;
-		ddsd.dwHeight = height;
+		ddsd.dwHeight = SURFACE_HEIGHT;
 		if (ddraw2->CreateSurface(&ddsd, &ddraw.backsurf, NULL) != DD_OK) {
 			goto scre_err;
 		}
@@ -463,6 +546,7 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
 		ddsd.dwWidth = SURFACE_WIDTH;
 		ddsd.dwHeight = SURFACE_HEIGHT;
+		width = SURFACE_WIDTH;
 		height = SURFACE_HEIGHT;
 
 		if (ddraw2->CreateSurface(&ddsd, &ddraw.backsurf, NULL) != DD_OK) {
@@ -486,7 +570,7 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 	scrnmng.bpp = (UINT8)bitcolor;
 	scrnsurf.bpp = bitcolor;
 	ddraw.scrnmode = scrnmode;
-	ddraw.width = SURFACE_WIDTH;
+	ddraw.width = width;
 	ddraw.height = height;
 	ddraw.cliping = 0;
 	renewalclientsize(FALSE);
@@ -661,6 +745,8 @@ void scrnmng_update(void) {
 
 	POINT	clip;
 	RECT	dst;
+	RECT	*rect;
+	RECT	*scrn;
 	HRESULT	r;
 
 	if (scrnmng.palchanged) {
@@ -673,7 +759,22 @@ void scrnmng_update(void) {
 				scrnmng.allflash = 0;
 				clearoutfullscreen();
 			}
-			dst = ddraw.scrn;
+			if (GetWindowLong(hWndMain, EXTGWL_HMENU)) {
+				rect = &ddraw.rect;
+				scrn = &ddraw.scrn;
+			}
+			else {
+				rect = &ddraw.rectclip;
+				scrn = &ddraw.scrnclip;
+			}
+			r = ddraw.primsurf->Blt(scrn, ddraw.backsurf, rect,
+															DDBLT_WAIT, NULL);
+			if (r == DDERR_SURFACELOST) {
+				ddraw.backsurf->Restore();
+				ddraw.primsurf->Restore();
+				ddraw.primsurf->Blt(scrn, ddraw.backsurf, rect,
+															DDBLT_WAIT, NULL);
+			}
 		}
 		else {
 			if (scrnmng.allflash) {
@@ -687,16 +788,33 @@ void scrnmng_update(void) {
 			dst.top = clip.y + ddraw.scrn.top;
 			dst.right = clip.x + ddraw.scrn.right;
 			dst.bottom = clip.y + ddraw.scrn.bottom;
-		}
-		r = ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
+			r = ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
+									DDBLT_WAIT, NULL);
+			if (r == DDERR_SURFACELOST) {
+				ddraw.backsurf->Restore();
+				ddraw.primsurf->Restore();
+				ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
 														DDBLT_WAIT, NULL);
-		if (r == DDERR_SURFACELOST) {
-			ddraw.backsurf->Restore();
-			ddraw.primsurf->Restore();
-			ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
-														DDBLT_WAIT, NULL);
+			}
 		}
 	}
+}
+
+
+// ----
+
+void scrnmng_setmultiple(int multiple)
+{
+	if (scrnstat.multiple != multiple)
+	{
+		scrnstat.multiple = multiple;
+		renewalclientsize(TRUE);
+	}
+}
+
+int scrnmng_getmultiple(void)
+{
+	return scrnstat.multiple;
 }
 
 
@@ -730,7 +848,7 @@ void scrnmng_dispclock(void)
 		DispClock::GetInstance()->Draw(scrnmng.bpp, dest.lpSurface, dest.lPitch);
 		ddraw.clocksurf->Unlock(NULL);
 	}
-	if (ddraw.primsurf->BltFast(640 - DCLOCK_WIDTH - 4,
+	if (ddraw.primsurf->BltFast(ddraw.width - DCLOCK_WIDTH - 4,
 									ddraw.height - DCLOCK_HEIGHT,
 									ddraw.clocksurf, const_cast<RECT*>(&rectclk),
 									DDBLTFAST_WAIT) == DDERR_SURFACELOST)
@@ -741,4 +859,114 @@ void scrnmng_dispclock(void)
 	DispClock::GetInstance()->CountDown(xmiloscfg.DRAW_SKIP);
 }
 #endif	// defined(SUPPORT_DCLOCK)
+
+
+// ----
+
+typedef struct {
+	int		bx;
+	int		by;
+	int		cx;
+	int		cy;
+	int		mul;
+} SCRNSIZING;
+
+static	SCRNSIZING	scrnsizing;
+
+enum {
+	SIZING_ADJUST	= 12
+};
+
+void scrnmng_entersizing(void) {
+
+	RECT	rectwindow;
+	RECT	rectclient;
+	int		cx;
+	int		cy;
+
+	GetWindowRect(hWndMain, &rectwindow);
+	GetClientRect(hWndMain, &rectclient);
+	scrnsizing.bx = (rectwindow.right - rectwindow.left) -
+					(rectclient.right - rectclient.left);
+	scrnsizing.by = (rectwindow.bottom - rectwindow.top) -
+					(rectclient.bottom - rectclient.top);
+	cx = min(scrnstat.width, ddraw.width);
+	cx = (cx + 7) >> 3;
+	cy = min(scrnstat.height, ddraw.height);
+	cy = (cy + 7) >> 3;
+	scrnsizing.cx = cx;
+	scrnsizing.cy = cy;
+	scrnsizing.mul = scrnstat.multiple;
+}
+
+void scrnmng_sizing(UINT side, RECT *rect) {
+
+	int		width;
+	int		height;
+	int		mul;
+
+	if ((side != WMSZ_TOP) && (side != WMSZ_BOTTOM)) {
+		width = rect->right - rect->left - scrnsizing.bx + SIZING_ADJUST;
+		width /= scrnsizing.cx;
+	}
+	else {
+		width = 16;
+	}
+	if ((side != WMSZ_LEFT) && (side != WMSZ_RIGHT)) {
+		height = rect->bottom - rect->top - scrnsizing.by + SIZING_ADJUST;
+		height /= scrnsizing.cy;
+	}
+	else {
+		height = 16;
+	}
+	mul = min(width, height);
+	if (mul <= 0) {
+		mul = 1;
+	}
+	else if (mul > 16) {
+		mul = 16;
+	}
+	width = scrnsizing.bx + (scrnsizing.cx * mul);
+	height = scrnsizing.by + (scrnsizing.cy * mul);
+	switch(side) {
+		case WMSZ_LEFT:
+		case WMSZ_TOPLEFT:
+		case WMSZ_BOTTOMLEFT:
+			rect->left = rect->right - width;
+			break;
+
+		case WMSZ_RIGHT:
+		case WMSZ_TOP:
+		case WMSZ_TOPRIGHT:
+		case WMSZ_BOTTOM:
+		case WMSZ_BOTTOMRIGHT:
+		default:
+			rect->right = rect->left + width;
+			break;
+	}
+
+	switch(side) {
+		case WMSZ_TOP:
+		case WMSZ_TOPLEFT:
+		case WMSZ_TOPRIGHT:
+			rect->top = rect->bottom - height;
+			break;
+
+		case WMSZ_LEFT:
+		case WMSZ_RIGHT:
+		case WMSZ_BOTTOM:
+		case WMSZ_BOTTOMLEFT:
+		case WMSZ_BOTTOMRIGHT:
+		default:
+			rect->bottom = rect->top + height;
+			break;
+	}
+	scrnsizing.mul = mul;
+}
+
+void scrnmng_exitsizing(void)
+{
+	scrnmng_setmultiple(scrnsizing.mul);
+	InvalidateRect(hWndMain, NULL, TRUE);		// ugh
+}
 

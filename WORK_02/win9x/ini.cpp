@@ -302,6 +302,7 @@ static const TCHAR s_szIniTitle[] = TEXT("Xmillennium");		//!< ƒAƒvƒŠ–¼
 enum
 {
 	PFRO_BOOL		= PFFLAG_RO + PFTYPE_BOOL,
+	PFRO_UINT8		= PFFLAG_RO + PFTYPE_UINT8,
 	PFRO_HEX32		= PFFLAG_RO + PFTYPE_HEX32
 };
 
@@ -351,6 +352,9 @@ static const PFTBL s_IniItems[] =
 
 	PFVAL("shortcut", PFTYPE_HEX8,		&xmiloscfg.shortcut),
 
+#if defined(SUPPORT_RESUME)
+	PFVAL("e_resume", PFTYPE_BOOL,		&xmiloscfg.resume),
+#endif	// defined(SUPPORT_RESUME)
 #if defined(SUPPORT_STATSAVE)
 	PFVAL("STATSAVE", PFRO_BOOL,		&xmiloscfg.statsave),
 #endif	// defined(SUPPORT_STATSAVE)
@@ -361,6 +365,10 @@ static const PFTBL s_IniItems[] =
 	PFAND("clock_up", PFRO_HEX32,		&xmiloscfg.clockcolor1,	0xffffff),
 	PFAND("clock_dn", PFRO_HEX32,		&xmiloscfg.clockcolor2,	0xffffff),
 #endif	/* defined(SUPPORT_DCLOCK) */
+
+	PFVAL("thickfrm", PFTYPE_BOOL,		&xmiloscfg.thickframe),
+	PFVAL("fscrnbpp", PFRO_UINT8,		&xmiloscfg.fscrnbpp),
+	PFVAL("fscrnmod", PFTYPE_HEX8,		&xmiloscfg.fscrnmod),
 };
 
 //! .ini Šg’£Žq

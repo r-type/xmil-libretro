@@ -22,6 +22,7 @@
 #include	"extclass.h"
 #include "misc\wndloc.h"
 #include "misc\WndProc.h"
+#include "strres.h"
 #include	"z80core.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -57,6 +58,8 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 #if defined(SUPPORT_DCLOCK)
 							0, 0, 0xffffff, 0xffbf6a,
 #endif	// defined(SUPPORT_DCLOCK)
+							0, 0,
+							FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8
 						};
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium ÇÀÇ±ÇøÇ„Å`ÇÒ");
@@ -171,12 +174,8 @@ static void dispbmp(HINSTANCE hinst, HDC hdc,
 
 // ----
 
-#if defined(SUPPORT_RESUME)
-static const OEMCHAR xmilresumeext[] = OEMTEXT(".sav");
-static const OEMCHAR str_resume[] = OEMTEXT("Resume");
-#endif
 #if defined(SUPPORT_STATSAVE)
-static const OEMCHAR xmilflagext[] = OEMTEXT(".sv%u");
+static const OEMCHAR xmilflagext[] = OEMTEXT(".S%2u");
 static const OEMCHAR str_statload[] = OEMTEXT("Status Load");
 #endif
 
@@ -188,6 +187,7 @@ static void getstatfilename(OEMCHAR *path, const OEMCHAR *ext, UINT size) {
 
 	file_cpyname(path, modulefile, size);
 	file_cutext(path);
+	file_catname(path, str_dot, size);
 	file_catname(path, ext, size);
 }
 
@@ -270,6 +270,13 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 		case IDM_CONFIG:
 			winuienter();
 			CConfigDlg::Config(hWnd);
+			if (!scrnmng_isfullscreen()) {
+				UINT8 thick;
+				thick = (GetWindowLong(hWnd, GWL_STYLE) & WS_THICKFRAME) ? 1 : 0;
+				if (thick != xmiloscfg.thickframe) {
+					extclass_frametype(hWnd, xmiloscfg.thickframe);
+				}
+			}
 			winuileave();
 			break;
 
@@ -712,11 +719,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			soundmng_disable(SNDPROC_MAIN);
 			mousemng_disable(MOUSEPROC_WINUI);
 			s_wndloc.Start();
-			break;
-
-		case WM_EXITSIZEMOVE:
-			mousemng_enable(MOUSEPROC_WINUI);
-			soundmng_enable(SNDPROC_MAIN);
+			scrnmng_entersizing();
 			break;
 
 		case WM_MOVING:
@@ -724,6 +727,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			{
 				s_wndloc.Moving(reinterpret_cast<RECT*>(lParam));
 			}
+			break;
+
+		case WM_SIZING:
+			scrnmng_sizing((UINT)wParam, (RECT *)lParam);
+			break;
+
+		case WM_EXITSIZEMOVE:
+			scrnmng_exitsizing();
+			mousemng_enable(MOUSEPROC_WINUI);
+			soundmng_enable(SNDPROC_MAIN);
 			break;
 
 		case WM_KEYDOWN:
@@ -969,12 +982,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	mousemng_initialize();
 
+	DWORD style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
+	if (xmiloscfg.thickframe) {
+		style |= WS_THICKFRAME;
+	}
 	hWnd = CreateWindowEx(0,
-						szClassName, szProgName,
-						WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION |
-						WS_MINIMIZEBOX,
-						xmiloscfg.winx, xmiloscfg.winy,
-						SURFACE_WIDTH, SURFACE_HEIGHT,
+						szClassName, szProgName, style,
+						xmiloscfg.winx, xmiloscfg.winy, SURFACE_WIDTH, SURFACE_HEIGHT,
 						NULL, NULL, hInstance, NULL);
 	hWndMain = hWnd;
 	scrnmng_initialize();
@@ -1015,7 +1029,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	pccore_initialize();
 	pccore_reset();
 
-#if !defined(UNICODE)
+	xmilopening = 0;
+
+	// ÇÍÇ∂Ç§Çﬁ
+#if defined(SUPPORT_RESUME)
+	if (xmiloscfg.resume) {
+		int id = flagload(str_sav, TEXT("Resume"), FALSE);
+		if (id == IDYES)
+		{
+//			XmilArg::GetInstance()->ClearDisk();
+		}
+		else if (id == IDCANCEL) {
+			DestroyWindow(hWnd);
+			mousemng_disable(MOUSEPROC_WINUI);
+			x1f_close();
+			pccore_deinitialize();
+			soundmng_deinitialize();
+			scrnmng_destroy();
+			TRACETERM();
+			dosio_term();
+			return(FALSE);
+		}
+	}
+#endif	// defined(SUPPORT_RESUME)
+
+#if 0 // !defined(UNICODE)
 	if (__argc > 1) {
 		for (int i=1; i<__argc; i++) {
 			if (is_d8ufile(__argv[i])) {
@@ -1028,8 +1066,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif
 
 	scrndraw_redraw();
-
-	xmilopening = 0;
 
 	while(1) {
 		if (!xmilstopemulate) {
@@ -1112,6 +1148,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	mousemng_disable(MOUSEPROC_WINUI);
 
 	x1f_close();
+
+#if defined(SUPPORT_RESUME)
+	if (xmiloscfg.resume) {
+		flagsave(str_sav);
+	}
+	else {
+		flagdelete(str_sav);
+	}
+#endif	// defined(SUPPORT_RESUME)
+
 	pccore_deinitialize();
 
 	soundmng_deinitialize();
