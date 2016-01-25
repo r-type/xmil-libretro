@@ -17,6 +17,7 @@
 #include "dialog\d_bmp.h"
 #include "dialog\d_cfg.h"
 #include "dialog\d_disk.h"
+#include "dialog\d_screen.h"
 #include "dialog\d_sound.h"
 #include	"extclass.h"
 #include "misc\wndloc.h"
@@ -46,11 +47,12 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 							CW_USEDEFAULT, CW_USEDEFAULT,
 							1, 0, 0, 0, 0,
 							0, 0, 0,
+							1,
 #if defined(SUPPORT_RESUME)
 							0,
 #endif
 #if defined(SUPPORT_STATSAVE)
-							1,
+							0,
 #endif
 #if defined(SUPPORT_DCLOCK)
 							0, 0, 0xffffff, 0xffbf6a,
@@ -59,6 +61,7 @@ static const OEMCHAR szClassName[] = OEMTEXT("Xmil-MainWindow");
 
 		OEMCHAR		szProgName[] = OEMTEXT("X millennium ÇÀÇ±ÇøÇ„Å`ÇÒ");
 		HWND		hWndMain;
+		UINT8		g_scrnmode;
 		OEMCHAR		modulefile[MAX_PATH];
 		OEMCHAR		fddfolder[MAX_PATH];
 		OEMCHAR		bmpfilefolder[MAX_PATH];
@@ -67,6 +70,49 @@ static	BOOL		xmilstopemulate = FALSE;
 static	UINT8		xmilopening = 1;
 
 static	CWndLoc		s_wndloc;
+
+BRESULT xmil_changescreen(REG8 newmode) {
+
+	REG8	change;
+	REG8	renewal;
+	BRESULT	r;
+
+	change = g_scrnmode ^ newmode;
+	renewal = (change & SCRNMODE_FULLSCREEN);
+	if (g_scrnmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
+		renewal ^= SCRNMODE_COREHIGHCOLOR;
+	}
+	if (newmode & (SCRNMODE_SYSHIGHCOLOR | SCRNMODE_COREHIGHCOLOR)) {
+		renewal ^= SCRNMODE_COREHIGHCOLOR;
+	}
+	r = SUCCESS;
+	if (renewal) {
+		if (renewal & SCRNMODE_FULLSCREEN) {
+			kdispwin_destroy();
+			skbdwin_destroy();
+		}
+		soundmng_stop();
+		mousemng_disable(MOUSEPROC_WINUI);
+		scrnmng_destroy();
+		if (scrnmng_create(newmode) == SUCCESS) {
+			g_scrnmode = newmode;
+		}
+		else {
+			r = FAILURE;
+			if (scrnmng_create(g_scrnmode) != SUCCESS) {
+				PostQuitMessage(0);
+				return r;
+			}
+		}
+		scrndraw_redraw();
+		mousemng_enable(MOUSEPROC_WINUI);
+		soundmng_play();
+	}
+	else {
+		g_scrnmode = newmode;
+	}
+	return r;
+}
 
 static void wincentering(HWND hWnd) {
 
@@ -315,11 +361,11 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			break;
 
 		case IDM_WINDOW:
-			scrnmng_changescreen(scrnmode & (~SCRNMODE_FULLSCREEN));
+			xmil_changescreen(g_scrnmode & (~SCRNMODE_FULLSCREEN));
 			break;
 
 		case IDM_FULLSCREEN:
-			scrnmng_changescreen(scrnmode | SCRNMODE_FULLSCREEN);
+			xmil_changescreen(g_scrnmode | SCRNMODE_FULLSCREEN);
 			break;
 
 		case IDM_DISPSYNC:
@@ -330,10 +376,10 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 		case IDM_RASTER:
 			xmilcfg.RASTER = !xmilcfg.RASTER;
 			if (xmilcfg.RASTER) {
-				scrnmng_changescreen(scrnmode | SCRNMODE_SYSHIGHCOLOR);
+				xmil_changescreen(g_scrnmode | SCRNMODE_SYSHIGHCOLOR);
 			}
 			else {
-				scrnmng_changescreen(scrnmode & (~SCRNMODE_SYSHIGHCOLOR));
+				xmil_changescreen(g_scrnmode & (~SCRNMODE_SYSHIGHCOLOR));
 			}
 			update = SYS_UPDATECFG;
 			break;
@@ -366,6 +412,12 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 		case IDM_15FPS:
 			xmiloscfg.DRAW_SKIP = 4;
 			update = SYS_UPDATECFG;
+			break;
+
+		case IDM_SCREENOPT:
+			winuienter();
+			dialog_scropt(hWnd);
+			winuileave();
 			break;
 
 		case IDM_KEY:
@@ -442,6 +494,16 @@ static void xmilcmd(HWND hWnd, UINT cmd) {
 			winuileave();
 			break;
 #endif	// defined(SUPPORT_X1F)
+
+		case IDM_ALTENTER:
+			xmiloscfg.shortcut ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case IDM_ALTF4:
+			xmiloscfg.shortcut ^= 2;
+			update |= SYS_UPDATECFG;
+			break;
 
 		case IDM_DISPCLOCK:
 			xmiloscfg.DISPCLK ^= 1;
@@ -680,6 +742,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 
 		case WM_SYSKEYDOWN:
+			if (lParam & 0x20000000) {
+				if ((xmiloscfg.shortcut & 1) && (wParam == VK_RETURN)) {
+					xmil_changescreen(g_scrnmode ^ SCRNMODE_FULLSCREEN);
+					break;
+				}
+				if ((xmiloscfg.shortcut & 2) && (wParam == VK_F4)) {
+					SendMessage(hWnd, WM_CLOSE, 0, 0L);
+					break;
+				}
+			}
 			if (wParam == VK_F10) {
 				return(DefWindowProc(hWnd, WM_SYSKEYDOWN, wParam, lParam));
 			}
@@ -915,13 +987,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	DrawMenuBar(hWnd);
 
 	scrndraw_initialize();
-	scrnmode = 0;
+	g_scrnmode = 0;
 	if (xmilcfg.RASTER) {
-		scrnmode |= SCRNMODE_SYSHIGHCOLOR;
+		g_scrnmode |= SCRNMODE_SYSHIGHCOLOR;
 	}
-	if (scrnmng_create(scrnmode) != SUCCESS) {
-		scrnmode ^= SCRNMODE_FULLSCREEN;
-		if (scrnmng_create(scrnmode) != SUCCESS) {
+	if (scrnmng_create(g_scrnmode) != SUCCESS) {
+		g_scrnmode ^= SCRNMODE_FULLSCREEN;
+		if (scrnmng_create(g_scrnmode) != SUCCESS) {
 			MessageBox(hWnd, OEMTEXT("Couldn't create DirectDraw Object"),
 													szProgName, MB_OK);
 			return(FALSE);
