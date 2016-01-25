@@ -8,6 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		BA1E81461BC3D6DD009B45F1 /* xmilsdl2.icns in Resources */ = {isa = PBXBuildFile; fileRef = BA1E81451BC3D6DD009B45F1 /* xmilsdl2.icns */; };
+		BA80D0161C4B9D9800AE7400 /* soundmng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0151C4B9D9800AE7400 /* soundmng.cpp */; };
+		BA80D0261C4B9DCD00AE7400 /* externalchipmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D01A1C4B9DCD00AE7400 /* externalchipmanager.cpp */; };
+		BA80D0271C4B9DCD00AE7400 /* externalopl3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D01C1C4B9DCD00AE7400 /* externalopl3.cpp */; };
+		BA80D0281C4B9DCD00AE7400 /* externalopm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D01E1C4B9DCD00AE7400 /* externalopm.cpp */; };
+		BA80D0291C4B9DCD00AE7400 /* externalopna.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0201C4B9DCD00AE7400 /* externalopna.cpp */; };
+		BA80D02A1C4B9DCD00AE7400 /* externalpsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0221C4B9DCD00AE7400 /* externalpsg.cpp */; };
+		BA80D0371C4B9DE700AE7400 /* c86ctlc86box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D02E1C4B9DE700AE7400 /* c86ctlc86box.cpp */; };
+		BA80D0381C4B9DE700AE7400 /* c86ctlgimic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0301C4B9DE700AE7400 /* c86ctlgimic.cpp */; };
+		BA80D0391C4B9DE700AE7400 /* c86ctlif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0321C4B9DE700AE7400 /* c86ctlif.cpp */; };
+		BA80D03A1C4B9DE700AE7400 /* c86ctlrealchipbase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0341C4B9DE700AE7400 /* c86ctlrealchipbase.cpp */; };
+		BA80D0481C4B9E0600AE7400 /* scciif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D03E1C4B9E0600AE7400 /* scciif.cpp */; };
+		BA80D0491C4B9E0600AE7400 /* sccisoundchip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0401C4B9E0600AE7400 /* sccisoundchip.cpp */; };
+		BA80D04A1C4B9E0600AE7400 /* sccisoundinterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0421C4B9E0600AE7400 /* sccisoundinterface.cpp */; };
+		BA80D04B1C4B9E0600AE7400 /* sccisoundinterfacemanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0441C4B9E0600AE7400 /* sccisoundinterfacemanager.cpp */; };
+		BA80D04C1C4B9E0600AE7400 /* sccispfmlight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0461C4B9E0600AE7400 /* sccispfmlight.cpp */; };
+		BA80D0561C4B9E8300AE7400 /* threadbase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0501C4B9E8300AE7400 /* threadbase.cpp */; };
+		BA80D0571C4B9E8300AE7400 /* tty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0521C4B9E8300AE7400 /* tty.cpp */; };
+		BA80D0581C4B9E8300AE7400 /* usbdev.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0541C4B9E8300AE7400 /* usbdev.cpp */; };
+		BA80D05B1C4B9F4B00AE7400 /* opm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D0591C4B9F4B00AE7400 /* opm.cpp */; };
+		BA80D05C1C4B9F4B00AE7400 /* psg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA80D05A1C4B9F4B00AE7400 /* psg.cpp */; };
 		BAABD5551BC3B7DF00522E67 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAABD5541BC3B7DF00522E67 /* Cocoa.framework */; };
 		BAABD55F1BC3B7DF00522E67 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BAABD55D1BC3B7DF00522E67 /* InfoPlist.strings */; };
 		BAABD5611BC3B7DF00522E67 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BAABD5601BC3B7DF00522E67 /* main.m */; };
@@ -86,7 +106,6 @@
 		BAABD7001BC3BA5D00522E67 /* mousemng.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD6471BC3BA5D00522E67 /* mousemng.c */; };
 		BAABD7011BC3BA5D00522E67 /* scrnmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD64A1BC3BA5D00522E67 /* scrnmng.c */; };
 		BAABD7021BC3BA5D00522E67 /* sdlkbd.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD64C1BC3BA5D00522E67 /* sdlkbd.c */; };
-		BAABD7031BC3BA5D00522E67 /* soundmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD64E1BC3BA5D00522E67 /* soundmng.c */; };
 		BAABD7041BC3BA5D00522E67 /* sysmenu.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD6501BC3BA5D00522E67 /* sysmenu.c */; };
 		BAABD7071BC3BA5D00522E67 /* sysmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD6541BC3BA5D00522E67 /* sysmng.c */; };
 		BAABD7081BC3BA5D00522E67 /* taskmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD6561BC3BA5D00522E67 /* taskmng.c */; };
@@ -127,12 +146,53 @@
 		BAABD7341BC3BA5E00522E67 /* z80dmap.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD69D1BC3BA5D00522E67 /* z80dmap.c */; };
 		BAABD7351BC3BA5E00522E67 /* z80mem.c in Sources */ = {isa = PBXBuildFile; fileRef = BAABD69F1BC3BA5D00522E67 /* z80mem.c */; };
 		BAABD73B1BC3BBE200522E67 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAABD73A1BC3BBE200522E67 /* SDL2.framework */; };
-		BAD1A2CD1BE7569C00B23E7C /* opm.c in Sources */ = {isa = PBXBuildFile; fileRef = BAD1A2CB1BE7569C00B23E7C /* opm.c */; };
-		BAD1A2D01BE756A400B23E7C /* psg.c in Sources */ = {isa = PBXBuildFile; fileRef = BAD1A2CE1BE756A400B23E7C /* psg.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		BA1E81451BC3D6DD009B45F1 /* xmilsdl2.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = xmilsdl2.icns; sourceTree = "<group>"; };
+		BA80D0151C4B9D9800AE7400 /* soundmng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundmng.cpp; sourceTree = "<group>"; };
+		BA80D0191C4B9DCD00AE7400 /* externalchip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = externalchip.h; path = ext/externalchip.h; sourceTree = "<group>"; };
+		BA80D01A1C4B9DCD00AE7400 /* externalchipmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = externalchipmanager.cpp; path = ext/externalchipmanager.cpp; sourceTree = "<group>"; };
+		BA80D01B1C4B9DCD00AE7400 /* externalchipmanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = externalchipmanager.h; path = ext/externalchipmanager.h; sourceTree = "<group>"; };
+		BA80D01C1C4B9DCD00AE7400 /* externalopl3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = externalopl3.cpp; path = ext/externalopl3.cpp; sourceTree = "<group>"; };
+		BA80D01D1C4B9DCD00AE7400 /* externalopl3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = externalopl3.h; path = ext/externalopl3.h; sourceTree = "<group>"; };
+		BA80D01E1C4B9DCD00AE7400 /* externalopm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = externalopm.cpp; path = ext/externalopm.cpp; sourceTree = "<group>"; };
+		BA80D01F1C4B9DCD00AE7400 /* externalopm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = externalopm.h; path = ext/externalopm.h; sourceTree = "<group>"; };
+		BA80D0201C4B9DCD00AE7400 /* externalopna.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = externalopna.cpp; path = ext/externalopna.cpp; sourceTree = "<group>"; };
+		BA80D0211C4B9DCD00AE7400 /* externalopna.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = externalopna.h; path = ext/externalopna.h; sourceTree = "<group>"; };
+		BA80D0221C4B9DCD00AE7400 /* externalpsg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = externalpsg.cpp; path = ext/externalpsg.cpp; sourceTree = "<group>"; };
+		BA80D0231C4B9DCD00AE7400 /* externalpsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = externalpsg.h; path = ext/externalpsg.h; sourceTree = "<group>"; };
+		BA80D02D1C4B9DE700AE7400 /* c86ctl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = c86ctl.h; path = ext/c86ctl/c86ctl.h; sourceTree = "<group>"; };
+		BA80D02E1C4B9DE700AE7400 /* c86ctlc86box.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = c86ctlc86box.cpp; path = ext/c86ctl/c86ctlc86box.cpp; sourceTree = "<group>"; };
+		BA80D02F1C4B9DE700AE7400 /* c86ctlc86box.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = c86ctlc86box.h; path = ext/c86ctl/c86ctlc86box.h; sourceTree = "<group>"; };
+		BA80D0301C4B9DE700AE7400 /* c86ctlgimic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = c86ctlgimic.cpp; path = ext/c86ctl/c86ctlgimic.cpp; sourceTree = "<group>"; };
+		BA80D0311C4B9DE700AE7400 /* c86ctlgimic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = c86ctlgimic.h; path = ext/c86ctl/c86ctlgimic.h; sourceTree = "<group>"; };
+		BA80D0321C4B9DE700AE7400 /* c86ctlif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = c86ctlif.cpp; path = ext/c86ctl/c86ctlif.cpp; sourceTree = "<group>"; };
+		BA80D0331C4B9DE700AE7400 /* c86ctlif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = c86ctlif.h; path = ext/c86ctl/c86ctlif.h; sourceTree = "<group>"; };
+		BA80D0341C4B9DE700AE7400 /* c86ctlrealchipbase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = c86ctlrealchipbase.cpp; path = ext/c86ctl/c86ctlrealchipbase.cpp; sourceTree = "<group>"; };
+		BA80D0351C4B9DE700AE7400 /* c86ctlrealchipbase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = c86ctlrealchipbase.h; path = ext/c86ctl/c86ctlrealchipbase.h; sourceTree = "<group>"; };
+		BA80D0361C4B9DE700AE7400 /* cbus_boardtype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cbus_boardtype.h; path = ext/c86ctl/cbus_boardtype.h; sourceTree = "<group>"; };
+		BA80D03C1C4B9E0600AE7400 /* scci.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scci.h; path = ext/scci/scci.h; sourceTree = "<group>"; };
+		BA80D03D1C4B9E0600AE7400 /* SCCIDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCCIDefines.h; path = ext/scci/SCCIDefines.h; sourceTree = "<group>"; };
+		BA80D03E1C4B9E0600AE7400 /* scciif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scciif.cpp; path = ext/scci/scciif.cpp; sourceTree = "<group>"; };
+		BA80D03F1C4B9E0600AE7400 /* scciif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scciif.h; path = ext/scci/scciif.h; sourceTree = "<group>"; };
+		BA80D0401C4B9E0600AE7400 /* sccisoundchip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sccisoundchip.cpp; path = ext/scci/sccisoundchip.cpp; sourceTree = "<group>"; };
+		BA80D0411C4B9E0600AE7400 /* sccisoundchip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sccisoundchip.h; path = ext/scci/sccisoundchip.h; sourceTree = "<group>"; };
+		BA80D0421C4B9E0600AE7400 /* sccisoundinterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sccisoundinterface.cpp; path = ext/scci/sccisoundinterface.cpp; sourceTree = "<group>"; };
+		BA80D0431C4B9E0600AE7400 /* sccisoundinterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sccisoundinterface.h; path = ext/scci/sccisoundinterface.h; sourceTree = "<group>"; };
+		BA80D0441C4B9E0600AE7400 /* sccisoundinterfacemanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sccisoundinterfacemanager.cpp; path = ext/scci/sccisoundinterfacemanager.cpp; sourceTree = "<group>"; };
+		BA80D0451C4B9E0600AE7400 /* sccisoundinterfacemanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sccisoundinterfacemanager.h; path = ext/scci/sccisoundinterfacemanager.h; sourceTree = "<group>"; };
+		BA80D0461C4B9E0600AE7400 /* sccispfmlight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sccispfmlight.cpp; path = ext/scci/sccispfmlight.cpp; sourceTree = "<group>"; };
+		BA80D0471C4B9E0600AE7400 /* sccispfmlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sccispfmlight.h; path = ext/scci/sccispfmlight.h; sourceTree = "<group>"; };
+		BA80D04F1C4B9E8300AE7400 /* guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = guard.h; path = misc/guard.h; sourceTree = "<group>"; };
+		BA80D0501C4B9E8300AE7400 /* threadbase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = threadbase.cpp; path = misc/threadbase.cpp; sourceTree = "<group>"; };
+		BA80D0511C4B9E8300AE7400 /* threadbase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = threadbase.h; path = misc/threadbase.h; sourceTree = "<group>"; };
+		BA80D0521C4B9E8300AE7400 /* tty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tty.cpp; path = misc/tty.cpp; sourceTree = "<group>"; };
+		BA80D0531C4B9E8300AE7400 /* tty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tty.h; path = misc/tty.h; sourceTree = "<group>"; };
+		BA80D0541C4B9E8300AE7400 /* usbdev.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = usbdev.cpp; path = misc/usbdev.cpp; sourceTree = "<group>"; };
+		BA80D0551C4B9E8300AE7400 /* usbdev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usbdev.h; path = misc/usbdev.h; sourceTree = "<group>"; };
+		BA80D0591C4B9F4B00AE7400 /* opm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = opm.cpp; path = ../sdl2/ext/opm.cpp; sourceTree = "<group>"; };
+		BA80D05A1C4B9F4B00AE7400 /* psg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = psg.cpp; path = ../sdl2/ext/psg.cpp; sourceTree = "<group>"; };
 		BAABD5511BC3B7DF00522E67 /* xmilsdl2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = xmilsdl2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAABD5541BC3B7DF00522E67 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		BAABD5571BC3B7DF00522E67 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -287,7 +347,6 @@
 		BAABD64B1BC3BA5D00522E67 /* scrnmng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scrnmng.h; sourceTree = "<group>"; };
 		BAABD64C1BC3BA5D00522E67 /* sdlkbd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sdlkbd.c; sourceTree = "<group>"; };
 		BAABD64D1BC3BA5D00522E67 /* sdlkbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sdlkbd.h; sourceTree = "<group>"; };
-		BAABD64E1BC3BA5D00522E67 /* soundmng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = soundmng.c; sourceTree = "<group>"; };
 		BAABD64F1BC3BA5D00522E67 /* soundmng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundmng.h; sourceTree = "<group>"; };
 		BAABD6501BC3BA5D00522E67 /* sysmenu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sysmenu.c; sourceTree = "<group>"; };
 		BAABD6511BC3BA5D00522E67 /* sysmenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sysmenu.h; sourceTree = "<group>"; };
@@ -356,9 +415,7 @@
 		BAABD6A01BC3BA5D00522E67 /* z80mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = z80mem.h; sourceTree = "<group>"; };
 		BAABD7391BC3BB2400522E67 /* compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compiler.h; sourceTree = "<group>"; };
 		BAABD73A1BC3BBE200522E67 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
-		BAD1A2CB1BE7569C00B23E7C /* opm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = opm.c; sourceTree = "<group>"; };
 		BAD1A2CC1BE7569C00B23E7C /* opm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opm.h; sourceTree = "<group>"; };
-		BAD1A2CE1BE756A400B23E7C /* psg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psg.c; sourceTree = "<group>"; };
 		BAD1A2CF1BE756A400B23E7C /* psg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psg.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -375,6 +432,76 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA80D0171C4B9DA900AE7400 /* ext */ = {
+			isa = PBXGroup;
+			children = (
+				BA80D0181C4B9DB500AE7400 /* c86ctl */,
+				BA80D0191C4B9DCD00AE7400 /* externalchip.h */,
+				BA80D01A1C4B9DCD00AE7400 /* externalchipmanager.cpp */,
+				BA80D01B1C4B9DCD00AE7400 /* externalchipmanager.h */,
+				BA80D01C1C4B9DCD00AE7400 /* externalopl3.cpp */,
+				BA80D01D1C4B9DCD00AE7400 /* externalopl3.h */,
+				BA80D01E1C4B9DCD00AE7400 /* externalopm.cpp */,
+				BA80D01F1C4B9DCD00AE7400 /* externalopm.h */,
+				BA80D0201C4B9DCD00AE7400 /* externalopna.cpp */,
+				BA80D0211C4B9DCD00AE7400 /* externalopna.h */,
+				BA80D0221C4B9DCD00AE7400 /* externalpsg.cpp */,
+				BA80D0231C4B9DCD00AE7400 /* externalpsg.h */,
+				BA80D03B1C4B9DF000AE7400 /* scci */,
+			);
+			name = ext;
+			sourceTree = "<group>";
+		};
+		BA80D0181C4B9DB500AE7400 /* c86ctl */ = {
+			isa = PBXGroup;
+			children = (
+				BA80D02D1C4B9DE700AE7400 /* c86ctl.h */,
+				BA80D02E1C4B9DE700AE7400 /* c86ctlc86box.cpp */,
+				BA80D02F1C4B9DE700AE7400 /* c86ctlc86box.h */,
+				BA80D0301C4B9DE700AE7400 /* c86ctlgimic.cpp */,
+				BA80D0311C4B9DE700AE7400 /* c86ctlgimic.h */,
+				BA80D0321C4B9DE700AE7400 /* c86ctlif.cpp */,
+				BA80D0331C4B9DE700AE7400 /* c86ctlif.h */,
+				BA80D0341C4B9DE700AE7400 /* c86ctlrealchipbase.cpp */,
+				BA80D0351C4B9DE700AE7400 /* c86ctlrealchipbase.h */,
+				BA80D0361C4B9DE700AE7400 /* cbus_boardtype.h */,
+			);
+			name = c86ctl;
+			sourceTree = "<group>";
+		};
+		BA80D03B1C4B9DF000AE7400 /* scci */ = {
+			isa = PBXGroup;
+			children = (
+				BA80D03C1C4B9E0600AE7400 /* scci.h */,
+				BA80D03D1C4B9E0600AE7400 /* SCCIDefines.h */,
+				BA80D03E1C4B9E0600AE7400 /* scciif.cpp */,
+				BA80D03F1C4B9E0600AE7400 /* scciif.h */,
+				BA80D0401C4B9E0600AE7400 /* sccisoundchip.cpp */,
+				BA80D0411C4B9E0600AE7400 /* sccisoundchip.h */,
+				BA80D0421C4B9E0600AE7400 /* sccisoundinterface.cpp */,
+				BA80D0431C4B9E0600AE7400 /* sccisoundinterface.h */,
+				BA80D0441C4B9E0600AE7400 /* sccisoundinterfacemanager.cpp */,
+				BA80D0451C4B9E0600AE7400 /* sccisoundinterfacemanager.h */,
+				BA80D0461C4B9E0600AE7400 /* sccispfmlight.cpp */,
+				BA80D0471C4B9E0600AE7400 /* sccispfmlight.h */,
+			);
+			name = scci;
+			sourceTree = "<group>";
+		};
+		BA80D04E1C4B9E2400AE7400 /* misc */ = {
+			isa = PBXGroup;
+			children = (
+				BA80D04F1C4B9E8300AE7400 /* guard.h */,
+				BA80D0501C4B9E8300AE7400 /* threadbase.cpp */,
+				BA80D0511C4B9E8300AE7400 /* threadbase.h */,
+				BA80D0521C4B9E8300AE7400 /* tty.cpp */,
+				BA80D0531C4B9E8300AE7400 /* tty.h */,
+				BA80D0541C4B9E8300AE7400 /* usbdev.cpp */,
+				BA80D0551C4B9E8300AE7400 /* usbdev.h */,
+			);
+			name = misc;
+			sourceTree = "<group>";
+		};
 		BAABD5481BC3B7DF00522E67 = {
 			isa = PBXGroup;
 			children = (
@@ -416,8 +543,9 @@
 		BAABD55A1BC3B7DF00522E67 /* xmilsdl2 */ = {
 			isa = PBXGroup;
 			children = (
-				BA1E81451BC3D6DD009B45F1 /* xmilsdl2.icns */,
 				BAABD7391BC3BB2400522E67 /* compiler.h */,
+				BA80D04E1C4B9E2400AE7400 /* misc */,
+				BA1E81451BC3D6DD009B45F1 /* xmilsdl2.icns */,
 				BAABD55B1BC3B7DF00522E67 /* Supporting Files */,
 			);
 			path = xmilsdl2;
@@ -656,6 +784,7 @@
 			children = (
 				BAABD61B1BC3BA5D00522E67 /* dosio.c */,
 				BAABD61C1BC3BA5D00522E67 /* dosio.h */,
+				BA80D0171C4B9DA900AE7400 /* ext */,
 				BAABD61D1BC3BA5D00522E67 /* fontmng.c */,
 				BAABD61E1BC3BA5D00522E67 /* fontmng.h */,
 				BAABD61F1BC3BA5D00522E67 /* ini.c */,
@@ -671,7 +800,7 @@
 				BAABD64B1BC3BA5D00522E67 /* scrnmng.h */,
 				BAABD64C1BC3BA5D00522E67 /* sdlkbd.c */,
 				BAABD64D1BC3BA5D00522E67 /* sdlkbd.h */,
-				BAABD64E1BC3BA5D00522E67 /* soundmng.c */,
+				BA80D0151C4B9D9800AE7400 /* soundmng.cpp */,
 				BAABD64F1BC3BA5D00522E67 /* soundmng.h */,
 				BAABD6501BC3BA5D00522E67 /* sysmenu.c */,
 				BAABD6511BC3BA5D00522E67 /* sysmenu.h */,
@@ -700,12 +829,12 @@
 		BAABD6641BC3BA5D00522E67 /* sound */ = {
 			isa = PBXGroup;
 			children = (
-				BAD1A2CB1BE7569C00B23E7C /* opm.c */,
+				BA80D0591C4B9F4B00AE7400 /* opm.cpp */,
 				BAD1A2CC1BE7569C00B23E7C /* opm.h */,
 				BAABD6651BC3BA5D00522E67 /* opmgen.h */,
 				BAABD6661BC3BA5D00522E67 /* opmgenc.c */,
 				BAABD6671BC3BA5D00522E67 /* opmgeng.c */,
-				BAD1A2CE1BE756A400B23E7C /* psg.c */,
+				BA80D05A1C4B9F4B00AE7400 /* psg.cpp */,
 				BAD1A2CF1BE756A400B23E7C /* psg.h */,
 				BAABD6681BC3BA5D00522E67 /* psggen.h */,
 				BAABD6691BC3BA5D00522E67 /* psggenc.c */,
@@ -837,19 +966,22 @@
 			files = (
 				BAABD6D91BC3BA5D00522E67 /* ctc.c in Sources */,
 				BAABD7331BC3BA5E00522E67 /* z80c_sb.c in Sources */,
+				BA80D0161C4B9D9800AE7400 /* soundmng.cpp in Sources */,
+				BA80D0491C4B9E0600AE7400 /* sccisoundchip.cpp in Sources */,
 				BAABD6C11BC3BA5D00522E67 /* menumbox.c in Sources */,
 				BAABD6B41BC3BA5D00522E67 /* strres.c in Sources */,
 				BAABD6B51BC3BA5D00522E67 /* textfile.c in Sources */,
 				BAABD6A81BC3BA5D00522E67 /* textcnv.c in Sources */,
 				BAABD71E1BC3BA5D00522E67 /* makechr.c in Sources */,
 				BAABD7001BC3BA5D00522E67 /* mousemng.c in Sources */,
-				BAABD7031BC3BA5D00522E67 /* soundmng.c in Sources */,
 				BAABD6E31BC3BA5D00522E67 /* sndboard.c in Sources */,
 				BAABD71F1BC3BA5D00522E67 /* makemix.c in Sources */,
 				BAABD7231BC3BA5E00522E67 /* maketxtl.c in Sources */,
 				BAABD6E01BC3BA5D00522E67 /* pcg.c in Sources */,
+				BA80D0291C4B9DCD00AE7400 /* externalopna.cpp in Sources */,
 				BAABD72B1BC3BA5E00522E67 /* z80c.c in Sources */,
 				BAABD6AF1BC3BA5D00522E67 /* milstr.c in Sources */,
+				BA80D0281C4B9DCD00AE7400 /* externalopm.cpp in Sources */,
 				BAABD7251BC3BA5E00522E67 /* scrndraw.c in Sources */,
 				BAABD6D51BC3BA5D00522E67 /* ievent.c in Sources */,
 				BAABD70F1BC3BA5D00522E67 /* xmil.c in Sources */,
@@ -889,8 +1021,10 @@
 				BAABD6A91BC3BA5D00522E67 /* ucs2sjis.c in Sources */,
 				BAABD6DD1BC3BA5D00522E67 /* fdc.c in Sources */,
 				BAABD7301BC3BA5E00522E67 /* z80c_iy.c in Sources */,
+				BA80D04B1C4B9E0600AE7400 /* sccisoundinterfacemanager.cpp in Sources */,
 				BAABD6CC1BC3BA5D00522E67 /* fdd_mtr.c in Sources */,
 				BAABD6A11BC3BA5D00522E67 /* calendar.c in Sources */,
+				BA80D04A1C4B9E0600AE7400 /* sccisoundinterface.cpp in Sources */,
 				BAABD6C81BC3BA5D00522E67 /* diskdrv.c in Sources */,
 				BAABD6AD1BC3BA5D00522E67 /* bmpdata.c in Sources */,
 				BAABD7211BC3BA5D00522E67 /* makesub.c in Sources */,
@@ -898,8 +1032,10 @@
 				BAABD70A1BC3BA5D00522E67 /* trace.c in Sources */,
 				BAABD6DC1BC3BA5D00522E67 /* dmac.c in Sources */,
 				BAABD72F1BC3BA5E00522E67 /* z80c_ix.c in Sources */,
+				BA80D0581C4B9E8300AE7400 /* usbdev.cpp in Sources */,
 				BAABD7311BC3BA5E00522E67 /* z80c_mn.c in Sources */,
 				BAABD6EE1BC3BA5D00522E67 /* ini.c in Sources */,
+				BA80D02A1C4B9DCD00AE7400 /* externalpsg.cpp in Sources */,
 				BAABD6CD1BC3BA5D00522E67 /* fddfile.c in Sources */,
 				BAABD7101BC3BA5D00522E67 /* opmgenc.c in Sources */,
 				BAABD6E91BC3BA5D00522E67 /* pccore.c in Sources */,
@@ -907,11 +1043,13 @@
 				BAABD71B1BC3BA5D00522E67 /* make15.c in Sources */,
 				BAABD6D71BC3BA5D00522E67 /* cmt.c in Sources */,
 				BAABD6C71BC3BA5D00522E67 /* vrammix.c in Sources */,
+				BA80D0261C4B9DCD00AE7400 /* externalchipmanager.cpp in Sources */,
 				BAABD7261BC3BA5E00522E67 /* scrnsave.c in Sources */,
 				BAABD7141BC3BA5D00522E67 /* sndcsec.c in Sources */,
 				BAABD6AC1BC3BA5D00522E67 /* _memory.c in Sources */,
 				BAABD6A61BC3BA5D00522E67 /* tcswap16.c in Sources */,
 				BAABD6B01BC3BA5D00522E67 /* parts.c in Sources */,
+				BA80D0391C4B9DE700AE7400 /* c86ctlif.cpp in Sources */,
 				BAABD6B31BC3BA5D00522E67 /* resize.c in Sources */,
 				BAABD6ED1BC3BA5D00522E67 /* fontmng.c in Sources */,
 				BAABD7341BC3BA5E00522E67 /* z80dmap.c in Sources */,
@@ -924,33 +1062,41 @@
 				BAABD6C01BC3BA5D00522E67 /* menuicon.c in Sources */,
 				BAABD6DB1BC3BA5D00522E67 /* dipsw.c in Sources */,
 				BAABD6C31BC3BA5D00522E67 /* menusys.c in Sources */,
+				BA80D05C1C4B9F4B00AE7400 /* psg.cpp in Sources */,
 				BAABD6F51BC3BA5D00522E67 /* joymng.c in Sources */,
 				BAABD6A51BC3BA5D00522E67 /* sjisucs2.c in Sources */,
+				BA80D0561C4B9E8300AE7400 /* threadbase.cpp in Sources */,
 				BAABD7161BC3BA5D00522E67 /* sound.c in Sources */,
+				BA80D0481C4B9E0600AE7400 /* scciif.cpp in Sources */,
 				BAABD6AE1BC3BA5D00522E67 /* lstarray.c in Sources */,
+				BA80D04C1C4B9E0600AE7400 /* sccispfmlight.cpp in Sources */,
 				BAABD6D11BC3BA5D00522E67 /* fontmake.c in Sources */,
 				BAABD5611BC3B7DF00522E67 /* main.m in Sources */,
+				BA80D0571C4B9E8300AE7400 /* tty.cpp in Sources */,
 				BAABD7291BC3BA5E00522E67 /* sdrawq16.c in Sources */,
 				BAABD7201BC3BA5D00522E67 /* makescrn.c in Sources */,
+				BA80D0371C4B9DE700AE7400 /* c86ctlc86box.cpp in Sources */,
 				BAABD7221BC3BA5E00522E67 /* maketxth.c in Sources */,
 				BAABD6E51BC3BA5D00522E67 /* vramio.c in Sources */,
-				BAD1A2D01BE756A400B23E7C /* psg.c in Sources */,
 				BAABD6D81BC3BA5D00522E67 /* crtc.c in Sources */,
 				BAABD6DE1BC3BA5D00522E67 /* iocore.c in Sources */,
 				BAABD7011BC3BA5D00522E67 /* scrnmng.c in Sources */,
-				BAD1A2CD1BE7569C00B23E7C /* opm.c in Sources */,
 				BAABD6E81BC3BA5D00522E67 /* nevent.c in Sources */,
 				BAABD6C61BC3BA5D00522E67 /* vramhdl.c in Sources */,
 				BAABD6E21BC3BA5D00522E67 /* sio.c in Sources */,
+				BA80D0271C4B9DCD00AE7400 /* externalopl3.cpp in Sources */,
 				BAABD7131BC3BA5D00522E67 /* psggeng.c in Sources */,
+				BA80D05B1C4B9F4B00AE7400 /* opm.cpp in Sources */,
 				BAABD7271BC3BA5E00522E67 /* sdraw.c in Sources */,
 				BAABD71A1BC3BA5D00522E67 /* timing.c in Sources */,
 				BAABD7181BC3BA5D00522E67 /* statsave.c in Sources */,
+				BA80D0381C4B9DE700AE7400 /* c86ctlgimic.cpp in Sources */,
 				BAABD6C41BC3BA5D00522E67 /* menuvram.c in Sources */,
 				BAABD6CF1BC3BA5D00522E67 /* font.c in Sources */,
 				BAABD6AA1BC3BA5D00522E67 /* ucs2utf8.c in Sources */,
 				BAABD7111BC3BA5D00522E67 /* opmgeng.c in Sources */,
 				BAABD6E11BC3BA5D00522E67 /* ppi.c in Sources */,
+				BA80D03A1C4B9DE700AE7400 /* c86ctlrealchipbase.cpp in Sources */,
 				BAABD71D1BC3BA5D00522E67 /* makeatr.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1062,6 +1208,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					.,
+					./xmilsdl2,
 					..,
 					../..,
 					../../common,
@@ -1096,6 +1243,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					.,
+					./xmilsdl2,
 					..,
 					../..,
 					../../common,

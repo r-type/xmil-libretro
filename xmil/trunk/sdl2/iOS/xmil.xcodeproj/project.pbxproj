@@ -81,7 +81,7 @@
 		BA6D1665193D5CC1006EC729 /* mousemng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B2193D5CC1006EC729 /* mousemng.c */; };
 		BA6D1666193D5CC1006EC729 /* scrnmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B5193D5CC1006EC729 /* scrnmng.c */; };
 		BA6D1667193D5CC1006EC729 /* sdlkbd.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B7193D5CC1006EC729 /* sdlkbd.c */; };
-		BA6D1668193D5CC1006EC729 /* soundmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B9193D5CC1006EC729 /* soundmng.c */; };
+		BA6D1668193D5CC1006EC729 /* soundmng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15B9193D5CC1006EC729 /* soundmng.cpp */; };
 		BA6D1669193D5CC1006EC729 /* sysmenu.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15BB193D5CC1006EC729 /* sysmenu.c */; };
 		BA6D166C193D5CC1006EC729 /* sysmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15BF193D5CC1006EC729 /* sysmng.c */; };
 		BA6D166D193D5CC1006EC729 /* taskmng.c in Sources */ = {isa = PBXBuildFile; fileRef = BA6D15C1193D5CC1006EC729 /* taskmng.c */; };
@@ -335,7 +335,7 @@
 		BA6D15B6193D5CC1006EC729 /* scrnmng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scrnmng.h; sourceTree = "<group>"; };
 		BA6D15B7193D5CC1006EC729 /* sdlkbd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sdlkbd.c; sourceTree = "<group>"; };
 		BA6D15B8193D5CC1006EC729 /* sdlkbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sdlkbd.h; sourceTree = "<group>"; };
-		BA6D15B9193D5CC1006EC729 /* soundmng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = soundmng.c; sourceTree = "<group>"; };
+		BA6D15B9193D5CC1006EC729 /* soundmng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundmng.cpp; sourceTree = "<group>"; };
 		BA6D15BA193D5CC1006EC729 /* soundmng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundmng.h; sourceTree = "<group>"; };
 		BA6D15BB193D5CC1006EC729 /* sysmenu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sysmenu.c; sourceTree = "<group>"; };
 		BA6D15BC193D5CC1006EC729 /* sysmenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sysmenu.h; sourceTree = "<group>"; };
@@ -781,7 +781,7 @@
 				BA6D15B6193D5CC1006EC729 /* scrnmng.h */,
 				BA6D15B7193D5CC1006EC729 /* sdlkbd.c */,
 				BA6D15B8193D5CC1006EC729 /* sdlkbd.h */,
-				BA6D15B9193D5CC1006EC729 /* soundmng.c */,
+				BA6D15B9193D5CC1006EC729 /* soundmng.cpp */,
 				BA6D15BA193D5CC1006EC729 /* soundmng.h */,
 				BA6D15BB193D5CC1006EC729 /* sysmenu.c */,
 				BA6D15BC193D5CC1006EC729 /* sysmenu.h */,
@@ -1046,7 +1046,7 @@
 				BA6D162C193D5CC1006EC729 /* filesel.c in Sources */,
 				BA6D1616193D5CC1006EC729 /* sjisucs2.c in Sources */,
 				BA6D1632193D5CC1006EC729 /* menumbox.c in Sources */,
-				BA6D1668193D5CC1006EC729 /* soundmng.c in Sources */,
+				BA6D1668193D5CC1006EC729 /* soundmng.cpp in Sources */,
 				BA6D1629193D5CC1006EC729 /* debugsub.c in Sources */,
 				BA6D1669193D5CC1006EC729 /* sysmenu.c in Sources */,
 				BA6D1624193D5CC1006EC729 /* resize.c in Sources */,
