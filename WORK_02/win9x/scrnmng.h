@@ -32,8 +32,8 @@ enum {
 };
 
 typedef struct {
-	UINT8	bpp;
 	UINT8	flag;
+	UINT8	bpp;
 	UINT8	allflash;
 	UINT8	palchanged;
 } SCRNMNG;
@@ -43,12 +43,11 @@ typedef struct {
 extern "C" {
 #endif
 
-extern	REG8		scrnmode;
 extern	SCRNMNG		scrnmng;			// É}ÉNÉçóp
 
 // void scrnmng_setwidth(int posx, int width);
 void scrnmng_setheight(int posy, int height);	// ddraws_change_drawlines
-BRESULT scrnmng_setcolormode(BRESULT fullcolor);
+BRESULT scrnmng_setcolormode(BOOL fullcolor);
 const SCRNSURF *scrnmng_surflock(void);
 void scrnmng_surfunlock(const SCRNSURF *surf);
 void scrnmng_update(void);						// ddraws_drawall
@@ -70,7 +69,6 @@ RGB16 scrnmng_makepal16(RGB32 pal32);			// pal_get16pal
 void scrnmng_initialize(void);						// ddraws_initwindowsize
 BRESULT scrnmng_create(UINT8 scrnmode);				// ddraws_InitDirectDraw
 void scrnmng_destroy(void);							// ddraws_TermDirectDraw
-BRESULT scrnmng_changescreen(REG8 newmode);
 #if defined(SUPPORT_DCLOCK)
 void scrnmng_dispclock(void);						// ddraws_dispclock
 #endif	// defined(SUPPORT_DCLOCK)
