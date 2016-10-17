@@ -54,11 +54,6 @@ void CExternalPsg::WriteRegister(UINT nAddr, UINT8 cData)
 		if (nAddr == 0x07)
 		{
 			// psg mix
-			cData &= 0x3f;
-			if (m_cPsgMix == cData)
-			{
-				return;
-			}
 			m_cPsgMix = cData;
 		}
 		WriteRegisterInner(nAddr, cData);

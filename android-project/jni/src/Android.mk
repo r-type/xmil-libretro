@@ -39,7 +39,6 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 		$(wildcard $(XMIL_PATH)/font/*.c) \
 		$(wildcard $(XMIL_PATH)/io/*.c) \
 		$(wildcard $(XMIL_PATH)/sdl2/*.c) \
-		$(wildcard $(XMIL_PATH)/sdl2/*.cpp) \
 		$(wildcard $(XMIL_PATH)/sound/*.c) \
 		$(wildcard $(XMIL_PATH)/vram/*.c) \
 		$(wildcard $(XMIL_PATH)/z80c/*.c) \
