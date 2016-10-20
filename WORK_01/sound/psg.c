@@ -41,7 +41,9 @@ void psg_reset(PPSG psg, REG8 cCaps)
 	psg->s.reg[0x0e] = 0xff;
 	psg->s.reg[0x0f] = 0xff;
 
+#if !defined(DISABLE_SOUND)
 	psggen_reset(&psg->psg);
+#endif	/* !defined(DISABLE_SOUND) */
 }
 
 /**
@@ -74,10 +76,12 @@ void psg_bind(PPSG psg)
 
 	psg_restore(psg);
 
+#if !defined(DISABLE_SOUND)
 	if (cCaps & PSG_HAS_PSG)
 	{
 		sound_streamregist(&psg->psg, (SOUNDCB)psggen_getpcm);
 	}
+#endif /* !defined(DISABLE_SOUND) */
 }
 
 /**
@@ -123,6 +127,7 @@ void psg_writeRegister(PPSG psg, REG8 nAddress, REG8 cData)
  */
 static void writeRegister(PPSG psg, REG8 nAddress, REG8 cData)
 {
+#if !defined(DISABLE_SOUND)
 	const UINT8 cCaps = psg->s.cCaps;
 
 	if (nAddress < 0x10)
@@ -133,6 +138,7 @@ static void writeRegister(PPSG psg, REG8 nAddress, REG8 cData)
 			psggen_setreg(&psg->psg, nAddress, cData);
 		}
 	}
+#endif /* !defined(DISABLE_SOUND) */
 }
 
 /**

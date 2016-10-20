@@ -5,7 +5,9 @@
 
 #pragma once
 
+#if !defined(DISABLE_SOUND)
 #include "psggen.h"
+#endif	/* !defined(DISABLE_SOUND) */
 
 /**
  * Chips flags
@@ -32,8 +34,10 @@ struct tagPsgState
 struct tagPsg
 {
 	struct tagPsgState s;
+#if !defined(DISABLE_SOUND)
 	INTPTR userdata;
 	_PSGGEN psg;
+#endif	/* !defined(DISABLE_SOUND) */
 };
 
 typedef struct tagPsg PSG;
