@@ -526,7 +526,7 @@ extern	UINT	lastpc;
 #define MCR_OUT_BYTE {													\
 		REG8 tmp;														\
 		GET_PC_BYTE(tmp);												\
-		iocore_out((R_Z80A << 8) + tmp, tmp);							\
+		iocore_out((R_Z80A << 8) + tmp, R_Z80A);						\
 	}
 
 #define MCR_SUB_BYTE {													\
