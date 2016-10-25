@@ -166,8 +166,6 @@ SCRNSAVE scrnsave_get(void) {
 	int			width;
 	int			height;
 	SCRNDATA	*sd;
-	PALNUM		*dat;
-	UINT		scrnsize;
 	PALNUM		*s;
 	UINT		pals;
 	PALNUM		remap[XMILPAL_MAX];
@@ -189,8 +187,6 @@ SCRNSAVE scrnsave_get(void) {
 	}
 	ZeroMemory(sd, sizeof(SCRNDATA));
 
-	dat = sd->dat;
-	scrnsize = SURFACE_WIDTH * SURFACE_HEIGHT;
 	scmix[makescrn.drawmode](sd->dat, screenmap);
 
 	// パレット最適化

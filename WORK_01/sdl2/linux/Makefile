@@ -7,7 +7,7 @@ RM		=	rm -f
 
 XMIL_PATH	= ../..
 
-CFLAGS	=	-Wall -O3 -I. -I.. \
+CFLAGS	=	-Wall -O3 -Wstrict-overflow=0 -I. -I.. \
 			-I$(XMIL_PATH) \
 			-I$(XMIL_PATH)/common \
 			-I$(XMIL_PATH)/embed \
