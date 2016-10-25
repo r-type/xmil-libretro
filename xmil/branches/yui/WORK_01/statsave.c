@@ -516,6 +516,7 @@ static int flagload_disk(STFLAGH sfh, const SFENTRY *tbl) {
 
 	ret = STATFLAG_SUCCESS;
 	for (i=0; i<MAX_FDDFILE; i++) {
+		memset(&st, 0, sizeof(st));
 		ret |= statflag_read(sfh, &st, sizeof(st));
 		if (st.fname[0]) {
 			fddfile_set(i, st.fname, st.ftype, st.readonly);

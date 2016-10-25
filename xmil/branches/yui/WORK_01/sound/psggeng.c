@@ -14,7 +14,6 @@ void SOUNDCALL psggen_getpcm(PSGGEN psg, SINT32 *pcm, UINT count) {
 
 	UINT	r;
 	SINT32	*p;
-	SINT32	noisevol;
 	UINT8	mixer;
 	UINT	noisetbl;
 	PSGTONE	*tone;
@@ -42,7 +41,6 @@ void SOUNDCALL psggen_getpcm(PSGGEN psg, SINT32 *pcm, UINT count) {
 		}
 		while(r) {
 			r--;
-			noisevol = 0;
 			mixer = psg->mixer;
 			noisetbl = 0;
 			if (mixer & 0x38) {
