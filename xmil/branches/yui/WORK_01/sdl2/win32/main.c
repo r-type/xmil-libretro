@@ -7,8 +7,13 @@
 #include "..\xmil.h"
 #include "..\fontmng.h"
 
+#if (SDL_MAJOR_VERSION >= 2)
 #pragma comment(lib, "SDL2.lib")
 #pragma comment(lib, "SDL2main.lib")
+#else	/* (SDL_MAJOR_VERSION >= 2) */
+#pragma comment(lib, "SDL.lib")
+#pragma comment(lib, "SDLmain.lib")
+#endif	/* (SDL_MAJOR_VERSION >= 2) */
 
 #if !defined(RESOURCE_US)
 #pragma comment(lib, "SDL2_ttf.lib")
