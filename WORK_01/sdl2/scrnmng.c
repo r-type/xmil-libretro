@@ -7,9 +7,11 @@
 #include	"vramhdl.h"
 #include	"menubase.h"
 
+#if (SDL_MAJOR_VERSION >= 2)
 static SDL_Window *s_sdlWindow;
 static SDL_Renderer *s_renderer;
 static SDL_Texture *s_texture;
+#endif	/* (SDL_MAJOR_VERSION >= 2) */
 static SDL_Surface *s_surface;
 
 typedef struct {
@@ -86,11 +88,34 @@ BOOL scrnmng_create(int width, int height) {
 		fprintf(stderr, "Error: SDL_Init: %s\n", SDL_GetError());
 		return(FAILURE);
 	}
+
+#if (SDL_MAJOR_VERSION >= 2)
+
 	s_sdlWindow = SDL_CreateWindow(app_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0);
 	s_renderer = SDL_CreateRenderer(s_sdlWindow, -1, 0);
 	SDL_RenderSetLogicalSize(s_renderer, width, height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, height);
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 16, 0xf800, 0x07e0, 0x001f, 0);
+
+#else	/* (SDL_MAJOR_VERSION >= 2) */
+
+	{
+		SDL_WM_SetCaption(app_name, app_name);
+		const SDL_VideoInfo *vinfo = SDL_GetVideoInfo();
+		if (vinfo == NULL)
+		{
+			fprintf(stderr, "Error: SDL_GetVideoInfo: %s\n", SDL_GetError());
+			return FAILURE;
+		}
+		s_surface = SDL_SetVideoMode(width, height, vinfo->vfmt->BitsPerPixel, SDL_HWSURFACE | SDL_ANYFORMAT | SDL_DOUBLEBUF);
+		if (s_surface == NULL)
+		{
+			fprintf(stderr, "Error: SDL_SetVideoMode: %s\n", SDL_GetError());
+			return FAILURE;
+		}
+	}
+
+#endif	/* (SDL_MAJOR_VERSION >= 2) */
 
 	surface = s_surface;
 	r = FALSE;
@@ -129,7 +154,7 @@ BOOL scrnmng_create(int width, int height) {
 		return(SUCCESS);
 	}
 	else {
-		fprintf(stderr, "Error: Bad screen mode");
+		fprintf(stderr, "Error: Bad screen mode (%d)\n", fmt->BitsPerPixel);
 		return(FAILURE);
 	}
 }
@@ -288,10 +313,18 @@ const BYTE		*a;
 	}
 	SDL_UnlockSurface(surface);
 
+#if (SDL_MAJOR_VERSION >= 2)
+
 	SDL_UpdateTexture(s_texture, NULL, surface->pixels, surface->pitch);
 	SDL_RenderClear(s_renderer);
 	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
 	SDL_RenderPresent(s_renderer);
+
+#else /* (SDL_MAJOR_VERSION >= 2) */
+
+	SDL_Flip(surface);
+
+#endif /* (SDL_MAJOR_VERSION >= 2) */
 }
 
 void scrnmng_surfunlock(const SCRNSURF *surf) {
@@ -305,10 +338,18 @@ void scrnmng_surfunlock(const SCRNSURF *surf) {
 				scrnmng.surface = NULL;
 				SDL_UnlockSurface(surface);
 
+#if (SDL_MAJOR_VERSION >= 2)
+
 				SDL_UpdateTexture(s_texture, NULL, surface->pixels, surface->pitch);
 				SDL_RenderClear(s_renderer);
 				SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
 				SDL_RenderPresent(s_renderer);
+
+#else /* (SDL_MAJOR_VERSION >= 2) */
+
+				SDL_Flip(surface);
+
+#endif /* (SDL_MAJOR_VERSION >= 2) */
 			}
 		}
 		else {
@@ -468,9 +509,17 @@ const BYTE		*q;
 	}
 	SDL_UnlockSurface(surface);
 
+#if (SDL_MAJOR_VERSION >= 2)
+
 	SDL_UpdateTexture(s_texture, NULL, surface->pixels, surface->pitch);
 	SDL_RenderClear(s_renderer);
 	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
 	SDL_RenderPresent(s_renderer);
+
+#else /* (SDL_MAJOR_VERSION >= 2) */
+
+	SDL_Flip(surface);
+
+#endif /* (SDL_MAJOR_VERSION >= 2) */
 }
 
