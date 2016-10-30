@@ -51,7 +51,15 @@ enum {
 	MID_JOY1,
 	MID_JOY2,
 	MID_MOUSEKEY,
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#if defined(SUPPORT_OPMx2)
+	MID_OPM_NONE,
+	MID_OPM_1,
+	MID_OPM_2,
+#else	/* defined(SUPPORT_OPMx2) */
 	MID_FMBOARD,
+#endif	/* defined(SUPPORT_OPMx2) */
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
 	MID_JOYSTICK,
 	MID_MOUSE,
 	MID_SEEKSND,
