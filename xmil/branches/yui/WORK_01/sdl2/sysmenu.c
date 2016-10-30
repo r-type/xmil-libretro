@@ -159,10 +159,20 @@ static void sys_cmd(MENUID id) {
 #endif
 
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#if defined(SUPPORT_OPMx2)
+		case MID_OPM_NONE:
+		case MID_OPM_1:
+		case MID_OPM_2:
+			xmilcfg.SOUND_SW = (UINT8)(id - MID_OPM_NONE);
+			update = SYS_UPDATECFG;
+			break;
+
+#else	/* defined(SUPPORT_OPMx2) */
 		case MID_FMBOARD:
 			xmilcfg.SOUND_SW ^= 1;
 			update = SYS_UPDATECFG;
 			break;
+#endif	/* defined(SUPPORT_OPMx2) */
 #endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
 
 #if !defined(DISABLE_SOUND)
@@ -257,7 +267,14 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_JOY2, (b == 2));
 	menusys_setcheck(MID_MOUSEKEY, (b == 3));
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	menusys_setcheck(MID_FMBOARD, (xmilcfg.SOUND_SW & 1));
+	b = xmilcfg.SOUND_SW;
+#if defined(SUPPORT_OPMx2)
+	menusys_setcheck(MID_OPM_NONE, (b == 0));
+	menusys_setcheck(MID_OPM_1, (b == 1));
+	menusys_setcheck(MID_OPM_2, (b == 2));
+#else	/* defined(SUPPORT_OPMx2) */
+	menusys_setcheck(MID_FMBOARD, (b != 0));
+#endif	/* defined(SUPPORT_OPMx2) */
 #endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
 #if !defined(DISABLE_SOUND)
 	menusys_setcheck(MID_SEEKSND, (xmilcfg.MOTOR & 1));
