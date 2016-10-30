@@ -26,7 +26,8 @@ PCH		=	compiler.h
 
 TARGET	=	xmil
 
-CPPSRCS	=	./main.c \
+CPPSRCS	=	./main.cpp \
+			$(wildcard ./nbv4/*.cpp) \
 			$(wildcard $(XMIL_PATH)/*.c) \
 			$(wildcard $(XMIL_PATH)/codecnv/*.c) \
 			$(wildcard $(XMIL_PATH)/common/*.c) \
@@ -41,9 +42,11 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(XMIL_PATH)/sound/*.c) \
 			$(wildcard $(XMIL_PATH)/vram/*.c) \
 			$(wildcard $(XMIL_PATH)/z80c/*.c)
+CPPSRCS := $(filter-out $(XMIL_PATH)/sound/opm.c, $(CPPSRCS))
+CPPSRCS := $(filter-out $(XMIL_PATH)/sound/psg.c, $(CPPSRCS))
 
 OBJS = $(addsuffix .o,$(basename $(CPPSRCS)))
-LIBS = -lm $(shell sdl-config --libs)
+LIBS = -lm $(shell sdl-config --libs) -lwiringPi -lstdc++
 
 .SUFFIXES: .c.o
 .SUFFIXES: .cpp.o

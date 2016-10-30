@@ -98,6 +98,7 @@ typedef signed char BOOL;
 #define	SOUNDRESERVE	100
 
 #define	SUPPORT_OPM
+#define	SUPPORT_OPMx2
 
 #define	SCREEN_BPP		32
 
