@@ -36,7 +36,7 @@ static const PFTBL iniitem[] = {
 	{"Seek_Vol", PFMAX_UINT8,		&xmilcfg.MOTORVOL,		100},
 #endif	/* !defined(DISABLE_SOUND) */
 #if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
-	{"OPMsound", PFTYPE_BOOL,		&xmilcfg.SOUND_SW,		0},
+	{"OPMsound", PFTYPE_UINT8,		&xmilcfg.SOUND_SW,		0},
 #endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
 
 	{"MouseInt", PFTYPE_BOOL,		&xmilcfg.MOUSE_SW,		0},
