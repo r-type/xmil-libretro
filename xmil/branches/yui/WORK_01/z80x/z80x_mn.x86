@@ -730,9 +730,10 @@ rst_38:			MCRRST	0x38
 
 
 				align	16
-out_byte_a:		GETPCDL
-				mov		cl, dl
-				mov		ch, [edi + R_Z80A]
+out_byte_a:		GETPCAL
+				mov		dl, [edi + R_Z80A]
+				mov		cl, al
+				mov		ch, dl
 				movzx	ecx, cx
 				jmp		@iocore_out@8
 
