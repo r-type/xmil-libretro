@@ -23,10 +23,41 @@ enum {
 	DID_FILTER
 };
 
+#if defined(OSLANG_SJIS) && !defined(RESOURCE_US)
+static const OEMCHAR str_dirname[] =			// ファイルの場所
+			"\203\164\203\100\203\103\203\213\202\314\217\352\217\212";
+static const OEMCHAR str_filename[] =			// ファイル名
+			"\203\164\203\100\203\103\203\213\226\274";
+static const OEMCHAR str_filetype[] =			// ファイルの種類
+			"\203\164\203\100\203\103\203\213\202\314\216\355\227\336";
+static const OEMCHAR str_open[] =				// 開く
+			"\212\112\202\255";
+#elif defined(OSLANG_EUC) && !defined(RESOURCE_US)
+static const OEMCHAR str_dirname[] =			// ファイルの場所
+			"\245\325\245\241\245\244\245\353\244\316\276\354\275\352";
+static const OEMCHAR str_filename[] =			// ファイル名
+			"\245\325\245\241\245\244\245\353\314\276";
+static const OEMCHAR str_filetype[] =			// ファイルの種類
+			"\245\325\245\241\245\244\245\353\244\316\274\357\316\340";
+static const OEMCHAR str_open[] =				// 開く
+			"\263\253\244\257";
+#elif defined(OSLANG_UTF8) && !defined(RESOURCE_US)
+static const OEMCHAR str_dirname[] =			// ファイルの場所
+			"\343\203\225\343\202\241\343\202\244\343\203\253\343\201\256" \
+			"\345\240\264\346\211\200";
+static const OEMCHAR str_filename[] =			// ファイル名
+			"\343\203\225\343\202\241\343\202\244\343\203\253\345\220\215";
+static const OEMCHAR str_filetype[] =			// ファイルの種類
+			"\343\203\225\343\202\241\343\202\244\343\203\253\343\201\256" \
+			"\347\250\256\351\241\236";
+static const OEMCHAR str_open[] =				// 開く
+			"\351\226\213\343\201\217";
+#else
 static const OEMCHAR str_dirname[] = OEMTEXT("Look in");
 static const OEMCHAR str_filename[] = OEMTEXT("File name");
 static const OEMCHAR str_filetype[] = OEMTEXT("Files of type");
 static const OEMCHAR str_open[] = OEMTEXT("Open");
+#endif
 
 #if defined(SIZE_QVGA)
 enum {

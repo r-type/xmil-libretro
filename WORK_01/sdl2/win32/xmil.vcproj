@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;..\;..\..\;..\..\common;..\..\embed;..\..\embed\menu;..\..\embed\menubase;..\..\fdd;..\..\font;..\..\io;..\..\sound;..\..\vram;..\..\z80c"
+				AdditionalIncludeDirectories=".\;..\;..\..\;..\..\common;..\..\fdd;..\..\font;..\..\io;..\..\sound;..\..\vram;..\..\z80c"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".\;..\;..\..\;..\..\common;..\..\embed;..\..\embed\menu;..\..\embed\menubase;..\..\fdd;..\..\font;..\..\io;..\..\sound;..\..\vram;..\..\z80c"
+				AdditionalIncludeDirectories=".\;..\;..\..\;..\..\common;..\..\fdd;..\..\font;..\..\io;..\..\sound;..\..\vram;..\..\z80c"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

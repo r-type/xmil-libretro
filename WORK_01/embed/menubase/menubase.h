@@ -10,14 +10,6 @@
 typedef unsigned short		MENUID;
 typedef unsigned short		MENUFLG;
 
-// #include	"menuvram.h"
-// #include	"menuicon.h"
-// #include	"menusys.h"
-// #include	"menudlg.h"
-// #include	"menumbox.h"
-// #include	"menures.h"
-
-
 enum {
 	MENU_DISABLE		= 0x0001,
 	MENU_GRAY			= 0x0002,
@@ -87,3 +79,4 @@ void menubase_modalproc(void);
 #ifdef __cplusplus
 }
 #endif
+

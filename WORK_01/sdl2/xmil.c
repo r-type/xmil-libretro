@@ -15,8 +15,7 @@
 #include "diskdrv.h"
 #include "timing.h"
 #include "keystat.h"
-#include "vramhdl.h"
-#include "menubase.h"
+#include "embed/menubase/menubase.h"
 #include "sysmenu.h"
 
 		XMILOSCFG	xmiloscfg = {0, 0};
