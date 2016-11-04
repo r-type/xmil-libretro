@@ -100,3 +100,4 @@ void vrammix_textex(VRAMHDL dst, void *fhdl, const OEMCHAR *str,
 #ifdef __cplusplus
 }
 #endif
+

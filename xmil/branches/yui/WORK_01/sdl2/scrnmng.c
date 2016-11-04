@@ -1,11 +1,7 @@
 #include	"compiler.h"
-// #include	<sys/time.h>
-// #include	<signal.h>
-// #include	<unistd.h>
 #include	"scrnmng.h"
 #include	"scrndraw.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
+#include "embed/menubase/menubase.h"
 
 #if (SDL_MAJOR_VERSION >= 2)
 static SDL_Window *s_sdlWindow;

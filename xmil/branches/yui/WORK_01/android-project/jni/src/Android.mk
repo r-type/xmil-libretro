@@ -14,9 +14,6 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include \
 	$(XMIL_PATH) \
 	$(XMIL_PATH)/codecnv \
 	$(XMIL_PATH)/common \
-	$(XMIL_PATH)/embed \
-	$(XMIL_PATH)/embed/menu \
-	$(XMIL_PATH)/embed/menubase \
 	$(XMIL_PATH)/fdd \
 	$(XMIL_PATH)/font \
 	$(XMIL_PATH)/io \
