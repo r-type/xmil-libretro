@@ -29,7 +29,7 @@
 _out_byte_a:	Z80WORK	#7
 				GETPC8
 				and		r2, rAF, #(0xff << 8)
-				mov		r1, r0
+				lsr		r1, rAF, #8
 				orr		r0, r2, r0
 				b		fastioout
 
