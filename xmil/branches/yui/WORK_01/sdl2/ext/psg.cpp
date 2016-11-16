@@ -90,7 +90,7 @@ void psg_bind(PPSG psg)
 	CExternalPsg* pExt = reinterpret_cast<CExternalPsg*>(psg->userdata);
 	if (pExt == NULL)
 	{
-		pExt = static_cast<CExternalPsg*>(CExternalChipManager::GetInstance()->GetInterface(IExternalChip::kAY8910, 4000000));
+		pExt = static_cast<CExternalPsg*>(CExternalChipManager::GetInstance()->GetInterface(IExternalChip::kAY8910, 2000000));
 		psg->userdata = reinterpret_cast<INTPTR>(pExt);
 	}
 	if (pExt)
