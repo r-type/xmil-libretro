@@ -61,7 +61,7 @@ IExternalChip* CExternalChipManager::GetInterface(IExternalChip::ChipType nChipT
 		switch (nChipType)
 		{
 			case IExternalChip::kAY8910:
-				pChip = GetInterface(IExternalChip::kYM2203, nClock);
+				pChip = GetInterface(IExternalChip::kYM2203, nClock * 2);
 				break;
 
 			case IExternalChip::kYM2203:
