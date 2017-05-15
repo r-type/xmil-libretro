@@ -81,7 +81,10 @@ void IOOUTCALL memio_ram(UINT port, REG8 dat) {
 
 static const OEMCHAR iplromx1[] = OEMTEXT("IPLROM.X1");
 static const OEMCHAR iplromx1t[] = OEMTEXT("IPLROM.X1T");
-
+#ifdef __LIBRETRO__
+extern char retro_system_conf[512];
+extern char slash ;
+#endif
 void memio_reset(void) {
 
 const OEMCHAR	*iplfile;
@@ -99,7 +102,13 @@ const OEMCHAR	*iplfile;
 			iplfile = iplromx1;
 			iplsize = 0x8000;
 		}
+#ifdef __LIBRETRO__
+	char rtmp[512];
+	sprintf(rtmp,"%s%c%s\0",retro_system_conf,slash,iplfile);
+		fh = file_open_rb(rtmp);
+#else
 		fh = file_open_rb_c(iplfile);
+#endif
 		if (fh != FILEH_INVALID) {
 			file_read(fh, biosmem, iplsize);
 			file_close(fh);

@@ -1,0 +1,35 @@
+XMIL_PATH := ..
+CORE_DIR := ..
+
+INCFLAGS := -I$(CORE_DIR) \
+	-I$(CORE_DIR)/libretro \
+	-I$(XMIL_PATH) \
+	-I$(XMIL_PATH)/codecnv \
+	-I$(XMIL_PATH)/common \
+	-I$(XMIL_PATH)/embed \
+	-I$(XMIL_PATH)/embed/menu \
+	-I$(XMIL_PATH)/embed/menubase \
+	-I$(XMIL_PATH)/fdd \
+	-I$(XMIL_PATH)/font \
+	-I$(XMIL_PATH)/io \
+	-I$(XMIL_PATH)/sound \
+	-I$(XMIL_PATH)/vram \
+	-I$(XMIL_PATH)/z80c
+
+SOURCES_C :=  \
+		$(wildcard $(XMIL_PATH)/*.c) \
+		$(wildcard $(XMIL_PATH)/codecnv/*.c) \
+		$(wildcard $(XMIL_PATH)/common/*.c) \
+		$(wildcard $(XMIL_PATH)/embed/*.c) \
+		$(wildcard $(XMIL_PATH)/embed/menu/*.c) \
+		$(wildcard $(XMIL_PATH)/embed/menubase/*.c) \
+		$(wildcard $(XMIL_PATH)/fdd/*.c) \
+		$(wildcard $(XMIL_PATH)/font/*.c) \
+		$(wildcard $(XMIL_PATH)/io/*.c) \
+		$(wildcard $(XMIL_PATH)/libretro/*.c) \
+		$(wildcard $(XMIL_PATH)/sound/*.c) \
+		$(wildcard $(XMIL_PATH)/vram/*.c) \
+		$(wildcard $(XMIL_PATH)/z80c/*.c)
+
+
+#SOURCES_CXX := 

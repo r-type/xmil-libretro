@@ -1,0 +1,180 @@
+
+static const OEMCHAR str_emulate[] = OEMTEXT("Emulate");
+static const OEMCHAR str_iplreset[] = OEMTEXT("IPL Reset");
+static const OEMCHAR str_nmireset[] = OEMTEXT("NMI Reset");
+static const OEMCHAR str_config[] = OEMTEXT("Configure...");
+static const OEMCHAR str_newdisk[] = OEMTEXT("NewDisk...");
+static const OEMCHAR str_exit[] = OEMTEXT("Exit");
+
+static const OEMCHAR str_fdd0[] = OEMTEXT("FDD0");
+static const OEMCHAR str_fdd1[] = OEMTEXT("FDD1");
+static const OEMCHAR str_open[] = OEMTEXT("Open...");
+static const OEMCHAR str_eject[] = OEMTEXT("Eject");
+
+static const OEMCHAR str_iplrom[] = OEMTEXT("IPL-ROM");
+static const OEMCHAR str_x1rom[] = OEMTEXT("X1");
+static const OEMCHAR str_turbo[] = OEMTEXT("turbo");
+static const OEMCHAR str_turboz[] = OEMTEXT("turboZ");
+
+static const OEMCHAR str_dipsw[] = OEMTEXT("DIP-SW");
+static const OEMCHAR str_boot2d[] = OEMTEXT("boot 2D");
+static const OEMCHAR str_boot2hd[] = OEMTEXT("boot 2HD");
+static const OEMCHAR str_highreso[] = OEMTEXT("HIGH RESO.");
+static const OEMCHAR str_standard[] = OEMTEXT("Standard");
+
+static const OEMCHAR str_screen[] = OEMTEXT("Screen");
+static const OEMCHAR str_window[] = OEMTEXT("Window");
+static const OEMCHAR str_fullscrn[] = OEMTEXT("FullScreen");
+static const OEMCHAR str_dispsync[] = OEMTEXT("Disp Vsync");
+static const OEMCHAR str_raster[] = OEMTEXT("Raster");
+static const OEMCHAR str_nowait[] = OEMTEXT("No Wait");
+static const OEMCHAR str_autoframe[] = OEMTEXT("Auto frame");
+static const OEMCHAR str_60fps[] = OEMTEXT("Full frame");
+static const OEMCHAR str_30fps[] = OEMTEXT("1/2 frame");
+static const OEMCHAR str_20fps[] = OEMTEXT("1/3 frame");
+static const OEMCHAR str_15fps[] = OEMTEXT("1/4 frame");
+
+static const OEMCHAR str_device[] = OEMTEXT("Device");
+
+#if defined(WIN32_PLATFORM_PSPC)
+static const OEMCHAR str_cursor[] = OEMTEXT("Cursor");
+static const OEMCHAR str_default[] = OEMTEXT("Default");
+static const OEMCHAR str_cur2[] = OEMTEXT("Tenkey");
+static const OEMCHAR str_botton[] = OEMTEXT("Button");
+static const OEMCHAR str_btn1[] = OEMTEXT("RET/SPACE");
+static const OEMCHAR str_btn2[] = OEMTEXT("Z / X");
+#endif
+
+static const OEMCHAR str_keyboard[] = OEMTEXT("Keyboard");
+static const OEMCHAR str_joykey1[] = OEMTEXT("JoyKey-1");
+static const OEMCHAR str_joykey2[] = OEMTEXT("JoyKey-2");
+static const OEMCHAR str_mousekey[] = OEMTEXT("Mouse-Key");
+static const OEMCHAR str_fmboard[] = OEMTEXT("FM Board");
+static const OEMCHAR str_joystick[] = OEMTEXT("Joystick");
+static const OEMCHAR str_mouse[] = OEMTEXT("Mouse");
+static const OEMCHAR str_seeksound[] = OEMTEXT("Seek Sound");
+
+static const OEMCHAR str_other[] = OEMTEXT("Other");
+static const OEMCHAR str_bmpsave[] = OEMTEXT("BMP Save...");
+static const OEMCHAR str_opmlog[] = OEMTEXT("OPM LOG...");
+static const OEMCHAR str_clockdisp[] = OEMTEXT("Clock Disp");
+static const OEMCHAR str_framedisp[] = OEMTEXT("Frame Disp");
+static const OEMCHAR str_joyrev[] = OEMTEXT("Joy Reverse");
+static const OEMCHAR str_joyrapid[] = OEMTEXT("Joy Rapid");
+static const OEMCHAR str_about[] = OEMTEXT("About...");
+
+static const MSYSITEM s_emu[] = {
+		{str_iplreset,		NULL,		MID_IPLRESET,		0},
+		{str_nmireset,		NULL,		MID_NMIRESET,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_config,		NULL,		MID_CONFIG,			0},
+		{str_newdisk,		NULL,		MID_NEWDISK,		MENU_GRAY},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_exit,			NULL,		MID_EXIT,			MENU_DELETED}};
+
+static const MSYSITEM s_fdd0[] = {
+		{str_open,			NULL,		MID_FDD0OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_eject,			NULL,		MID_FDD0EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_fdd1[] = {
+		{str_open,			NULL,		MID_FDD1OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_eject,			NULL,		MID_FDD1EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_ipl[] = {
+		{str_x1rom,			NULL,		MID_X1ROM,			0},
+		{str_turbo,			NULL,		MID_TURBO,
+#if defined(SUPPORT_TURBOZ)
+															0},
+		{str_turboz,		NULL,		MID_TURBOZ,
+#endif
+															MENU_DELETED}};
+
+static const MSYSITEM s_dipsw[] = {
+		{str_boot2d,		NULL,		MID_BOOT2D,			0},
+		{str_boot2hd,		NULL,		MID_BOOT2HD,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_highreso,		NULL,		MID_HIGHRES,		0},
+		{str_standard,		NULL,		MID_LOWRES,			MENU_DELETED}};
+
+static const MSYSITEM s_screen[] = {
+		{str_window,		NULL,		MID_WINDOW,			MENU_GRAY},
+		{str_fullscrn,		NULL,		MID_FULLSCREEN,		MENU_GRAY},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_dispsync,		NULL,		MID_DISPSYNC,		0},
+		{str_raster,		NULL,		MID_RASTER,			0},
+		{str_nowait,		NULL,		MID_NOWAIT,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_autoframe,		NULL,		MID_AUTOFPS,		0},
+		{str_60fps,			NULL,		MID_60FPS,			0},
+		{str_30fps,			NULL,		MID_30FPS,			0},
+		{str_20fps,			NULL,		MID_20FPS,			0},
+		{str_15fps,			NULL,		MID_15FPS,			MENU_DELETED}};
+
+#if defined(WIN32_PLATFORM_PSPC)
+static const MSYSITEM s_bindcur[] = {
+		{str_default,		NULL,		MID_CURDEF,			0},
+		{str_cursor,		NULL,		MID_CUR1,			0},
+		{str_cur2,			NULL,		MID_CUR2,			MENU_DELETED}};
+
+static const MSYSITEM s_bindbtn[] = {
+		{str_default,		NULL,		MID_BTNDEF,			0},
+		{str_btn1,			NULL,		MID_BTN1,			0},
+		{str_btn2,			NULL,		MID_BTN2,			MENU_DELETED}};
+#endif
+
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#if defined(SUPPORT_OPMx2)
+static const MSYSITEM s_fmboard[] = {
+		{"None",			NULL,		MID_OPM_NONE,		0},
+		{"CZ-8BS1",			NULL,		MID_OPM_1,			0},
+		{"CZ-8BS1 x 2",		NULL,		MID_OPM_2,			MENU_DELETED}};
+#endif	/* defined(SUPPORT_OPMx2) */
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
+
+static const MSYSITEM s_device[] = {
+#if defined(WIN32_PLATFORM_PSPC)
+		{str_cursor,		s_bindcur,	MID_STATIC,			0},
+		{str_botton,		s_bindbtn,	MID_STATIC,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#endif
+		{str_keyboard,		NULL,		MID_KEY,			0},
+		{str_joykey1,		NULL,		MID_JOY1,			0},
+		{str_joykey2,		NULL,		MID_JOY2,			0},
+//		{str_mousekey,		NULL,		MID_MOUSEKEY,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM)
+#if defined(SUPPORT_OPMx2)
+		{str_fmboard,		s_fmboard,	MID_STATIC,			0},
+#else	/* defined(SUPPORT_OPMx2) */
+		{str_fmboard,		NULL,		MID_FMBOARD,		0},
+#endif	/* defined(SUPPORT_OPMx2) */
+#endif	/* defined(SUPPORT_TURBOZ) || defined(SUPPORT_OPM) */
+        {str_joystick,		NULL,		MID_JOYSTICK,		MENU_GRAY},
+		{str_mouse,			NULL,		MID_MOUSE,			MENU_GRAY},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_seeksound,		NULL,		MID_SEEKSND,		MENU_DELETED}};
+
+static const MSYSITEM s_other[] = {
+		{str_bmpsave,		NULL,		MID_BMPSAVE,		MENU_GRAY},
+#if defined(SUPPORT_X1F)
+		{str_opmlog,		NULL,		MID_OPMLOG,			0},
+#endif	/* defined(SUPPORT_X1F) */
+		{str_clockdisp,		NULL,		MID_DISPCLOCK,		MENU_GRAY},
+		{str_framedisp,		NULL,		MID_DISPFRAME,		MENU_GRAY},
+		{str_joyrev,		NULL,		MID_JOYX,			0},
+		{str_joyrapid,		NULL,		MID_RAPID,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_about,			NULL,		MID_ABOUT,			MENU_DELETED}};
+
+static const MSYSITEM s_main[] = {
+		{str_emulate,		s_emu,		MID_STATIC,			0},
+		{str_fdd0,			s_fdd0,		MID_STATIC,			0},
+		{str_fdd1,			s_fdd1,		MID_STATIC,			0},
+		{str_iplrom,		s_ipl,		MID_STATIC,			0},
+		{str_dipsw,			s_dipsw,	MID_STATIC,			0},
+		{str_screen,		s_screen,	MID_STATIC,			0},
+		{str_device,		s_device,	MID_STATIC,			0},
+		{str_other,			s_other,	MID_STATIC,			MENU_DELETED}};
+
