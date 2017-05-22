@@ -3,7 +3,7 @@
 extern "C" {
 #endif
 
-REG8 mousemng_getstat(SINT16 *x, SINT16 *y, BOOL clear);
+UINT8 mousemng_getstat(SINT16 *x, SINT16 *y, int clear);
 
 #ifdef __cplusplus
 }

@@ -19,11 +19,11 @@ typedef struct {
 	int		samples;
 	SINT16	*buf[NSNDBUF];
 } SOUNDMNG;
-
+ 
 static	SOUNDMNG	soundmng;
 
 
- void sound_play_cb(void *userdata, UINT8 *stream, int len) {
+void sound_play_cb(void *userdata, UINT8 *stream, int len) {
 
 	int			length;
 	SINT16		*dst;
