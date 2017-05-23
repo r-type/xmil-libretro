@@ -70,7 +70,7 @@ UINT soundmng_create(UINT rate, UINT ms) {
 		samples <<= 1;
 	}
 	soundmng.nsndbuf = 0;
-	soundmng.samples = samples;
+	soundmng.samples = samples=1024;
 /*
 	for (s=0; s<NSNDBUF; s++) {
 		tmp = (SINT16 *)_MALLOC(samples * 2 * sizeof(SINT16), "buf");
