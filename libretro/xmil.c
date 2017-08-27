@@ -106,7 +106,7 @@ static void processwait(UINT cnt) {
 
 
 char* get_file_ext(char* filepath){
-   if(filepath[strlen(filepath) - 2]=='.')return filepath + strlen(filepath) - 2;
+   if(filepath[strlen(filepath) - 3]=='.')return filepath + strlen(filepath) - 2;
    return filepath + strlen(filepath) - 3;
 }
 

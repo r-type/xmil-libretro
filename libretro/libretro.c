@@ -13,6 +13,7 @@
 #include "fontmng.h"
 #include "scrnmng.h"
 #include "soundmng.h"
+#include "mousemng.h"
 #include "sysmng.h"
 #include "taskmng.h"
 #include "joymng.h"
@@ -55,6 +56,9 @@ int CHANGEAV=0;
 
 int pauseg=0;
 
+bool GUIMOUSE =true;
+int PAS=2;
+
 signed short soundbuf[1024*2];
 
 uint16_t videoBuffer[640*400];  //emu  surf
@@ -75,6 +79,14 @@ void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) { audio_batch_c
 void retro_set_input_poll(retro_input_poll_t cb) { input_poll_cb = cb; }
 void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
+#ifdef WIIU
+#include <features_cpu.h>
+#endif
+
+long frame=0;
+unsigned long  Ktime=0 , LastFPSTime=0;
+int slowdown=0;
+
 long GetTicks(void)
 { // in MSec
 #ifndef _ANDROID_
@@ -91,6 +103,8 @@ long GetTicks(void)
    ticks_micro =  secs * 1000000UL + (nsecs / 1000);
 
    return ticks_micro/1000;
+#elif defined(WIIU)
+return (cpu_features_get_time_usec())/1000;
 #else
    struct timeval tv;
    gettimeofday (&tv, NULL);
@@ -105,6 +119,18 @@ long GetTicks(void)
 #endif
 
 } 
+
+void gui_delay_events(void)
+{
+   	Ktime =(unsigned long)  GetTicks();
+
+   	if(Ktime - LastFPSTime >= 1000/50)
+   	{
+      		slowdown=0;
+      		frame++; 
+      		LastFPSTime = Ktime;
+   	}
+}
 
 static char CMDFILE[512];
 
@@ -298,6 +324,8 @@ void retro_set_environment(retro_environment_t cb)
       {
          "x1_analog","Use Analog; OFF|ON",
       },
+      { "X1_GUI_controller" , "Gui Controller; MOUSE|JOY0" },
+      { "X1_GUIJOY_PAS" , "Gui Joy0 PAS; 2|3|4|1" },
       { NULL, NULL },
    };
 
@@ -323,6 +351,26 @@ static void update_variables(void)
 
       fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
    }
+
+   var.key = "X1_GUI_controller";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "MOUSE") == 0)
+         GUIMOUSE= true;
+      else if (strcmp(var.value, "JOY0") == 0)
+         GUIMOUSE = false;
+   }
+
+   var.key = "X1_GUIJOY_PAS";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      PAS = atoi(var.value);      
+   }
+
 }
 
 static const char *cross[] = {
@@ -382,16 +430,20 @@ void draw_cross(int x,int y) {
 }	
 
 static int lastx=320,lasty=200;
+static int menukey=0;
+static int menu_active=0;
 
 void update_input(void)
 {
+ 	static int mposx=640/2,mposy=400/2;
+	int i;
 
-  		input_poll_cb();
+  	input_poll_cb();
 
-  		joymng_sync();
+  	joymng_sync();
 
-		int i;
-		static int mposx=320,mposy=200;
+
+
 
    		for(i=0;i<320;i++)
       			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
@@ -401,23 +453,64 @@ void update_input(void)
 				KEYP(i,i);
 			}
 
-		if(Core_Key_Sate[RETROK_F12] && Core_Key_Sate[RETROK_F12]!=Core_old_Key_Sate[RETROK_F12]  )
+//		if(Core_Key_Sate[RETROK_F12] && Core_Key_Sate[RETROK_F12]!=Core_old_Key_Sate[RETROK_F12]  )
+	   	if ((input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F11) || 
+            input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2)) && menukey==0){
+		      menukey=1; 
+
 			if (menuvram == NULL) {
 				sysmenu_menuopen(0, 0, 0);
 				mposx=0;mposy=0;
 				lastx=0;lasty=0;
+         			mousemng_disable(MOUSEPROC_SYSTEM);
+         			menu_active=1;
 			}
 			else {
 				menubase_close();
+         			mousemng_enable(MOUSEPROC_SYSTEM);
+         			memset(videoBuffer2,0,retrow*retroh*2);
+         			scrndraw_redraw();
+         			menu_active=0;
 			}
+
+		} else if ( !(input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F11) || 
+            input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2)) && menukey==1)
+      menukey=0;
+
+   	if (menuvram == NULL && menu_active==1){
+   	   menubase_close();
+   	   menu_active==0;
+   	   mousemng_enable(MOUSEPROC_SYSTEM);
+   	   memset(videoBuffer2,0,retrow*retroh*2);
+   	   scrndraw_redraw();
+   	}
 
    		memcpy(Core_old_Key_Sate,Core_Key_Sate , sizeof(Core_Key_Sate) );
 
 		static int mbL = 0, mbR = 0;
+		int mouse_x=0,mouse_y=0,mouse_l,mouse_r;
 
-	      	int mouse_x = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-		int mouse_y = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+   if(GUIMOUSE){
+	      	mouse_x = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+		mouse_y = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
 		
+   }
+   else if(slowdown==0) {
+	
+      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT))
+         mouse_x += PAS;
+      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT))
+         mouse_x -= PAS;
+      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN))
+         mouse_y += PAS;
+      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP))
+         mouse_y -= PAS;
+   }
+
+   if (!mousemng.flag){			
+	mousemng_sync(mouse_x,mouse_y);
+   }
+
 		mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=retrow)mposx=retrow-1;
 		mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=retroh)mposy=retroh-1;
 
@@ -428,9 +521,16 @@ void update_input(void)
 				menubase_moving(mposx, mposy, 0);
 			}
 
-		int mouse_l    = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
-		int mouse_r    = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
-		      
+		if(GUIMOUSE){
+			mouse_l    = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
+			mouse_r    = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
+		}
+   		else {
+        		mouse_l = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A);
+        		mouse_r = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B);
+   		}
+
+
   	        if(mbL==0 && mouse_l){
       			mbL=1;		
 
@@ -438,28 +538,34 @@ void update_input(void)
 			{
 				menubase_moving(mposx, mposy, 1);
 			}
+			else mousemng_buttonevent(MOUSEMNG_LEFTDOWN);
+
 		}
    		else if(mbL==1 && !mouse_l)
    		{
    			mbL=0;
-
-			if (menuvram != NULL)
+			if (!mousemng_buttonevent(MOUSEMNG_LEFTUP))
 			{
-				menubase_moving(mposx, mposy, 2);
+				if (menuvram != NULL)
+				{
+					menubase_moving(mposx, mposy, 2);
+				}
+				else
+				{
+					sysmenu_menuopen(0, mposx, mposy);
+				}
 			}
-			else
-			{
-				sysmenu_menuopen(0, mposx, mposy);
-			}
-
 		}
+
   	        if(mbR==0 && mouse_r){
-      			mbR=1;		
+      			mbR=1;	
+			mousemng_buttonevent(MOUSEMNG_RIGHTDOWN);
 			
 		}
    		else if(mbR==1 && !mouse_r)
    		{
    			mbR=0;
+			mousemng_buttonevent(MOUSEMNG_RIGHTUP);
 			
 		}
 
@@ -677,6 +783,8 @@ void retro_run(void)
    if(firstcall)
    {
       pre_main(RPATH);
+      update_variables();
+      mousemng_enable(MOUSEPROC_SYSTEM);
       firstcall=0;
       printf("INIT done\n");
       return;
@@ -689,10 +797,22 @@ void retro_run(void)
       CHANGEAV=0;
    }
 
+   bool updated = false;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+   {
+      update_variables();
+   }
+
+   if (menuvram != NULL){
+	slowdown=1;
+	gui_delay_events();
+   }
+
    update_input();
 
    if (menuvram != NULL){
-
+	gui_delay_events();
 	memcpy(videoBuffer,videoBuffer2,retrow*retroh*2);
 	draw_cross(lastx,lasty);
    }

@@ -17,7 +17,12 @@
 #define SDL_arraysize(array)   (sizeof(array)/sizeof(array[0]))
 #define SDL_Delay(a) usleep((a)*1000)
 
+#ifndef MSB_FIRST
 #define	BYTESEX_LITTLE
+#else
+#define	BYTESEX_BIG
+#endif
+
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_CRLF
 #define RESOURCE_US

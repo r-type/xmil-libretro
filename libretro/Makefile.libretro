@@ -91,6 +91,20 @@ CPU_FLAGS += -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 	fpic := -fPIC
 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
 	FLAGS += -D__LINUX__ -DARM -marm
+# Nintendo Wii U
+else ifeq ($(platform), wiiu)
+   TARGET := $(TARGET_NAME)_libretro_wiiu.a
+   CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
+   CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
+   AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
+   FLAGS += -DGEKKO -mwup -mcpu=750 -meabi -mhard-float -D__POWERPC__ -D__ppc__ -DWORDS_BIGENDIAN=1 -malign-natural 
+   FLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int -fsingle-precision-constant -mno-bit-align
+   FLAGS += -DHAVE_STRTOUL -DBIGENDIAN=1 -DWIIU -DUNIX -D__LINUX__
+   FLAGS += -DMSB_FIRST -I../libretro/include
+   CFLAGS += -g -O2 
+   CXXFLAGS += -g -O2  -fno-merge-constants 
+   BIGENDIAN=1
+   STATIC_LINKING = 1
 	# cross Windows
 else ifeq ($(platform), wincross64)
 	TARGET := $(TARGET_NAME)_libretro.dll
@@ -138,7 +152,11 @@ CFLAGS += $(FLAGS) -std=gnu99 $(CPU_FLAGS)
 
 
 $(TARGET): $(OBJECTS)
+ifeq ($(STATIC_LINKING), 1)
+	$(AR) rcs $@ $(OBJECTS)
+else
 	$(CXX) -o $@ $^ $(LDFLAGS)
+endif
 
 %.o: %.cpp
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
