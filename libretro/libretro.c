@@ -339,6 +339,7 @@ void retro_set_environment(retro_environment_t cb)
 #endif
       },
       { "X1_AUDIO_DELAYMS", "Audio buffer (ms); 250|100|150|200|300|350|500|750|1000" },
+      { "X1_CPU_CLOCK", "Cpu clock (MHz); 4|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20" },
 
       { NULL, NULL },
    };
@@ -483,6 +484,21 @@ static void update_variables(void)
 
    xmilcfg.skipline = 0;
    xmilcfg.skiplight = 0;
+
+   int cpuclock = 4;
+
+   var.key = "X1_CPU_CLOCK";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      cpuclock = atoi(var.value);
+   }
+
+   if (cpuclock < 1 || cpuclock > 20)
+     cpuclock = 4;
+
+   xmilcfg.X1_CPU_CLOCK = 1000000 * cpuclock;
 }
 
 #define KEYP(a,b) {\

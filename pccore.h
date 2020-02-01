@@ -29,6 +29,8 @@ typedef struct {
 	UINT8	KEY_MODE;
 	UINT8	BTN_RAPID;
 	UINT8	BTN_MODE;
+
+        UINT32  X1_CPU_CLOCK;
 } XMILCFG;
 
 typedef struct {
