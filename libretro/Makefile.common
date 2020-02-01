@@ -1,6 +1,3 @@
-XMIL_PATH := ..
-CORE_DIR := ..
-
 INCFLAGS := -I$(CORE_DIR) \
 	-I$(CORE_DIR)/libretro \
 	-I$(XMIL_PATH) \
