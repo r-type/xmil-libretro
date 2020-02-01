@@ -68,6 +68,10 @@ signed short soundbuf[1024*2];
 uint16_t videoBuffer[640*400];  //emu  surf
 uint16_t videoBuffer2[640*400]; //menu surf
 
+#define MAX_DISK_IMAGES 100
+static char *images[MAX_DISK_IMAGES];
+static int cur_disk_idx, cur_disk_num;
+
 static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
 
@@ -806,6 +810,9 @@ bool retro_load_game(const struct retro_game_info *info)
    const char *full_path;
 
    full_path = info->path;
+   images[0] = strdup(full_path);
+   cur_disk_idx = 0;
+   cur_disk_num = full_path ? 1 : 0;
 
    strcpy(RPATH,full_path);
 
@@ -846,6 +853,60 @@ size_t retro_get_memory_size(unsigned id)
 {
     return 0;
 }
+
+bool set_eject_state(bool ejected) {
+  if (ejected || cur_disk_idx >= cur_disk_num) {
+    fddfile_eject();
+  } else {
+    diskdrv_setfdd(0, images[cur_disk_idx], 0);
+  }
+  return 1;
+}
+
+/* TODO: support FDD 1. */
+
+bool get_eject_state (void) {
+  return !fddfile_diskready(0);
+}
+
+unsigned get_image_index (void) {
+    return cur_disk_idx;
+}
+
+bool set_image_index(unsigned index) {
+  cur_disk_idx = index;
+  return 1;
+}
+
+unsigned get_num_images(void) {
+    return cur_disk_num;
+}
+
+bool replace_image_index(unsigned index,
+			 const struct retro_game_info *info) {
+  if (index >= cur_disk_num)
+    return 0;
+  images[index] = strdup(info->path);
+  return 1;
+}
+
+bool add_image_index(void) {
+  if (cur_disk_num >= MAX_DISK_IMAGES - 1)
+    return 0;
+  cur_disk_num++;
+  return 1;
+}
+
+const struct retro_disk_control_callback disk_controller =
+  {
+   .set_eject_state = set_eject_state,
+   .get_eject_state = get_eject_state,
+   .get_image_index = get_image_index,
+   .set_image_index = set_image_index,
+   .get_num_images = get_num_images,
+   .replace_image_index = replace_image_index,
+   .add_image_index = add_image_index
+};
 
 void retro_init(void)
 {
@@ -915,6 +976,7 @@ void retro_init(void)
     struct retro_keyboard_callback cbk = { keyboard_cb };
     environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &cbk);
 */
+	environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE, &disk_controller);
   	update_variables();
 
     memset(Core_Key_Sate,0,512);
