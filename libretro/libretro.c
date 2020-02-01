@@ -330,11 +330,39 @@ void retro_set_environment(retro_environment_t cb)
       },
       { "X1_GUI_controller" , "Gui Controller; MOUSE|JOY0" },
       { "X1_GUIJOY_PAS" , "Gui Joy0 PAS; 2|3|4|1" },
+      { "X1_RESOLUTE" , "Resolution; LOW|HIGH" },
+      { "X1_BOOTMEDIA" , "Boot media; 2HD|2D" },
+      { "X1_ROMTYPE", "ROM type; X1|TURBO|TURBOZ" },
+      { "X1_FPS", "FPS; AUTO|60|30|20|15" },
+      { "X1_DISPSYNC", "Disp Vsync; OFF|ON" },
+      { "X1_RASTER", "Raster; OFF|ON" },
+      { "X1_NOWAIT", "No wait; OFF|ON" },
+      { "X1_BTN_MODE", "Joy Reverse; OFF|ON" },
+      { "X1_BTN_RAPID", "Joy Rapid; OFF|ON" },
+      { "X1_AUDIO_RATE", "Audio sampling rate; 44100|22050|11025"},
+      {	"X1_SEEKSND", "Seek Sound; OFF|ON" },
+      { "X1_KEY_MODE", "Key mode; Keyboard|JoyKey-1|JoyKey-2|Mouse-Key" },
+      { "X1_FMBOARD", "FM Board; ON|OFF"
+#if defined(SUPPORT_OPMx2)
+	"|DOUBLE"
+#endif
+      },
+      { "X1_AUDIO_DELAYMS", "Audio buffer (ms); 250|100|150|200|300|350|500|750|1000" },
+
       { NULL, NULL },
    };
 
    cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
 
+}
+
+static int get_booleanvar(const char *name, const char *true_string) {
+  struct retro_variable var = {0};
+
+  var.key = name;
+  var.value = NULL;
+
+  return environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && strcmp(var.value, true_string) == 0;
 }
 
 static void update_variables(void)
@@ -375,6 +403,129 @@ static void update_variables(void)
       PAS = atoi(var.value);      
    }
 
+   int audiorate = 44100;
+
+   var.key = "X1_AUDIO_RATE";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      audiorate = atoi(var.value);      
+   }
+
+   if (audiorate != 44100 && audiorate != 22050 && audiorate != 11025)
+     audiorate = 44100;
+
+   if (xmilcfg.samplingrate != (UINT16)audiorate) {
+     xmilcfg.samplingrate = (UINT16)audiorate;
+     corestat.soundrenewal = 1;
+   }
+
+   int resolute = get_booleanvar("X1_RESOLUTE", "LOW");
+   int bootmedia = get_booleanvar("X1_BOOTMEDIA", "2D");
+
+   xmilcfg.DIP_SW = (resolute ? DIPSW_RESOLUTE : 0) | (bootmedia ? DIPSW_BOOTMEDIA : 0);
+
+   int romtype = 1;
+
+   var.key = "X1_ROMTYPE";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "X1") == 0)
+         romtype = 1;
+      else if (strcmp(var.value, "TURBO") == 0)
+         romtype = 2;
+      else if (strcmp(var.value, "TURBOZ") == 0)
+         romtype = 3;
+   }
+
+   xmilcfg.ROM_TYPE = romtype;
+
+   int fps = 0;
+
+   var.key = "X1_FPS";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "AUTO") == 0)
+         fps = 0;
+      else if (strcmp(var.value, "60") == 0)
+         fps = 1;
+      else if (strcmp(var.value, "30") == 0)
+         fps = 2;
+      else if (strcmp(var.value, "20") == 0)
+         fps = 3;
+      else if (strcmp(var.value, "15") == 0)
+         fps = 4;
+   }
+
+   xmiloscfg.DRAW_SKIP = fps;
+
+   xmilcfg.DISPSYNC = get_booleanvar("X1_DISPSYNC", "ON");
+   xmilcfg.RASTER = get_booleanvar("X1_RASTER", "ON");
+   xmiloscfg.NOWAIT = get_booleanvar("X1_NOWAIT", "ON");
+   xmilcfg.BTN_MODE = get_booleanvar("X1_BTN_MODE", "ON");
+   xmilcfg.BTN_RAPID = get_booleanvar("X1_BTN_RAPID", "ON");
+   xmilcfg.MOTOR = get_booleanvar("X1_SEEKSND", "ON");
+
+   int keymode = 0;
+   var.key = "X1_KEY_MODE";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "Keyboard") == 0)
+         keymode = 0;
+      else if (strcmp(var.value, "JoyKey-1") == 0)
+         keymode = 1;
+      else if (strcmp(var.value, "JoyKey-2") == 0)
+         keymode = 2;
+      else if (strcmp(var.value, "Mouse-Key") == 0)
+         keymode = 3;
+   }
+
+   if (xmilcfg.KEY_MODE != keymode) {
+     xmilcfg.KEY_MODE = keymode;
+     keystat_resetjoykey();
+   }
+
+   int fmboard = 1;
+
+   var.key = "X1_FMBOARD";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         fmboard = 0;
+      else if (strcmp(var.value, "ON") == 0)
+         fmboard = 1;
+      else if (strcmp(var.value, "DOUBLE") == 0)
+         fmboard = 2;
+   }
+
+   xmilcfg.SOUND_SW = fmboard;
+
+   int delayms = 250;
+
+   var.key = "X1_AUDIO_DELAYMS";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      delayms = atoi(var.value);      
+   }
+
+   if (delayms < 100 || delayms > 1000)
+     delayms = 250;
+
+   xmilcfg.delayms = delayms;
+
+   xmilcfg.skipline = 0;
+   xmilcfg.skiplight = 0;
 }
 
 static const char *cross[] = {
@@ -458,7 +609,7 @@ void update_input(void)
 			}
 
 //		if(Core_Key_Sate[RETROK_F12] && Core_Key_Sate[RETROK_F12]!=Core_old_Key_Sate[RETROK_F12]  )
-	   	if ((input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F11) || 
+	   	if ((input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_q) || 
             input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2)) && menukey==0){
 		      menukey=1; 
 
@@ -768,6 +919,10 @@ void retro_init(void)
 
     memset(Core_Key_Sate,0,512);
     memset(Core_old_Key_Sate ,0, sizeof(Core_old_Key_Sate));
+}
+
+void initload() {
+  update_variables();
 }
 
 void retro_deinit(void)

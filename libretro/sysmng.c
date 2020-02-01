@@ -27,10 +27,6 @@ void sysmng_deinitialize(void)
  */
 void sysmng_update(UINT update)
 {
-	if (update & (SYS_UPDATECFG | SYS_UPDATEOSCFG))
-	{
-		initsave();
-	}
 }
 
 /**
