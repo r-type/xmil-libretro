@@ -26,6 +26,7 @@
 #include "timing.h"
 #include "keystat.h"
 #include "vramhdl.h"
+#include "statsave.h"
 
 #ifdef __ANDROID__
 #include <time.h>
@@ -581,19 +582,30 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
     (void)device;
 }
 
+#define SERIAL_SIZE 265000
+
 size_t retro_serialize_size(void)
 {
-	return 0;
+	return SERIAL_SIZE;
 }
 
 bool retro_serialize(void *data, size_t size)
 {
+  FILEH fh = make_writemem_file();
+  int res= statsave_save_fh(fh);
+  if (res<0)
     return false;
+  if (fh->memsize > size)
+    return false;
+  memset(data, 0, size);
+  memcpy(data, fh->mem, fh->memsize);
+  return true;
 }
 
 bool retro_unserialize(const void *data, size_t size)
 {
-    return false;
+  FILEH fh = make_readmem_file(data, size);
+  return statsave_load_fh(fh) >= 0;
 }
 
 void retro_cheat_reset(void)
