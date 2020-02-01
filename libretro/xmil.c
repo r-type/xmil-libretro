@@ -17,7 +17,6 @@
 #include "keystat.h"
 #include "vramhdl.h"
 #include "menubase.h"
-#include "sysmenu.h"
 
 XMILOSCFG	xmiloscfg = {0, 0};
 static	UINT		framecnt;
@@ -160,10 +159,6 @@ int xmil_main(int argc, char *argv[]) {
 
 //	keystat_initialize();
 
-	if (sysmenu_create() != SUCCESS) {
-		goto np2main_err3;
-	}
-
 	scrnmng_initialize();
 	if (scrnmng_create(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT) != SUCCESS) {
 		goto np2main_err4;
@@ -266,7 +261,6 @@ int xmil_main(int argc, char *argv[]) {
 	sysmng_deinitialize();
 
 	scrnmng_destroy();
-	sysmenu_destroy();
 	TRACETERM();
 	//SDL_Quit();
 	return(SUCCESS);
@@ -283,7 +277,6 @@ np2main_err4:
 	scrnmng_destroy();
 
 np2main_err3:
-	sysmenu_destroy();
 
 np2main_err2:
 	TRACETERM();
@@ -375,7 +368,6 @@ int xmil_end(){
 	sysmng_deinitialize();
 
 	scrnmng_destroy();
-	sysmenu_destroy();
 	TRACETERM();
 	//SDL_Quit();
 	return(SUCCESS);

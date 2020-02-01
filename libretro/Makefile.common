@@ -18,8 +18,6 @@ SOURCES_C :=  \
 		$(wildcard $(XMIL_PATH)/codecnv/*.c) \
 		$(wildcard $(XMIL_PATH)/common/*.c) \
 		$(wildcard $(XMIL_PATH)/embed/*.c) \
-		$(wildcard $(XMIL_PATH)/embed/menu/*.c) \
-		$(wildcard $(XMIL_PATH)/embed/menubase/*.c) \
 		$(wildcard $(XMIL_PATH)/fdd/*.c) \
 		$(wildcard $(XMIL_PATH)/font/*.c) \
 		$(wildcard $(XMIL_PATH)/io/*.c) \

@@ -4,7 +4,6 @@
 #include	"sdlkbd.h"
 #include	"vramhdl.h"
 #include	"menubase.h"
-#include	"sysmenu.h"
 
 
 	BOOL	task_avail;

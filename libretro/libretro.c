@@ -26,8 +26,6 @@
 #include "timing.h"
 #include "keystat.h"
 #include "vramhdl.h"
-#include "menubase.h"
-#include "sysmenu.h"
 
 #ifdef __ANDROID__
 #include <time.h>
@@ -52,21 +50,15 @@ char retro_system_conf[512];
 char Core_Key_Sate[512];
 char Core_old_Key_Sate[512];
 
-bool opt_analog;
-
 int retrow=640;
 int retroh=400;
 int CHANGEAV=0;
 
 int pauseg=0;
 
-bool GUIMOUSE =true;
-int PAS=2;
-
 signed short soundbuf[1024*2];
 
 uint16_t videoBuffer[640*400];  //emu  surf
-uint16_t videoBuffer2[640*400]; //menu surf
 
 #define MAX_DISK_IMAGES 100
 static char *images[MAX_DISK_IMAGES];
@@ -329,11 +321,6 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
 
    struct retro_variable variables[] = {
-      {
-         "x1_analog","Use Analog; OFF|ON",
-      },
-      { "X1_GUI_controller" , "Gui Controller; MOUSE|JOY0" },
-      { "X1_GUIJOY_PAS" , "Gui Joy0 PAS; 2|3|4|1" },
       { "X1_RESOLUTE" , "Resolution; LOW|HIGH" },
       { "X1_BOOTMEDIA" , "Boot media; 2HD|2D" },
       { "X1_ROMTYPE", "ROM type; X1|TURBO|TURBOZ" },
@@ -372,40 +359,6 @@ static int get_booleanvar(const char *name, const char *true_string) {
 static void update_variables(void)
 {
    struct retro_variable var = {0};
-
-
-   var.key = "x1_analog";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      fprintf(stderr, "value: %s\n", var.value);
-      if (!strcmp(var.value, "OFF"))
-         opt_analog = false;
-      if (!strcmp(var.value, "ON"))
-         opt_analog = true;
-
-      fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
-   }
-
-   var.key = "X1_GUI_controller";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (strcmp(var.value, "MOUSE") == 0)
-         GUIMOUSE= true;
-      else if (strcmp(var.value, "JOY0") == 0)
-         GUIMOUSE = false;
-   }
-
-   var.key = "X1_GUIJOY_PAS";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      PAS = atoi(var.value);      
-   }
 
    int audiorate = 44100;
 
@@ -532,55 +485,6 @@ static void update_variables(void)
    xmilcfg.skiplight = 0;
 }
 
-static const char *cross[] = {
-  "X                               ",
-  "XX                              ",
-  "X.X                             ",
-  "X..X                            ",
-  "X...X                           ",
-  "X....X                          ",
-  "X.....X                         ",
-  "X......X                        ",
-  "X.......X                       ",
-  "X........X                      ",
-  "X.....XXXXX                     ",
-  "X..X..X                         ",
-  "X.X X..X                        ",
-  "XX  X..X                        ",
-  "X    X..X                       ",
-  "     X..X                       ",
-  "      X..X                      ",
-  "      X..X                      ",
-  "       XX                       ",
-  "                                ",
-};
-
-void DrawPointBmp(unsigned short *buffer,int x, int y, unsigned short color)
-{
-   int idx;
-
-   idx=x+y*retrow;
-   buffer[idx]=color;	
-}
-
-
-void draw_cross(int x,int y) {
-
-	int i,j,idx;
-	int dx=32,dy=20;
-	unsigned  short color;
-
-	for(j=y;j<y+dy;j++){
-		idx=0;
-		for(i=x;i<x+dx;i++){
-			if(cross[j-y][idx]=='.')DrawPointBmp(videoBuffer,i,j,0xffff);
-			else if(cross[j-y][idx]=='X')DrawPointBmp(videoBuffer,i,j,0);
-			idx++;			
-		}
-	}
-
-}
-
 #define KEYP(a,b) {\
 	if(Core_Key_Sate[a] && Core_Key_Sate[a]!=Core_old_Key_Sate[a]  )\
 		sdlkbd_keydown(a);\
@@ -589,8 +493,6 @@ void draw_cross(int x,int y) {
 }	
 
 static int lastx=320,lasty=200;
-static int menukey=0;
-static int menu_active=0;
 
 void update_input(void)
 {
@@ -612,124 +514,7 @@ void update_input(void)
 				KEYP(i,i);
 			}
 
-//		if(Core_Key_Sate[RETROK_F12] && Core_Key_Sate[RETROK_F12]!=Core_old_Key_Sate[RETROK_F12]  )
-	   	if ((input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_q) || 
-            input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2)) && menukey==0){
-		      menukey=1; 
-
-			if (menuvram == NULL) {
-				sysmenu_menuopen(0, 0, 0);
-				mposx=0;mposy=0;
-				lastx=0;lasty=0;
-         			mousemng_disable(MOUSEPROC_SYSTEM);
-         			menu_active=1;
-			}
-			else {
-				menubase_close();
-         			mousemng_enable(MOUSEPROC_SYSTEM);
-         			memset(videoBuffer2,0,retrow*retroh*2);
-         			scrndraw_redraw();
-         			menu_active=0;
-			}
-
-		} else if ( !(input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F11) || 
-            input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2)) && menukey==1)
-      menukey=0;
-
-   	if (menuvram == NULL && menu_active==1){
-   	   menubase_close();
-   	   menu_active==0;
-   	   mousemng_enable(MOUSEPROC_SYSTEM);
-   	   memset(videoBuffer2,0,retrow*retroh*2);
-   	   scrndraw_redraw();
-   	}
-
    		memcpy(Core_old_Key_Sate,Core_Key_Sate , sizeof(Core_Key_Sate) );
-
-		static int mbL = 0, mbR = 0;
-		int mouse_x=0,mouse_y=0,mouse_l,mouse_r;
-
-   if(GUIMOUSE){
-	      	mouse_x = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-		mouse_y = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
-		
-   }
-   else if(slowdown==0) {
-	
-      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT))
-         mouse_x += PAS;
-      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT))
-         mouse_x -= PAS;
-      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN))
-         mouse_y += PAS;
-      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP))
-         mouse_y -= PAS;
-   }
-
-   if (!mousemng.flag){			
-	mousemng_sync(mouse_x,mouse_y);
-   }
-
-		mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=retrow)mposx=retrow-1;
-		mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=retroh)mposy=retroh-1;
-
-		if(lastx!=mposx || lasty!=mposy)
-			if (menuvram == NULL) {
-			}
-			else {
-				menubase_moving(mposx, mposy, 0);
-			}
-
-		if(GUIMOUSE){
-			mouse_l    = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
-			mouse_r    = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
-		}
-   		else {
-        		mouse_l = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A);
-        		mouse_r = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B);
-   		}
-
-
-  	        if(mbL==0 && mouse_l){
-      			mbL=1;		
-
-			if (menuvram != NULL)
-			{
-				menubase_moving(mposx, mposy, 1);
-			}
-			else mousemng_buttonevent(MOUSEMNG_LEFTDOWN);
-
-		}
-   		else if(mbL==1 && !mouse_l)
-   		{
-   			mbL=0;
-			if (!mousemng_buttonevent(MOUSEMNG_LEFTUP))
-			{
-				if (menuvram != NULL)
-				{
-					menubase_moving(mposx, mposy, 2);
-				}
-				else
-				{
-					sysmenu_menuopen(0, mposx, mposy);
-				}
-			}
-		}
-
-  	        if(mbR==0 && mouse_r){
-      			mbR=1;	
-			mousemng_buttonevent(MOUSEMNG_RIGHTDOWN);
-			
-		}
-   		else if(mbR==1 && !mouse_r)
-   		{
-   			mbR=0;
-			mousemng_buttonevent(MOUSEMNG_RIGHTUP);
-			
-		}
-
-		lastx=mposx;lasty=mposy;
-
 }
 
 
@@ -1025,24 +810,11 @@ void retro_run(void)
       update_variables();
    }
 
-   if (menuvram != NULL){
-	slowdown=1;
-	gui_delay_events();
-   }
 
    update_input();
 
-   if (menuvram != NULL){
-	gui_delay_events();
-	memcpy(videoBuffer,videoBuffer2,retrow*retroh*2);
-	draw_cross(lastx,lasty);
-   }
-   else {
-
- 	   pccore_exec(TRUE);
-	   sound_play_cb(NULL, NULL,SNDSZ*4);
-   }
-
+   pccore_exec(TRUE);
+   sound_play_cb(NULL, NULL,SNDSZ*4);
 
    video_cb(videoBuffer, retrow, retroh, /*retrow*/ 640 << 1/*2*/);
 }
