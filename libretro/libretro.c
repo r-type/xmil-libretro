@@ -28,6 +28,9 @@
 #include "keystat.h"
 #include "vramhdl.h"
 #include "statsave.h"
+#include "joymng.h"
+#include "sdlkbd.h"
+#include "fddfile.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -475,7 +478,7 @@ size_t retro_get_memory_size(unsigned id)
 
 bool set_eject_state(bool ejected) {
   if (ejected || cur_disk_idx >= cur_disk_num) {
-    fddfile_eject();
+    fddfile_eject(0);
   } else {
     diskdrv_setfdd(0, images[cur_disk_idx], 0);
   }

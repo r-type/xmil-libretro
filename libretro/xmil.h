@@ -20,3 +20,5 @@ enum {
 extern	XMILOSCFG	xmiloscfg;
 
 extern int xmil_main(const char *floppy);
+int xmil_end();
+
