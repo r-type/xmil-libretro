@@ -1,11 +1,10 @@
 
 #ifdef __cplusplus
-void joymng_sync();
-
 extern "C" {
 #endif
 
 BYTE joymng_getstat(void);
+void joymng_sync();
 
 #ifdef __cplusplus
 }

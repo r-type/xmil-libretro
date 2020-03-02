@@ -90,6 +90,8 @@ void file_setseparator(char *path, int maxlen);
 FILEH make_readmem_file(void *buf, long size);
 FILEH make_writemem_file();
 
+void log_printf(const char *format, ...);
+
 #ifdef	__cplusplus
 }
 #endif

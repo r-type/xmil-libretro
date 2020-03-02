@@ -3,6 +3,7 @@
 #include <stdlib.h>  
 #include <ctype.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "libretro.h"
 
@@ -27,6 +28,9 @@
 #include "keystat.h"
 #include "vramhdl.h"
 #include "statsave.h"
+#include "joymng.h"
+#include "sdlkbd.h"
+#include "fddfile.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -65,6 +69,7 @@ static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
 
 static  retro_input_poll_t input_poll_cb;
+static retro_log_printf_t log_cb;
 
 retro_input_state_t input_state_cb;
 retro_audio_sample_t audio_cb;
@@ -93,7 +98,21 @@ int pre_main(const char *floppy)
 void texture_init(void)
 {
    memset(videoBuffer, 0,retrow*retroh*2);
-} 
+}
+
+void log_printf(const char *format, ...)
+{
+	va_list va;
+	char formatted[1024];
+
+	va_start(va, format);
+	vsnprintf(formatted, sizeof(formatted) - 1, format, va);
+	if (log_cb)
+		log_cb(RETRO_LOG_INFO, "%s\n", formatted);
+	else
+		fprintf(stderr, "%s\n", formatted);
+	va_end(va);
+}
 
 void retro_set_environment(retro_environment_t cb)
 {
@@ -130,6 +149,11 @@ void retro_set_environment(retro_environment_t cb)
    vfs_interface_info.iface = NULL;
    if (cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_interface_info))
      vfs_interface = vfs_interface_info.iface;
+
+   struct retro_log_callback logging;
+
+   if (cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &logging))
+	   log_cb = logging.log;
 }
 
 static int get_booleanvar(const char *name, const char *true_string) {
@@ -407,6 +431,15 @@ bool retro_load_game(const struct retro_game_info *info)
 {
    const char *full_path;
 
+   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+
+   if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+   {
+	   log_printf("RGB565 is not supported.\n");
+	   return false;
+   }
+
+
    full_path = info->path;
    images[0] = strdup(full_path);
    cur_disk_idx = 0;
@@ -414,7 +447,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    strcpy(RPATH,full_path);
 
-   printf("LOAD EMU\n");
+   log_printf("LOAD EMU\n");
 
    return true;
 }
@@ -454,7 +487,7 @@ size_t retro_get_memory_size(unsigned id)
 
 bool set_eject_state(bool ejected) {
   if (ejected || cur_disk_idx >= cur_disk_num) {
-    fddfile_eject();
+    fddfile_eject(0);
   } else {
     diskdrv_setfdd(0, images[cur_disk_idx], 0);
   }
@@ -495,7 +528,7 @@ bool add_image_index(void) {
   return 1;
 }
 
-const struct retro_disk_control_callback disk_controller =
+struct retro_disk_control_callback disk_controller =
   {
    .set_eject_state = set_eject_state,
    .get_eject_state = get_eject_state,
@@ -542,14 +575,6 @@ void retro_init(void)
 
    sprintf(retro_system_conf, "%s%cxmil\0",RETRO_DIR,slash);
 
-   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-
-   if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-   {
-      fprintf(stderr, "RGB565 is not supported.\n");
-      exit(0);
-   }
-
    struct retro_input_descriptor inputDescriptors[] = {
 		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
 		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "B" },
@@ -588,7 +613,7 @@ void initload() {
 void retro_deinit(void)
 {
    xmil_end();
-   printf("Retro DeInit\n");
+   log_printf("Retro DeInit\n");
 }
 
 void retro_reset(void)
@@ -606,14 +631,14 @@ void retro_run(void)
       update_variables();
       mousemng_enable(MOUSEPROC_SYSTEM);
       firstcall=0;
-      printf("INIT done\n");
+      log_printf("INIT done\n");
       return;
    }
 
    if (CHANGEAV == 1)
    {
       update_geometry();
-      printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
+      log_printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
       CHANGEAV=0;
    }
 
