@@ -125,19 +125,26 @@ static UINT32 fdd2d_sec(FDDFILE fdd, REG8 media, UINT track, REG8 sc) {
 /* ---- */
 
 BRESULT fdd2d_set(FDDFILE fdd, const OEMCHAR *fname) {
-
 	short		attr;
 	FILEH		fh;
 	UINT		fdsize;
 const _XDFINFO	*xdf;
 const _XDFINFO	*xdfterm;
-	UINT		size;
+ UINT		size;
 
+#ifndef __LIBRETRO__
 	attr = file_attr(fname);
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
+#else
+	attr = 0;
+#endif
 	fh = file_open(fname);
+	if (fh == FILEH_INVALID) {
+		attr |= FILEATTR_READONLY;
+		fh = file_open_rb(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
@@ -153,7 +160,7 @@ const _XDFINFO	*xdfterm;
 		if (size == fdsize) {
 			file_cpyname(fdd->fname, fname, sizeof(fdd->fname));
 			fdd->type = DISKTYPE_BETA;
-			fdd->protect = (UINT8)(attr & 1);
+			fdd->protect = (UINT8)(attr & FILEATTR_READONLY);
 			fdd->seek = fdd2d_seek;
 			fdd->read = fdd2d_read;
 			fdd->write = fdd2d_write;

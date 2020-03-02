@@ -77,7 +77,6 @@ UINT file_write(FILEH handle, const void *data, UINT length);
 short file_close(FILEH handle);
 UINT file_getsize(FILEH handle);
 short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
-short file_attr(const char *path);
 
 /* カレントファイル操作 */
 void file_setcd(const char *exepath);

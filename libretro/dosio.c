@@ -212,43 +212,6 @@ UINT file_getsize(FILEH handle) {
 	}
 }
 
-short file_attr(const char *path) {
-
-struct stat	sb;
-	short	attr;
-
-#if defined(WIN32) && defined(OSLANG_UTF8)
-	char	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, SDL_arraysize(sjis), path, (UINT)-1);
-	if (stat(sjis, &sb) == 0)
-#else
-	if (stat(path, &sb) == 0)
-#endif
-	{
-#if defined(WIN32)
-		if (sb.st_mode & _S_IFDIR) {
-			attr = FILEATTR_DIRECTORY;
-		}
-		else {
-			attr = 0;
-		}
-		if (!(sb.st_mode & S_IWRITE)) {
-			attr |= FILEATTR_READONLY;
-		}
-#else
-		if (S_ISDIR(sb.st_mode)) {
-			return(FILEATTR_DIRECTORY);
-		}
-		attr = 0;
-		if (!(sb.st_mode & S_IWUSR)) {
-			attr |= FILEATTR_READONLY;
-		}
-#endif
-		return(attr);
-	}
-	return(-1);
-}
-
 static BRESULT cnv_sttime(time_t *t, DOSDATE *dosdate, DOSTIME *dostime) {
 
 struct tm      *ftime;
