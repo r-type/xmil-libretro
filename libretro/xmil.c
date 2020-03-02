@@ -20,59 +20,9 @@
 
 XMILOSCFG	xmiloscfg = {0, 0};
 
-static void usage(const char *progname) {
-
-	printf("Usage: %s [options]\n", progname);
-	printf("\t--help   [-h]       : print this message\n");
-}
-
 // ---- proc
 
-
-char* get_file_ext(char* filepath){
-   if(filepath[strlen(filepath) - 3]=='.')return filepath + strlen(filepath) - 2;
-   return filepath + strlen(filepath) - 3;
-}
-
-int xmil_main(int argc, char *argv[]) {
-
-	int		pos;
-	char	*p;
-        int load_floppy=0;
-
-	pos = 1;
-	while(pos < argc) {
-		p = argv[pos++];
-		if ((!milstr_cmp(p, "-h")) || (!milstr_cmp(p, "--help"))) {
-			usage(argv[0]);
-			goto np2main_err1;
-		}
-		else if(strcmp(get_file_ext(p), "88d") == 0 ||\
-			strcmp(get_file_ext(p), "88D") == 0 ||\
-			strcmp(get_file_ext(p), "dx1") == 0 ||\
-			strcmp(get_file_ext(p), "DX1") == 0 ||\
-			strcmp(get_file_ext(p), "2d")  == 0 ||\
-			strcmp(get_file_ext(p), "2D")  == 0 ||\
-			strcmp(get_file_ext(p), "xdf") == 0 ||\
-			strcmp(get_file_ext(p), "XDF") == 0 ||\
-			strcmp(get_file_ext(p), "hdm") == 0 ||\
-			strcmp(get_file_ext(p), "HDM") == 0 ||\
-			strcmp(get_file_ext(p), "dup") == 0 ||\
-			strcmp(get_file_ext(p), "DUP") == 0 ||\
-			strcmp(get_file_ext(p), "2HD") == 0 ||\
-			strcmp(get_file_ext(p), "2hd") == 0 ||\
-			strcmp(get_file_ext(p), "tfd") == 0 ||\
-			strcmp(get_file_ext(p), "TFD") == 0 ||\
-			strcmp(get_file_ext(p), "d88") == 0 ||\
-			strcmp(get_file_ext(p), "D88") == 0 )
-	        {
-			load_floppy=1; break;
-		}
-		else {
-			printf("error command: %s\n", p);
-			goto np2main_err1;
-		}
-	}
+int xmil_main(const char *floppy) {
 
 	initload();
 
@@ -98,7 +48,7 @@ int xmil_main(int argc, char *argv[]) {
 	scrndraw_redraw();
 	pccore_reset();
  
-	if(load_floppy)diskdrv_setfdd(0,p, 0/*read_only*/);
+	if(floppy)diskdrv_setfdd(0,floppy, 0/*read_only*/);
 
 #if defined(SUPPORT_RESUME)
 	if (xmiloscfg.resume) {
