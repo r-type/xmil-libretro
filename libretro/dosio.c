@@ -234,17 +234,14 @@ struct tm      *ftime;
 }
 
 short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime) {
-	if (handle->type == FILEH_MEM)
-		return (-1);
-
-	struct stat sb;
-
-       if (fstat(fileno(handle->f), &sb) == 0) {
-               if (cnv_sttime(&sb.st_mtime, dosdate, dostime) == SUCCESS) {
-                       return(0);
-               }
-       }
-       return(-1);
+	// Fake datetime.
+	dosdate->year = 1990;
+	dosdate->month = 1;
+	dosdate->day = 1;
+	dostime->hour = 12;
+	dostime->minute = 0;
+	dostime->second = 0;
+	return(0);
 }
 
 /* カレントファイル操作 */
