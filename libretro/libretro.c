@@ -80,46 +80,16 @@ void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) { audio_batch_c
 void retro_set_input_poll(retro_input_poll_t cb) { input_poll_cb = cb; }
 void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
-#ifdef WIIU
-#include <features_cpu.h>
-#endif
-
 long frame=0;
 unsigned long  Ktime=0 , LastFPSTime=0;
 int slowdown=0;
 
+static long framecount = 0;
+
 long GetTicks(void)
-{ // in MSec
-#ifndef __ANDROID__
-
-#ifdef __CELLOS_LV2__
-
-   //#warning "GetTick PS3\n"
-
-   unsigned long	ticks_micro;
-   uint64_t secs;
-   uint64_t nsecs;
-
-   sys_time_get_current_time(&secs, &nsecs);
-   ticks_micro =  secs * 1000000UL + (nsecs / 1000);
-
-   return ticks_micro/1000;
-#elif defined(WIIU)
-return (cpu_features_get_time_usec())/1000;
-#else
-   struct timeval tv;
-   gettimeofday (&tv, NULL);
-   return (tv.tv_sec*1000000 + tv.tv_usec)/1000;
-#endif
-
-#else
-
-   struct timespec now;
-   clock_gettime(CLOCK_MONOTONIC, &now);
-   return (now.tv_sec*1000000 + now.tv_nsec/1000)/1000;
-#endif
-
-} 
+{
+  return (framecount * 100) / 6;
+}
 
 void gui_delay_events(void)
 {
@@ -595,16 +565,18 @@ bool retro_serialize(void *data, size_t size)
   int res= statsave_save_fh(fh);
   if (res<0)
     return false;
-  if (fh->memsize > size)
+  if (fh->memsize + 8 > size)
     return false;
   memset(data, 0, size);
-  memcpy(data, fh->mem, fh->memsize);
+  memcpy((char *)data, &framecount, 8);
+  memcpy((char *)data + 8, fh->mem, fh->memsize);
   return true;
 }
 
 bool retro_unserialize(const void *data, size_t size)
 {
-  FILEH fh = make_readmem_file(data, size);
+  memcpy(&framecount, (char *)data, 8);
+  FILEH fh = make_readmem_file(data+8, size-8);
   return statsave_load_fh(fh) >= 0;
 }
 
@@ -813,7 +785,8 @@ void retro_reset(void)
 static int firstcall=1;
 
 void retro_run(void)
-{       
+{
+   framecount++;
    if(firstcall)
    {
       pre_main(RPATH);
