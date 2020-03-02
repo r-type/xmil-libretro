@@ -528,7 +528,7 @@ bool add_image_index(void) {
   return 1;
 }
 
-const struct retro_disk_control_callback disk_controller =
+struct retro_disk_control_callback disk_controller =
   {
    .set_eject_state = set_eject_state,
    .get_eject_state = get_eject_state,
