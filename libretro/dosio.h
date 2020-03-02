@@ -1,12 +1,15 @@
 
+extern struct retro_vfs_interface *vfs_interface;
+
 typedef struct {
   FILE *f;
-  enum { FILEH_FILE, FILEH_MEM } type;
+  enum { FILEH_STDIO, FILEH_MEM, FILEH_LIBRETRO } type;
   long memsize;
   long memptr;
   long memalloc;
   int writeable;
   char *mem;
+  struct retro_vfs_file_handle *lr;
 } *FILEH;
 #define	FILEH_INVALID		NULL
 
