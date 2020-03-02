@@ -29,6 +29,10 @@
 #include "menubase.h"
 #include "sysmenu.h"
 
+#ifdef __ANDROID__
+#include <time.h>
+#endif
+
 #ifdef _WIN32
 char slash = '\\';
 #else
@@ -89,7 +93,7 @@ int slowdown=0;
 
 long GetTicks(void)
 { // in MSec
-#ifndef _ANDROID_
+#ifndef __ANDROID__
 
 #ifdef __CELLOS_LV2__
 

@@ -1,3 +1,5 @@
+XMIL_PATH := ..
+CORE_DIR := ..
 
 DEBUG = 0
 
