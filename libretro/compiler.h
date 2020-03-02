@@ -93,6 +93,7 @@ typedef signed char BOOL;
 #include "trace.h"
 
 
+long GetTicks();
 #define	GETTICK()			GetTicks()
 #define	__ASSERT(s)
 #define	SPRINTF				sprintf
