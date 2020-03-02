@@ -4,7 +4,6 @@
 #include	"sdlkbd.h"
 #include	"vramhdl.h"
 #include	"menubase.h"
-#include	"sysmenu.h"
 
 
 	BOOL	task_avail;
@@ -118,16 +117,3 @@ void taskmng_rol(void) {
 */
 
 }
-
-BOOL taskmng_sleep(UINT32 tick) {
-
-	UINT32	base;
-
-	base = GETTICK();
-	while((task_avail) && ((GETTICK() - base) < tick)) {
-		taskmng_rol();
-		SDL_Delay(1);
-	}
-	return(task_avail);
-}
-

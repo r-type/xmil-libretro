@@ -231,7 +231,7 @@ const GDCCLK	*clk;
 	else if (v > clk->maxy) {
 		v = clk->maxy;
 	}
-	crtc.e.frameclock = ((4000000 * h) / clk->clock) * v;
+	crtc.e.frameclock = ((xmilcfg.X1_CPU_CLOCK * h) / clk->clock) * v;
 }
 
 static void crtc_timingupdate(void) {

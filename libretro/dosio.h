@@ -1,5 +1,13 @@
 
-typedef FILE *				FILEH;
+typedef struct {
+  FILE *f;
+  enum { FILEH_FILE, FILEH_MEM } type;
+  long memsize;
+  long memptr;
+  long memalloc;
+  int writeable;
+  char *mem;
+} *FILEH;
 #define	FILEH_INVALID		NULL
 
 #if defined(WIN32)
@@ -92,6 +100,9 @@ char *file_getext(const char *path);
 void file_cutext(char *path);
 void file_cutseparator(char *path);
 void file_setseparator(char *path, int maxlen);
+
+FILEH make_readmem_file(void *buf, long size);
+FILEH make_writemem_file();
 
 #ifdef	__cplusplus
 }

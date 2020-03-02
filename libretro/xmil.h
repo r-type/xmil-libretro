@@ -19,4 +19,4 @@ enum {
 
 extern	XMILOSCFG	xmiloscfg;
 
-extern int xmil_main(int argc, char *argv[]);
+extern int xmil_main(const char *floppy);

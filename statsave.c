@@ -105,16 +105,11 @@ typedef struct {
 	NP2FHDR		f;
 } _SFFILEH, *SFFILEH;
 
-static SFFILEH statflag_open(const OEMCHAR *filename,
+static SFFILEH statflag_open(FILEH	fh,
 												OEMCHAR *err, UINT errlen) {
 
-	FILEH	fh;
 	SFFILEH	ret;
 
-	fh = file_open_rb(filename);
-	if (fh == FILEH_INVALID) {
-		goto sfo_err1;
-	}
 	ret = (SFFILEH)_MALLOC(sizeof(_SFFILEH), filename);
 	if (ret == NULL) {
 		goto sfo_err2;
@@ -218,18 +213,13 @@ sfr_err:
 	return(STATFLAG_FAILURE);
 }
 
-static SFFILEH statflag_create(const OEMCHAR *filename) {
+static SFFILEH statflag_create(FILEH fh) {
 
 	SFFILEH	ret;
-	FILEH	fh;
 
 	ret = (SFFILEH)_MALLOC(sizeof(_SFFILEH), filename);
 	if (ret == NULL) {
 		goto sfc_err1;
-	}
-	fh = file_create(filename);
-	if (fh == FILEH_INVALID) {
-		goto sfc_err2;
 	}
 	if (file_write(fh, &np2flagdef, sizeof(NP2FHDR)) == sizeof(NP2FHDR)) {
 		ZeroMemory(ret, sizeof(_SFFILEH));
@@ -239,7 +229,6 @@ static SFFILEH statflag_create(const OEMCHAR *filename) {
 		return(ret);
 	}
 	file_close(fh);
-	file_delete(filename);
 
 sfc_err2:
 	_MFREE(ret);
@@ -547,14 +536,14 @@ static int flagcheck_veronly(STFLAGH sfh, const SFENTRY *tbl) {
 
 /* interface */
 
-int statsave_save(const OEMCHAR *filename) {
+int statsave_save_fh(FILEH fh) {
 
 	SFFILEH		sffh;
 	int			ret;
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
 
-	sffh = statflag_create(filename);
+	sffh = statflag_create(fh);
 	if (sffh == NULL) {
 		return(STATFLAG_FAILURE);
 	}
@@ -584,7 +573,22 @@ const SFENTRY	*tblterm;
 	return(ret);
 }
 
-int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, UINT size) {
+int statsave_save(const OEMCHAR *filename) {
+
+	FILEH		fh;
+
+	fh = file_create(filename);
+	if (fh == FILEH_INVALID) {
+		return(STATFLAG_FAILURE);
+	}
+
+	int ret = statsave_save_fh(fh);
+	if (ret < 0)
+	  file_delete(filename);
+	return ret;
+}
+
+int statsave_check_fh(FILEH fh, OEMCHAR *buf, UINT size) {
 
 	SFFILEH		sffh;
 	int			ret;
@@ -592,7 +596,7 @@ int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, UINT size) {
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
 
-	sffh = statflag_open(filename, buf, size);
+	sffh = statflag_open(fh, buf, size);
 	if (sffh == NULL) {
 		return(STATFLAG_FAILURE);
 	}
@@ -640,7 +644,16 @@ const SFENTRY	*tblterm;
 	return(ret);
 }
 
-int statsave_load(const OEMCHAR *filename) {
+int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, UINT size) {
+  	FILEH fh = file_open_rb(filename);
+	if (fh == FILEH_INVALID) {
+		return(STATFLAG_FAILURE);
+	}
+
+	return statsave_check_fh(fh, buf, size);
+}
+
+int statsave_load_fh(FILEH fh) {
 
 	SFFILEH		sffh;
 	int			ret;
@@ -648,7 +661,7 @@ int statsave_load(const OEMCHAR *filename) {
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
 
-	sffh = statflag_open(filename, NULL, 0);
+	sffh = statflag_open(fh, NULL, 0);
 	if (sffh == NULL) {
 		return(STATFLAG_FAILURE);
 	}
@@ -725,3 +738,11 @@ const SFENTRY	*tblterm;
 	return(ret);
 }
 
+int statsave_load(const OEMCHAR *filename) {
+  	FILEH fh = file_open_rb(filename);
+	if (fh == FILEH_INVALID) {
+		return(STATFLAG_FAILURE);
+	}
+
+	return statsave_load_fh(fh);
+}
