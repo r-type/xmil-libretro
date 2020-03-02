@@ -15,7 +15,6 @@
 #include <stddef.h>
 
 #define SDL_arraysize(array)   (sizeof(array)/sizeof(array[0]))
-#define SDL_Delay(a) usleep((a)*1000)
 
 #ifndef MSB_FIRST
 #define	BYTESEX_LITTLE

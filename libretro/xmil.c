@@ -19,9 +19,6 @@
 #include "menubase.h"
 
 XMILOSCFG	xmiloscfg = {0, 0};
-static	UINT		framecnt;
-static	UINT		waitcnt;
-static	UINT		framemax = 1;
 
 static void usage(const char *progname) {
 
@@ -29,79 +26,7 @@ static void usage(const char *progname) {
 	printf("\t--help   [-h]       : print this message\n");
 }
 
-// ---- resume
-
-#if 0
-static void getstatfilename(char *path, const char *ext, int size)
-{
-	char filename[32];
-	sprintf(filename, "xmil.%s", ext);
-
-	file_cpyname(path, file_getcd(filename), size);
-}
-
-static int flagsave(const char *ext) {
-
-	int		ret;
-	char	path[MAX_PATH];
-
-	getstatfilename(path, ext, sizeof(path));
-	ret = statsave_save(path);
-	if (ret) {
-		file_delete(path);
-	}
-	return(ret);
-}
-
-static void flagdelete(const char *ext) {
-
-	char	path[MAX_PATH];
-
-	getstatfilename(path, ext, sizeof(path));
-	file_delete(path);
-}
-
-static int flagload(const char *ext, const char *title, BOOL force) {
-
-	int		ret;
-	int		id;
-	char	path[MAX_PATH];
-	char	buf[1024];
-	char	buf2[1024 + 256];
-
-	getstatfilename(path, ext, sizeof(path));
-	id = DID_YES;
-	ret = statsave_check(path, buf, sizeof(buf));
-	if (ret & (~STATFLAG_DISKCHG)) {
-		menumbox("Couldn't restart", title, MBOX_OK | MBOX_ICONSTOP);
-		id = DID_NO;
-	}
-	else if ((!force) && (ret & STATFLAG_DISKCHG)) {
-		SPRINTF(buf2, "Conflict!\n\n%s\nContinue?", buf);
-		id = menumbox(buf2, title, MBOX_YESNOCAN | MBOX_ICONQUESTION);
-	}
-	if (id == DID_YES) {
-		statsave_load(path);
-	}
-	return(id);
-}
-#endif
-
-
 // ---- proc
-
-#define	framereset(cnt)		framecnt = 0
-
-static void processwait(UINT cnt) {
-
-	if (timing_getcount() >= cnt) {
-		timing_setcount(0);
-		framereset(cnt);
-	}
-	else {
-		taskmng_sleep(1);
-	}
-}
 
 
 char* get_file_ext(char* filepath){
@@ -186,86 +111,6 @@ int xmil_main(int argc, char *argv[]) {
 
 	return(SUCCESS);
 
-#if 0
-	while(taskmng_isavail()) {
-		taskmng_rol();
-		if (xmiloscfg.NOWAIT) {
-			pccore_exec(framecnt == 0);
-			if (xmiloscfg.DRAW_SKIP) {			// nowait frame skip
-				framecnt++;
-				if (framecnt >= xmiloscfg.DRAW_SKIP) {
-					processwait(0);
-				}
-			}
-			else {							// nowait auto skip
-				framecnt = 1;
-				if (timing_getcount()) {
-					processwait(0);
-				}
-			}
-		}
-		else if (xmiloscfg.DRAW_SKIP) {		// frame skip
-			if (framecnt < xmiloscfg.DRAW_SKIP) {
-				pccore_exec(framecnt == 0);
-				framecnt++;
-			}
-			else {
-				processwait(xmiloscfg.DRAW_SKIP);
-			}
-		}
-		else {								// auto skip
-			if (!waitcnt) {
-				UINT cnt;
-				pccore_exec(framecnt == 0);
-				framecnt++;
-				cnt = timing_getcount();
-				if (framecnt > cnt) {
-					waitcnt = framecnt;
-					if (framemax > 1) {
-						framemax--;
-					}
-				}
-				else if (framecnt >= framemax) {
-					if (framemax < 12) {
-						framemax++;
-					}
-					if (cnt >= 12) {
-						timing_reset();
-					}
-					else {
-						timing_setcount(cnt - framecnt);
-					}
-					framereset(0);
-				}
-			}
-			else {
-				processwait(waitcnt);
-				waitcnt = framecnt;
-			}
-		}
-	}
-
-//	pccore_cfgupdate();
-#if defined(SUPPORT_RESUME)
-	if (xmiloscfg.resume) {
-		flagsave(str_sav);
-	}
-	else {
-		flagdelete(str_sav);
-	}
-#endif
-	pccore_deinitialize();
-	x1f_close();
-	soundmng_deinitialize();
-
-	sysmng_deinitialize();
-
-	scrnmng_destroy();
-	TRACETERM();
-	//SDL_Quit();
-	return(SUCCESS);
-#endif
-
 #if defined(SUPPORT_RESUME)
 np2main_err5:
 	pccore_deinitialize();
@@ -284,70 +129,6 @@ np2main_err2:
 
 np2main_err1:
 	return(FAILURE);
-
-}
-
-int xmil_loop(){
-
-	//while(taskmng_isavail())
-	{
-		taskmng_rol();
-		if (xmiloscfg.NOWAIT) {
-			pccore_exec(framecnt == 0);
-			if (xmiloscfg.DRAW_SKIP) {			// nowait frame skip
-				framecnt++;
-				if (framecnt >= xmiloscfg.DRAW_SKIP) {
-					processwait(0);
-				}
-			}
-			else {							// nowait auto skip
-				framecnt = 1;
-				if (timing_getcount()) {
-					processwait(0);
-				}
-			}
-		}
-		else if (xmiloscfg.DRAW_SKIP) {		// frame skip
-			if (framecnt < xmiloscfg.DRAW_SKIP) {
-				pccore_exec(framecnt == 0);
-				framecnt++;
-			}
-			else {
-				processwait(xmiloscfg.DRAW_SKIP);
-			}
-		}
-		else {								// auto skip
-			if (!waitcnt) {
-				UINT cnt;
-				pccore_exec(framecnt == 0);
-				framecnt++;
-				cnt = timing_getcount();
-				if (framecnt > cnt) {
-					waitcnt = framecnt;
-					if (framemax > 1) {
-						framemax--;
-					}
-				}
-				else if (framecnt >= framemax) {
-					if (framemax < 12) {
-						framemax++;
-					}
-					if (cnt >= 12) {
-						timing_reset();
-					}
-					else {
-						timing_setcount(cnt - framecnt);
-					}
-					framereset(0);
-				}
-			}
-			else {
-				processwait(waitcnt);
-				waitcnt = framecnt;
-			}
-		}
-	}
-
 
 }
 

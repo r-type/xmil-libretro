@@ -28,10 +28,6 @@
 #include "vramhdl.h"
 #include "statsave.h"
 
-#ifdef __ANDROID__
-#include <time.h>
-#endif
-
 #ifdef _WIN32
 char slash = '\\';
 #else
@@ -80,27 +76,11 @@ void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) { audio_batch_c
 void retro_set_input_poll(retro_input_poll_t cb) { input_poll_cb = cb; }
 void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
-long frame=0;
-unsigned long  Ktime=0 , LastFPSTime=0;
-int slowdown=0;
-
 static long framecount = 0;
 
 long GetTicks(void)
 {
   return (framecount * 100) / 6;
-}
-
-void gui_delay_events(void)
-{
-   	Ktime =(unsigned long)  GetTicks();
-
-   	if(Ktime - LastFPSTime >= 1000/50)
-   	{
-      		slowdown=0;
-      		frame++; 
-      		LastFPSTime = Ktime;
-   	}
 }
 
 static char CMDFILE[512];
