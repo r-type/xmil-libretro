@@ -459,16 +459,24 @@ const _D88SEC	*sec;
 /* ---- */
 
 BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname) {
-
 	short	attr;
 	FILEH	fh;
 	BOOL	r;
 	UINT8	ptr[D88_TRACKMAX][4];
 	UINT	i;
 
+#ifndef __LIBRETRO__
 	attr = file_attr(fname);
 	if (attr & 0x18) {
 		goto fdst_err;
+	}
+#else
+	attr = 0;
+#endif
+	fh = file_open(fname);
+	if (fh == FILEH_INVALID) {
+		attr |= FILEATTR_READONLY;
+		fh = file_open_rb(fname);
 	}
 	fh = file_open_rb(fname);
 	if (fh == FILEH_INVALID) {
@@ -486,10 +494,10 @@ BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname) {
 		fdd->inf.d88.ptr[i] = LOADINTELDWORD(ptr[i]);
 	}
 	if (fdd->inf.d88.head.protect & 0x10) {
-		attr |= 1;
+		attr |= FILEATTR_READONLY;
 	}
 	fdd->type = DISKTYPE_D88;
-	fdd->protect = (UINT8)(attr & 1);
+	fdd->protect = (UINT8)(attr & FILEATTR_READONLY);
 	fdd->seek = fddd88_seek;
 	fdd->read = fddd88_read;
 	fdd->write = fddd88_write;

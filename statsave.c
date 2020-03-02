@@ -573,6 +573,7 @@ const SFENTRY	*tblterm;
 	return(ret);
 }
 
+#ifndef __LIBRETRO__
 int statsave_save(const OEMCHAR *filename) {
 
 	FILEH		fh;
@@ -587,6 +588,7 @@ int statsave_save(const OEMCHAR *filename) {
 	  file_delete(filename);
 	return ret;
 }
+#endif
 
 int statsave_check_fh(FILEH fh, OEMCHAR *buf, UINT size) {
 

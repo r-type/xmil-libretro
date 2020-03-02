@@ -125,6 +125,11 @@ void retro_set_environment(retro_environment_t cb)
 
    cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
 
+   struct retro_vfs_interface_info vfs_interface_info;
+   vfs_interface_info.required_interface_version = 1;
+   vfs_interface_info.iface = NULL;
+   if (cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_interface_info))
+     vfs_interface = vfs_interface_info.iface;
 }
 
 static int get_booleanvar(const char *name, const char *true_string) {

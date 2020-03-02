@@ -1,12 +1,15 @@
 
+extern struct retro_vfs_interface *vfs_interface;
+
 typedef struct {
   FILE *f;
-  enum { FILEH_FILE, FILEH_MEM } type;
+  enum { FILEH_STDIO, FILEH_MEM, FILEH_LIBRETRO } type;
   long memsize;
   long memptr;
   long memalloc;
   int writeable;
   char *mem;
+  struct retro_vfs_file_handle *lr;
 } *FILEH;
 #define	FILEH_INVALID		NULL
 
@@ -74,9 +77,6 @@ UINT file_write(FILEH handle, const void *data, UINT length);
 short file_close(FILEH handle);
 UINT file_getsize(FILEH handle);
 short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
-short file_delete(const char *path);
-short file_attr(const char *path);
-short file_dircreate(const char *path);
 
 /* カレントファイル操作 */
 void file_setcd(const char *exepath);
@@ -84,12 +84,6 @@ char *file_getcd(const char *path);
 FILEH file_open_c(const char *path);
 FILEH file_open_rb_c(const char *path);
 FILEH file_create_c(const char *path);
-short file_delete_c(const char *path);
-short file_attr_c(const char *path);
-
-FLISTH file_list1st(const char *dir, FLINFO *fli);
-BRESULT file_listnext(FLISTH hdl, FLINFO *fli);
-void file_listclose(FLISTH hdl);
 
 #define file_cpyname(p, n, m)	milstr_ncpy(p, n, m)
 #define file_cmpname(p, n)		milstr_cmp(p, n)
