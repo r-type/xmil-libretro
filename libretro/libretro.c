@@ -3,6 +3,7 @@
 #include <stdlib.h>  
 #include <ctype.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "libretro.h"
 
@@ -65,6 +66,7 @@ static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
 
 static  retro_input_poll_t input_poll_cb;
+static retro_log_printf_t log_cb;
 
 retro_input_state_t input_state_cb;
 retro_audio_sample_t audio_cb;
@@ -93,7 +95,21 @@ int pre_main(const char *floppy)
 void texture_init(void)
 {
    memset(videoBuffer, 0,retrow*retroh*2);
-} 
+}
+
+void log_printf(const char *format, ...)
+{
+	va_list va;
+	char formatted[1024];
+
+	va_start(va, format);
+	vsnprintf(formatted, sizeof(formatted) - 1, format, va);
+	if (log_cb)
+		log_cb(RETRO_LOG_INFO, "%s\n", formatted);
+	else
+		fprintf(stderr, "%s\n", formatted);
+	va_end(va);
+}
 
 void retro_set_environment(retro_environment_t cb)
 {
@@ -130,6 +146,11 @@ void retro_set_environment(retro_environment_t cb)
    vfs_interface_info.iface = NULL;
    if (cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_interface_info))
      vfs_interface = vfs_interface_info.iface;
+
+   struct retro_log_callback logging;
+
+   if (cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &logging))
+	   log_cb = logging.log;
 }
 
 static int get_booleanvar(const char *name, const char *true_string) {
@@ -414,7 +435,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    strcpy(RPATH,full_path);
 
-   printf("LOAD EMU\n");
+   log_printf("LOAD EMU\n");
 
    return true;
 }
@@ -588,7 +609,7 @@ void initload() {
 void retro_deinit(void)
 {
    xmil_end();
-   printf("Retro DeInit\n");
+   log_printf("Retro DeInit\n");
 }
 
 void retro_reset(void)
@@ -606,14 +627,14 @@ void retro_run(void)
       update_variables();
       mousemng_enable(MOUSEPROC_SYSTEM);
       firstcall=0;
-      printf("INIT done\n");
+      log_printf("INIT done\n");
       return;
    }
 
    if (CHANGEAV == 1)
    {
       update_geometry();
-      printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
+      log_printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
       CHANGEAV=0;
    }
 
