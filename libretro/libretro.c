@@ -431,6 +431,15 @@ bool retro_load_game(const struct retro_game_info *info)
 {
    const char *full_path;
 
+   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+
+   if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+   {
+	   log_printf("RGB565 is not supported.\n");
+	   return false;
+   }
+
+
    full_path = info->path;
    images[0] = strdup(full_path);
    cur_disk_idx = 0;
@@ -565,14 +574,6 @@ void retro_init(void)
    else sprintf(RETRO_DIR, "%s\0", retro_system_directory);
 
    sprintf(retro_system_conf, "%s%cxmil\0",RETRO_DIR,slash);
-
-   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-
-   if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-   {
-      fprintf(stderr, "RGB565 is not supported.\n");
-      exit(0);
-   }
 
    struct retro_input_descriptor inputDescriptors[] = {
 		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
