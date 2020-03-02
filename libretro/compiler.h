@@ -15,6 +15,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define SDL_arraysize(array)   (sizeof(array)/sizeof(array[0]))
 
@@ -36,6 +37,7 @@ typedef	signed short		SINT16;
 typedef	unsigned short		UINT16;
 typedef	signed int			SINT32;
 typedef	unsigned int		UINT32;
+#define INTPTR intptr_t 
 
 #define	BRESULT				UINT
 #define	OEMCHAR				char
