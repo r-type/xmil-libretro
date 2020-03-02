@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 #include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define SDL_arraysize(array)   (sizeof(array)/sizeof(array[0]))
 
