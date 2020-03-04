@@ -137,6 +137,10 @@ else ifeq ($(platform), wincross64)
 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
 	LDFLAGS += -static-libgcc -static-libstdc++ 
 	EXTRA_LDF := -lwinmm -Wl,--export-all-symbols
+else ifeq ($(platform), emscripten)
+	TARGET := $(TARGET_NAME)_libretro_emscripten.bc
+	fpic := -fPIC
+	SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
 else
 	TARGET :=  $(TARGET_NAME)_libretro.dll
 	CC = gcc
