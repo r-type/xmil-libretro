@@ -82,6 +82,7 @@ void retro_set_input_poll(retro_input_poll_t cb) { input_poll_cb = cb; }
 void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
 static long framecount = 0;
+int allow_scanlines = 0;
 
 long GetTicks(void)
 {
@@ -130,6 +131,7 @@ void retro_set_environment(retro_environment_t cb)
       { "X1_BTN_RAPID", "Joy Rapid; OFF|ON" },
       { "X1_AUDIO_RATE", "Audio sampling rate; 44100|22050|11025"},
       {	"X1_SEEKSND", "Seek Sound; OFF|ON" },
+      {	"X1_SCANLINES", "Scanlines in low-res; OFF|ON" },
       { "X1_KEY_MODE", "Key mode; Keyboard|JoyKey-1|JoyKey-2|Mouse-Key" },
       { "X1_FMBOARD", "FM Board; ON|OFF"
 #if defined(SUPPORT_OPMx2)
@@ -236,6 +238,7 @@ static void update_variables(void)
    xmilcfg.BTN_MODE = get_booleanvar("X1_BTN_MODE", "ON");
    xmilcfg.BTN_RAPID = get_booleanvar("X1_BTN_RAPID", "ON");
    xmilcfg.MOTOR = get_booleanvar("X1_SEEKSND", "ON");
+   allow_scanlines = get_booleanvar("X1_SCANLINES", "ON");
 
    int keymode = 0;
    var.key = "X1_KEY_MODE";

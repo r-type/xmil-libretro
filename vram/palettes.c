@@ -224,6 +224,7 @@ void pal_setgrph4096(UINT num) {
 }
 #endif
 
+extern int allow_scanlines;
 
 // ----
 
@@ -237,7 +238,7 @@ void pal_update1(const UINT8 *rgbp) {
 	UINT	bcnt;
 
 	skip8 = 0;
-	if (!(crtc.s.SCRN_BITS & SCRN_24KHZ)) {
+	if (!(crtc.s.SCRN_BITS & SCRN_24KHZ) && allow_scanlines) {
 		skip8 = 8;
 	}
 	for (i=0, bit=1; i<8; i++, bit<<=1) {
