@@ -117,6 +117,15 @@ else ifeq ($(platform), vita)
    CFLAGS += -DVITA=1
    CXXFLAGS += -DVITA=1 -Wl,-q -Wall -O2
    STATIC_LINKING = 1
+else ifeq ($(platform), psp1)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
+   CC = psp-gcc
+   CXX = psp-g++
+   AR = psp-ar
+   CFLAGS += -DPSP -G0 -DSIZE_QVGA
+   CXXFLAGS += -DPSP -G0 -DSIZE_QVGA
+   CFLAGS += -I$(shell psp-config --pspsdk-path)/include
+   STATIC_LINKING = 1
 # Nintendo Wii U
 else ifeq ($(platform), wiiu)
    TARGET := $(TARGET_NAME)_libretro_wiiu.a
