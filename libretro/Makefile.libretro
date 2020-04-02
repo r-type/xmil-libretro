@@ -109,6 +109,14 @@ else ifneq (,$(findstring qnx,$(platform)))
    CC = qcc -Vgcc_ntoarmv7le
    CXX = QCC -Vgcc_ntoarmv7le
    LDFLAGS += -lm
+else ifeq ($(platform), vita)
+   TARGET := $(TARGET_NAME)_libretro_vita.a
+   CC = arm-vita-eabi-gcc
+   CXX = arm-vita-eabi-g++
+   AR = arm-vita-eabi-ar
+   CFLAGS += -DVITA=1
+   CXXFLAGS += -DVITA=1 -Wl,-q -Wall -O2
+   STATIC_LINKING = 1
 # Nintendo Wii U
 else ifeq ($(platform), wiiu)
    TARGET := $(TARGET_NAME)_libretro_wiiu.a
