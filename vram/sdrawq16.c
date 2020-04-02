@@ -88,7 +88,7 @@ const UINT8	*p;
 	do {
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
-				c = xmil_pal16[p[0]] + xmil_pal16[p[SURFACE_WIDTH]];
+			        c = xmil_pal16[p[x]] + xmil_pal16[p[x+SURFACE_WIDTH]];
 				c = c & (0x07e0f81f << 1);
 				*(UINT16 *)q = (UINT16)((c >> 1) | (c >> 17));
 				q += sdraw->xalign;

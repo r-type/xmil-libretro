@@ -51,15 +51,15 @@ char retro_system_conf[512];
 char Core_Key_Sate[512];
 char Core_old_Key_Sate[512];
 
-int retrow=640;
-int retroh=400;
+int retrow=FULLSCREEN_WIDTH;
+int retroh=FULLSCREEN_HEIGHT;
 int CHANGEAV=0;
 
 int pauseg=0;
 
 signed short soundbuf[1024*2];
 
-uint16_t videoBuffer[640*400];  //emu  surf
+uint16_t videoBuffer[(SCREEN_PITCH / 2) * FULLSCREEN_HEIGHT];  //emu  surf
 
 #define MAX_DISK_IMAGES 100
 static char *images[MAX_DISK_IMAGES];
@@ -319,8 +319,6 @@ static void update_variables(void)
 		sdlkbd_keyup(a);\
 }	
 
-static int lastx=320,lasty=200;
-
 void update_input(void)
 {
  	static int mposx=640/2,mposy=400/2;
@@ -369,7 +367,10 @@ void retro_get_system_info(struct retro_system_info *info)
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
    /* FIXME handle PAL/NTSC */
-   struct retro_game_geometry geom = { retrow, retroh,640, 400 ,4.0 / 3.0 };
+   struct retro_game_geometry geom = { retrow, retroh,
+				       FULLSCREEN_WIDTH,
+				       FULLSCREEN_HEIGHT,
+				       4.0 / 3.0 };
    struct retro_system_timing timing = { 60.0, SOUNDRATE };
 
    info->geometry = geom;
@@ -658,6 +659,6 @@ void retro_run(void)
    pccore_exec(TRUE);
    sound_play_cb(NULL, NULL,SNDSZ*4);
 
-   video_cb(videoBuffer, retrow, retroh, /*retrow*/ 640 << 1/*2*/);
+   video_cb(videoBuffer, retrow, retroh, SCREEN_PITCH);
 }
 
