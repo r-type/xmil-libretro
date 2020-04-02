@@ -6,8 +6,9 @@
 #include	"scrndraw.h"
 #include	"vramhdl.h"
 #include	"menubase.h"
+#include        "xmil.h"
 
-extern unsigned short int videoBuffer[640*400];
+extern unsigned short int videoBuffer[(SCREEN_PITCH/2)*FULLSCREEN_HEIGHT];
 
 /*
 static SDL_Window *s_sdlWindow;
@@ -51,7 +52,7 @@ static BOOL calcdrawrect(int *surface,
 	int		pos;
 
 	dr->xalign = 2;
-	dr->yalign = 640*2;
+	dr->yalign = SCREEN_PITCH;
 	dr->srcpos = 0;
 	dr->dstpos = 0;
 	dr->width = min(scrnmng.width, s->width);
@@ -126,7 +127,7 @@ const SCRNSURF *scrnmng_surflock(void) {
 		scrnmng.surface = NULL;
 		scrnsurf.ptr = (BYTE *)videoBuffer;
 		scrnsurf.xalign = 2;
-		scrnsurf.yalign = 640*2;
+		scrnsurf.yalign = SCREEN_PITCH;
 		scrnsurf.bpp = 16;
 	}
 	else {

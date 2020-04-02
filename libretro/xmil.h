@@ -8,7 +8,7 @@ typedef struct {
 #if defined(SIZE_QVGA)
 enum {
 	FULLSCREEN_WIDTH	= 320,
-	FULLSCREEN_HEIGHT	= 240
+	FULLSCREEN_HEIGHT	= 200
 };
 #else
 enum {
@@ -16,6 +16,8 @@ enum {
 	FULLSCREEN_HEIGHT	= 400
 };
 #endif
+
+#define SCREEN_PITCH (FULLSCREEN_WIDTH * 2)
 
 extern	XMILOSCFG	xmiloscfg;
 
