@@ -102,6 +102,13 @@ else ifeq ($(platform), ctr)
 	DEFINES += -D_3DS -DARM11 -march=armv6k -mtune=mpcore -mfloat-abi=hard
 	CFLAGS += $(DEFINES)
 	STATIC_LINKING = 1
+else ifneq (,$(findstring qnx,$(platform)))
+	TARGET := $(TARGET_NAME)_libretro_qnx.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
+   CC = qcc -Vgcc_ntoarmv7le
+   CXX = QCC -Vgcc_ntoarmv7le
+   LDFLAGS += -lm
 # Nintendo Wii U
 else ifeq ($(platform), wiiu)
    TARGET := $(TARGET_NAME)_libretro_wiiu.a
