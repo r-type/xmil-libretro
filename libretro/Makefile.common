@@ -1,5 +1,6 @@
 INCFLAGS := -I$(CORE_DIR) \
 	-I$(CORE_DIR)/libretro \
+	-I$(CORE_DIR)/include \
 	-I$(XMIL_PATH) \
 	-I$(XMIL_PATH)/codecnv \
 	-I$(XMIL_PATH)/common \
