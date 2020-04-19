@@ -36,7 +36,6 @@ ifeq ($(platform), win)
 endif
 
 TARGET_NAME := x1
-ENDIANNESS_DEFINES :=
 CORE_DIR := .
 
 ifeq ($(platform), unix)
@@ -126,19 +125,27 @@ else ifeq ($(platform), psp1)
    CXXFLAGS += -DPSP -G0 -DSIZE_QVGA
    CFLAGS += -I$(shell psp-config --pspsdk-path)/include
    STATIC_LINKING = 1
+# Lightweight PS3 Homebrew SDK
+else ifeq ($(platform), psl1ght)
+   EXT=a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).$(EXT)
+   CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
+   CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
+   CC_AS = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
+   AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
+   FLAGS += -D__CELLOS_LV2__ -D__PSL1GHT__ -mcpu=cell
+   STATIC_LINKING = 1
 # Nintendo Wii U
 else ifeq ($(platform), wiiu)
    TARGET := $(TARGET_NAME)_libretro_wiiu.a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
    CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
-   FLAGS += -DGEKKO -mwup -mcpu=750 -meabi -mhard-float -D__POWERPC__ -D__ppc__ -DWORDS_BIGENDIAN=1 -malign-natural 
+   FLAGS += -DGEKKO -mwup -mcpu=750 -meabi -mhard-float -malign-natural 
    FLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int -fsingle-precision-constant -mno-bit-align
-   FLAGS += -DHAVE_STRTOUL -DBIGENDIAN=1 -DWIIU -DUNIX -D__LINUX__
-   FLAGS += -DMSB_FIRST -I../libretro/include
+   FLAGS += -DHAVE_STRTOUL -DWIIU -DUNIX -D__LINUX__
    CFLAGS += -g -O2 
    CXXFLAGS += -g -O2  -fno-merge-constants 
-   BIGENDIAN=1
    STATIC_LINKING = 1
 # Nintendo Switch (libnx)
 else ifeq ($(platform), libnx)
@@ -196,7 +203,7 @@ FLAGS +=
 
 WARNINGS :=  
 	
-FLAGS += -D__LIBRETRO__ $(ENDIANNESS_DEFINES) $(WARNINGS) $(fpic) 
+FLAGS += -D__LIBRETRO__ $(WARNINGS) $(fpic) 
 
 CXXFLAGS += $(FLAGS) -fpermissive $(CPU_FLAGS)
 CFLAGS += $(FLAGS) -std=gnu99 $(CPU_FLAGS)

@@ -16,13 +16,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <retro_endianness.h>
 
 #define SDL_arraysize(array)   (sizeof(array)/sizeof(array[0]))
 
-#ifndef MSB_FIRST
+#if RETRO_IS_LITTLE_ENDIAN
 #define	BYTESEX_LITTLE
-#else
+#elif RETRO_IS_BIG_ENDIAN
 #define	BYTESEX_BIG
+#else
+#error Endianness defines are broken
 #endif
 
 #define	OSLANG_UTF8
