@@ -12,7 +12,8 @@ INCFLAGS := -I$(CORE_DIR) \
 	-I$(XMIL_PATH)/io \
 	-I$(XMIL_PATH)/sound \
 	-I$(XMIL_PATH)/vram \
-	-I$(XMIL_PATH)/z80c
+	-I$(XMIL_PATH)/z80c \
+	-I$(XMIL_PATH)/libretro/include
 
 SOURCES_C :=  \
 		$(wildcard $(XMIL_PATH)/*.c) \
