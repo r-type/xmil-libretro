@@ -38,7 +38,7 @@ endif
 TARGET_NAME := x1
 CORE_DIR := .
 
-ifeq ($(platform), unix)
+ifneq (,$(filter $(platform), unix unix-armv7-hardfloat-neon))
 	CFLAGS = -g -O2 
 	CXXFLAGS = -g -O2  -fno-merge-constants 
 	TARGET := $(TARGET_NAME)_libretro.so
