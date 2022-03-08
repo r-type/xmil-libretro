@@ -39,6 +39,10 @@ include:
   - project: 'libretro-infrastructure/ci-templates'
     file: '/osx-arm64.yml'
 
+  # MacOS PPC
+  - project: 'libretro-infrastructure/ci-templates'
+    file: '/osx-ppc.yml'
+
   # DJGPP
   - project: 'libretro-infrastructure/ci-templates'
     file: '/djgpp-static.yml'
@@ -157,6 +161,12 @@ libretro-build-osx-arm64:
 libretro-build-djgpp-i586:
   extends:
     - .libretro-djgpp-static-retroarch-master
+    - .core-defs
+
+# MacOS PPC
+libretro-build-osx-ppc:
+  extends:
+    - .libretro-osx-ppc-make-default
     - .core-defs
 
 ################################### CELLULAR #################################
